@@ -10,6 +10,7 @@
     "@remotion/tailwind-v4": "4.0.431",
     "csv-writer": "^1.6.0",
     "dotenv": "^17.3.1",
+    "git-filter-repo": "^0.0.30",
     "googleapis": "^171.4.0",
     "mime-types": "^3.0.2",
     "open": "^11.0.0",
