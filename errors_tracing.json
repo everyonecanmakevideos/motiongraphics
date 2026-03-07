@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "prompt": "Circle Fade In",
+    "error_type": "ReferenceError",
+    "layer": "code_generation",
+    "root_cause": "LLM used <motion.div> without importing motion from framer-motion.",
+    "system_prompt_fix": "Always import required libraries before using components. If motion.div is used, import { motion } from 'framer-motion'."
+  },
+  {
+    "id": 2,
+    "prompt": "Three Circles Chasing Each Other",
+    "error_type": "JSX Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "Invalid JSX structure with stray '>' and unexpected const declarations inside JSX.",
+    "system_prompt_fix": "Ensure JSX syntax correctness: variables must be declared outside JSX and no invalid characters inside JSX tags."
+  },
+  {
+    "id": 3,
+    "prompt": "Circle Glowing Pulse",
+    "error_type": "Interpolation Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange and outputRange arrays had different lengths in interpolate().",
+    "system_prompt_fix": "Ensure inputRange and outputRange arrays in interpolate() always have identical lengths."
+  },
+  {
+    "id": 4,
+    "prompt": "Circle Slide Up",
+    "error_type": "Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "Invalid '$' character caused JS syntax failure.",
+    "system_prompt_fix": "Do not output template variables or '$' characters unless inside valid JavaScript template strings."
+  },
+  {
+    "id": 5,
+    "prompt": "Circle Drop Gravity",
+    "error_type": "Interpolation Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange and outputRange mismatch in interpolate().",
+    "system_prompt_fix": "Always validate interpolate() arrays so both ranges contain equal number of values."
+  },
+  {
+    "id": 6,
+    "prompt": "Triangle Color Cycle",
+    "error_type": "Interpolation Error",
+    "layer": "remotion_runtime",
+    "root_cause": "Mismatch between inputRange and outputRange values.",
+    "system_prompt_fix": "When animating color transitions, ensure inputRange and outputRange arrays are equal length."
+  },
+  {
+    "id": 7,
+    "prompt": "Triangle Opacity Wave",
+    "error_type": "Positioning + Runtime Error",
+    "layer": "system_prompt",
+    "root_cause": "Center alignment rule missing and interpolate() contained non-numeric values.",
+    "system_prompt_fix": "All centered shapes must use explicit center alignment logic and interpolate ranges must contain only numeric frame values."
+  },
+  {
+    "id": 8,
+    "prompt": "Line Draw On Vertical",
+    "error_type": "Constant Reassignment Error",
+    "layer": "code_generation",
+    "root_cause": "Code attempted to reassign a variable declared with const.",
+    "system_prompt_fix": "Never reassign const variables; use let when values need modification."
+  },
+  {
+    "id": 9,
+    "prompt": "Circle Breathing Loop",
+    "error_type": "JSX Prop Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "${durationInFrames} was written as plain text instead of JSX expression.",
+    "system_prompt_fix": "All dynamic values inside JSX props must be wrapped with {}."
+  },
+  {
+    "id": 10,
+    "prompt": "Circle Opacity Fade Pulse",
+    "error_type": "Conditional Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "LLM produced invalid if/else block syntax.",
+    "system_prompt_fix": "Ensure conditional blocks follow correct JavaScript syntax and are placed outside JSX where required."
+  },
+  {
+    "id": 11,
+    "prompt": "Circle Glow Intensity Wave",
+    "error_type": "Interpolation Range Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange contained duplicate values [30,30], violating increasing rule.",
+    "system_prompt_fix": "All inputRange values must be strictly increasing numbers."
+  },
+  {
+    "id": 12,
+    "prompt": "Square Grid Appear Sequential",
+    "error_type": "Loop Violation",
+    "layer": "validation",
+    "root_cause": "LLM used loop/map instead of explicit JSX elements for grid generation.",
+    "system_prompt_fix": "Do not use loops or array mapping; explicitly declare each element in JSX."
+  },
+  {
+    "id": 13,
+    "prompt": "Triangles Point Inward",
+    "error_type": "Undefined Variable",
+    "layer": "code_generation",
+    "root_cause": "scale variable referenced without declaration.",
+    "system_prompt_fix": "Every variable used in transforms must be explicitly declared before usage."
+  },
+  {
+    "id": 14,
+    "prompt": "Opacity Fade Pattern",
+    "error_type": "Loop Violation",
+    "layer": "validation",
+    "root_cause": "AI used programmatic looping to generate grid elements.",
+    "system_prompt_fix": "Grid elements must be explicitly written without loops or programmatic generation."
+  },
+  {
+    "id": 15,
+    "prompt": "Line Star Formation",
+    "error_type": "Loop Violation",
+    "layer": "validation",
+    "root_cause": "AI attempted to generate starburst lines using loop logic.",
+    "system_prompt_fix": "All shapes must be declared explicitly in JSX without loops."
+  },
+  {
+    "id": 16,
+    "prompt": "Circles Radial Expand",
+    "error_type": "JSX Braces Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "Mismatched braces caused build failure.",
+    "system_prompt_fix": "Ensure balanced braces and parentheses in JSX and TypeScript code."
+  },
+  {
+    "id": 17,
+    "prompt": "Lines Grid Fade In",
+    "error_type": "Interpolation Order Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange defined backwards [135,90].",
+    "system_prompt_fix": "All interpolate inputRange values must increase chronologically (e.g., [90,135])."
+  }
+]
