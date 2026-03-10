@@ -1,0 +1,292 @@
+{
+  "scene_id": "1",
+  "scene_name": "Circle Fade In",
+  "duration_sec": 4,
+  "fps": 30,
+  "canvas": {
+    "width_px": 1920,
+    "height_px": 1080,
+    "aspect_ratio": "16:9"
+  },
+  "background": {
+    "type": "solid",
+    "color": "#FFFFFF",
+    "gradient_start": "",
+    "gradient_end": "",
+    "gradient_direction": "",
+    "image_url": ""
+  },
+  "global_layout": {
+    "origin": "center",
+    "safe_margin_px": 0
+  },
+  "objects": [
+    {
+      "id": "circle1",
+      "type": "shape",
+      "shape": "circle",
+      "subtype": "",
+      "count": 1,
+      "orientation": {
+        "facing": "",
+        "rotation_deg": 0
+      },
+      "text": {
+        "content": "",
+        "font_family": "",
+        "font_size_px": 0,
+        "font_weight": "",
+        "alignment": "",
+        "letter_spacing": 0
+      },
+      "size": {
+        "width_px": 0,
+        "height_px": 0,
+        "diameter_px": 150,
+        "thickness_px": 0
+      },
+      "corner_radius_px": 0,
+      "color": "#E53935",
+      "stroke_color": "",
+      "stroke_width_px": 0,
+      "fill_enabled": true,
+      "effects": {
+        "shadow": {
+          "offset_x_px": 0,
+          "offset_y_px": 0,
+          "blur_px": 0,
+          "color": "rgba(0,0,0,0)"
+        },
+        "glow": {
+          "enabled": false,
+          "color": "",
+          "blur_px": 0,
+          "intensity_from": 0,
+          "intensity_to": 0
+        },
+        "gradient_fill": {
+          "enabled": false,
+          "start_color": "",
+          "end_color": "",
+          "direction": ""
+        }
+      },
+      "initial_state": {
+        "position": {
+          "x_value": 0,
+          "x_unit": "px",
+          "y_value": 0,
+          "y_unit": "px"
+        },
+        "rotation_deg": 0,
+        "scale": 1.0,
+        "opacity": 0.0
+      },
+      "layout": {
+        "pattern": "single",
+        "gap_px": 0,
+        "radius_px": 0,
+        "angle_step_deg": 0,
+        "row_count": 0,
+        "column_count": 0,
+        "item_spacing_px": 0
+      }
+    }
+  ],
+  "animations": [
+    {
+      "id": "fade1",
+      "target_object_id": "circle1",
+      "type": "fade",
+      "start_sec": 0,
+      "end_sec": 1.2,
+      "duration_sec": 1.2,
+      "easing": "ease-out",
+      "transform": {
+        "translate": {
+          "from_x": 0,
+          "to_x": 0,
+          "x_unit": "px",
+          "from_y": 0,
+          "to_y": 0,
+          "y_unit": "px"
+        },
+        "rotate_deg": {
+          "from": 0,
+          "to": 0,
+          "axis": "2d",
+          "direction": ""
+        },
+        "scale": {
+          "from": 1.0,
+          "to": 1.0,
+          "axis": "uniform"
+        },
+        "opacity": {
+          "from": 0.0,
+          "to": 1.0
+        },
+        "length_px": {
+          "from": 0,
+          "to": 0
+        },
+        "thickness_px": {
+          "from": 0,
+          "to": 0
+        },
+        "corner_radius_px": {
+          "from": 0,
+          "to": 0
+        }
+      },
+      "color_transition": {
+        "from": "",
+        "to": "",
+        "gradient_shift": {
+          "enabled": false,
+          "start_position": "",
+          "end_position": ""
+        },
+        "glow_pulse": {
+          "enabled": false,
+          "blur_from_px": 0,
+          "blur_to_px": 0,
+          "intensity_from": 0,
+          "intensity_to": 0
+        }
+      },
+      "physics": {
+        "gravity_strength": 0,
+        "bounce_heights_px": [],
+        "overshoot_px": 0
+      },
+      "stroke_draw": {
+        "enabled": false,
+        "start_point": "start",
+        "direction": "clockwise",
+        "coverage_from": 0.0,
+        "coverage_to": 1.0
+      },
+      "dash_pattern": {
+        "enabled": false,
+        "dash_px": 0,
+        "gap_px": 0,
+        "offset_animation": {
+          "from_px": 0,
+          "to_px": 0
+        }
+      },
+      "pattern": {
+        "repeat_count": 1,
+        "wave": {
+          "enabled": false,
+          "axis": "x",
+          "direction": "left-to-right",
+          "per_item_stagger_sec": 0
+        }
+      },
+      "sequence": {
+        "order": "",
+        "stagger_sec": 0,
+        "direction": ""
+      }
+    },
+    {
+      "id": "hold1",
+      "target_object_id": "circle1",
+      "type": "hold",
+      "start_sec": 1.2,
+      "end_sec": 4.0,
+      "duration_sec": 2.8,
+      "easing": "",
+      "transform": {
+        "translate": {
+          "from_x": 0,
+          "to_x": 0,
+          "x_unit": "px",
+          "from_y": 0,
+          "to_y": 0,
+          "y_unit": "px"
+        },
+        "rotate_deg": {
+          "from": 0,
+          "to": 0,
+          "axis": "2d",
+          "direction": ""
+        },
+        "scale": {
+          "from": 1.0,
+          "to": 1.0,
+          "axis": "uniform"
+        },
+        "opacity": {
+          "from": 1.0,
+          "to": 1.0
+        },
+        "length_px": {
+          "from": 0,
+          "to": 0
+        },
+        "thickness_px": {
+          "from": 0,
+          "to": 0
+        },
+        "corner_radius_px": {
+          "from": 0,
+          "to": 0
+        }
+      },
+      "color_transition": {
+        "from": "",
+        "to": "",
+        "gradient_shift": {
+          "enabled": false,
+          "start_position": "",
+          "end_position": ""
+        },
+        "glow_pulse": {
+          "enabled": false,
+          "blur_from_px": 0,
+          "blur_to_px": 0,
+          "intensity_from": 0,
+          "intensity_to": 0
+        }
+      },
+      "physics": {
+        "gravity_strength": 0,
+        "bounce_heights_px": [],
+        "overshoot_px": 0
+      },
+      "stroke_draw": {
+        "enabled": false,
+        "start_point": "start",
+        "direction": "clockwise",
+        "coverage_from": 0.0,
+        "coverage_to": 1.0
+      },
+      "dash_pattern": {
+        "enabled": false,
+        "dash_px": 0,
+        "gap_px": 0,
+        "offset_animation": {
+          "from_px": 0,
+          "to_px": 0
+        }
+      },
+      "pattern": {
+        "repeat_count": 1,
+        "wave": {
+          "enabled": false,
+          "axis": "x",
+          "direction": "left-to-right",
+          "per_item_stagger_sec": 0
+        }
+      },
+      "sequence": {
+        "order": "",
+        "stagger_sec": 0,
+        "direction": ""
+      }
+    }
+  ]
+}
