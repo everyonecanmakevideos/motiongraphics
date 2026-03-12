@@ -1,0 +1,71 @@
+{
+  "scene": "robot_arm_mechanism",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#FFFFFF",
+  "objects": [
+    {
+      "id": "base_1",
+      "shape": "rectangle",
+      "size": [200, 120],
+      "color": "#1E88E5",
+      "pos": [0, 200],
+      "opacity": 0
+    },
+    {
+      "id": "arm_1",
+      "shape": "rectangle",
+      "size": [300, 40],
+      "color": "#9E9E9E",
+      "parent": "base_1",
+      "offset": [0, -60],
+      "anchor": "bottom-center",
+      "opacity": 0
+    },
+    {
+      "id": "gripper_1",
+      "shape": "circle",
+      "diameter": 60,
+      "color": "#E53935",
+      "parent": "arm_1",
+      "offset": [150, 0],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "base_1",
+      "time": [0, 1.5],
+      "opacity": [0, 1]
+    },
+    {
+      "target": "arm_1",
+      "time": [0, 1.5],
+      "opacity": [0, 1]
+    },
+    {
+      "target": "gripper_1",
+      "time": [0, 1.5],
+      "opacity": [0, 1]
+    },
+    {
+      "target": "arm_1",
+      "time": [1.5, 4],
+      "rotation": [0, 60]
+    },
+    {
+      "target": "gripper_1",
+      "time": [4, 6],
+      "rotation": [0, 180]
+    },
+    {
+      "target": "arm_1",
+      "time": [6, 8],
+      "rotation": [60, 0]
+    }
+  ]
+}

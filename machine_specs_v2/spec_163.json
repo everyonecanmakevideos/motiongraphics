@@ -1,0 +1,164 @@
+{
+  "scene": "sliding_label_tag",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "rect_1",
+      "shape": "rectangle",
+      "size": [
+        340,
+        120
+      ],
+      "color": "#8E24AA",
+      "cornerRadius": 30,
+      "pos": [
+        -960,
+        0
+      ]
+    },
+    {
+      "id": "text_1",
+      "shape": "text",
+      "text": "SALE",
+      "fontSize": 64,
+      "fontWeight": "bold",
+      "fontFamily": "sans-serif",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "parent": "rect_1",
+      "offset": [
+        0,
+        0
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "target": "rect_1",
+      "time": [
+        0,
+        1
+      ],
+      "x": [
+        -960,
+        0
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        0.2,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        1,
+        2
+      ],
+      "scale": [
+        1,
+        1.2
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        2,
+        3
+      ],
+      "scale": [
+        1.2,
+        1
+      ]
+    },
+    {
+      "target": "rect_1",
+      "time": [
+        3,
+        4
+      ],
+      "rotation": [
+        0,
+        10
+      ]
+    },
+    {
+      "target": "rect_1",
+      "time": [
+        4,
+        5
+      ],
+      "rotation": [
+        10,
+        -10
+      ]
+    },
+    {
+      "target": "rect_1",
+      "time": [
+        5,
+        6
+      ],
+      "rotation": [
+        -10,
+        0
+      ]
+    },
+    {
+      "target": "rect_1",
+      "time": [
+        5,
+        7
+      ],
+      "y": [
+        0,
+        -150
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        5,
+        7
+      ],
+      "y": [
+        0,
+        -150
+      ]
+    },
+    {
+      "target": "rect_1",
+      "time": [
+        7,
+        8
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        7,
+        8
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    }
+  ]
+}

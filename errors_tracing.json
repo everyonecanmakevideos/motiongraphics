@@ -152,5 +152,14 @@
     "layer": "code_generation",
     "root_cause": "src/GeneratedMotion.tsx(25,7): error TS6133: 'totalFrames' is declared but its value is never read.",
     "timestamp": "2026-03-10T13:50:05.747Z"
+  },
+  {
+    "id": 20,
+    "prompt": "Text Badge Animation. Light background. A rounded rectangle badge (300px x 120px, blue #1E88E5, corner radius 24px) placed at the center. Inside the badge a white text label 'HELLO' (bold sans-serif, 60px) is centered horizontally and vertically. Animation (8s): 0-1s: The rounded rectangle fades in at center. 1-2s: The text fades in slightly after the rectangle. 2-4s: The entire badge (rectangle and text together) scales up from 100% -> 115%. 4-5.5s: The badge rotates slightly (-8° -> 8°) like a gentle wobble while the text remains centered inside the box. 5.5-7s: The badge returns to normal rotation and scales back to original size. 7-8s: Both text and rectangle fade out together. Total duration: 8s.",
+    "prompt_id": 162,
+    "error_type": "TypeScript Error",
+    "layer": "code_generation",
+    "root_cause": "src/GeneratedMotion.tsx(126,10): error TS2322: Type '{ position: string; left: string; top: string; width: string; height: string; transform: string; pointerEvents: string; }' is not assignable to type 'Properties<string | number, string & {}>'.\nsrc/GeneratedMotion.tsx(127,12): error TS2322: Type '{ position: string; left: string; top: string; width: string; height: string; backgroundColor: string; borderRadius: string; transform: string; opacity: number; boxSizing: string; }' is not assignable ",
+    "timestamp": "2026-03-12T09:27:05.965Z"
   }
 ]

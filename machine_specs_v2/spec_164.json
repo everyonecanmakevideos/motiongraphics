@@ -1,0 +1,255 @@
+{
+  "scene": "rotating_wheel_spokes",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "circle_1",
+      "shape": "circle",
+      "diameter": 160,
+      "color": "#212121",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "line_1",
+      "shape": "line",
+      "size": [
+        160,
+        6
+      ],
+      "color": "#616161",
+      "pos": [
+        0,
+        0
+      ],
+      "rotation": 0,
+      "opacity": 0
+    },
+    {
+      "id": "line_2",
+      "shape": "line",
+      "size": [
+        160,
+        6
+      ],
+      "color": "#616161",
+      "pos": [
+        0,
+        0
+      ],
+      "rotation": 90,
+      "opacity": 0
+    },
+    {
+      "id": "line_3",
+      "shape": "line",
+      "size": [
+        160,
+        6
+      ],
+      "color": "#616161",
+      "pos": [
+        0,
+        0
+      ],
+      "rotation": 45,
+      "opacity": 0
+    },
+    {
+      "id": "line_4",
+      "shape": "line",
+      "size": [
+        160,
+        6
+      ],
+      "color": "#616161",
+      "pos": [
+        0,
+        0
+      ],
+      "rotation": -45,
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "circle_1",
+      "time": [
+        0,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "line_1",
+      "time": [
+        0,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "line_2",
+      "time": [
+        0,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "line_3",
+      "time": [
+        0,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "line_4",
+      "time": [
+        0,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "circle_1",
+      "time": [
+        1,
+        6
+      ],
+      "rotation": [
+        0,
+        720
+      ]
+    },
+    {
+      "target": "line_1",
+      "time": [
+        1,
+        6
+      ],
+      "rotation": [
+        0,
+        720
+      ]
+    },
+    {
+      "target": "line_2",
+      "time": [
+        1,
+        6
+      ],
+      "rotation": [
+        0,
+        720
+      ]
+    },
+    {
+      "target": "line_3",
+      "time": [
+        1,
+        6
+      ],
+      "rotation": [
+        0,
+        720
+      ]
+    },
+    {
+      "target": "line_4",
+      "time": [
+        1,
+        6
+      ],
+      "rotation": [
+        0,
+        720
+      ]
+    },
+    {
+      "target": "circle_1",
+      "time": [
+        6,
+        8
+      ],
+      "rotation": [
+        720,
+        720
+      ],
+      "easing": "ease-out"
+    },
+    {
+      "target": "line_1",
+      "time": [
+        6,
+        8
+      ],
+      "rotation": [
+        720,
+        720
+      ],
+      "easing": "ease-out"
+    },
+    {
+      "target": "line_2",
+      "time": [
+        6,
+        8
+      ],
+      "rotation": [
+        720,
+        720
+      ],
+      "easing": "ease-out"
+    },
+    {
+      "target": "line_3",
+      "time": [
+        6,
+        8
+      ],
+      "rotation": [
+        720,
+        720
+      ],
+      "easing": "ease-out"
+    },
+    {
+      "target": "line_4",
+      "time": [
+        6,
+        8
+      ],
+      "rotation": [
+        720,
+        720
+      ],
+      "easing": "ease-out"
+    }
+  ]
+}

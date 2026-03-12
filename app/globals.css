@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+:root {
+  --accent-from: #6366f1;
+  --accent-to: #8b5cf6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #e5e5e5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Glass-morphism utilities */
+@utility glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@utility glass-strong {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@utility gradient-text {
+  background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility gradient-border {
+  position: relative;
+}
+
+/* Keyframes */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes gradient-sweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation utilities */
+@utility animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@utility animate-gradient-sweep {
+  background-size: 200% 200%;
+  animation: gradient-sweep 3s ease infinite;
+}
+
+@utility animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+/* Nav gradient underline */
+.gradient-border::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-from),
+    var(--accent-to),
+    transparent
+  );
+}

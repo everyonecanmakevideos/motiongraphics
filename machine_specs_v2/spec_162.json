@@ -1,0 +1,133 @@
+{
+  "scene": "text_badge_animation",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "badge_1",
+      "shape": "rectangle",
+      "size": [
+        300,
+        120
+      ],
+      "color": "#1E88E5",
+      "cornerRadius": 24,
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "text_1",
+      "shape": "text",
+      "text": "HELLO",
+      "fontSize": 60,
+      "fontWeight": "bold",
+      "fontFamily": "sans-serif",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "parent": "badge_1"
+    }
+  ],
+  "timeline": [
+    {
+      "target": "badge_1",
+      "time": [
+        0,
+        1
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        1,
+        2
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "badge_1",
+      "time": [
+        2,
+        4
+      ],
+      "scale": [
+        1,
+        1.15
+      ]
+    },
+    {
+      "target": "badge_1",
+      "time": [
+        4,
+        5.5
+      ],
+      "rotation": [
+        -8,
+        8
+      ]
+    },
+    {
+      "target": "badge_1",
+      "time": [
+        5.5,
+        7
+      ],
+      "rotation": [
+        8,
+        0
+      ]
+    },
+    {
+      "target": "badge_1",
+      "time": [
+        5.5,
+        7
+      ],
+      "scale": [
+        1.15,
+        1
+      ]
+    },
+    {
+      "target": "badge_1",
+      "time": [
+        7,
+        8
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        7,
+        8
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    }
+  ]
+}

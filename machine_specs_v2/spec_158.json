@@ -1,0 +1,141 @@
+{
+  "scene": "orbiting_moon_system",
+  "duration": 10,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#000000",
+  "objects": [
+    {
+      "id": "sun",
+      "shape": "circle",
+      "diameter": 160,
+      "color": "#FDD835",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "planet",
+      "shape": "circle",
+      "diameter": 100,
+      "color": "#1E88E5",
+      "pos": [
+        250,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "moon",
+      "shape": "circle",
+      "diameter": 50,
+      "color": "#BDBDBD",
+      "parent": "planet",
+      "offset": [
+        70,
+        0
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "sun",
+      "time": [
+        0,
+        2
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "planet",
+      "time": [
+        0,
+        2
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "moon",
+      "time": [
+        0,
+        2
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "planet",
+      "time": [
+        2,
+        8
+      ],
+      "orbit": {
+        "center": [
+          0,
+          0
+        ],
+        "radius": 250,
+        "degrees": 360
+      }
+    },
+    {
+      "target": "moon",
+      "time": [
+        2,
+        8
+      ],
+      "orbit": {
+        "center": [
+          0,
+          0
+        ],
+        "radius": 70,
+        "degrees": 720
+      }
+    },
+    {
+      "target": "planet",
+      "time": [
+        8,
+        10
+      ],
+      "orbit": {
+        "center": [
+          0,
+          0
+        ],
+        "radius": 250,
+        "degrees": 60
+      }
+    },
+    {
+      "target": "moon",
+      "time": [
+        8,
+        10
+      ],
+      "orbit": {
+        "center": [
+          0,
+          0
+        ],
+        "radius": 70,
+        "degrees": 120
+      }
+    }
+  ]
+}

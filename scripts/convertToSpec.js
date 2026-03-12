@@ -125,6 +125,75 @@ Output:
     { "target": "triangle_1", "time": [5, 6], "opacity": [1, 0] }
   ]
 }
+
+---
+
+EXAMPLE 4 — Parent-child group animation (Level 1.2)
+
+Prompt: "Planet and Moon. Dark space background (#1A1A2E). A blue planet (120px circle, #2196F3) orbits the canvas center at radius 200px, one full clockwise loop over 4s. A small white moon (40px circle, #FFFFFF) is attached to the planet and rotates around the planet at 90px radius, completing 2 full loops in the same 4s. Total duration: 4s."
+
+Output:
+{
+  "scene": "planet_moon_orbit",
+  "duration": 4,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080 },
+  "bg": "#1A1A2E",
+  "objects": [
+    {
+      "id": "planet_1",
+      "shape": "circle",
+      "diameter": 120,
+      "color": "#2196F3",
+      "pos": [200, 0]
+    },
+    {
+      "id": "moon_1",
+      "shape": "circle",
+      "diameter": 40,
+      "color": "#FFFFFF",
+      "parent": "planet_1",
+      "offset": [90, 0]
+    }
+  ],
+  "timeline": [
+    { "target": "planet_1", "time": [0, 4], "orbit": { "center": [0, 0], "radius": 200, "degrees": 360 } },
+    { "target": "moon_1", "time": [0, 4], "orbit": { "center": [0, 0], "radius": 90, "degrees": 720 } }
+  ]
+}
+
+---
+
+EXAMPLE 5 — Text typewriter animation (Level 1.1)
+
+Prompt: "Title Card. Black background (#000000). White bold text 'MOTION GRAPHICS' centered, 96px Arial. Text types in character by character over 1.5s, then holds for 1s, then fades out over 0.5s. Total: 3s."
+
+Output:
+{
+  "scene": "title_typewriter",
+  "duration": 3,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080 },
+  "bg": "#000000",
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "MOTION GRAPHICS",
+      "fontSize": 96,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "pos": [0, 0],
+      "opacity": 1
+    }
+  ],
+  "timeline": [
+    { "target": "title_1", "time": [0, 1.5], "chars": [0, 15] },
+    { "target": "title_1", "time": [2.5, 3], "opacity": [1, 0] }
+  ]
+}
 `;
 
 const SYSTEM_PROMPT = `You are an expert Motion Graphics Specification Generator.
@@ -151,7 +220,7 @@ The spec has 5 top-level keys: scene, duration, fps, canvas, bg, objects, timeli
 
    Required fields:
    - "id": unique string identifier (e.g., "circle_1", "rect_2")
-   - "shape": "circle" | "rectangle" | "triangle" | "pentagon" | "star" | "line"
+   - "shape": "circle" | "rectangle" | "triangle" | "pentagon" | "star" | "line" | "text"
 
    Optional fields (include ONLY if needed):
    - "diameter": number (for circles)
@@ -167,6 +236,23 @@ The spec has 5 top-level keys: scene, duration, fps, canvas, bg, objects, timeli
    - "facing": "up" | "down" | "left" | "right" (for triangles; default: "up")
    - "zIndex": number (for layering)
    - "blendMode": "screen" | "multiply" etc.
+   - "parent": string — id of the parent object; this object's transforms are relative to parent's center
+   - "offset": [x, y] — position relative to parent's center (use instead of "pos" when "parent" is set)
+   - "anchor": "top-left"|"top-center"|"top-right"|"left-center"|"center"|"right-center"|"bottom-left"|"bottom-center"|"bottom-right" — transform-origin pivot for all transforms on this object
+   - "fixed": true — pins this object to absolute canvas coordinates, not affected by any parent transforms
+
+   TEXT OBJECT FIELDS (include only when shape is "text"):
+   - "text": string — the text content to display
+   - "fontSize": number — font size in pixels (e.g., 64)
+   - "fontWeight": "normal" | "bold" | "100" | "400" | "700" | "900"
+   - "fontFamily": string — system-safe fonts only: "Arial", "Helvetica", "Georgia", "Times New Roman", "monospace", "sans-serif", "serif"
+   - "fontStyle": "normal" | "italic"
+   - "textAlign": "left" | "center" | "right" (default: "center")
+   - "letterSpacing": number — spacing between characters in pixels (default: 0)
+   - "lineHeight": number — line height multiplier (default: 1.2)
+   - "textTransform": "none" | "uppercase" | "lowercase" | "capitalize"
+   - "maxWidth": number — maximum width in pixels before text wraps
+   - "cursor": true — show a blinking cursor after text (for typewriter animations)
 
    POSITIONING: Canvas origin is center (0, 0). Positive x = right, positive y = down.
    Off-screen left = x: -960, right = x: 960, top = y: -540, bottom = y: 540.
@@ -200,6 +286,14 @@ The spec has 5 top-level keys: scene, duration, fps, canvas, bg, objects, timeli
    Advanced animation properties:
    - "orbit": { "center": [x, y], "radius": px, "degrees": totalDeg }
    - "bounce": { "floor": yPx, "heights": [h1, h2, ...] }
+   - "pivot": [canvasX, canvasY] — rotate or scale around this canvas-coordinate point instead of the object's own center
+   - "anchor": same values as object anchor — overrides the object-level anchor for this animation entry only
+   - "trail": { "follows": "target_id", "delay": seconds } — this object follows the target's position with a time lag
+   - "chars": [fromCount, toCount] — typewriter reveal by character count (for text shape targets)
+   - "words": [fromCount, toCount] — typewriter reveal by word count (for text shape targets)
+   - "textColor": [fromHex, toHex] — animate the text fill color (for text shape targets)
+   - "fontSize": [from, to] — animate font size in pixels (for text shape targets)
+   - "letterSpacing": [from, to] — animate letter spacing in pixels (for text shape targets)
    - "morphTo": { "shape": "circle"|"rectangle"|..., "size": [w, h] }
 
    Optional per-entry:

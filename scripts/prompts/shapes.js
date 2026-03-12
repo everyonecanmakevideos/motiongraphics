@@ -38,6 +38,33 @@ OUTLINED SHAPES (stroke)
 If object has "stroke" but "fill" is false:
 - Set backgroundColor to "transparent"
 - Use border: strokeWidth + "px solid " + strokeColor
-- Use boxSizing: "border-box"`;
+- Use boxSizing: "border-box"
+
+TEXT OBJECTS
+When object has "shape": "text":
+- Render as a <div> containing the text string from the object's "text" field.
+- NEVER use backgroundColor for the text fill — use the CSS "color" property.
+- Do NOT apply clipPath, borderRadius, or border to text divs.
+- Use the same centering/pos transform as all other shapes.
+
+Required style properties for text objects:
+  color: textColor,
+  fontSize: fontSize + "px",
+  fontWeight: fontWeight,
+  fontFamily: fontFamily,
+  whiteSpace: "nowrap",
+  lineHeight: lineHeight,
+  letterSpacing: letterSpacing + "px",
+  textAlign: textAlign,
+  textTransform: textTransform,
+  userSelect: "none",
+  pointerEvents: "none"
+
+For multi-line text (object has "maxWidth"):
+  maxWidth: maxWidth + "px",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word"
+
+Opacity, scale, rotation, x/y animate identically to shape objects.`;
 
 module.exports = SHAPE_RULES;
