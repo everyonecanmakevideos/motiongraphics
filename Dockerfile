@@ -37,4 +37,8 @@ COPY . .
 
 RUN mkdir -p outputs
 
-CMD ["node", "server.js"]
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
