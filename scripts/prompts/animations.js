@@ -38,10 +38,16 @@ The sparse spec timeline entries have flat properties. Map them as follows:
 "cornerRadius": [from, to] → interpolate borderRadius
 "skewX": [from, to] → interpolate skewX degrees
 "skewY": [from, to] → interpolate skewY degrees
+"blur": [from, to] → interpolate blur pixels, apply as: filter: "blur(" + val + "px)"
+"strokeDash": [from, to] → interpolate dash percentage 0-100, apply as conic-gradient mask
+"gradientAngle": [from, to] → interpolate gradient angle degrees for linear-gradient rotation
+"rotateX": [from, to] → interpolate X rotation degrees (3D tilt, needs perspective parent)
+"rotateY": [from, to] → interpolate Y rotation degrees (3D tilt, needs perspective parent)
 
 COMBINING TRANSFORMS
 When multiple transform properties apply to the same object at the same frame, combine them:
-transform: "translate(-50%, -50%) translateX(" + x + "px) translateY(" + y + "px) rotate(" + rot + "deg) scale(" + s + ")"
+transform: "translate(-50%, -50%) translateX(" + x + "px) translateY(" + y + "px) rotateX(" + rx + "deg) rotateY(" + ry + "deg) rotate(" + rot + "deg) scale(" + s + ")"
+Note: Only include rotateX/rotateY when the spec uses them. The parent div must have perspective set.
 
 EASING MAPPING
 "linear" → Easing.linear (default, no easing needed)

@@ -8,6 +8,7 @@ const BASE_RULES = require("./base");
 const SHAPE_RULES = require("./shapes");
 const ANIMATION_RULES = require("./animations");
 const { getAdvancedRules } = require("./advanced");
+const { getDatavizRules } = require("./dataviz");
 
 /**
  * Assemble a system prompt tailored to the given spec.
@@ -29,6 +30,17 @@ function assemblePrompt(specData) {
     parts.push("");
     parts.push("ADVANCED ANIMATION RULES (specific to this spec):");
     for (const rule of advancedRules) {
+      parts.push("");
+      parts.push(rule);
+    }
+  }
+
+  // Conditionally add dataviz rules based on spec content
+  const datavizRules = getDatavizRules(specData);
+  if (datavizRules.length > 0) {
+    parts.push("");
+    parts.push("DATA VISUALIZATION RULES (specific to this spec):");
+    for (const rule of datavizRules) {
       parts.push("");
       parts.push(rule);
     }
@@ -60,11 +72,12 @@ MULTI-OBJECT RULE: Each object in the spec gets its own div with correct timing.
  */
 function getPromptSummary(specData) {
   const advancedRules = getAdvancedRules(specData);
+  const datavizRules = getDatavizRules(specData);
   const baseCount = 3; // base + shapes + animations
   return {
-    totalModules: baseCount + advancedRules.length,
-    advancedModules: advancedRules.length,
-    advancedTypes: advancedRules.map(r => {
+    totalModules: baseCount + advancedRules.length + datavizRules.length,
+    advancedModules: advancedRules.length + datavizRules.length,
+    advancedTypes: advancedRules.concat(datavizRules).map(r => {
       // Extract first line as type name
       const firstLine = r.split("\n")[0];
       return firstLine.replace(/[^A-Za-z& ]/g, "").trim();

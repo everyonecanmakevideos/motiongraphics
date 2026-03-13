@@ -194,6 +194,119 @@ const TEXT_COLOR_ANIM_RULES = "TEXT COLOR ANIMATION RULES\n" +
 "  fontSize: animFontSize + \"px\"\n" +
 "  letterSpacing: animLetterSpacing + \"px\"";
 
+const BLUR_RULES = "BLUR ANIMATION RULES\n" +
+  "When the spec contains \"blur\" in a timeline entry:\n" +
+  "blur: [fromPx, toPx] — animates CSS filter blur.\n\n" +
+  "IMPLEMENTATION:\n" +
+  "  const blurVal = interpolate(frame, [startFrame, endFrame], [fromPx, toPx], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  Apply as: filter: \"blur(\" + blurVal + \"px)\"\n\n" +
+  "COMBINING WITH OTHER FILTERS:\n" +
+  "  If the element also has brightness or other filters, concatenate:\n" +
+  "  filter: \"blur(\" + blurVal + \"px) brightness(\" + brightness + \")\"\n\n" +
+  "COMMON PATTERNS:\n" +
+  "  Focus-in: blur [10, 0] — shape starts blurry and sharpens.\n" +
+  "  Defocus: blur [0, 8] — shape goes out of focus.\n" +
+  "  Glow pulse: blur [0, 4] then [4, 0] — creates a soft glow effect.\n\n" +
+  "CRITICAL: blur value must be non-negative. Use 0 for fully sharp.";
+
+const STROKE_DASH_RULES = "STROKE DASH / PATH TRACING RULES\n" +
+  "When the spec contains \"strokeDash\" in a timeline entry:\n" +
+  "strokeDash: [from%, to%] — draws a shape's outline from invisible to fully visible.\n\n" +
+  "IMPLEMENTATION — using conic-gradient mask:\n" +
+  "For circle outlines, use a conic-gradient mask approach:\n" +
+  "  const dashProgress = interpolate(frame, [startFrame, endFrame], [fromPct, toPct], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  const degrees = dashProgress * 3.6;\n\n" +
+  "  Render as a div with:\n" +
+  "  borderRadius: \"50%\",\n" +
+  "  background: \"transparent\",\n" +
+  "  border: strokeWidth + \"px solid \" + strokeColor,\n" +
+  "  maskImage: \"conic-gradient(from -90deg, black \" + degrees + \"deg, transparent \" + degrees + \"deg)\",\n" +
+  "  WebkitMaskImage: \"conic-gradient(from -90deg, black \" + degrees + \"deg, transparent \" + degrees + \"deg)\"\n\n" +
+  "For line path tracing (non-circular):\n" +
+  "  Animate the width of a thin line div from 0 to target width (use existing LINE_DRAW technique).\n\n" +
+  "MARCHING DASHES:\n" +
+  "  If the prompt describes \"marching\" or rotating dashes, rotate the mask:\n" +
+  "  const marchAngle = interpolate(frame, [sf, ef], [0, 360], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  maskImage: \"conic-gradient(from \" + (marchAngle - 90) + \"deg, ...)\"\n\n" +
+  "CRITICAL: Always include both maskImage and WebkitMaskImage for browser compatibility.";
+
+const GRADIENT_SHIFT_RULES = "GRADIENT SHIFT ANIMATION RULES\n" +
+  "When the spec contains \"gradientAngle\" in a timeline entry:\n" +
+  "gradientAngle: [fromDeg, toDeg] — rotates a linear-gradient's direction.\n\n" +
+  "IMPLEMENTATION:\n" +
+  "  const angle = interpolate(frame, [startFrame, endFrame], [fromDeg, toDeg], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  background: \"linear-gradient(\" + angle + \"deg, \" + color1 + \", \" + color2 + \")\"\n\n" +
+  "GRADIENT OBJECT FORMAT:\n" +
+  "  If the object's \"color\" field is a gradient object:\n" +
+  "  { \"type\": \"gradient\", \"from\": \"#hex1\", \"to\": \"#hex2\", \"angle\": 0 }\n" +
+  "  Use the gradient colors for the animated background.\n\n" +
+  "RADIAL GRADIENT SHIFT:\n" +
+  "  If gradientAngle is used with a radial gradient, shift the center position instead:\n" +
+  "  background: \"radial-gradient(circle at \" + x + \"% \" + y + \"%, \" + color1 + \", \" + color2 + \")\"\n\n" +
+  "CRITICAL: Build all gradient strings with + concatenation. NEVER use template literals.";
+
+const PERSPECTIVE_TILT_RULES = "PERSPECTIVE TILT RULES (3D TRANSFORMS)\n" +
+  "When the spec contains \"rotateX\" or \"rotateY\" in a timeline entry:\n\n" +
+  "OBJECT SETUP:\n" +
+  "  The object MUST have \"perspective\": number (in px, typically 600-1200).\n" +
+  "  Apply CSS perspective on the parent wrapper, NOT on the element itself:\n" +
+  "  perspective: perspectiveValue + \"px\"\n\n" +
+  "IMPLEMENTATION:\n" +
+  "  const rx = interpolate(frame, [sf, ef], [fromRX, toRX], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  const ry = interpolate(frame, [sf, ef], [fromRY, toRY], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n\n" +
+  "  Parent wrapper style:\n" +
+  "  perspective: \"800px\",\n" +
+  "  position: \"absolute\", left: \"50%\", top: \"50%\"\n\n" +
+  "  Element style (inside wrapper):\n" +
+  "  transform: \"translate(-50%, -50%) translateX(\" + x + \"px) translateY(\" + y + " +
+  "\"px) rotateX(\" + rx + \"deg) rotateY(\" + ry + \"deg)\"\n\n" +
+  "COMMON PATTERNS:\n" +
+  "  Card flip: rotateY [0, 180] — horizontal flip.\n" +
+  "  Tilt forward: rotateX [0, 30] — leans toward viewer.\n" +
+  "  Door swing: rotateY [0, 90] with anchor \"left-center\" — opens like a door.\n\n" +
+  "COMBINING WITH OTHER TRANSFORMS:\n" +
+  "  rotateX and rotateY go AFTER translate and BEFORE scale in the transform string.\n\n" +
+  "CRITICAL: perspective must be on the PARENT div, not the rotating element itself. " +
+  "Without perspective, rotateX/rotateY produce flat skewing instead of 3D depth.";
+
+const MORPH_RULES = "SHAPE MORPH RULES\n" +
+  "When the spec contains \"morphTo\" in a timeline entry:\n" +
+  "morphTo: { \"shape\": \"circle\"|\"rectangle\"|..., \"size\": [w, h] }\n\n" +
+  "IMPLEMENTATION — interpolate clip-path + dimensions:\n\n" +
+  "RECTANGLE TO CIRCLE:\n" +
+  "  Interpolate borderRadius from 0 to 50%:\n" +
+  "  const morphRadius = interpolate(frame, [sf, ef], [0, 50], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  borderRadius: morphRadius + \"%\"\n" +
+  "  Simultaneously interpolate width/height to target size.\n\n" +
+  "POLYGON MORPHS (triangle, pentagon, star):\n" +
+  "  Interpolate each clip-path vertex coordinate individually.\n" +
+  "  Both source and target clip-paths MUST have the SAME number of vertices.\n" +
+  "  If vertex counts differ, add intermediate points on the simpler shape.\n\n" +
+  "  Pentagon (5 vertices) to Star (10 vertices):\n" +
+  "  Double the pentagon's vertices by adding midpoints on each edge,\n" +
+  "  then interpolate each of the 10 points to the star's 10 points.\n\n" +
+  "  const x1 = interpolate(frame, [sf, ef], [fromX1, toX1], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  const y1 = interpolate(frame, [sf, ef], [fromY1, toY1], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  // ... repeat for each vertex\n" +
+  "  clipPath: \"polygon(\" + x1 + \"% \" + y1 + \"%, \" + x2 + \"% \" + y2 + \"%, ...)\"\n\n" +
+  "SIZE TRANSITION:\n" +
+  "  If morphTo includes \"size\", interpolate width and height simultaneously:\n" +
+  "  const morphW = interpolate(frame, [sf, ef], [origW, targetW], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n" +
+  "  const morphH = interpolate(frame, [sf, ef], [origH, targetH], " +
+  "{ extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" });\n\n" +
+  "CRITICAL: Both source and target shapes must have equal vertex counts for smooth morphing. " +
+  "Pre-compute all vertex positions as explicit numbers — never use loops.";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Detect which advanced rules are needed based on spec content
 // ─────────────────────────────────────────────────────────────────────────────
@@ -255,6 +368,26 @@ function getAdvancedRules(specData) {
 
   if (specStr.includes('"textColor"')) {
     rules.push(TEXT_COLOR_ANIM_RULES);
+  }
+
+  if (specStr.includes('"blur"')) {
+    rules.push(BLUR_RULES);
+  }
+
+  if (specStr.includes('"strokeDash"')) {
+    rules.push(STROKE_DASH_RULES);
+  }
+
+  if (specStr.includes('"gradientAngle"')) {
+    rules.push(GRADIENT_SHIFT_RULES);
+  }
+
+  if (specStr.includes('"rotateX"') || specStr.includes('"rotateY"')) {
+    rules.push(PERSPECTIVE_TILT_RULES);
+  }
+
+  if (specStr.includes('"morphTo"')) {
+    rules.push(MORPH_RULES);
   }
 
   return rules;

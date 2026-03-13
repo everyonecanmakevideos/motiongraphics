@@ -9,7 +9,7 @@
   "bg": "#F5F5F5",
   "objects": [
     {
-      "id": "circle_1",
+      "id": "wheel_rim",
       "shape": "circle",
       "diameter": 160,
       "color": "#212121",
@@ -20,7 +20,7 @@
       "opacity": 0
     },
     {
-      "id": "line_1",
+      "id": "spoke_horizontal",
       "shape": "line",
       "size": [
         160,
@@ -31,26 +31,24 @@
         0,
         0
       ],
-      "rotation": 0,
       "opacity": 0
     },
     {
-      "id": "line_2",
+      "id": "spoke_vertical",
       "shape": "line",
       "size": [
-        160,
-        6
+        6,
+        160
       ],
       "color": "#616161",
       "pos": [
         0,
         0
       ],
-      "rotation": 90,
       "opacity": 0
     },
     {
-      "id": "line_3",
+      "id": "spoke_diagonal_1",
       "shape": "line",
       "size": [
         160,
@@ -65,7 +63,7 @@
       "opacity": 0
     },
     {
-      "id": "line_4",
+      "id": "spoke_diagonal_2",
       "shape": "line",
       "size": [
         160,
@@ -82,7 +80,7 @@
   ],
   "timeline": [
     {
-      "target": "circle_1",
+      "target": "wheel_rim",
       "time": [
         0,
         1
@@ -93,7 +91,7 @@
       ]
     },
     {
-      "target": "line_1",
+      "target": "spoke_horizontal",
       "time": [
         0,
         1
@@ -104,7 +102,7 @@
       ]
     },
     {
-      "target": "line_2",
+      "target": "spoke_vertical",
       "time": [
         0,
         1
@@ -115,7 +113,7 @@
       ]
     },
     {
-      "target": "line_3",
+      "target": "spoke_diagonal_1",
       "time": [
         0,
         1
@@ -126,7 +124,7 @@
       ]
     },
     {
-      "target": "line_4",
+      "target": "spoke_diagonal_2",
       "time": [
         0,
         1
@@ -137,7 +135,7 @@
       ]
     },
     {
-      "target": "circle_1",
+      "target": "wheel_rim",
       "time": [
         1,
         6
@@ -148,7 +146,7 @@
       ]
     },
     {
-      "target": "line_1",
+      "target": "spoke_horizontal",
       "time": [
         1,
         6
@@ -159,7 +157,7 @@
       ]
     },
     {
-      "target": "line_2",
+      "target": "spoke_vertical",
       "time": [
         1,
         6
@@ -170,86 +168,86 @@
       ]
     },
     {
-      "target": "line_3",
+      "target": "spoke_diagonal_1",
       "time": [
         1,
         6
       ],
       "rotation": [
-        0,
-        720
+        45,
+        765
       ]
     },
     {
-      "target": "line_4",
+      "target": "spoke_diagonal_2",
       "time": [
         1,
         6
       ],
       "rotation": [
-        0,
+        -45,
+        675
+      ]
+    },
+    {
+      "target": "wheel_rim",
+      "time": [
+        6,
+        8
+      ],
+      "easing": "ease-out",
+      "rotation": [
+        720,
         720
       ]
     },
     {
-      "target": "circle_1",
+      "target": "spoke_horizontal",
       "time": [
         6,
         8
       ],
+      "easing": "ease-out",
       "rotation": [
         720,
         720
-      ],
-      "easing": "ease-out"
+      ]
     },
     {
-      "target": "line_1",
+      "target": "spoke_vertical",
       "time": [
         6,
         8
       ],
+      "easing": "ease-out",
       "rotation": [
         720,
         720
-      ],
-      "easing": "ease-out"
+      ]
     },
     {
-      "target": "line_2",
+      "target": "spoke_diagonal_1",
       "time": [
         6,
         8
       ],
+      "easing": "ease-out",
       "rotation": [
-        720,
-        720
-      ],
-      "easing": "ease-out"
+        765,
+        765
+      ]
     },
     {
-      "target": "line_3",
+      "target": "spoke_diagonal_2",
       "time": [
         6,
         8
       ],
+      "easing": "ease-out",
       "rotation": [
-        720,
-        720
-      ],
-      "easing": "ease-out"
-    },
-    {
-      "target": "line_4",
-      "time": [
-        6,
-        8
-      ],
-      "rotation": [
-        720,
-        720
-      ],
-      "easing": "ease-out"
+        675,
+        675
+      ]
     }
   ]
 }
