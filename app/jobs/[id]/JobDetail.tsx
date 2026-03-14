@@ -62,7 +62,21 @@ export default function JobDetail({ initialJob }: Props) {
       </div>
 
       {/* Video */}
-      <VideoPlayer videoKey={job.video_r2_key} />
+      {job.status === "failed" ? (
+        <div className="glass-strong rounded-2xl p-8 flex flex-col items-center gap-3 text-center">
+          <svg className="w-10 h-10 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+          <p className="text-sm text-neutral-300 font-medium">Video generation failed</p>
+          {job.error && (
+            <p className="text-xs text-neutral-500 max-w-md">
+              {job.error.length > 200 ? job.error.slice(0, 200) + "..." : job.error}
+            </p>
+          )}
+        </div>
+      ) : (
+        <VideoPlayer videoKey={job.video_r2_key} />
+      )}
 
       {/* Spec */}
       <SpecViewer spec={job.spec_json} />

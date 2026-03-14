@@ -87,9 +87,9 @@ async function setStep(
   emit(jobId, { jobId, step, status, label: STEP_LABELS[step] ?? "", ...extra });
 }
 
-async function failJob(jobId: string, error: string): Promise<void> {
-  await updateJob(jobId, { status: "failed", error });
-  emit(jobId, { jobId, step: 0, status: "failed", label: "Failed: " + error.slice(0, 200), error });
+async function failJob(jobId: string, step: number, error: string): Promise<void> {
+  await updateJob(jobId, { status: "failed", step, error });
+  emit(jobId, { jobId, step, status: "failed", label: "Failed: " + error.slice(0, 200), error });
 }
 
 async function runPipeline(jobId: string): Promise<void> {
@@ -104,7 +104,7 @@ async function runPipeline(jobId: string): Promise<void> {
     await setStep(jobId, 2, "expanding");
     const expandResult = await expandPrompt(job.prompt);
     if (!expandResult.result) {
-      await failJob(jobId, "Prompt expansion failed: " + expandResult.errors.join("; "));
+      await failJob(jobId, 2, "Prompt expansion failed: " + expandResult.errors.join("; "));
       return;
     }
     const detailedPrompt = expandResult.result.prompt;
@@ -114,7 +114,7 @@ async function runPipeline(jobId: string): Promise<void> {
     await setStep(jobId, 3, "spec_generating");
     const specResult = await generateSpec(detailedPrompt);
     if (!specResult.spec) {
-      await failJob(jobId, "Spec generation failed: " + specResult.errors.join("; "));
+      await failJob(jobId, 3, "Spec generation failed: " + specResult.errors.join("; "));
       return;
     }
     const specText = JSON.stringify(specResult.spec, null, 2);
@@ -153,16 +153,30 @@ async function runPipeline(jobId: string): Promise<void> {
       }
     }
 
-    // Step 7: Render
+    // Step 7: Render (retry once on failure)
     await setStep(jobId, 7, "rendering");
-    const { videoKey, codeKey, specKey } = await renderAndUpload(
-      jobId,
-      fullComponent,
-      specResult.spec as Record<string, unknown>,
-      specText
-    );
+    const MAX_RENDER_ATTEMPTS = 2;
+    let renderResult: { videoKey: string; codeKey: string; specKey: string } | undefined;
+    for (let attempt = 1; attempt <= MAX_RENDER_ATTEMPTS; attempt++) {
+      try {
+        renderResult = await renderAndUpload(
+          jobId,
+          fullComponent,
+          specResult.spec as Record<string, unknown>,
+          specText
+        );
+        break;
+      } catch (renderErr) {
+        if (attempt < MAX_RENDER_ATTEMPTS) {
+          console.warn("[queue] Render attempt", attempt, "failed for", jobId, "— retrying...");
+          continue;
+        }
+        throw renderErr;
+      }
+    }
 
     // Step 8: Done
+    const { videoKey, codeKey, specKey } = renderResult!;
     await updateJob(jobId, {
       status: "done",
       step: 8,
@@ -173,6 +187,6 @@ async function runPipeline(jobId: string): Promise<void> {
     emit(jobId, { jobId, step: 8, status: "done", label: STEP_LABELS[8], videoKey });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await failJob(jobId, msg);
+    await failJob(jobId, 7, msg);
   }
 }
