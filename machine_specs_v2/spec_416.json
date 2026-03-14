@@ -1,0 +1,99 @@
+{
+  "scene": "loading_spinner_to_check_mark",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "spinner",
+      "shape": "circle",
+      "diameter": 120,
+      "color": "#2196F3",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "check_mark",
+      "shape": "asset",
+      "assetId": "checkmark",
+      "size": [
+        120,
+        120
+      ],
+      "color": "#4CAF50",
+      "pos": [
+        0,
+        0
+      ],
+      "scale": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "spinner",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "spinner",
+      "time": [
+        1,
+        5
+      ],
+      "easing": "linear",
+      "rotation": [
+        0,
+        1440
+      ]
+    },
+    {
+      "target": "spinner",
+      "time": [
+        5,
+        6
+      ],
+      "easing": "ease-in-out",
+      "scale": [
+        1,
+        0
+      ]
+    },
+    {
+      "target": "check_mark",
+      "time": [
+        5,
+        6
+      ],
+      "easing": "ease-in-out",
+      "scale": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "check_mark",
+      "time": [
+        7,
+        8
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    }
+  ]
+}

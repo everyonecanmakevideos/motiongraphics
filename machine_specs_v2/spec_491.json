@@ -1,0 +1,305 @@
+{
+  "scene": "day_to_night_transition",
+  "duration": 12,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#87CEEB",
+    "to": "#0F0F23",
+    "direction": "to bottom"
+  },
+  "objects": [
+    {
+      "id": "sun",
+      "shape": "asset",
+      "assetId": "sun",
+      "size": [
+        120,
+        120
+      ],
+      "color": "#FDD835",
+      "pos": [
+        -1080,
+        -300
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "moon",
+      "shape": "asset",
+      "assetId": "moon",
+      "size": [
+        120,
+        120
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        -1080,
+        -300
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "cloud_1",
+      "shape": "asset",
+      "assetId": "cloud",
+      "size": [
+        200,
+        100
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        -1080,
+        -400
+      ]
+    },
+    {
+      "id": "cloud_2",
+      "shape": "asset",
+      "assetId": "cloud",
+      "size": [
+        200,
+        100
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        -1080,
+        -350
+      ]
+    },
+    {
+      "id": "cloud_3",
+      "shape": "asset",
+      "assetId": "cloud",
+      "size": [
+        200,
+        100
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        -1080,
+        -450
+      ]
+    },
+    {
+      "id": "star_1",
+      "shape": "asset",
+      "assetId": "star-icon",
+      "size": [
+        20,
+        20
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        -500,
+        -500
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "star_2",
+      "shape": "asset",
+      "assetId": "star-icon",
+      "size": [
+        20,
+        20
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        0,
+        -520
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "star_3",
+      "shape": "asset",
+      "assetId": "star-icon",
+      "size": [
+        20,
+        20
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        500,
+        -480
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "grass",
+      "shape": "rectangle",
+      "size": [
+        1920,
+        200
+      ],
+      "color": "#4CAF50",
+      "pos": [
+        0,
+        440
+      ],
+      "anchor": "bottom-center"
+    }
+  ],
+  "timeline": [
+    {
+      "target": "sun",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "sun",
+      "time": [
+        1,
+        4
+      ],
+      "easing": "ease-in-out",
+      "x": [
+        -1080,
+        1080
+      ]
+    },
+    {
+      "target": "sun",
+      "time": [
+        4,
+        5
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    },
+    {
+      "target": "moon",
+      "time": [
+        5,
+        6
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "moon",
+      "time": [
+        6,
+        9
+      ],
+      "easing": "ease-in-out",
+      "x": [
+        -1080,
+        1080
+      ]
+    },
+    {
+      "target": "moon",
+      "time": [
+        6,
+        9
+      ],
+      "glow": {
+        "from": [
+          0,
+          0,
+          "#FFFFFF"
+        ],
+        "to": [
+          10,
+          0.5,
+          "#FFFFFF"
+        ]
+      }
+    },
+    {
+      "target": "star_1",
+      "time": [
+        9,
+        10
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "star_2",
+      "time": [
+        9.5,
+        10.5
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "star_3",
+      "time": [
+        10,
+        11
+      ],
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "cloud_1",
+      "time": [
+        0,
+        12
+      ],
+      "x": [
+        -1080,
+        1080
+      ]
+    },
+    {
+      "target": "cloud_2",
+      "time": [
+        0,
+        12
+      ],
+      "x": [
+        -1080,
+        1080
+      ]
+    },
+    {
+      "target": "cloud_3",
+      "time": [
+        0,
+        12
+      ],
+      "x": [
+        -1080,
+        1080
+      ]
+    },
+    {
+      "target": "grass",
+      "time": [
+        0,
+        12
+      ],
+      "color": [
+        "#4CAF50",
+        "#013220"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "scene": "sunset_and_moonrise",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#1A1A2E",
+  "objects": [
+    {
+      "id": "sun_1",
+      "shape": "asset",
+      "assetId": "sun",
+      "size": [
+        120,
+        120
+      ],
+      "color": "#FDD835",
+      "pos": [
+        0,
+        -540
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "moon_1",
+      "shape": "asset",
+      "assetId": "moon",
+      "size": [
+        120,
+        120
+      ],
+      "color": "#FFFFFF",
+      "pos": [
+        0,
+        640
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "sun_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "sun_1",
+      "time": [
+        0.5,
+        3
+      ],
+      "easing": "ease-in-out",
+      "y": [
+        -540,
+        640
+      ]
+    },
+    {
+      "target": "sun_1",
+      "time": [
+        3,
+        4
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    },
+    {
+      "target": "moon_1",
+      "time": [
+        4,
+        4.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "moon_1",
+      "time": [
+        4.5,
+        7
+      ],
+      "easing": "ease-in-out",
+      "y": [
+        640,
+        -540
+      ]
+    }
+  ]
+}

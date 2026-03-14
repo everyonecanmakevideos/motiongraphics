@@ -1,0 +1,47 @@
+{
+  "scene": "two_segment_pie_chart",
+  "duration": 6,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#FFFFFF",
+  "objects": [
+    {
+      "id": "pie_1",
+      "shape": "pie",
+      "diameter": 300,
+      "pos": [
+        0,
+        0
+      ],
+      "segments": [
+        {
+          "label": "Blue",
+          "value": 60,
+          "color": "#2196F3"
+        },
+        {
+          "label": "Green",
+          "value": 40,
+          "color": "#4CAF50"
+        }
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "target": "pie_1",
+      "time": [
+        0,
+        3
+      ],
+      "easing": "ease-out",
+      "sweep": [
+        0,
+        360
+      ]
+    }
+  ]
+}

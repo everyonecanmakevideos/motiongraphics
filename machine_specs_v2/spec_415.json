@@ -1,0 +1,209 @@
+{
+  "scene": "statistic_cards_display",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "card_1",
+      "shape": "rectangle",
+      "size": [
+        300,
+        200
+      ],
+      "color": "#FFFFFF",
+      "cornerRadius": 10,
+      "pos": [
+        -320,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "card_2",
+      "shape": "rectangle",
+      "size": [
+        300,
+        200
+      ],
+      "color": "#FFFFFF",
+      "cornerRadius": 10,
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "card_3",
+      "shape": "rectangle",
+      "size": [
+        300,
+        200
+      ],
+      "color": "#FFFFFF",
+      "cornerRadius": 10,
+      "pos": [
+        320,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "Revenue",
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#333333",
+      "pos": [
+        -320,
+        -40
+      ]
+    },
+    {
+      "id": "number_1",
+      "shape": "text",
+      "text": "$0",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#4CAF50",
+      "pos": [
+        -320,
+        40
+      ]
+    },
+    {
+      "id": "title_2",
+      "shape": "text",
+      "text": "Users",
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#333333",
+      "pos": [
+        0,
+        -40
+      ]
+    },
+    {
+      "id": "number_2",
+      "shape": "text",
+      "text": "0",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#2196F3",
+      "pos": [
+        0,
+        40
+      ]
+    },
+    {
+      "id": "title_3",
+      "shape": "text",
+      "text": "Growth",
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#333333",
+      "pos": [
+        320,
+        -40
+      ]
+    },
+    {
+      "id": "number_3",
+      "shape": "text",
+      "text": "0%",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#FF9800",
+      "pos": [
+        320,
+        40
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "target": "card_1",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "card_2",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "card_3",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "number_1",
+      "time": [
+        1,
+        6
+      ],
+      "easing": "ease-in-out",
+      "counter": [
+        0,
+        10
+      ]
+    },
+    {
+      "target": "number_2",
+      "time": [
+        1,
+        6
+      ],
+      "easing": "ease-in-out",
+      "counter": [
+        0,
+        50
+      ]
+    },
+    {
+      "target": "number_3",
+      "time": [
+        1,
+        6
+      ],
+      "easing": "ease-in-out",
+      "counter": [
+        0,
+        20
+      ]
+    }
+  ]
+}

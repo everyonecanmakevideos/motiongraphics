@@ -1,26 +1,142 @@
 [
- 
-{
-  "id": 300,
-  "category": "asset",
-  "prompt": "Rocket Launch. Dark space background (#0F0F23). A white rocket (120px) starts at the bottom center and launches upward to the top with ease-in over 3s. Flame effect: an orange fire asset (60px) trails below the rocket. Both fade in over 0.5s first. Total duration: 5s."
-},
-{
-  "id": 301,
-  "category": "asset",
-  "prompt": "Day-to-Night Sky Transition with Sun, Moon, Clouds, and Tree. Background starts as a bright daytime sky: solid light blue (#87CEFA) filling the canvas. At the top center, a yellow sun asset (120px) is visible; at the bottom center, a simple green hill with a dark green tree asset (160px tall) rooted slightly left of center, trunk brown (#5D4037), foliage green (#2E7D32). Two white cloud assets (each 180px wide) begin off-screen on the left side at mid‑height. Total canvas 1920×1080px.\n\nAnimation timeline (10 seconds total): 0–1s: Scene fades in from black; sun, tree, and hill all fade from 0% to 100% opacity. 1–5s: Sun moves smoothly from near the top center down toward the right horizon line, following a gentle arc, using ease‑in‑out; simultaneously, the sky background color animates from light blue (#87CEFA) to a deep twilight blue (#0D47A1). 1–6s: Clouds drift from left to right across the sky: Cloud 1 enters at 1s and crosses to the right edge by 5s with slow, linear motion; Cloud 2 starts slightly later at 2s and exits by 6s, both maintaining soft movement. 5–8s: As the sun reaches the horizon and fades out to 0% opacity, a moon asset (110px, pale yellow #FFF9C4) fades in at the upper left and slowly rises slightly upward and to the center, ease‑out. During this period the background shifts from twilight blue (#0D47A1) to almost night black‑blue (#020817), and overall scene brightness subtly decreases. 6–10s: Clouds become darker grey‑blue (#546E7A) at 70% opacity and continue drifting slowly rightward, looping if necessary. The tree remains static but its colors darken slightly to suggest night. 8–10s: Final state holds with dark sky, visible moon high in the sky, dim clouds, and silhouetted tree, with no further motion except slow cloud drift. Total duration: 10s."
-},{
-  "id": 302,
-  "category": "coordination",
-  "prompt": "Four Object Merge and Transform Sequence. Background dark (#111111). Canvas 1920x1080 with center-middle as the scene anchor. Four circles (diameter 120px) of different colors start from the four cardinal directions outside the frame and move toward the center. Top circle color red (#E53935) begins at top-center outside the frame. Bottom circle color blue (#1E88E5) begins at bottom-center outside the frame. Left circle color green (#43A047) begins at middle-left outside the frame. Right circle color yellow (#FDD835) begins at middle-right outside the frame. All circles travel toward the center-middle and perfectly overlap there, visually forming a stacked cluster. Animation (12s): 0–2s circles move from their starting directions (top-center, bottom-center, middle-left, middle-right) toward the center-middle using smooth ease-in-out motion and arrive simultaneously. 2–4s circles remain merged at the center-middle. During this hold the top-origin circle transitions its color smoothly from red (#E53935) to purple (#8E24AA) over 2 seconds while the other circles remain unchanged. 4–5s all circles fade out together while staying centered. 5–6s four squares appear stacked at the center-middle. Each square size 100px with different colors: square A cyan (#00ACC1), square B pink (#EC407A), square C lime (#7CB342), square D amber (#FFA000). Initial scale of all squares is 0 (not visible). 6–8s squares scale up simultaneously from scale 0 to scale 1.0 while remaining centered. 8–9s squares hold fully visible at the center-middle. 9–11s squares move outward from the center toward four directions while maintaining their size: cyan square moves toward top-center outside the frame, pink square moves toward middle-right outside the frame, lime square moves toward bottom-center outside the frame, amber square moves toward middle-left outside the frame using smooth ease-in motion. 11–12s squares fade out as they exit the frame. The entire sequence maintains symmetrical motion and centered composition using directional positioning (top, bottom, left, right, center, middle) rather than absolute pixel coordinates."
-},{
-  "id": 303,
-  "category": "coordination",
-  "prompt": "Rolling Vehicle Motion with Parent–Child Wheel System and Cat Rider. Background light neutral (#F5F5F5). Canvas 1920x1080. A horizontal rectangle acts as the parent body of the system. Rectangle size approximately wide 500px and height 200px with dark blue color (#4A90E2). The rectangle initially starts slightly outside the left side of the frame at middle vertical alignment and moves across the screen toward the right side. Two circular ring wheels are attached to the rectangle along its bottom edge. The circles are children of the rectangle so they move together with the parent body. Each wheel is a hollow circle ring (diameter 160px) with dark grey stroke (#333333) and transparent center. One wheel is attached near the bottom-left edge of the rectangle and the other wheel is attached near the bottom-right edge of the rectangle. Inside each circle there are four straight line spokes connected from the center to the ring edges forming a wheel-like structure. The four lines are evenly spaced forming a cross-wheel pattern at 0°, 90°, 45°, and 135° angles giving the appearance of mechanical spokes. Sitting on top of the rectangle is a small cartoon cat which is also a child object of the rectangle. The cat is positioned at the top-center edge of the rectangle body as if riding the moving platform. The cat body is light orange (#FFB74D) with darker ear tips (#E65100), simple round head, triangular ears, small black eyes and a curved tail pointing upward. Because the cat is attached to the rectangle parent it remains perfectly fixed to the top of the rectangle and travels together with the entire system. Animation (10s): 0–1s the rectangle with both wheels and the cat rider enters smoothly from the left side into the visible canvas area while maintaining middle vertical alignment. Because the wheels and cat are children of the rectangle they remain fixed relative to their attachment points on the rectangle. 1–9s the entire rectangle system continues moving horizontally from left toward the right side of the screen with steady linear motion. During this motion both circular wheels rotate continuously around their Z-axis to simulate rolling wheels. The spoke lines rotate together with their respective circle parents so the whole wheel rotates as one unit. The cat remains sitting steadily on the top of the rectangle maintaining its upright orientation while traveling across the screen. 9–10s the vehicle body, wheels, and cat rider exit the frame toward the right side while the wheels continue rotating until they leave the screen. Throughout the animation the hierarchical structure remains intact where the rectangle is the parent object and both wheels with their spokes plus the cat rider are child objects attached respectively to the bottom-left, bottom-right, and top-center edges of the rectangle. The entire composition maintains consistent center alignment vertically while moving horizontally across the scene."
-},
-{
-  "id": 304,
-  "category": "progress",
-  "prompt": "Order Status Timeline Progress Animation. Background light neutral (#F5F5F5). Canvas 1920x1080. A long horizontal rectangle strip acts as a timeline progress bar placed at center-middle of the canvas. The strip has rounded corners and light grey base color (#E0E0E0). The rectangle begins filling from the left side with a colored progress fill (#4CAF50) representing the order progress. Along the strip three status labels are positioned evenly from left to right: 'Order Placed', 'Order Processing', and 'Order Completed'. Animation (10s): 0–3s the progress fill starts from the left edge and smoothly expands toward the first status label 'Order Placed'. When the progress reaches this position a small circle appears directly on the strip at the same horizontal position and a check mark tick icon appears inside the circle indicating completion of the first step. 3–7s the rectangle progress continues filling toward the second status label 'Order Processing'. When the fill reaches this point another circle marker appears on the strip aligned with the text and a tick check appears inside the circle showing the second stage is completed. 7–10s the progress fill continues expanding until it reaches the final label 'Order Completed'. When the progress reaches this position a final circle marker appears aligned with the label and a check mark icon appears inside the circle. At the end the entire progress strip is fully filled showing the order process completed with three visible check circles along the timeline."
-}
+  {
+    "id": 400,
+    "category": "coordination",
+    "prompt": "Two Circles Merge Into Square. White background (#FFFFFF). Canvas 1920x1080. Two circles (diameter 120px each): circle A red (#E53935) positioned at middle-left (200px left of center), circle B blue (#2196F3) positioned at middle-right (200px right of center). Animation (8s): 0-1s: Both circles fade in from opacity 0 to 1 with ease-out. 1-3s: Both circles move toward canvas center using ease-in-out, arriving at the same position and overlapping. 3-4s: Both circles scale down from 100% to 0% while a purple (#7B1FA2) square (size 140px) scales up from 0% to 100% at center, creating a merge-transform effect. 4-6s: Square holds at center. 6-7s: Square rotates 45 degrees with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
+  },
+  {
+    "id": 401,
+    "category": "asset",
+    "prompt": "Rocket Launch. Dark space background (#0F0F23). Canvas 1920x1080. A white rocket asset (120px) starts at bottom-center. An orange fire asset (60px, color #FF6B35) positioned directly below the rocket. Animation (6s): 0-0.5s: Both rocket and fire assets fade in from opacity 0 to 1 with ease-out. 0.5-4s: Rocket moves upward from bottom-center toward off-screen-top with ease-in acceleration. Fire asset trails below the rocket following the same upward path. 4-5s: Both assets fade out from opacity 1 to 0. 5-6s: Hold dark background. Total duration: 6s."
+  },
+  {
+    "id": 402,
+    "category": "dataviz",
+    "prompt": "Two-Segment Pie Chart. White background (#FFFFFF). Canvas 1920x1080. A pie chart (300px diameter) centered on canvas. Two segments: blue (#2196F3) representing 60% (216 degrees), green (#4CAF50) representing 40% (144 degrees). Segments sum to 100%. Animation (6s): 0-3s: Pie sweeps radially from 0 degrees to 360 degrees with ease-out. Blue segment fills first from 0 to 216 degrees, then green segment fills from 216 to 360 degrees. 3-6s: Hold complete pie chart. Total duration: 6s."
+  },
+  {
+    "id": 403,
+    "category": "coordination",
+    "prompt": "Bouncing Red Circle. White background (#FFFFFF). Canvas 1920x1080. A red circle (#E53935, diameter 120px) starts at middle-left. Animation (6s): 0-0.5s: Circle fades in from opacity 0 to 1 with ease-out. 0.5-5s: Circle moves horizontally from middle-left to middle-right with bounce easing, bouncing three times with decreasing arc heights (200px, 120px, 60px above the center line). 5-6s: Hold final position at middle-right. Total duration: 6s."
+  },
+  {
+    "id": 404,
+    "category": "progress",
+    "prompt": "Loading Progress Bar. Light neutral background (#F5F5F5). Canvas 1920x1080. A horizontal rectangle strip (600px wide, 40px tall, rounded corners 20px) centered on canvas with light grey base color (#E0E0E0). A green (#4CAF50) fill rectangle inside the strip starts at 0px width. Text '0%' (24px bold Arial, dark grey #333333) centered above the bar. Animation (8s): 0-1s: Base bar and text fade in from opacity 0 to 1 with ease-out. 1-6s: Green fill grows from 0px to 600px width from left to right with ease-in-out. Simultaneously the text counts from '0%' to '100%'. 6-7s: Text scales from 100% to 115% and back to 100% with ease-in-out as a completion pulse. 7-8s: Hold completed state. Total duration: 8s."
+  },
+  {
+    "id": 405,
+    "category": "coordination",
+    "prompt": "Triangle Pattern Formation. White background (#FFFFFF). Canvas 1920x1080. Three circles (diameter 120px each): red (#E53935), blue (#2196F3), and green (#4CAF50). Initial positions: red circle at bottom-left, blue circle at bottom-right, green circle at top-center. Animation (8s): 0-1s: All circles fade in from opacity 0 to 1 with ease-out. 1-3s: Red circle moves to middle-left, blue circle moves to middle-right, green circle remains at top-center, forming a triangle pattern with ease-in-out. 3-6s: Hold triangle pattern. 6-7s: All circles scale up by 20% and back to original size with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
+  },
+  {
+    "id": 406,
+    "category": "asset",
+    "prompt": "Car Drives Across Screen. White background (#FFFFFF). Canvas 1920x1080. A blue car asset (120px, color #2196F3) starts at off-screen-left. Animation (6s): 0-0.5s: Car fades in from opacity 0 to 1 with ease-out. 0.5-5s: Car moves horizontally from off-screen-left to off-screen-right across the center line with ease-in-out. 5-6s: Hold final position off-screen-right. Total duration: 6s."
+  },
+  {
+    "id": 407,
+    "category": "dataviz",
+    "prompt": "Quarterly Sales Bar Chart. White background (#FFFFFF). Canvas 1920x1080. A bar chart with four vertical bars representing Q1, Q2, Q3, and Q4 sales data, centered on canvas. Bars are evenly spaced with 100px width each. Colors: Q1 red (#E53935), Q2 blue (#2196F3), Q3 green (#4CAF50), Q4 yellow (#FDD835). Heights: Q1 300px, Q2 450px, Q3 400px, Q4 350px. Labels 'Q1', 'Q2', 'Q3', 'Q4' (24px Arial, black #000000) below each bar. Animation (8s): 0-1s: Bars and labels fade in from opacity 0 to 1 with ease-out. 1-5s: Bars grow vertically from 0px to their respective heights with ease-in-out. 5-7s: Hold final bar heights. 7-8s: Bars and labels fade out from opacity 1 to 0 with ease-in. Total duration: 8s."
+  },
+  {
+    "id": 408,
+    "category": "coordination",
+    "prompt": "Typing Text Animation. White background (#FFFFFF). Canvas 1920x1080. Text 'Hello World!' (48px Arial bold, black #000000) starts at center. Animation (6s): 0-0.5s: Text cursor blinks at start position with ease-out. 0.5-5s: Text types out letter by letter from left to right with ease-in-out, each letter appearing sequentially. 5-6s: Hold complete text. Total duration: 6s."
+  },
+  {
+    "id": 409,
+    "category": "asset",
+    "prompt": "Sunset and Moonrise. Dark space background (#1A1A2E). Canvas 1920x1080. A yellow sun asset (120px, color #FDD835) starts at top-center. A white moon asset (120px) starts at off-screen-bottom. Animation (8s): 0-0.5s: Sun fades in from opacity 0 to 1 with ease-out. 0.5-3s: Sun moves downward from top-center to off-screen-bottom with ease-in-out. 3-4s: Sun fades out from opacity 1 to 0. 4-4.5s: Moon fades in from opacity 0 to 1 with ease-out. 4.5-7s: Moon moves upward from off-screen-bottom to top-center with ease-in-out. 7-8s: Hold final position of moon at top-center. Total duration: 8s."
+  },
+  {
+    "id": 410,
+    "category": "coordination",
+    "prompt": "Two Triangles Merge Into Diamond. White background (#FFFFFF). Canvas 1920x1080. Two triangles (140px base, 140px tall each): triangle A red (#E53935) positioned at middle-left (200px left of center), triangle B blue (#2196F3) positioned at middle-right (200px right of center). Animation (8s): 0-1s: Both triangles fade in from opacity 0 to 1 with ease-out. 1-3s: Both triangles move toward canvas center using ease-in-out, arriving at the same position and overlapping. 3-4s: Both triangles scale down from 100% to 0% while a purple (#7B1FA2) diamond shape (size 140px wide, 140px tall) scales up from 0% to 100% at center, creating a merge-transform effect. 4-6s: Diamond holds at center. 6-7s: Diamond rotates 45 degrees with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
+  },
+  {
+    "id": 411,
+    "category": "coordination",
+    "prompt": "Three Squares Stack and Fall. White background (#FFFFFF). Canvas 1920x1080. Three squares (each 120px, red #E53935, blue #2196F3, green #4CAF50) start spread out horizontally at bottom-center. Animation (8s): 0-1s: Squares fade in from opacity 0 to 1 with ease-out. 1-3s: Squares move vertically to stack at center with ease-in-out, red at bottom, blue in middle, green on top. 3-5s: Hold stacked position. 5-7s: Squares fall sequentially from top to bottom with bounce easing, each square bouncing twice before settling at bottom-center. 7-8s: Hold final fallen state. Total duration: 8s."
+  },
+  {
+    "id": 412,
+    "category": "progress",
+    "prompt": "Step-by-Step Timeline with Check Marks. Light neutral background (#F5F5F5). Canvas 1920x1080. A horizontal timeline with five evenly spaced circles (diameter 60px) centered horizontally on canvas. Each circle is grey (#9E9E9E) initially. A green checkmark asset (size 40px) appears inside each circle. Animation (10s): 0-1s: Timeline fades in from opacity 0 to 1 with ease-out. 1-2s: First circle fills with green (#4CAF50) and checkmark appears with ease-in. 2-3s: Second circle fills with green and checkmark appears with ease-in. 3-4s: Third circle fills with green and checkmark appears with ease-in. 4-5s: Fourth circle fills with green and checkmark appears with ease-in. 5-6s: Fifth circle fills with green and checkmark appears with ease-in. 6-8s: Hold completed timeline. 8-10s: Entire timeline scales up slightly (110%) and back to original size with ease-in-out as a completion pulse. Total duration: 10s."
+  },
+  {
+    "id": 413,
+    "category": "asset",
+    "prompt": "Cloud and Rain Animation. Light neutral background (#F5F5F5). Canvas 1920x1080. A cloud asset (120px) positioned at top-center. Multiple blue raindrop assets (each 20px, color #2196F3) start above the cloud. Animation (8s): 0-1s: Cloud fades in from opacity 0 to 1 with ease-out. 1-3s: Raindrops appear and fall from above the cloud to bottom-center with ease-in-out, spreading out slightly as they fall. 3-6s: Continuous rain effect with raindrops falling in a loop. 6-7s: Raindrops fade out from opacity 1 to 0. 7-8s: Hold final state with cloud. Total duration: 8s."
+  },
+  {
+    "id": 414,
+    "category": "asset",
+    "prompt": "Notification Bell Vibration. Light neutral background (#F5F5F5). Canvas 1920x1080. A bell asset (120px, color #FF9800) positioned at center. Animation (6s): 0-0.5s: Bell fades in from opacity 0 to 1 with ease-out. 0.5-4s: Bell vibrates with a rapid left-right motion (10px each side) using ease-in-out, simulating a ringing effect. 4-5s: Bell fades out from opacity 1 to 0. 5-6s: Hold background. Total duration: 6s."
+  },
+  {
+    "id": 415,
+    "category": "progress",
+    "prompt": "Statistic Cards Display. Light neutral background (#F5F5F5). Canvas 1920x1080. Three statistic cards (each 300px wide, 200px tall, rounded corners 10px) positioned side by side, centered horizontally. Card 1: 'Revenue' title (24px bold Arial, dark grey #333333) with number '$0' (48px bold Arial, green #4CAF50) below. Card 2: 'Users' title (24px bold Arial, dark grey #333333) with number '0' (48px bold Arial, blue #2196F3) below. Card 3: 'Growth' title (24px bold Arial, dark grey #333333) with number '0%' (48px bold Arial, orange #FF9800) below. Animation (8s): 0-1s: All cards fade in from opacity 0 to 1 with ease-out. 1-6s: Numbers on each card count up smoothly: Revenue from '$0' to '$10,000', Users from '0' to '5,000', Growth from '0%' to '20%' with ease-in-out. 6-8s: Hold final numbers. Total duration: 8s."
+  },
+  {
+    "id": 416,
+    "category": "progress",
+    "prompt": "Loading Spinner to Check Mark. Light neutral background (#F5F5F5). Canvas 1920x1080. A circular loading spinner (diameter 120px, color #2196F3) centered on canvas. A green check mark asset (120px, color #4CAF50) positioned at center. Animation (8s): 0-1s: Spinner fades in from opacity 0 to 1 with ease-out. 1-5s: Spinner rotates clockwise continuously with linear easing. 5-6s: Spinner scales down to 0% while the check mark scales up from 0% to 100% at center with ease-in-out, creating a transformation effect. 6-7s: Check mark holds at center. 7-8s: Check mark fades out from opacity 1 to 0. Total duration: 8s."
+  },
+  {
+    "id": 417,
+    "category": "progress",
+    "prompt": "Product Rating Graphic. Light neutral background (#F5F5F5). Canvas 1920x1080. Five star icons (each 60px, color #E0E0E0) aligned horizontally at center, spaced 40px apart. A text element 'Rating: 0/5' (48px Arial bold, dark grey #333333) positioned to the right of the stars. Animation (8s): 0-1s: Stars and text fade in from opacity 0 to 1 with ease-out. 1-6s: Stars fill one by one from left to right, changing from grey to yellow (#FDD835) with ease-in-out, each star filling over 1s. Simultaneously, the text updates to 'Rating: 1/5', 'Rating: 2/5', etc., with each star fill. 6-7s: Text scales from 100% to 115% and back to 100% with ease-in-out as a completion pulse. 7-8s: Hold completed state with all stars filled and text 'Rating: 5/5'. Total duration: 8s."
+  },
+  {
+    "id": 418,
+    "category": "dataviz",
+    "prompt": "Monthly Growth Line Chart. White background (#FFFFFF). Canvas 1920x1080. A line chart with a horizontal axis labeled 'Months' and a vertical axis labeled 'Growth' spans the width of the canvas. The line chart starts at the bottom-left and progresses to the top-right, representing monthly growth. A glowing dot (20px diameter, cyan #00ACC1) travels along the line. Animation (8s): 0-1s: Axes and labels fade in from opacity 0 to 1 with ease-out. 1-5s: Line draws from left to right with ease-in-out, showing monthly growth. Simultaneously, the glowing dot follows the line's path, maintaining its position on the line. 5-6s: Glowing dot pulses by scaling from 100% to 120% and back to 100% with ease-in-out. 6-8s: Hold final state with complete line and glowing dot at the end of the line. Total duration: 8s."
+  },
+  {
+    "id": 419,
+    "category": "coordination",
+    "prompt": "Success Achievement with Trophy and Stars. White background (#FFFFFF). Canvas 1920x1080. A trophy asset (120px, gold color #FFD700) positioned at center. Five star icons (60px each, yellow #FDD835) surrounding the trophy in a circular arrangement at a 200px radius. Animation (8s): 0-1s: Trophy fades in from opacity 0 to 1 with ease-out. 1-3s: Stars fade in sequentially in a clockwise order with ease-out. 3-6s: Stars rotate around the trophy in a clockwise direction with ease-in-out. 6-7s: Stars scale up to 120% and back to 100% creating a pulsing effect with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
+  },
+  {
+    "id": 420,
+    "category": "asset",
+    "prompt": "Cloud Processing Animation. Light neutral background (#F5F5F5). Canvas 1920x1080. A cloud asset (120px) positioned at top-center. A lightning asset (120px) positioned off-screen-top. Multiple blue lines (width 10px, length 300px, color #2196F3) representing data flow, positioned at middle-center, initially off-screen-top. Animation (10s): 0-1s: Cloud asset fades in from opacity 0 to 1 with ease-out. 1-2s: Lightning asset moves from off-screen-top to the cloud with ease-in-out and strikes it. 2-3s: Lightning asset fades out from opacity 1 to 0. 3-4s: Blue lines appear from the cloud and flow downward to middle-center with ease-in, representing data processing. 4-9s: Blue lines continue flowing downward in a loop, simulating fast processing. 9-10s: Hold final state. Total duration: 10s."
+  },
+  {
+    "id": 421,
+    "category": "coordination",
+    "prompt": "System Automation Gears. White background (#FFFFFF). Canvas 1920x1080. A central gear icon (asset, 120px, grey #9E9E9E) positioned at center. Four smaller gear icons (asset, 60px each, colors: red #E53935, blue #2196F3, green #4CAF50, yellow #FDD835) surrounding the central gear at 200px radius. Animation (8s): 0-1s: Central gear fades in from opacity 0 to 1 with ease-out. 1-3s: Central gear rotates clockwise continuously with linear easing. 3-5s: Smaller gears fade in sequentially around the central gear, one per 0.5s, with ease-out. 5-7s: All gears rotate in sync with the central gear, maintaining their positions. 7-8s: Hold final state. Total duration: 8s."
+  },
+  {
+    "id": 422,
+    "category": "coordination",
+    "prompt": "User Growth and Expansion. White background (#FFFFFF). Canvas 1920x1080. A user icon asset (120px, color #E53935) positioned at center. Multiple arrow-right icons (60px each, color #2196F3) initially positioned at center, overlapping the user icon. Animation (8s): 0-1s: User icon fades in from opacity 0 to 1 with ease-out. 1-3s: Arrow-right icons appear and move outward from the center to positions surrounding the user icon at a 200px radius with ease-in-out, representing expansion. 3-7s: Arrow-right icons continue to move outward slightly, creating a subtle growth effect. 7-8s: Hold final expanded state. Total duration: 8s."
+  },
+  {
+    "id": 490,
+    "category": "coordination",
+    "prompt": "Day to Night Transition. Canvas 1920x1080. Background starts bright blue (#87CEEB) and transitions to deep dark blue (#1A1A2E) and then almost black (#0F0F23). A sun asset (120px, yellow #FDD835) starts near bottom-left horizon and moves in a smooth circular arc across the sky, setting near bottom-right horizon. A moon asset (120px, white #FFFFFF) rises from bottom-left horizon following a similar arc path, moving toward upper-right area of the sky, emitting a soft glow. Several cloud assets (white #FFFFFF, 200px wide each) drift across the sky from left to right. Small star assets (white #FFFFFF, 10px each) appear gradually across the sky, distributed unevenly, twinkling softly in a continuous loop. A wide rectangle at the bottom represents grass, transitioning from bright green (#4CAF50) to very dark green (#013220). Animation (12s): 0-1s: Scene fades in from opacity 0 to 1 with ease-out. 1-5s: Sun moves in an arc from bottom-left to bottom-right with ease-in-out; sky transitions from bright blue to deep dark blue. 5-6s: Sun disappears, moon rises from bottom-left following a similar arc path with ease-in-out; sky transitions to almost black. 6-10s: Moon holds position, emitting soft glow; stars appear and twinkle softly; clouds drift continuously. 10-12s: Grass transitions to very dark green. Total duration: 12s."
+  },
+  {
+    "id": 491,
+    "category": "coordination",
+    "prompt": "Day to Night Transition. Canvas 1920x1080. Background transitions from bright blue (#87CEEB) to deep dark blue (#1A1A2E) and finally almost black (#0F0F23). A sun asset (120px, yellow #FDD835) starts near off-screen-left and moves horizontally across the sky toward the right horizon. A moon asset (120px, white #FFFFFF) enters from off-screen-left after the sun sets and moves toward the right side of the sky, emitting a soft glow. Several cloud assets (white #FFFFFF, 200px wide) drift across the sky from left to right. Small star assets (white #FFFFFF, 20px) appear gradually and twinkle softly. A wide rectangle at the bottom represents grass, transitioning from bright green (#4CAF50) to very dark green (#013220). Animation (12s): 0-1s: Sun fades in from opacity 0 to 1 with ease-out. 1-4s: Sun moves from left to right across the sky with ease-in-out. 4-5s: Sun fades out as it sets. 5-6s: Moon fades in from opacity 0 to 1 with ease-out. 6-9s: Moon moves from left to right across the sky with ease-in-out, emitting a soft glow. 9-10s: Stars appear gradually and twinkle softly in a continuous loop. 0-12s: Clouds drift from left to right continuously. Grass color transitions from bright green to very dark green as the sky darkens. 10-12s: Hold final night scene with moon and stars. Total duration: 12s."
+  },
+  {
+    "id": 492,
+    "category": "coordination",
+    "prompt": "Day to Night Transition Scene. Dark to light gradient background transitioning from bright blue (#2196F3) to deep dark blue (#1A1A2E) to almost black (#0F0F23). Canvas 1920x1080. A yellow sun asset (120px, color #FDD835) starts near the upper-left. A white moon asset (120px, color #FFFFFF) starts off-screen-top. Several white cloud assets (120px each, color #FFFFFF) distributed unevenly across the sky. A wide horizontal rectangle (1920px wide, 100px tall) at bottom represents grass, transitioning from bright green (#4CAF50) to very dark green (#1B5E20). Animation (12s): 0-1s: Sun fades in from opacity 0 to 1 with ease-out. 1-5s: Sun travels along a smooth circular arc path from upper-left to bottom-right with ease-in-out, sky transitions from bright blue to deep dark blue. 5-6s: Sun fades out as it sets. 6-7s: Moon fades in from opacity 0 to 1 with ease-out. 7-11s: Moon travels along a similar arc path from upper-left to bottom-right, sky transitions to almost black. Clouds drift slowly from left to right throughout with linear easing. 8-10s: Stars appear gradually and twinkle softly with a continuous looping glow. 11-12s: Hold final night scene with moon and stars visible. Total duration: 12s."
+  },
+  {
+    "id": 505,
+    "category": "coordination",
+    "prompt": "Heart Outline and Pulse. White background (#FFFFFF). Canvas 1920x1080. A heart shape outline (red #E53935, stroke width 5px) centered on canvas. Animation (10s): 0-1s: Heart outline draws itself from top-center to complete shape with ease-out. 1-2s: Heart fills with red color (#E53935) from top to bottom with ease-in. 2-8s: Heart beats with rhythmic pulsing motion, scaling from 100% to 110% and back to 100% in a smooth cycle every 1s with ease-in-out. 8-10s: Hold final pulsing state. Total duration: 10s."
+  },
+  {
+    "id": 507,
+    "category": "asset",
+    "prompt": "Lightbulb Icon with Glowing Effect. White background (#FFFFFF). Canvas 1920x1080. A lightbulb asset (120px) centered on canvas. Animation (8s): 0-1s: Lightbulb outline begins drawing from the bottom to the top with ease-in-out, using animated strokes. 1-4s: Drawing continues until the entire lightbulb outline is complete. 4-5s: A glowing light effect (yellow #FDD835) appears inside the bulb with ease-out, simulating a light turning on. 5-7s: Glow pulsates slightly, expanding and contracting by 10% with ease-in-out. 7-8s: Hold final glowing state. Total duration: 8s."
+  }
 ]

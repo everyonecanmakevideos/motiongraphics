@@ -1,0 +1,216 @@
+{
+  "scene": "monthly_growth_line_chart",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#FFFFFF",
+  "objects": [
+    {
+      "id": "x_axis",
+      "shape": "line",
+      "size": [
+        1920,
+        2
+      ],
+      "color": "#333333",
+      "pos": [
+        0,
+        500
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "y_axis",
+      "shape": "line",
+      "size": [
+        2,
+        1080
+      ],
+      "color": "#333333",
+      "pos": [
+        -960,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "label_months",
+      "shape": "text",
+      "text": "Months",
+      "fontSize": 24,
+      "fontFamily": "Arial",
+      "color": "#333333",
+      "pos": [
+        0,
+        520
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "label_growth",
+      "shape": "text",
+      "text": "Growth",
+      "fontSize": 24,
+      "fontFamily": "Arial",
+      "color": "#333333",
+      "pos": [
+        -980,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "line_chart",
+      "shape": "polyline",
+      "vertices": [
+        [
+          -960,
+          500
+        ],
+        [
+          -480,
+          250
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          480,
+          -250
+        ],
+        [
+          960,
+          -500
+        ]
+      ],
+      "stroke": {
+        "color": "#1976D2",
+        "width": 4
+      },
+      "opacity": 0
+    },
+    {
+      "id": "glowing_dot",
+      "shape": "circle",
+      "diameter": 20,
+      "color": "#00ACC1",
+      "pos": [
+        -960,
+        500
+      ],
+      "scale": 1
+    }
+  ],
+  "timeline": [
+    {
+      "target": "x_axis",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "y_axis",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "label_months",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "label_growth",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "line_chart",
+      "time": [
+        1,
+        5
+      ],
+      "easing": "ease-in-out",
+      "opacity": [
+        0,
+        1
+      ],
+      "clipExpand": [
+        0,
+        100
+      ]
+    },
+    {
+      "target": "glowing_dot",
+      "time": [
+        1,
+        5
+      ],
+      "easing": "ease-in-out",
+      "pos": [
+        [
+          -960,
+          500
+        ],
+        [
+          960,
+          -500
+        ]
+      ]
+    },
+    {
+      "target": "glowing_dot",
+      "time": [
+        5,
+        6
+      ],
+      "easing": "ease-in-out",
+      "scale": [
+        1,
+        1.2
+      ]
+    },
+    {
+      "target": "glowing_dot",
+      "time": [
+        6,
+        7
+      ],
+      "easing": "ease-in-out",
+      "scale": [
+        1.2,
+        1
+      ]
+    }
+  ]
+}

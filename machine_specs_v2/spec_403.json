@@ -1,0 +1,63 @@
+{
+  "scene": "bouncing_red_circle",
+  "duration": 6,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#FFFFFF",
+  "objects": [
+    {
+      "id": "circle_1",
+      "shape": "circle",
+      "diameter": 120,
+      "color": "#E53935",
+      "pos": [
+        -960,
+        0
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "circle_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "circle_1",
+      "time": [
+        0.5,
+        5
+      ],
+      "easing": "bounce",
+      "pos": [
+        [
+          -960,
+          0
+        ],
+        [
+          960,
+          0
+        ]
+      ],
+      "bounce": {
+        "floor": 0,
+        "heights": [
+          200,
+          120,
+          60
+        ]
+      }
+    }
+  ]
+}

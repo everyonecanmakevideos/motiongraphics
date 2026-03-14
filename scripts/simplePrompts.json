@@ -1,0 +1,37 @@
+[
+  { "id": 400, "simplePrompt": "two circles merge and become a square" },
+  { "id": 401, "simplePrompt": "rocket launches into space" },
+  { "id": 402, "simplePrompt": "pie chart showing 60% vs 40%" },
+  { "id": 403, "simplePrompt": "a red circle bounces across the screen" },
+  { "id": 404, "simplePrompt": "loading progress bar fills up" },
+  { "id": 405, "simplePrompt": "three shapes form a triangle pattern" },
+  { "id": 406, "simplePrompt": "car drives across the screen" },
+  { "id": 407, "simplePrompt": "bar chart with Q1 Q2 Q3 Q4 sales data" },
+  { "id": 408, "simplePrompt": "text types out letter by letter" },
+  { "id": 409, "simplePrompt": "sun sets and moon rises" },
+  { "id": 410, "simplePrompt": "two triangles merge into a diamond shape" },
+  { "id": 411, "simplePrompt": "three squares stack into a tower then fall" },
+  { "id": 412, "simplePrompt": "a timeline fills step by step with check marks" },
+  { "id": 413, "simplePrompt": "a cloud appears and rain drops fall down" },
+  { "id": 414, "simplePrompt": "a notification bell rings with vibration motion" },
+  { "id": 415, "simplePrompt": "three statistic cards appear side by side showing revenue users and growth with numbers counting up" },
+  { "id": 416, "simplePrompt": "a loading spinner rotates and then turns into a check mark" },
+  { "id": 417, "simplePrompt": "a product rating graphic shows five stars filling one by one with a rating number appearing beside them" },
+  { "id": 418, "simplePrompt": "a line chart draws from left to right showing monthly growth and a glowing dot travels along the line" },
+  { "id": 419, "simplePrompt": "a trophy icon appears and stars animate around it representing success achievement" },
+  { "id": 420, "simplePrompt": "a cloud icon appears and lightning icon strikes it then data flows downward representing fast cloud processing" },
+  { "id": 421, "simplePrompt": "a gear icon rotates in the center while smaller gears appear around it representing system automation" },
+  { "id": 422, "simplePrompt": "a users icon appears and multiple arrow-right icons move outward representing user growth and expansion" },
+{
+  "id": 492,
+  "simplePrompt": "a day to night transition scene where the sun begins near the upper left area of the sky and travels across the scene along a smooth circular arc path, gradually descending and setting near the bottom right horizon. During this motion the sky slowly transitions from bright daytime blue to deep dark blue and finally almost black to represent night. After the sun sets, the moon appears from the upper left region and follows a similar curved arc path across the sky toward the bottom right side, where it remains visible and emits a soft glowing light. Several clouds are placed at different vertical and horizontal positions across the sky so they are not aligned, and all clouds slowly drift from left to right throughout the animation. As the sky becomes dark, many small stars appear gradually across the sky, distributed unevenly to look natural, and they softly twinkle in a continuous looping glow. At the bottom of the scene a wide horizontal rectangle represents grass; its color transitions from bright green during daytime to very dark green as the sky changes from blue to night."
+},{
+    "id": 505,
+    "simplePrompt": "a heart outline draws itself gradually and once the drawing finishes the heart fills with color and starts beating in a rhythmic pulsing motion"
+  },
+{
+    "id": 507,
+    "simplePrompt": "a lightbulb icon is drawn using animated strokes and once the bulb outline finishes drawing a glowing light effect appears inside it"
+  }
+
+]

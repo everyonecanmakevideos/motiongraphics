@@ -1,0 +1,103 @@
+{
+  "scene": "lightbulb_glowing_effect",
+  "duration": 8,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#FFFFFF",
+  "objects": [
+    {
+      "id": "lightbulb_1",
+      "shape": "asset",
+      "assetId": "lightbulb",
+      "size": [
+        120,
+        120
+      ],
+      "pos": [
+        0,
+        0
+      ],
+      "stroke": {
+        "color": "#000000",
+        "width": 2
+      },
+      "fill": false,
+      "opacity": 1
+    },
+    {
+      "id": "glow_1",
+      "shape": "circle",
+      "diameter": 100,
+      "color": "#FDD835",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "lightbulb_1",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-in-out",
+      "strokeDash": [
+        0,
+        50
+      ]
+    },
+    {
+      "target": "lightbulb_1",
+      "time": [
+        1,
+        4
+      ],
+      "strokeDash": [
+        50,
+        100
+      ]
+    },
+    {
+      "target": "glow_1",
+      "time": [
+        4,
+        5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "glow_1",
+      "time": [
+        5,
+        6
+      ],
+      "easing": "ease-in-out",
+      "scale": [
+        1,
+        1.1
+      ]
+    },
+    {
+      "target": "glow_1",
+      "time": [
+        6,
+        7
+      ],
+      "easing": "ease-in-out",
+      "scale": [
+        1.1,
+        1
+      ]
+    }
+  ]
+}

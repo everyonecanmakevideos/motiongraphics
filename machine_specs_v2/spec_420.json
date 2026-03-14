@@ -1,0 +1,185 @@
+{
+  "scene": "cloud_processing_animation",
+  "duration": 10,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "cloud_1",
+      "shape": "asset",
+      "assetId": "cloud",
+      "size": [
+        120,
+        120
+      ],
+      "pos": [
+        0,
+        -540
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "lightning_1",
+      "shape": "asset",
+      "assetId": "lightning",
+      "size": [
+        120,
+        120
+      ],
+      "pos": [
+        0,
+        -640
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "line_1",
+      "shape": "rectangle",
+      "size": [
+        10,
+        300
+      ],
+      "color": "#2196F3",
+      "pos": [
+        0,
+        -640
+      ]
+    },
+    {
+      "id": "line_2",
+      "shape": "rectangle",
+      "size": [
+        10,
+        300
+      ],
+      "color": "#2196F3",
+      "pos": [
+        -20,
+        -640
+      ]
+    },
+    {
+      "id": "line_3",
+      "shape": "rectangle",
+      "size": [
+        10,
+        300
+      ],
+      "color": "#2196F3",
+      "pos": [
+        20,
+        -640
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "target": "cloud_1",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "lightning_1",
+      "time": [
+        1,
+        2
+      ],
+      "easing": "ease-in-out",
+      "y": [
+        -640,
+        -540
+      ]
+    },
+    {
+      "target": "lightning_1",
+      "time": [
+        2,
+        3
+      ],
+      "opacity": [
+        1,
+        0
+      ]
+    },
+    {
+      "target": "line_1",
+      "time": [
+        3,
+        4
+      ],
+      "easing": "ease-in",
+      "y": [
+        -540,
+        0
+      ]
+    },
+    {
+      "target": "line_2",
+      "time": [
+        3,
+        4
+      ],
+      "easing": "ease-in",
+      "y": [
+        -540,
+        0
+      ]
+    },
+    {
+      "target": "line_3",
+      "time": [
+        3,
+        4
+      ],
+      "easing": "ease-in",
+      "y": [
+        -540,
+        0
+      ]
+    },
+    {
+      "target": "line_1",
+      "time": [
+        4,
+        9
+      ],
+      "y": [
+        0,
+        540
+      ]
+    },
+    {
+      "target": "line_2",
+      "time": [
+        4,
+        9
+      ],
+      "y": [
+        0,
+        540
+      ]
+    },
+    {
+      "target": "line_3",
+      "time": [
+        4,
+        9
+      ],
+      "y": [
+        0,
+        540
+      ]
+    }
+  ]
+}
