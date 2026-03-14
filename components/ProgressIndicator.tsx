@@ -10,8 +10,9 @@ interface Props {
 }
 
 const PHASE_1_MESSAGES = [
-  "Analyzing your prompt...",
-  "Designing motion choreography...",
+  "Understanding your prompt...",
+  "Expanding into detailed description...",
+  "Analyzing motion choreography...",
   "Building animation spec...",
   "Generating animation code...",
   "Almost there...",
@@ -27,13 +28,13 @@ type PhaseState = "pending" | "active" | "done" | "failed";
 
 function getPhaseStates(step: number, status: JobStatus): [PhaseState, PhaseState] {
   if (status === "failed") {
-    return [step <= 5 ? "failed" : "done", step > 5 ? "failed" : "pending"];
+    return [step <= 6 ? "failed" : "done", step > 6 ? "failed" : "pending"];
   }
   if (status === "done") return ["done", "done"];
 
-  // Phase 1: steps 1-5, Phase 2: steps 6-7
-  const p1: PhaseState = step <= 5 ? "active" : "done";
-  const p2: PhaseState = step <= 5 ? "pending" : "active";
+  // Phase 1: steps 1-6 (expand + spec + code), Phase 2: steps 7-8 (render + done)
+  const p1: PhaseState = step <= 6 ? "active" : "done";
+  const p2: PhaseState = step <= 6 ? "pending" : "active";
   return [p1, p2];
 }
 

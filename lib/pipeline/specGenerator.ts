@@ -848,7 +848,26 @@ function validateSpec(spec: Record<string, unknown>): string[] {
       if ((obj.shape === "polygon" || obj.shape === "polyline") && !Array.isArray(obj.vertices)) {
         errors.push("Object '" + (obj.id || "unknown") + "' with shape '" + obj.shape + "' missing 'vertices' array");
       }
+      if (obj.shape === "asset" && !obj.assetId) {
+        errors.push("Object '" + (obj.id || "unknown") + "' with shape 'asset' missing 'assetId'");
+      }
       if (obj.id) objectIds.add(obj.id as string);
+    }
+  }
+
+  // Detect probable absolute (top-left origin) coordinates instead of center-relative
+  if (Array.isArray(spec.objects)) {
+    for (const obj of spec.objects as Record<string, unknown>[]) {
+      if (Array.isArray(obj.pos)) {
+        const x = (obj.pos as number[])[0];
+        const y = (obj.pos as number[])[1];
+        if (x === 960 && y === 540) {
+          errors.push("Object '" + (obj.id || "unknown") + "' pos [960,540] looks like absolute center — should be [0,0] in center-relative coords");
+        }
+        if (Math.abs(x) > 1100 || Math.abs(y) > 700) {
+          errors.push("Object '" + (obj.id || "unknown") + "' pos [" + x + "," + y + "] is far off-screen — verify center-relative coordinates");
+        }
+      }
     }
   }
 
@@ -864,6 +883,11 @@ function validateSpec(spec: Record<string, unknown>): string[] {
       }
       if (entry.target && !objectIds.has(entry.target as string)) {
         errors.push("Timeline[" + i + "] references unknown target '" + entry.target + "'");
+      }
+      if (Array.isArray(entry.pos) && (entry.pos as unknown[]).length === 2 && typeof (entry.pos as number[])[0] === "number") {
+        if ((entry.pos as number[])[0] === 960 && (entry.pos as number[])[1] === 540) {
+          errors.push("Timeline[" + i + "] target '" + entry.target + "' pos [960,540] looks like absolute center — should be [0,0]");
+        }
       }
     }
   }

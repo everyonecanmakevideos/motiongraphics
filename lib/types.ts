@@ -1,5 +1,6 @@
 export type JobStatus =
   | "queued"
+  | "expanding"
   | "spec_generating"
   | "spec_ready"
   | "code_generating"
@@ -11,6 +12,7 @@ export type JobStatus =
 export interface Job {
   id: string;
   prompt: string;
+  detailed_prompt: string | null;
   status: JobStatus;
   step: number;
   error: string | null;
@@ -30,14 +32,16 @@ export interface SSEEvent {
   error?: string;
   specJson?: object;
   videoKey?: string;
+  detailedPrompt?: string;
 }
 
 export const STEP_LABELS: Record<number, string> = {
   1: "Prompt received",
-  2: "Generating spec (GPT-4o)...",
-  3: "Spec ready",
-  4: "Generating animation code...",
-  5: "Code ready",
-  6: "Rendering video...",
-  7: "Video ready",
+  2: "Expanding prompt...",
+  3: "Generating spec (GPT-4o)...",
+  4: "Spec ready",
+  5: "Generating animation code...",
+  6: "Code ready",
+  7: "Rendering video...",
+  8: "Video ready",
 };

@@ -29,6 +29,7 @@ export interface UpdateJobFields {
   status?: JobStatus;
   step?: number;
   error?: string;
+  detailed_prompt?: string;
   spec_r2_key?: string;
   code_r2_key?: string;
   video_r2_key?: string;
@@ -49,6 +50,8 @@ export async function updateJob(id: string, fields: UpdateJobFields): Promise<vo
       await sql`UPDATE jobs SET step = ${value as number}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "error") {
       await sql`UPDATE jobs SET error = ${value as string}, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "detailed_prompt") {
+      await sql`UPDATE jobs SET detailed_prompt = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "spec_r2_key") {
       await sql`UPDATE jobs SET spec_r2_key = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "code_r2_key") {
@@ -77,6 +80,7 @@ export async function initDb(): Promise<void> {
     CREATE TABLE IF NOT EXISTS jobs (
       id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       prompt       TEXT NOT NULL,
+      detailed_prompt TEXT,
       status       TEXT NOT NULL DEFAULT 'queued',
       step         INTEGER NOT NULL DEFAULT 1,
       error        TEXT,
@@ -88,4 +92,6 @@ export async function initDb(): Promise<void> {
       updated_at   TIMESTAMPTZ DEFAULT now()
     )
   `;
+  // Migration for existing tables
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS detailed_prompt TEXT`;
 }

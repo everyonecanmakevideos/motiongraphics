@@ -39,7 +39,7 @@ export default function PromptForm() {
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
-        placeholder={"Describe your animation...\n\nExample: A blue circle pulses from 100% to 130% scale on a dark background (#1a1a2e), repeating 3 times over 6 seconds."}
+        placeholder={"Describe your animation in simple terms...\n\nExamples:\n- A rocket launches into space\n- Two circles merge into a square\n- Pie chart showing 60% vs 40%"}
         rows={5}
         maxLength={3000}
         disabled={loading}

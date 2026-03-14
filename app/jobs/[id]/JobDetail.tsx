@@ -21,6 +21,7 @@ export default function JobDetail({ initialJob }: Props) {
       step: event.step > 0 ? event.step : prev.step,
       status: event.status,
       error: event.error ?? prev.error,
+      detailed_prompt: event.detailedPrompt ?? prev.detailed_prompt,
       spec_json: event.specJson ?? prev.spec_json,
       video_r2_key: event.videoKey ?? prev.video_r2_key,
     }));
@@ -43,6 +44,16 @@ export default function JobDetail({ initialJob }: Props) {
         </Link>
         <h1 className="text-lg font-semibold text-white">Job {job.id.slice(0, 8)}</h1>
         <p className="text-sm text-neutral-400 mt-1 line-clamp-2">{job.prompt}</p>
+        {job.detailed_prompt && (
+          <details className="mt-2">
+            <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+              View expanded prompt
+            </summary>
+            <p className="text-xs text-neutral-400 mt-1 whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+              {job.detailed_prompt}
+            </p>
+          </details>
+        )}
       </div>
 
       {/* Progress */}

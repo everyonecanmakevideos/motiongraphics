@@ -7,6 +7,7 @@
  */
 
 import { getJob, updateJob } from "./db";
+import { expandPrompt } from "./pipeline/promptExpander";
 import { generateSpec } from "./pipeline/specGenerator";
 import { generateAnimationCode } from "./pipeline/codeGenerator";
 import { renderAndUpload } from "./pipeline/renderer";
@@ -97,29 +98,39 @@ async function runPipeline(jobId: string): Promise<void> {
   emit(jobId, { jobId, step: 1, status: "queued", label: STEP_LABELS[1] });
 
   try {
-    // Step 2: Generate spec
-    await setStep(jobId, 2, "spec_generating");
-    const specResult = await generateSpec(job.prompt);
+    // Step 2: Expand simple prompt into detailed prompt
+    await setStep(jobId, 2, "expanding");
+    const expandResult = await expandPrompt(job.prompt);
+    if (!expandResult.result) {
+      await failJob(jobId, "Prompt expansion failed: " + expandResult.errors.join("; "));
+      return;
+    }
+    const detailedPrompt = expandResult.result.prompt;
+    await updateJob(jobId, { detailed_prompt: detailedPrompt });
+
+    // Step 3: Generate spec from detailed prompt
+    await setStep(jobId, 3, "spec_generating");
+    const specResult = await generateSpec(detailedPrompt);
     if (!specResult.spec) {
       await failJob(jobId, "Spec generation failed: " + specResult.errors.join("; "));
       return;
     }
     const specText = JSON.stringify(specResult.spec, null, 2);
 
-    // Step 3: Spec ready
+    // Step 4: Spec ready
     await updateJob(jobId, { spec_json: specResult.spec });
-    await setStep(jobId, 3, "spec_ready", { specJson: specResult.spec });
+    await setStep(jobId, 4, "spec_ready", { specJson: specResult.spec });
 
-    // Step 4: Generate animation code
-    await setStep(jobId, 4, "code_generating");
+    // Step 5: Generate animation code
+    await setStep(jobId, 5, "code_generating");
     const { fullComponent, issues } = await generateAnimationCode(specText, specResult.spec);
     if (issues.length > 0) console.warn("[queue] Static issues for", jobId, issues.join(", "));
 
-    // Step 5: Code ready
-    await setStep(jobId, 5, "code_ready");
+    // Step 6: Code ready
+    await setStep(jobId, 6, "code_ready");
 
-    // Step 6: Render
-    await setStep(jobId, 6, "rendering");
+    // Step 7: Render
+    await setStep(jobId, 7, "rendering");
     const { videoKey, codeKey, specKey } = await renderAndUpload(
       jobId,
       fullComponent,
@@ -127,15 +138,15 @@ async function runPipeline(jobId: string): Promise<void> {
       specText
     );
 
-    // Step 7: Done
+    // Step 8: Done
     await updateJob(jobId, {
       status: "done",
-      step: 7,
+      step: 8,
       video_r2_key: videoKey,
       code_r2_key: codeKey,
       spec_r2_key: specKey,
     });
-    emit(jobId, { jobId, step: 7, status: "done", label: STEP_LABELS[7], videoKey });
+    emit(jobId, { jobId, step: 8, status: "done", label: STEP_LABELS[8], videoKey });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await failJob(jobId, msg);
