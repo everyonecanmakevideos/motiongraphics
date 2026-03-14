@@ -97,7 +97,7 @@ export async function renderAndUpload(
   // Remotion render
   try {
     execSync(
-      "npx remotion render src/index.ts GeneratedMotion " + videoLocalPath + " --concurrency=1",
+      "npx remotion render src/index.ts GeneratedMotion " + videoLocalPath + " --concurrency=1 --gl=swangle --disable-web-security",
       {
         stdio: "pipe",
         cwd: PROJECT_ROOT,
