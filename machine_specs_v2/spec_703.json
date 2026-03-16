@@ -1,0 +1,139 @@
+{
+  "scene": "dream_big_build_fast_slide_up",
+  "duration": 4,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#1A1A2E",
+    "to": "#0F0F23",
+    "direction": "radial",
+    "glow": "#25253A"
+  },
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "Dream Big Build Fast",
+      "fontSize": 72,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "pos": [
+        0,
+        40
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "title_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0.5,
+        1.125
+      ],
+      "words": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0.5,
+        1.125
+      ],
+      "easing": "ease-out",
+      "y": [
+        40,
+        0
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        1.125,
+        1.75
+      ],
+      "words": [
+        1,
+        2
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        1.125,
+        1.75
+      ],
+      "easing": "ease-out",
+      "y": [
+        40,
+        0
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        1.75,
+        2.375
+      ],
+      "words": [
+        2,
+        3
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        1.75,
+        2.375
+      ],
+      "easing": "ease-out",
+      "y": [
+        40,
+        0
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        2.375,
+        3
+      ],
+      "words": [
+        3,
+        4
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        2.375,
+        3
+      ],
+      "easing": "ease-out",
+      "y": [
+        40,
+        0
+      ]
+    }
+  ]
+}

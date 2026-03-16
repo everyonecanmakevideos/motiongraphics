@@ -307,7 +307,7 @@ async function run() {
     }
 
     // --- STEP 2: Wrap in full component ---
-    const hasAssets = specHasAssets(specData);
+     const hasAssets = specHasAssets(specData);
     let fullComponent;
     if (codeExists) {
       fullComponent = jsxContent;
@@ -316,7 +316,7 @@ async function run() {
       if (hasAssets) {
         imports += 'import { Asset } from "./assets/Asset";\n';
       }
-      fullComponent =
+       fullComponent =
         imports + "\n" +
         "export const GeneratedMotion = () => {\n" +
         jsxContent +
@@ -338,7 +338,7 @@ async function run() {
       // Retry with error context
       jsxContent = await generateCodeWithFix(spec, specData, jsxContent, tsResult.error);
 
-      let retryImports = 'import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";\n';
+       let retryImports = 'import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";\n';
       if (hasAssets) {
         retryImports += 'import { Asset } from "./assets/Asset";\n';
       }
@@ -378,8 +378,8 @@ async function run() {
     env: {
       ...process.env,
       REMOTION_APP_DURATION_FRAMES: String(durationInFrames),
-      REMOTION_APP_VIDEO_WIDTH: "1920",
-      REMOTION_APP_VIDEO_HEIGHT: "1080"
+       REMOTION_APP_VIDEO_WIDTH: String(specData.canvas && specData.canvas.w ? specData.canvas.w : 1920),
+      REMOTION_APP_VIDEO_HEIGHT: String(specData.canvas && specData.canvas.h ? specData.canvas.h : 1080)
     }
   }
 );

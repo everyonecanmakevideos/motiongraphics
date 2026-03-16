@@ -7,9 +7,11 @@
 const BASE_RULES = require("./base");
 const SHAPE_RULES = require("./shapes");
 const ANIMATION_RULES = require("./animations");
+const LAYOUT_RULES = require("./layout");
 const { getAdvancedRules } = require("./advanced");
 const { getDatavizRules } = require("./dataviz");
 const { getAssetRules } = require("./assets");
+const { getTypographyRules } = require("./typography");
 
 /**
  * Assemble a system prompt tailored to the given spec.
@@ -23,6 +25,8 @@ function assemblePrompt(specData) {
     SHAPE_RULES,
     "",
     ANIMATION_RULES,
+    "",
+    LAYOUT_RULES,
   ];
 
   // Conditionally add advanced rules based on spec content
@@ -58,6 +62,17 @@ function assemblePrompt(specData) {
     }
   }
 
+  // Conditionally add typography rules based on spec content
+  const typographyRules = getTypographyRules(specData);
+  if (typographyRules.length > 0) {
+    parts.push("");
+    parts.push("KINETIC TYPOGRAPHY RULES (specific to this spec):");
+    for (const rule of typographyRules) {
+      parts.push("");
+      parts.push(rule);
+    }
+  }
+
   // Final validation checklist (always included)
   parts.push("");
   parts.push(`FINAL VALIDATION CHECKLIST
@@ -86,8 +101,9 @@ function getPromptSummary(specData) {
   const advancedRules = getAdvancedRules(specData);
   const datavizRules = getDatavizRules(specData);
   const assetRulesSum = getAssetRules(specData);
-  const baseCount = 3; // base + shapes + animations
-  const allConditional = advancedRules.concat(datavizRules).concat(assetRulesSum);
+  const baseCount = 4; // base + shapes + animations + layout
+  const typographyRulesSum = getTypographyRules(specData);
+  const allConditional = advancedRules.concat(datavizRules).concat(assetRulesSum).concat(typographyRulesSum);
   return {
     totalModules: baseCount + allConditional.length,
     advancedModules: allConditional.length,

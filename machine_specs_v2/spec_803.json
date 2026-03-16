@@ -1,0 +1,76 @@
+{
+  "scene": "build_something_amazing_slide_up",
+  "duration": 5,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#1A1A2E",
+    "to": "#0F0F23",
+    "direction": "radial",
+    "glow": "#FFFFFF"
+  },
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "Build Something Amazing",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "maxWidth": 960
+    }
+  ],
+  "timeline": [
+    {
+      "target": "title_1",
+      "time": [
+        0,
+        0.6
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        0.6
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0,
+        0.6
+      ],
+      "easing": "ease-in-out",
+      "y": [
+        40,
+        15
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0.6,
+        3.6
+      ],
+      "easing": "ease-in-out",
+      "y": [
+        15,
+        0
+      ],
+      "opacity": [
+        0.6,
+        1
+      ]
+    }
+  ]
+}

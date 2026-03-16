@@ -1,36 +1,43 @@
 [
-  { "id": 400, "simplePrompt": "two circles merge and become a square" },
-  { "id": 401, "simplePrompt": "rocket launches into space" },
-  { "id": 402, "simplePrompt": "pie chart showing 60% vs 40%" },
-  { "id": 403, "simplePrompt": "a red circle bounces across the screen" },
-  { "id": 404, "simplePrompt": "loading progress bar fills up" },
-  { "id": 405, "simplePrompt": "three shapes form a triangle pattern" },
-  { "id": 406, "simplePrompt": "car drives across the screen" },
-  { "id": 407, "simplePrompt": "bar chart with Q1 Q2 Q3 Q4 sales data" },
-  { "id": 408, "simplePrompt": "text types out letter by letter" },
-  { "id": 409, "simplePrompt": "sun sets and moon rises" },
-  { "id": 410, "simplePrompt": "two triangles merge into a diamond shape" },
-  { "id": 411, "simplePrompt": "three squares stack into a tower then fall" },
-  { "id": 412, "simplePrompt": "a timeline fills step by step with check marks" },
-  { "id": 413, "simplePrompt": "a cloud appears and rain drops fall down" },
-  { "id": 414, "simplePrompt": "a notification bell rings with vibration motion" },
-  { "id": 415, "simplePrompt": "three statistic cards appear side by side showing revenue users and growth with numbers counting up" },
-  { "id": 416, "simplePrompt": "a loading spinner rotates and then turns into a check mark" },
-  { "id": 417, "simplePrompt": "a product rating graphic shows five stars filling one by one with a rating number appearing beside them" },
-  { "id": 418, "simplePrompt": "a line chart draws from left to right showing monthly growth and a glowing dot travels along the line" },
-  { "id": 419, "simplePrompt": "a trophy icon appears and stars animate around it representing success achievement" },
-  { "id": 420, "simplePrompt": "a cloud icon appears and lightning icon strikes it then data flows downward representing fast cloud processing" },
-  { "id": 421, "simplePrompt": "a gear icon rotates in the center while smaller gears appear around it representing system automation" },
-  { "id": 422, "simplePrompt": "a users icon appears and multiple arrow-right icons move outward representing user growth and expansion" },
+{ "id": 606, "simplePrompt": "Text 'Duration Check' appears and a small progress bar slowly fills from left to right until the video ends." },
 {
-  "id": 492,
-  "simplePrompt": "a day to night transition scene where the sun begins near the upper left area of the sky and travels across the scene along a smooth circular arc path, gradually descending and setting near the bottom right horizon. During this motion the sky slowly transitions from bright daytime blue to deep dark blue and finally almost black to represent night. After the sun sets, the moon appears from the upper left region and follows a similar curved arc path across the sky toward the bottom right side, where it remains visible and emits a soft glowing light. Several clouds are placed at different vertical and horizontal positions across the sky so they are not aligned, and all clouds slowly drift from left to right throughout the animation. As the sky becomes dark, many small stars appear gradually across the sky, distributed unevenly to look natural, and they softly twinkle in a continuous looping glow. At the bottom of the scene a wide horizontal rectangle represents grass; its color transitions from bright green during daytime to very dark green as the sky changes from blue to night."
+  "id": 608,
+  "simplePrompt": "A smooth gradient background fills the screen with a soft radial brightness glow in the center. In the middle of the screen, large text '10 years ago' appears with a typewriter effect, revealing each letter one by one."
 },{
-    "id": 505,
-    "simplePrompt": "Light beige background. In the center, a simple stick figure made from basic shapes: a vertical dark grey rectangle for the body (parent), a circle for the head on top, two thin rectangles for arms attached to the upper body, and two rectangles for legs at the bottom. Total duration 4 seconds. 0–0.5s: Whole figure scales from 0% to 100% and fades in at the center. 0.5–2.5s: Body stays in place while legs alternate a small walk-in-place (each leg rotating forward then back around the hip), and arms swing opposite to the legs, all moving relative to the body. 2.5–4s: Figure stops walking, right arm waves three times by rotating at the shoulder while the rest of the body, head, and legs remain still in the center"
-  },
-{
-    "id": 507,
-    "simplePrompt": "Light blue background. A green triangle starts at the top, falls to the bottom with a bounce effect once, then rests. Total duration 3 seconds."
+  "id": 611,
+  "simplePrompt": "Large text 'Hello World' appears in the center with a typewriter effect. The background is a dark cinematic charcoal gradient from #0F0F0F to #1C1C1C filling the screen. A very subtle soft radial glow sits behind the center area to gently highlight the text without appearing bright or white, with a light film grain texture to avoid a flat digital look."
+},{
+  "id": 703,
+  "simplePrompt": "Large centered text 'Dream Big Build Fast' appears word by word with a smooth slide-up kinetic typography animation. The background is a dark gradient and behind the center text there is a very faint soft radial glow that is only slightly lighter than the background color, not bright white and not intense."
+},{
+  "id": 702,
+  "simplePrompt": "Create a centered layout with three elements in a horizontal row. On the left is small text 'Before'. In the center is a rectangle highlight containing the text 'HELLO WORLD' that appears with a typewriter effect. On the right is small text 'After'. The background is a dark cinematic gradient with a very soft faint radial glow behind the center area that gently highlights the text without appearing bright."
+},{
+  "id": 701,
+  "simplePrompt": "In the center of the screen, a rounded rectangle appears as a highlight banner. Inside the rectangle, the text 'HELLO WORLD' appears with a typewriter effect. The background is a dark gradient with a very faint soft radial glow behind the center that is barely noticeable and only slightly brighter than the background."
+},{
+  "id": 801,
+  "simplePrompt": "Large centered text 'BIG IDEA' pops into the screen with a quick overshoot scale and then settles to its final size on a dark gradient background."
+},{
+  "id": 802,
+  "simplePrompt": "The text 'FOCUS' appears in the center starting very blurred and slightly transparent, then smoothly sharpens and fades into full clarity on a dark background."
+},{
+  "id": 803,
+  "simplePrompt": "The words 'Build Something Amazing' appear in the center with a smooth slide-up motion from below while fading in on a cinematic dark gradient background."
+},{
+  "id": 804,
+  "simplePrompt": "Centered text 'IMPORTANT NOTE' appears and a thin line draws smoothly from left to right underneath the text like an underline highlight."
+},{
+  "id": 805,
+  "simplePrompt": "The text 'KEY MESSAGE' is centered on the screen and a colored rectangle highlight grows horizontally behind the text from left to right."
+},{
+  "id": 806,
+  "simplePrompt": "Three words 'Dream Build Launch' appear in the center one after another with a small delay between each word on a dark gradient background."
+},{
+  "id": 807,
+  "simplePrompt": "A rounded rectangle appears in the center of the screen and inside it the text 'SYSTEM READY' appears with a simple fade-in animation."
+},{
+  "id": 808,
+  "simplePrompt": "The word 'START' appears in the center with a small pop scale animation while a highlight rectangle expands behind it and a thin underline draws beneath the text."
 }
-]
+    ]

@@ -161,5 +161,14 @@
     "layer": "code_generation",
     "root_cause": "src/GeneratedMotion.tsx(126,10): error TS2322: Type '{ position: string; left: string; top: string; width: string; height: string; transform: string; pointerEvents: string; }' is not assignable to type 'Properties<string | number, string & {}>'.\nsrc/GeneratedMotion.tsx(127,12): error TS2322: Type '{ position: string; left: string; top: string; width: string; height: string; backgroundColor: string; borderRadius: string; transform: string; opacity: number; boxSizing: string; }' is not assignable ",
     "timestamp": "2026-03-12T09:27:05.965Z"
+  },
+  {
+    "id": 21,
+    "prompt": "Radial Gradient Typewriter Title. Smooth radial gradient background from deep purple #7B1FA2 at the edges to vivid blue #2196F3 toward the center with a soft central radial brightness glow color #FFFFFF. Canvas 1920x1080. A single large text object '10 years ago' (120px Arial Bold, color #FFFFFF) centered on canvas with optical tracking adjusted for legibility; a thin caret (4px x 120px, color #FFFFFF) sits at the text end during typing. Animation (6s): 0-0.6s: Background gradient and central radial glow fade in from opacity 0 to 1 with ease-out while the text and caret remain invisible. 0.6-4.8s: Typewriter reveal of '10 years ago' at center: reveal each character sequentially over the entire phase with an exact interval of 0.35s per character (12 characters total), each character animating from opacity 0 to 1 and translating upward 8px with ease-out; the caret moves to follow the next character position instantly with ease-in-out between character placements and blinks continuously during this phase with a 0.5s blink cycle (0.25s visible, 0.25s hidden) using linear easing. 4.8-6.0s: Hold final state with full text visible at center, caret continues a final blink for the hold duration, and background glow remains steady. Total duration: 6s.",
+    "prompt_id": 608,
+    "error_type": "TypeScript Error",
+    "layer": "code_generation",
+    "root_cause": "src/GeneratedMotion.tsx(16,27): error TS7006: Parameter 's' implicitly has an 'any' type.\nsrc/GeneratedMotion.tsx(16,30): error TS7006: Parameter 'e' implicitly has an 'any' type.",
+    "timestamp": "2026-03-16T11:16:46.686Z"
   }
 ]

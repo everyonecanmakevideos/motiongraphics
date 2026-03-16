@@ -1,142 +1,86 @@
 [
   {
-    "id": 400,
-    "category": "coordination",
-    "prompt": "Two Circles Merge Into Square. White background (#FFFFFF). Canvas 1920x1080. Two circles (diameter 120px each): circle A red (#E53935) positioned at middle-left (200px left of center), circle B blue (#2196F3) positioned at middle-right (200px right of center). Animation (8s): 0-1s: Both circles fade in from opacity 0 to 1 with ease-out. 1-3s: Both circles move toward canvas center using ease-in-out, arriving at the same position and overlapping. 3-4s: Both circles scale down from 100% to 0% while a purple (#7B1FA2) square (size 140px) scales up from 0% to 100% at center, creating a merge-transform effect. 4-6s: Square holds at center. 6-7s: Square rotates 45 degrees with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
-  },
-  {
-    "id": 401,
-    "category": "asset",
-    "prompt": "Rocket Launch. Dark space background (#0F0F23). Canvas 1920x1080. A white rocket asset (120px) starts at bottom-center. An orange fire asset (60px, color #FF6B35) positioned directly below the rocket. Animation (6s): 0-0.5s: Both rocket and fire assets fade in from opacity 0 to 1 with ease-out. 0.5-4s: Rocket moves upward from bottom-center toward off-screen-top with ease-in acceleration. Fire asset trails below the rocket following the same upward path. 4-5s: Both assets fade out from opacity 1 to 0. 5-6s: Hold dark background. Total duration: 6s."
-  },
-  {
-    "id": 402,
-    "category": "dataviz",
-    "prompt": "Two-Segment Pie Chart. White background (#FFFFFF). Canvas 1920x1080. A pie chart (300px diameter) centered on canvas. Two segments: blue (#2196F3) representing 60% (216 degrees), green (#4CAF50) representing 40% (144 degrees). Segments sum to 100%. Animation (6s): 0-3s: Pie sweeps radially from 0 degrees to 360 degrees with ease-out. Blue segment fills first from 0 to 216 degrees, then green segment fills from 216 to 360 degrees. 3-6s: Hold complete pie chart. Total duration: 6s."
-  },
-  {
-    "id": 403,
-    "category": "coordination",
-    "prompt": "Bouncing Red Circle. White background (#FFFFFF). Canvas 1920x1080. A red circle (#E53935, diameter 120px) starts at middle-left. Animation (6s): 0-0.5s: Circle fades in from opacity 0 to 1 with ease-out. 0.5-5s: Circle moves horizontally from middle-left to middle-right with bounce easing, bouncing three times with decreasing arc heights (200px, 120px, 60px above the center line). 5-6s: Hold final position at middle-right. Total duration: 6s."
-  },
-  {
-    "id": 404,
+    "id": 606,
     "category": "progress",
-    "prompt": "Loading Progress Bar. Light neutral background (#F5F5F5). Canvas 1920x1080. A horizontal rectangle strip (600px wide, 40px tall, rounded corners 20px) centered on canvas with light grey base color (#E0E0E0). A green (#4CAF50) fill rectangle inside the strip starts at 0px width. Text '0%' (24px bold Arial, dark grey #333333) centered above the bar. Animation (8s): 0-1s: Base bar and text fade in from opacity 0 to 1 with ease-out. 1-6s: Green fill grows from 0px to 600px width from left to right with ease-in-out. Simultaneously the text counts from '0%' to '100%'. 6-7s: Text scales from 100% to 115% and back to 100% with ease-in-out as a completion pulse. 7-8s: Hold completed state. Total duration: 8s."
+    "prompt": "Duration Check with Slow Progress Fill. Light neutral background (#F5F5F5). Canvas 1920x1080. Title text 'Duration Check' (48px Arial bold, color #E53935) positioned top-center within the top 20% of the canvas. A small horizontal progress bar (400px wide, 24px tall, rounded corners 12px) centered on canvas with base track color light grey (#E0E0E0) and an internal fill element (color #2196F3) that starts at 0% width at the left edge of the track. Animation (12s): 0-1s: Title text and progress bar fade in from opacity 0 to 1 with ease-out. 1-10s: Progress fill grows smoothly from 0% to 100% width left-to-right with ease-out, visually representing the duration; title remains static and fully visible. 10-12s: Hold final completed progress bar and title visible with no motion. Total duration: 12s.",
+    "aspectRatio": "16:9"
   },
   {
-    "id": 405,
+    "id": 608,
+    "category": "effects",
+    "prompt": "Typewriter Reveal \"10 years ago\" on Soft Radial Gradient. Radial gradient background from deep purple (#7B1FA2) to blue (#2196F3) with a soft white (#FFFFFF) radial brightness glow in the center. Canvas 1920x1080. Large title text \"10 years ago\" (96px Arial bold, color #E53935) positioned center within the safe area (at least 60px from all edges). Text starts at full opacity but with 0 characters visible and will be revealed character by character with a typewriter effect. Animation (5s): 0-0.8s: Background and text fade in from opacity 0 to 1 with ease-out. 0.8-3.5s: Text reveals character by character over 2.7s with a typewriter effect, linear easing, showing each letter sequentially until the full phrase \"10 years ago\" is visible (text remains full opacity during reveal). 3.5-5s: Hold final fully revealed text at center for 1.5s. Total duration: 5s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 611,
+    "category": "effects",
+    "prompt": "Hello World Typewriter Reveal. Dark cinematic charcoal background as a linear gradient top-to-bottom from #0F0F0F to #1C1C1C with a very subtle radial center glow (radial gradient center #141414 fading to fully transparent) to gently highlight the center area; very light film grain overlay using #FFFFFF at 4% opacity to add texture and avoid a flat digital look. Canvas 1920x1080. Large title text 'Hello World' (96px Arial bold, color #E53935) centered on canvas (main content in the center 50% area). Animation (5s): 0-0.5s: Scene background fades in from opacity 0 to 1 with ease-out while the 'Hello World' text is present at full opacity but shows 0 characters (typewriter ready). 0.5-4s: Text reveals character by character over 3.5s with a typewriter effect (no simultaneous opacity fade), linear cadence, each character appearing sequentially from left to right; radial center glow remains steady during the reveal. 4-5s: Hold final state with full 'Hello World' text visible, center radial glow and film grain maintained. Total duration: 5s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 703,
+    "category": "effects",
+    "prompt": "Dream Big Build Fast — Word-by-Word Slide-Up. Radial gradient background from #1A1A2E (center) to #0F0F23 (edges) with a very faint soft radial glow in the center using #25253A (subtle, low intensity, not bright white). Canvas 1920x1080. A single large centered title text 'Dream Big Build Fast' (72px Arial bold, color #FFFFFF) placed in the center 50% of the canvas; the text is a single text object with four word groups ('Dream', 'Big', 'Build', 'Fast') that reveal sequentially in place. Animation (4s): 0-0.5s: Scene fades in from opacity 0 to 1 with ease-out. 0.5-1.125s: Word 1 'Dream' slides up from 40px below its final position while fading in from opacity 0 to 1 with ease-out (smooth slide-up kinetic typography). 1.125-1.75s: Word 2 'Big' slides up from 40px below its final position while fading in from opacity 0 to 1 with ease-out. 1.75-2.375s: Word 3 'Build' slides up from 40px below its final position while fading in from opacity 0 to 1 with ease-out. 2.375-3.0s: Word 4 'Fast' slides up from 40px below its final position while fading in from opacity 0 to 1 with ease-out. 3.0-4.0s: Hold final fully revealed title at center. Total duration: 4s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 702,
+    "category": "effects",
+    "prompt": "Centered Three-Element Typewriter Layout. Radial gradient dark cinematic background (radial gradient from #1A1A2E to #0F0F23) with a very soft faint radial glow in the center using white #FFFFFF at very low opacity to gently highlight the center area. Canvas 1920x1080. Three elements side by side (200px horizontal spacing): Left small text 'Before' (36px Arial bold, color #E53935) positioned at middle-left. Center highlighted rectangle (600px wide, 140px tall, rounded corners 12px, fill color #2196F3, text container) centered on canvas containing main text 'HELLO WORLD' (48px Arial bold, color #FFFFFF) centered inside the rectangle. Right small text 'After' (36px Arial bold, color #4CAF50) positioned at middle-right. All objects are within the safe area, at least 200px apart horizontally, and no visible edge is closer than 60px to the canvas edge. Animation (7s): 0-0.8s: All elements fade in from opacity 0 to 1 with ease-out. 0.8-3.15s: Highlight rectangle performs an animated expansion behind the center text, the rectangle's visible width grows from 0% to 100% of 600px from left to right while remaining centered, fill opacity eases to full with ease-out. 3.15-5.5s: Center text 'HELLO WORLD' reveals character by character over 2.35s with typewriter effect (text reveals character by character, no simultaneous opacity fade) with linear timing. 5.5-7s: Hold final state with all elements visible. Total duration: 7s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 701,
+    "category": "effects",
+    "prompt": "Centered Highlight Banner with Typewriter Text. Radial gradient background from deep navy (#0F0F23) at the edges to deep indigo (#1A1A2E) at the center with a very faint soft white (#FFFFFF) radial brightness glow in the exact center (low intensity, 6% opacity). Canvas 1920x1080. A rounded rectangle highlight banner (200px wide, 120px tall, corner radius 20px) filled with red (#E53935) positioned at center. Inside the rounded rectangle, the text 'HELLO WORLD' (48px Arial bold, color blue #2196F3) centered both horizontally and vertically within the rectangle; the text starts at full opacity but with 0 characters visible initially (typewriter reveal). Animation (7s): 0-0.5s: Rounded rectangle and text container fade in from opacity 0 to 1 with ease-out; text remains at 0 visible characters during this fade-in. 0.5-5.5s: Text reveals character by character over 5.0s with a typewriter effect (characters appear sequentially, linear easing), the rectangle remains steady at center. 5.5-7s: Hold final state with full text visible and banner steady. Total duration: 7s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 801,
+    "category": "effects",
+    "prompt": "BIG IDEA Pop Overshoot. Radial gradient background from deep navy (#0F0F23) to deep charcoal (#1A1A2E) with a soft white (#FFFFFF) central brightness glow. Canvas 1920x1080. Large centered text 'BIG IDEA' (96px bold Arial, color #E53935) positioned at center within the center 50% area and kept within safe margins (no visible edge closer than 60px to canvas edges). Animation (3.5s): 0-0.5s: Text fades in from opacity 0 to 1 with ease-out. 0.5-1.5s: Text appears with scale pop effect — scales from 0% to 115% (quick overshoot) while remaining centered with ease-out. 1.5-2.5s: Text settles from 115% to 100% with ease-in. 2.5-3.5s: Hold final state at center (final size 100%). Total duration: 3.5s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 802,
+    "category": "effects",
+    "prompt": "FOCUS Sharpness Reveal. Dark background (#0F0F23). Canvas 1920x1080. A single text 'FOCUS' (48px bold Arial, color #E53935) centered on canvas. Text initial state: highly blurred (20px gaussian blur) and slightly transparent (opacity 0.25). Animation (5s): 0-0.5s: Text fades in from opacity 0 to opacity 0.25 with ease-out while remaining blurred at 20px. 0.5-3.5s: Text reveals with blur effect (starts blurred at 20px and sharpens smoothly to 0px) while opacity increases from 0.25 to 1.0 with ease-out; the sharpening and fade occur simultaneously with no position change. 3.5-5s: Hold final state: text fully sharp (0px blur) at full opacity 1.0 with no motion. Total duration: 5s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 803,
+    "category": "effects",
+    "prompt": "Build Something Amazing Slide-Up. Radial gradient background from deep navy (#1A1A2E) to near-black (#0F0F23) with a soft white (#FFFFFF) brightness glow in the center. Canvas 1920x1080. A single text element 'Build Something Amazing' (48px Arial Bold, color #E53935) centered in the canvas within the center 50% area. Animation (5s): 0-0.6s: Text begins to appear — fades in from opacity 0 to 0.6 with ease-out while sliding up from 40px below final position to 15px below final position with ease-in-out (smooth motion, no bounce). 0.6-3.6s: Text continues sliding up from 15px below final position to center while fading from opacity 0.6 to 1 with ease-in-out (smooth slide-up motion). 3.6-5s: Hold final state at center with full opacity. Total duration: 5s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 804,
+    "category": "effects",
+    "prompt": "Centered Underline Highlight. White background (#FFFFFF). Canvas 1920x1080. A bold title text 'IMPORTANT NOTE' (48px Arial bold, color #E53935) centered on canvas. An animated underline (4px tall rectangle, 620px wide, color #2196F3) centered horizontally and positioned 48px below the text baseline. Animation (6s): 0-0.5s: Title text fades in from opacity 0 to 1 with ease-out. 0.5-5s: Underline draws smoothly from left to right beneath the text by expanding its width from 0px to 620px with ease-in-out, anchored to the text center so the line grows evenly outward from the left edge to the right edge. 5-6s: Hold final state with text and fully drawn underline visible. Total duration: 6s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 805,
+    "category": "effects",
+    "prompt": "Highlighted Key Message. Dark background (#1A1A2E). Canvas 1920x1080. A bold text 'KEY MESSAGE' (48px Arial bold, color #E53935) centered on canvas. A rounded rectangle highlight (200px wide, 120px tall, corner radius 12px, color #2196F3) positioned directly behind the text, centered; the highlight's visible width starts at 0% (anchored to its left edge) and will grow horizontally from left to right behind the text. Animation (6s): 0-0.5s: Both text and highlight fade in from opacity 0 to 1 with ease-out. 0.5-4.5s: Highlight expands horizontally from 0% width to 100% width behind the centered text with ease-out, visually revealing the colored bar from left to right while remaining vertically centered behind the text. 4.5-6s: Hold final state with full-width highlight and centered text. Total duration: 6s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 806,
+    "category": "effects",
+    "prompt": "Dream Build Launch — Staggered Word Reveal. Dark radial gradient background from deep navy (#1A1A2E) to near-black (#0F0F23) with a soft white (#FFFFFF) central glow. Canvas 1920x1080. Three text elements stacked (stacked spacing 150px): 'Dream' (64px bold Arial, color #E53935) positioned top-center (150px above center), 'Build' (64px bold Arial, color #2196F3) positioned center, 'Launch' (64px bold Arial, color #4CAF50) positioned bottom-center (150px below center). All three words occupy the center 50% area and are not visible simultaneously; no simultaneous overlap. Animation (6s): 0-0.8s: Background radial gradient and central glow fade in from opacity 0 to 1 with ease-out; all three text layers start at opacity 0. 0.8-2.2s: 'Dream' appears — fades in from opacity 0 to 1 while sliding up from 40px below its final position with ease-out; holds visible for the remainder of the phase. 2.2-3.6s: 'Build' appears with the same animation (fades in from opacity 0 to 1 while sliding up from 40px below final position) with ease-out; starts 1.4s after 'Dream' (staggered timing). 3.6-5.0s: 'Launch' appears with the same animation (fades in from opacity 0 to 1 while sliding up from 40px below final position) with ease-out; starts 1.4s after 'Build'. 5.0-6.0s: Hold final state with all three words visible and centered. Total duration: 6s.",
+    "aspectRatio": "16:9"
+  },
+  {
+    "id": 807,
     "category": "coordination",
-    "prompt": "Triangle Pattern Formation. White background (#FFFFFF). Canvas 1920x1080. Three circles (diameter 120px each): red (#E53935), blue (#2196F3), and green (#4CAF50). Initial positions: red circle at bottom-left, blue circle at bottom-right, green circle at top-center. Animation (8s): 0-1s: All circles fade in from opacity 0 to 1 with ease-out. 1-3s: Red circle moves to middle-left, blue circle moves to middle-right, green circle remains at top-center, forming a triangle pattern with ease-in-out. 3-6s: Hold triangle pattern. 6-7s: All circles scale up by 20% and back to original size with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
+    "prompt": "Rounded Rectangle with SYSTEM READY Fade-In. White background (#FFFFFF). Canvas 1920x1080. A rounded rectangle (200px wide, 120px tall, corner radius 16px, fill color #E53935) positioned at center. Inside the rectangle, the text 'SYSTEM READY' (48px bold Arial, color #2196F3) centered both horizontally and vertically within the rectangle. Animation (6s): 0-0.75s: Rounded rectangle fades in from opacity 0 to 1 with ease-out. 0.75-4.5s: Text 'SYSTEM READY' fades in from opacity 0 to 1 while remaining centered inside the rectangle with ease-out. 4.5-6s: Hold final state with rectangle and text fully visible. Total duration: 6s.",
+    "aspectRatio": "16:9"
   },
   {
-    "id": 406,
-    "category": "asset",
-    "prompt": "Car Drives Across Screen. White background (#FFFFFF). Canvas 1920x1080. A blue car asset (120px, color #2196F3) starts at off-screen-left. Animation (6s): 0-0.5s: Car fades in from opacity 0 to 1 with ease-out. 0.5-5s: Car moves horizontally from off-screen-left to off-screen-right across the center line with ease-in-out. 5-6s: Hold final position off-screen-right. Total duration: 6s."
-  },
-  {
-    "id": 407,
-    "category": "dataviz",
-    "prompt": "Quarterly Sales Bar Chart. White background (#FFFFFF). Canvas 1920x1080. A bar chart with four vertical bars representing Q1, Q2, Q3, and Q4 sales data, centered on canvas. Bars are evenly spaced with 100px width each. Colors: Q1 red (#E53935), Q2 blue (#2196F3), Q3 green (#4CAF50), Q4 yellow (#FDD835). Heights: Q1 300px, Q2 450px, Q3 400px, Q4 350px. Labels 'Q1', 'Q2', 'Q3', 'Q4' (24px Arial, black #000000) below each bar. Animation (8s): 0-1s: Bars and labels fade in from opacity 0 to 1 with ease-out. 1-5s: Bars grow vertically from 0px to their respective heights with ease-in-out. 5-7s: Hold final bar heights. 7-8s: Bars and labels fade out from opacity 1 to 0 with ease-in. Total duration: 8s."
-  },
-  {
-    "id": 408,
-    "category": "coordination",
-    "prompt": "Typing Text Animation. White background (#FFFFFF). Canvas 1920x1080. Text 'Hello World!' (48px Arial bold, black #000000) starts at center. Animation (6s): 0-0.5s: Text cursor blinks at start position with ease-out. 0.5-5s: Text types out letter by letter from left to right with ease-in-out, each letter appearing sequentially. 5-6s: Hold complete text. Total duration: 6s."
-  },
-  {
-    "id": 409,
-    "category": "asset",
-    "prompt": "Sunset and Moonrise. Dark space background (#1A1A2E). Canvas 1920x1080. A yellow sun asset (120px, color #FDD835) starts at top-center. A white moon asset (120px) starts at off-screen-bottom. Animation (8s): 0-0.5s: Sun fades in from opacity 0 to 1 with ease-out. 0.5-3s: Sun moves downward from top-center to off-screen-bottom with ease-in-out. 3-4s: Sun fades out from opacity 1 to 0. 4-4.5s: Moon fades in from opacity 0 to 1 with ease-out. 4.5-7s: Moon moves upward from off-screen-bottom to top-center with ease-in-out. 7-8s: Hold final position of moon at top-center. Total duration: 8s."
-  },
-  {
-    "id": 410,
-    "category": "coordination",
-    "prompt": "Two Triangles Merge Into Diamond. White background (#FFFFFF). Canvas 1920x1080. Two triangles (140px base, 140px tall each): triangle A red (#E53935) positioned at middle-left (200px left of center), triangle B blue (#2196F3) positioned at middle-right (200px right of center). Animation (8s): 0-1s: Both triangles fade in from opacity 0 to 1 with ease-out. 1-3s: Both triangles move toward canvas center using ease-in-out, arriving at the same position and overlapping. 3-4s: Both triangles scale down from 100% to 0% while a purple (#7B1FA2) diamond shape (size 140px wide, 140px tall) scales up from 0% to 100% at center, creating a merge-transform effect. 4-6s: Diamond holds at center. 6-7s: Diamond rotates 45 degrees with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
-  },
-  {
-    "id": 411,
-    "category": "coordination",
-    "prompt": "Three Squares Stack and Fall. White background (#FFFFFF). Canvas 1920x1080. Three squares (each 120px, red #E53935, blue #2196F3, green #4CAF50) start spread out horizontally at bottom-center. Animation (8s): 0-1s: Squares fade in from opacity 0 to 1 with ease-out. 1-3s: Squares move vertically to stack at center with ease-in-out, red at bottom, blue in middle, green on top. 3-5s: Hold stacked position. 5-7s: Squares fall sequentially from top to bottom with bounce easing, each square bouncing twice before settling at bottom-center. 7-8s: Hold final fallen state. Total duration: 8s."
-  },
-  {
-    "id": 412,
-    "category": "progress",
-    "prompt": "Step-by-Step Timeline with Check Marks. Light neutral background (#F5F5F5). Canvas 1920x1080. A horizontal timeline with five evenly spaced circles (diameter 60px) centered horizontally on canvas. Each circle is grey (#9E9E9E) initially. A green checkmark asset (size 40px) appears inside each circle. Animation (10s): 0-1s: Timeline fades in from opacity 0 to 1 with ease-out. 1-2s: First circle fills with green (#4CAF50) and checkmark appears with ease-in. 2-3s: Second circle fills with green and checkmark appears with ease-in. 3-4s: Third circle fills with green and checkmark appears with ease-in. 4-5s: Fourth circle fills with green and checkmark appears with ease-in. 5-6s: Fifth circle fills with green and checkmark appears with ease-in. 6-8s: Hold completed timeline. 8-10s: Entire timeline scales up slightly (110%) and back to original size with ease-in-out as a completion pulse. Total duration: 10s."
-  },
-  {
-    "id": 413,
-    "category": "asset",
-    "prompt": "Cloud and Rain Animation. Light neutral background (#F5F5F5). Canvas 1920x1080. A cloud asset (120px) positioned at top-center. Multiple blue raindrop assets (each 20px, color #2196F3) start above the cloud. Animation (8s): 0-1s: Cloud fades in from opacity 0 to 1 with ease-out. 1-3s: Raindrops appear and fall from above the cloud to bottom-center with ease-in-out, spreading out slightly as they fall. 3-6s: Continuous rain effect with raindrops falling in a loop. 6-7s: Raindrops fade out from opacity 1 to 0. 7-8s: Hold final state with cloud. Total duration: 8s."
-  },
-  {
-    "id": 414,
-    "category": "asset",
-    "prompt": "Notification Bell Vibration. Light neutral background (#F5F5F5). Canvas 1920x1080. A bell asset (120px, color #FF9800) positioned at center. Animation (6s): 0-0.5s: Bell fades in from opacity 0 to 1 with ease-out. 0.5-4s: Bell vibrates with a rapid left-right motion (10px each side) using ease-in-out, simulating a ringing effect. 4-5s: Bell fades out from opacity 1 to 0. 5-6s: Hold background. Total duration: 6s."
-  },
-  {
-    "id": 415,
-    "category": "progress",
-    "prompt": "Statistic Cards Display. Light neutral background (#F5F5F5). Canvas 1920x1080. Three statistic cards (each 300px wide, 200px tall, rounded corners 10px) positioned side by side, centered horizontally. Card 1: 'Revenue' title (24px bold Arial, dark grey #333333) with number '$0' (48px bold Arial, green #4CAF50) below. Card 2: 'Users' title (24px bold Arial, dark grey #333333) with number '0' (48px bold Arial, blue #2196F3) below. Card 3: 'Growth' title (24px bold Arial, dark grey #333333) with number '0%' (48px bold Arial, orange #FF9800) below. Animation (8s): 0-1s: All cards fade in from opacity 0 to 1 with ease-out. 1-6s: Numbers on each card count up smoothly: Revenue from '$0' to '$10,000', Users from '0' to '5,000', Growth from '0%' to '20%' with ease-in-out. 6-8s: Hold final numbers. Total duration: 8s."
-  },
-  {
-    "id": 416,
-    "category": "progress",
-    "prompt": "Loading Spinner to Check Mark. Light neutral background (#F5F5F5). Canvas 1920x1080. A circular loading spinner (diameter 120px, color #2196F3) centered on canvas. A green check mark asset (120px, color #4CAF50) positioned at center. Animation (8s): 0-1s: Spinner fades in from opacity 0 to 1 with ease-out. 1-5s: Spinner rotates clockwise continuously with linear easing. 5-6s: Spinner scales down to 0% while the check mark scales up from 0% to 100% at center with ease-in-out, creating a transformation effect. 6-7s: Check mark holds at center. 7-8s: Check mark fades out from opacity 1 to 0. Total duration: 8s."
-  },
-  {
-    "id": 417,
-    "category": "progress",
-    "prompt": "Product Rating Graphic. Light neutral background (#F5F5F5). Canvas 1920x1080. Five star icons (each 60px, color #E0E0E0) aligned horizontally at center, spaced 40px apart. A text element 'Rating: 0/5' (48px Arial bold, dark grey #333333) positioned to the right of the stars. Animation (8s): 0-1s: Stars and text fade in from opacity 0 to 1 with ease-out. 1-6s: Stars fill one by one from left to right, changing from grey to yellow (#FDD835) with ease-in-out, each star filling over 1s. Simultaneously, the text updates to 'Rating: 1/5', 'Rating: 2/5', etc., with each star fill. 6-7s: Text scales from 100% to 115% and back to 100% with ease-in-out as a completion pulse. 7-8s: Hold completed state with all stars filled and text 'Rating: 5/5'. Total duration: 8s."
-  },
-  {
-    "id": 418,
-    "category": "dataviz",
-    "prompt": "Monthly Growth Line Chart. White background (#FFFFFF). Canvas 1920x1080. A line chart with a horizontal axis labeled 'Months' and a vertical axis labeled 'Growth' spans the width of the canvas. The line chart starts at the bottom-left and progresses to the top-right, representing monthly growth. A glowing dot (20px diameter, cyan #00ACC1) travels along the line. Animation (8s): 0-1s: Axes and labels fade in from opacity 0 to 1 with ease-out. 1-5s: Line draws from left to right with ease-in-out, showing monthly growth. Simultaneously, the glowing dot follows the line's path, maintaining its position on the line. 5-6s: Glowing dot pulses by scaling from 100% to 120% and back to 100% with ease-in-out. 6-8s: Hold final state with complete line and glowing dot at the end of the line. Total duration: 8s."
-  },
-  {
-    "id": 419,
-    "category": "coordination",
-    "prompt": "Success Achievement with Trophy and Stars. White background (#FFFFFF). Canvas 1920x1080. A trophy asset (120px, gold color #FFD700) positioned at center. Five star icons (60px each, yellow #FDD835) surrounding the trophy in a circular arrangement at a 200px radius. Animation (8s): 0-1s: Trophy fades in from opacity 0 to 1 with ease-out. 1-3s: Stars fade in sequentially in a clockwise order with ease-out. 3-6s: Stars rotate around the trophy in a clockwise direction with ease-in-out. 6-7s: Stars scale up to 120% and back to 100% creating a pulsing effect with ease-in-out. 7-8s: Hold final state. Total duration: 8s."
-  },
-  {
-    "id": 420,
-    "category": "asset",
-    "prompt": "Cloud Processing Animation. Light neutral background (#F5F5F5). Canvas 1920x1080. A cloud asset (120px) positioned at top-center. A lightning asset (120px) positioned off-screen-top. Multiple blue lines (width 10px, length 300px, color #2196F3) representing data flow, positioned at middle-center, initially off-screen-top. Animation (10s): 0-1s: Cloud asset fades in from opacity 0 to 1 with ease-out. 1-2s: Lightning asset moves from off-screen-top to the cloud with ease-in-out and strikes it. 2-3s: Lightning asset fades out from opacity 1 to 0. 3-4s: Blue lines appear from the cloud and flow downward to middle-center with ease-in, representing data processing. 4-9s: Blue lines continue flowing downward in a loop, simulating fast processing. 9-10s: Hold final state. Total duration: 10s."
-  },
-  {
-    "id": 421,
-    "category": "coordination",
-    "prompt": "System Automation Gears. White background (#FFFFFF). Canvas 1920x1080. A central gear icon (asset, 120px, grey #9E9E9E) positioned at center. Four smaller gear icons (asset, 60px each, colors: red #E53935, blue #2196F3, green #4CAF50, yellow #FDD835) surrounding the central gear at 200px radius. Animation (8s): 0-1s: Central gear fades in from opacity 0 to 1 with ease-out. 1-3s: Central gear rotates clockwise continuously with linear easing. 3-5s: Smaller gears fade in sequentially around the central gear, one per 0.5s, with ease-out. 5-7s: All gears rotate in sync with the central gear, maintaining their positions. 7-8s: Hold final state. Total duration: 8s."
-  },
-  {
-    "id": 422,
-    "category": "coordination",
-    "prompt": "User Growth and Expansion. White background (#FFFFFF). Canvas 1920x1080. A user icon asset (120px, color #E53935) positioned at center. Multiple arrow-right icons (60px each, color #2196F3) initially positioned at center, overlapping the user icon. Animation (8s): 0-1s: User icon fades in from opacity 0 to 1 with ease-out. 1-3s: Arrow-right icons appear and move outward from the center to positions surrounding the user icon at a 200px radius with ease-in-out, representing expansion. 3-7s: Arrow-right icons continue to move outward slightly, creating a subtle growth effect. 7-8s: Hold final expanded state. Total duration: 8s."
-  },
-  {
-    "id": 490,
-    "category": "coordination",
-    "prompt": "Day to Night Transition. Canvas 1920x1080. Background starts bright blue (#87CEEB) and transitions to deep dark blue (#1A1A2E) and then almost black (#0F0F23). A sun asset (120px, yellow #FDD835) starts near bottom-left horizon and moves in a smooth circular arc across the sky, setting near bottom-right horizon. A moon asset (120px, white #FFFFFF) rises from bottom-left horizon following a similar arc path, moving toward upper-right area of the sky, emitting a soft glow. Several cloud assets (white #FFFFFF, 200px wide each) drift across the sky from left to right. Small star assets (white #FFFFFF, 10px each) appear gradually across the sky, distributed unevenly, twinkling softly in a continuous loop. A wide rectangle at the bottom represents grass, transitioning from bright green (#4CAF50) to very dark green (#013220). Animation (12s): 0-1s: Scene fades in from opacity 0 to 1 with ease-out. 1-5s: Sun moves in an arc from bottom-left to bottom-right with ease-in-out; sky transitions from bright blue to deep dark blue. 5-6s: Sun disappears, moon rises from bottom-left following a similar arc path with ease-in-out; sky transitions to almost black. 6-10s: Moon holds position, emitting soft glow; stars appear and twinkle softly; clouds drift continuously. 10-12s: Grass transitions to very dark green. Total duration: 12s."
-  },
-  {
-    "id": 491,
-    "category": "coordination",
-    "prompt": "Day to Night Transition. Canvas 1920x1080. Background transitions from bright blue (#87CEEB) to deep dark blue (#1A1A2E) and finally almost black (#0F0F23). A sun asset (120px, yellow #FDD835) starts near off-screen-left and moves horizontally across the sky toward the right horizon. A moon asset (120px, white #FFFFFF) enters from off-screen-left after the sun sets and moves toward the right side of the sky, emitting a soft glow. Several cloud assets (white #FFFFFF, 200px wide) drift across the sky from left to right. Small star assets (white #FFFFFF, 20px) appear gradually and twinkle softly. A wide rectangle at the bottom represents grass, transitioning from bright green (#4CAF50) to very dark green (#013220). Animation (12s): 0-1s: Sun fades in from opacity 0 to 1 with ease-out. 1-4s: Sun moves from left to right across the sky with ease-in-out. 4-5s: Sun fades out as it sets. 5-6s: Moon fades in from opacity 0 to 1 with ease-out. 6-9s: Moon moves from left to right across the sky with ease-in-out, emitting a soft glow. 9-10s: Stars appear gradually and twinkle softly in a continuous loop. 0-12s: Clouds drift from left to right continuously. Grass color transitions from bright green to very dark green as the sky darkens. 10-12s: Hold final night scene with moon and stars. Total duration: 12s."
-  },
-  {
-    "id": 492,
-    "category": "coordination",
-    "prompt": "Day to Night Transition Scene. Dark to light gradient background transitioning from bright blue (#2196F3) to deep dark blue (#1A1A2E) to almost black (#0F0F23). Canvas 1920x1080. A yellow sun asset (120px, color #FDD835) starts near the upper-left. A white moon asset (120px, color #FFFFFF) starts off-screen-top. Several white cloud assets (120px each, color #FFFFFF) distributed unevenly across the sky. A wide horizontal rectangle (1920px wide, 100px tall) at bottom represents grass, transitioning from bright green (#4CAF50) to very dark green (#1B5E20). Animation (12s): 0-1s: Sun fades in from opacity 0 to 1 with ease-out. 1-5s: Sun travels along a smooth circular arc path from upper-left to bottom-right with ease-in-out, sky transitions from bright blue to deep dark blue. 5-6s: Sun fades out as it sets. 6-7s: Moon fades in from opacity 0 to 1 with ease-out. 7-11s: Moon travels along a similar arc path from upper-left to bottom-right, sky transitions to almost black. Clouds drift slowly from left to right throughout with linear easing. 8-10s: Stars appear gradually and twinkle softly with a continuous looping glow. 11-12s: Hold final night scene with moon and stars visible. Total duration: 12s."
-  },
-  {
-    "id": 505,
-    "category": "coordination",
-    "prompt": "Stick Figure Animation. Light beige background (#F5F5DC). Canvas 1920x1080. A stick figure composed of basic shapes: a dark grey rectangle (#333333, 20px wide, 100px tall) for the body centered vertically; a circle (#333333, diameter 40px) for the head positioned on top of the body; two thin dark grey rectangles (#333333, 10px wide, 60px tall) for arms attached to the upper body; two dark grey rectangles (#333333, 10px wide, 80px tall) for legs at the bottom. Animation (4s): 0-0.5s: Whole figure scales from 0% to 100% and fades in at the center with ease-out. 0.5-2.5s: Body stays in place while legs alternate a small walk-in-place (each leg rotating forward then back around the hip), and arms swing opposite to the legs, all moving relative to the body with ease-in-out. 2.5-4s: Figure stops walking, right arm waves three times by rotating at the shoulder while the rest of the body, head, and legs remain still in the center with ease-in-out. Total duration: 4s."
-  },
-  {
-    "id": 507,
-    "category": "coordination",
-    "prompt": "Green Triangle Bounce. Light blue background (#E0F7FA). Canvas 1920x1080. A green triangle (#4CAF50, size 140px base, 140px tall) starts at top-center. Animation (3s): 0-0.5s: Triangle fades in from opacity 0 to 1 with ease-out. 0.5-2s: Triangle falls from top-center to bottom-center with a bounce effect, bouncing once with a 100px arc. 2-3s: Triangle holds at bottom-center. Total duration: 3s."
+    "id": 808,
+    "category": "effects",
+    "prompt": "START Pop With Highlight And Underline. Dark background (#1A1A2E). Canvas 1920x1080. A bold text 'START' (72px Arial bold, color #E53935) centered on canvas. A rounded highlight rectangle (final size 520px wide x 120px tall, corner radius 18px, color #2196F3) positioned directly behind the text and centered. A thin underline (4px tall rounded rectangle, final width 360px, color #4CAF50) positioned centered beneath the text with a 20px gap from the text baseline. Animation (7s): 0-0.5s: All elements fade in from opacity 0 to 1 with ease-out. 0.5-1.75s: Text appears with scale pop effect (scales from 0% to 115%) with ease-out. 1.75-3.0s: Text scale settles from 115% to 100% with ease-in. 3.0-4.25s: Highlight rectangle expands behind the text from 0% width to full 520px width from left to right with ease-out. 4.25-5.5s: Underline draws from left to right increasing width from 0% to 360px with ease-out (animated underline draw). 5.5-7.0s: Hold final state with text at 100%, highlight fully expanded, underline fully drawn. Total duration: 7s.",
+    "aspectRatio": "16:9"
   }
 ]

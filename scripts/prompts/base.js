@@ -62,6 +62,38 @@ JSX SYNTAX RULES
 - Use {} for dynamic values in JSX.
 
 BACKGROUND RULE
-The root AbsoluteFill must always set backgroundColor from the spec "bg" field.`;
+Read the spec "bg" field. It can be a solid color string or a gradient object.
+
+1. SOLID COLOR (string): "bg": "#FFFFFF"
+   → backgroundColor: "#FFFFFF"
+   Example: <AbsoluteFill style={{ backgroundColor: "#FFFFFF", overflow: "hidden" }}>
+
+2. LINEAR GRADIENT (object): "bg": { "type": "gradient", "from": "#hex1", "to": "#hex2", "direction": "to bottom" }
+   → background: "linear-gradient(to bottom, " + fromColor + ", " + toColor + ")"
+   The "direction" can be: "to bottom", "to right", "to top-right", "to bottom-left", etc.
+   Example: <AbsoluteFill style={{ background: "linear-gradient(to bottom, #7B1FA2, #2196F3)", overflow: "hidden" }}>
+
+3. RADIAL GRADIENT (object): "bg": { "type": "gradient", "from": "#hex1", "to": "#hex2", "direction": "radial" }
+   → background: "radial-gradient(circle at center, " + fromColor + ", " + toColor + ")"
+   Example: <AbsoluteFill style={{ background: "radial-gradient(circle at center, #7B1FA2, #2196F3)", overflow: "hidden" }}>
+
+4. GRADIENT WITH GLOW: "bg": { "type": "gradient", "from": "#hex1", "to": "#hex2", "direction": "radial", "glow": "#FFFFFF" }
+   → background: "radial-gradient(circle at center, " + glowColor + " 0%, " + fromColor + " 40%, " + toColor + " 100%)"
+   The glow color creates a bright center that fades into the gradient.
+   Example: <AbsoluteFill style={{ background: "radial-gradient(circle at center, #FFFFFF 0%, #7B1FA2 40%, #2196F3 100%)", overflow: "hidden" }}>
+
+CRITICAL: When bg is an object (has "type": "gradient"), use the CSS "background" property, NOT "backgroundColor".
+Build gradient strings with + concatenation. NEVER use template literals.
+
+GRID PATTERN BACKGROUND
+When the spec bg object has "grid": true (e.g., "bg": { "color": "#FFFFFF", "grid": true, "gridSpacing": 50, "gridColor": "rgba(200,200,200,0.3)" }),
+render the grid as a full-canvas overlay div immediately after the AbsoluteFill root:
+
+const gridBg = "repeating-linear-gradient(0deg, transparent, transparent " + (gridSpacing - 1) + "px, " + gridColor + " " + (gridSpacing - 1) + "px, " + gridColor + " " + gridSpacing + "px), " + "repeating-linear-gradient(90deg, transparent, transparent " + (gridSpacing - 1) + "px, " + gridColor + " " + (gridSpacing - 1) + "px, " + gridColor + " " + gridSpacing + "px)";
+
+Render as: <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: gridBg, zIndex: 0 }} />
+
+Default gridSpacing: 50. Default gridColor: "rgba(200, 200, 200, 0.3)" for light backgrounds, "rgba(255, 255, 255, 0.1)" for dark backgrounds.
+All foreground objects must have higher zIndex than the grid div.`;
 
 module.exports = BASE_RULES;

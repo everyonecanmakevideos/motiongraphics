@@ -1,0 +1,71 @@
+{
+  "scene": "system_ready_fade_in",
+  "duration": 6,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#FFFFFF",
+  "objects": [
+    {
+      "id": "rect_1",
+      "shape": "rectangle",
+      "size": [
+        200,
+        120
+      ],
+      "cornerRadius": 16,
+      "color": "#E53935",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "zIndex": 1
+    },
+    {
+      "id": "text_1",
+      "shape": "text",
+      "text": "SYSTEM READY",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#2196F3",
+      "parent": "rect_1",
+      "offset": [
+        0,
+        0
+      ],
+      "textAlign": "center",
+      "opacity": 0,
+      "zIndex": 2
+    }
+  ],
+  "timeline": [
+    {
+      "target": "rect_1",
+      "time": [
+        0,
+        0.75
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        0.75,
+        4.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    }
+  ]
+}

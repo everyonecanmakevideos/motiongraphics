@@ -1,0 +1,87 @@
+{
+  "scene": "centered_highlight_banner_typewriter",
+  "duration": 7,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#0F0F23",
+    "to": "#1A1A2E",
+    "direction": "radial",
+    "glow": "rgba(255,255,255,0.06)"
+  },
+  "objects": [
+    {
+      "id": "banner_1",
+      "shape": "rectangle",
+      "size": [
+        200,
+        120
+      ],
+      "cornerRadius": 20,
+      "color": "#E53935",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "title_text",
+      "shape": "text",
+      "text": "HELLO WORLD",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#2196F3",
+      "parent": "banner_1",
+      "offset": [
+        0,
+        0
+      ],
+      "textAlign": "center",
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "banner_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_text",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_text",
+      "time": [
+        0.5,
+        5.5
+      ],
+      "easing": "linear",
+      "chars": [
+        0,
+        11
+      ]
+    }
+  ]
+}

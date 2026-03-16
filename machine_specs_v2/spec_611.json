@@ -1,0 +1,62 @@
+{
+  "scene": "hello_world_typewriter_reveal",
+  "duration": 5,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#0F0F0F",
+    "to": "#1C1C1C",
+    "direction": "to bottom",
+    "glow": "#141414",
+    "grain": {
+      "color": "#FFFFFF",
+      "opacity": 0.04
+    }
+  },
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "Hello World",
+      "fontSize": 96,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "cursor": true
+    }
+  ],
+  "timeline": [
+    {
+      "target": "bg",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0.5,
+        4
+      ],
+      "chars": [
+        0,
+        11
+      ]
+    }
+  ]
+}

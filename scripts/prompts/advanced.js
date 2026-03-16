@@ -138,16 +138,17 @@ const PIVOT_RULES = "PIVOT POINT ROTATION RULES\n" +
 const FIXED_RULES = "FIXED POSITION RULES\n" +
 "When an object has \"fixed\": true, it is pinned to absolute canvas coordinates and NOT affected by parent transforms.\n\n" +
 "IMPLEMENTATION — absolute pixel positioning from canvas top-left:\n" +
+"  Read canvas from spec: halfW = canvas.w / 2, halfH = canvas.h / 2.\n" +
 "  position: \"absolute\",\n" +
-"  left: (960 + posX) + \"px\",\n" +
-"  top: (540 + posY) + \"px\",\n" +
+"  left: (halfW + posX) + \"px\",\n" +
+"  top: (halfH + posY) + \"px\",\n" +
 "  transform: \"translate(-50%, -50%)\"\n\n" +
-"Where 960 = canvas width / 2, 540 = canvas height / 2.\n" +
+"For 1920x1080: halfW=960, halfH=540. For 1080x1920: halfW=540, halfH=960.\n" +
 "This converts center-relative spec coords to top-left-relative pixel positions.\n\n" +
 "RULES:\n" +
 "  - Fixed objects must be direct children of the AbsoluteFill root, NEVER nested in a parent wrapper.\n" +
 "  - If the spec also sets a parent on the fixed object, ignore the nesting for layout.\n" +
-"  - If the fixed object has timeline x/y entries, add the interpolated delta: left: (960 + posX + animDeltaX) + \"px\"";
+"  - If the fixed object has timeline x/y entries, add the interpolated delta: left: (halfW + posX + animDeltaX) + \"px\"";
 
 const TRAIL_RULES = "TRAIL / FOLLOW DELAY RULES\n" +
 "When a timeline entry has \"trail\": { \"follows\": \"target_id\", \"delay\": seconds }, this object replicates the followed object's motion but lags behind by the delay.\n\n" +
@@ -179,7 +180,24 @@ const TYPEWRITER_RULES = "TYPEWRITER TEXT ANIMATION RULES\n" +
 "  const wordsVisible = Math.round(interpolate(frame, [sf, ef], [0, words.length], { extrapolateLeft: \"clamp\", extrapolateRight: \"clamp\" }));\n" +
 "  const visibleText = words.slice(0, wordsVisible).join(\" \");\n\n" +
 "NEVER: animate text with per-character opacity or separate divs per character.\n" +
-"ALWAYS: one div, one slice, one interpolated count.";
+"ALWAYS: one div, one slice, one interpolated count.\n\n" +
+"IMPORTANT TYPEWRITER SETUP:\n" +
+"- The text object MUST have opacity: 1 (or no opacity field) from the start of the chars animation.\n" +
+"  The chars animation itself creates the reveal effect — slice(0, 0) shows nothing, slice(0, N) shows all.\n" +
+"- Do NOT fade in opacity (0 to 1) at the SAME TIME as the chars animation. This makes text invisible during typing.\n" +
+"- If you need a fade-in before typewriting, complete the opacity animation FIRST, THEN start chars.\n" +
+"  Example: opacity [0, 1] at time [0, 0.5], then chars [0, 15] at time [0.5, 3].\n" +
+"- If the spec has no separate fade-in phase, just start chars immediately with the object at full opacity.\n\n" +
+"CURSOR STYLING:\n" +
+"- The cursor \"|\" is part of the text string, not a separate div or object.\n" +
+"- Do NOT create a separate rectangle or div for the cursor.\n" +
+"- The cursor naturally appears at the end of the visible text as characters are revealed.\n\n" +
+"CRITICAL ANTI-PATTERN — opacity: 0 + chars animation:\n" +
+"If the spec has a chars animation on a text object, that object MUST have opacity: 1\n" +
+"from the start of the chars animation. Do NOT generate an opacity fade-in that overlaps\n" +
+"with the chars time range. The typewriter effect (slice from 0 to N characters) IS the reveal.\n" +
+"If the text object starts at opacity: 0, the opacity animation MUST complete BEFORE chars begins.\n" +
+"CHECK: opacity end time <= chars start time. If they overlap, set opacity to 1 at the chars start frame.";
 
 const TEXT_COLOR_ANIM_RULES = "TEXT COLOR ANIMATION RULES\n" +
 "When a timeline entry has \"textColor\": [fromHex, toHex] for a text object:\n\n" +

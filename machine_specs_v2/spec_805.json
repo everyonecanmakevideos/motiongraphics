@@ -1,0 +1,85 @@
+{
+  "scene": "highlighted_key_message",
+  "duration": 6,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#1A1A2E",
+  "objects": [
+    {
+      "id": "highlight_1",
+      "shape": "rectangle",
+      "size": [
+        200,
+        120
+      ],
+      "color": "#2196F3",
+      "cornerRadius": 12,
+      "pos": [
+        0,
+        0
+      ],
+      "anchor": "left-center",
+      "opacity": 0,
+      "scaleX": 0,
+      "zIndex": 1
+    },
+    {
+      "id": "text_1",
+      "shape": "text",
+      "text": "KEY MESSAGE",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "zIndex": 2
+    }
+  ],
+  "timeline": [
+    {
+      "target": "highlight_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "text_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "highlight_1",
+      "time": [
+        0.5,
+        4.5
+      ],
+      "easing": "ease-out",
+      "anchor": "left-center",
+      "scaleX": [
+        0,
+        1
+      ]
+    }
+  ]
+}

@@ -197,7 +197,41 @@ Output:
 
 ---
 
-EXAMPLE 6 — Pie chart with sweep reveal (Level 2.1)
+EXAMPLE 6 — Gradient background with radial glow + typewriter text
+
+Prompt: "Gradient Title Card. Smooth radial gradient background from deep purple (#7B1FA2) to blue (#2196F3) with a soft white brightness glow in the center. Canvas 1920x1080. Large text '10 years ago' (120px bold Arial, white #FFFFFF) centered. Text reveals with typewriter effect character by character. Animation (6s): 0-4s: Text types in character by character with blinking cursor. 4-6s: Hold completed text. Total duration: 6s."
+
+Output:
+{
+  "scene": "gradient_title_typewriter",
+  "duration": 6,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080 },
+  "bg": { "type": "gradient", "from": "#7B1FA2", "to": "#2196F3", "direction": "radial", "glow": "#FFFFFF" },
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "10 years ago",
+      "fontSize": 120,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "pos": [0, 0],
+      "cursor": true
+    }
+  ],
+  "timeline": [
+    { "target": "title_1", "time": [0, 4], "chars": [0, 12] }
+  ]
+}
+
+Note: The gradient and glow are entirely in the "bg" field — no separate circle or glow objects needed. The text starts at full opacity (default 1) so the typewriter chars animation handles the reveal. No opacity animation overlaps with chars.
+
+---
+
+EXAMPLE 7 — Pie chart with sweep reveal (Level 2.1)
 
 Prompt: "Basic Pie Chart. White background. Circle (300px diameter, centered). Two slices: Blue (#2196F3) for 70%, Green (#4CAF50) for 30%. Animation (6s): 0-3s: Entire pie sweeps in radially from 0° to 360° (blue fills first, then green). 3-6s: Hold complete. Total duration: 6s."
 
@@ -637,6 +671,68 @@ Output:
     { "target": "flame_1", "time": [3.5, 4], "opacity": [1, 0] }
   ]
 }
+
+EXAMPLE 13 — Kinetic typography: ScalePop + Stagger + Underline
+
+Prompt: "Kinetic Title Sequence. Dark background (#1A1A2E). Canvas 1920x1080. Three text lines staggered vertically: 'DESIGN' (72px bold Arial, white #FFFFFF) at 80px above center, 'CREATE' (72px bold Arial, cyan #00ACC1) at center, 'INSPIRE' (72px bold Arial, pink #E91E63) at 80px below center. Each appears with a scale pop effect (0% to 115% to 100%) with 0.3s stagger delay. After all appear, underlines draw beneath each word from left to right. Hold for 2s. Total duration: 8s."
+
+Output:
+{
+  "scene": "kinetic_title_stagger",
+  "duration": 8,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080 },
+  "bg": "#1A1A2E",
+  "objects": [
+    { "id": "line_1", "shape": "text", "text": "DESIGN", "fontSize": 72, "fontWeight": "bold", "fontFamily": "Arial", "color": "#FFFFFF", "pos": [0, -80], "scale": 0 },
+    { "id": "line_2", "shape": "text", "text": "CREATE", "fontSize": 72, "fontWeight": "bold", "fontFamily": "Arial", "color": "#00ACC1", "pos": [0, 0], "scale": 0 },
+    { "id": "line_3", "shape": "text", "text": "INSPIRE", "fontSize": 72, "fontWeight": "bold", "fontFamily": "Arial", "color": "#E91E63", "pos": [0, 80], "scale": 0 },
+    { "id": "underline_1", "shape": "rectangle", "size": [260, 4], "color": "#FFFFFF", "parent": "line_1", "offset": [0, 44], "anchor": "left-center", "opacity": 0 },
+    { "id": "underline_2", "shape": "rectangle", "size": [260, 4], "color": "#00ACC1", "parent": "line_2", "offset": [0, 44], "anchor": "left-center", "opacity": 0 },
+    { "id": "underline_3", "shape": "rectangle", "size": [300, 4], "color": "#E91E63", "parent": "line_3", "offset": [0, 44], "anchor": "left-center", "opacity": 0 }
+  ],
+  "timeline": [
+    { "target": "line_1", "time": [0, 0.35], "scale": [0, 1.15], "easing": "ease-out" },
+    { "target": "line_1", "time": [0.35, 0.55], "scale": [1.15, 1], "easing": "ease-in" },
+    { "target": "line_2", "time": [0.3, 0.65], "scale": [0, 1.15], "easing": "ease-out" },
+    { "target": "line_2", "time": [0.65, 0.85], "scale": [1.15, 1], "easing": "ease-in" },
+    { "target": "line_3", "time": [0.6, 0.95], "scale": [0, 1.15], "easing": "ease-out" },
+    { "target": "line_3", "time": [0.95, 1.15], "scale": [1.15, 1], "easing": "ease-in" },
+    { "target": "underline_1", "time": [1.5, 1.8], "opacity": [0, 1] },
+    { "target": "underline_1", "time": [1.5, 2.5], "width": [0, 260], "easing": "ease-out" },
+    { "target": "underline_2", "time": [1.8, 2.1], "opacity": [0, 1] },
+    { "target": "underline_2", "time": [1.8, 2.8], "width": [0, 260], "easing": "ease-out" },
+    { "target": "underline_3", "time": [2.1, 2.4], "opacity": [0, 1] },
+    { "target": "underline_3", "time": [2.1, 3.1], "width": [0, 300], "easing": "ease-out" }
+  ]
+}
+
+EXAMPLE 14 — Text in container with highlight + slideUp subtitle
+
+Prompt: "Announcement Card. White background (#FFFFFF). Canvas 1920x1080. A rounded purple (#7B1FA2) container box (500x100px, cornerRadius 12) centered. Inside it, white bold text 'NEW FEATURE' (42px Arial). Box scales in with pop effect. After box appears, a yellow (#FDD835) highlight box expands behind the text from left to right. Then subtitle 'Coming Soon' (28px Arial, #757575) appears 80px below center with slide-up effect. Hold for 2s. Total duration: 7s."
+
+Output:
+{
+  "scene": "announcement_card",
+  "duration": 7,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080 },
+  "bg": "#FFFFFF",
+  "objects": [
+    { "id": "box", "shape": "rectangle", "size": [500, 100], "color": "#7B1FA2", "cornerRadius": 12, "pos": [0, 0], "opacity": 0, "scale": 0, "zIndex": 1 },
+    { "id": "box_text", "shape": "text", "text": "NEW FEATURE", "fontSize": 42, "fontWeight": "bold", "fontFamily": "Arial", "color": "#FFFFFF", "parent": "box", "offset": [0, 0], "zIndex": 3 },
+    { "id": "text_highlight", "shape": "rectangle", "size": [330, 54], "color": "#FDD835", "parent": "box", "offset": [0, 0], "zIndex": 2, "cornerRadius": 4, "scaleX": 0 },
+    { "id": "subtitle", "shape": "text", "text": "Coming Soon", "fontSize": 28, "fontFamily": "Arial", "color": "#757575", "pos": [0, 80], "opacity": 0 }
+  ],
+  "timeline": [
+    { "target": "box", "time": [0, 0.3], "opacity": [0, 1] },
+    { "target": "box", "time": [0, 0.4], "scale": [0, 1.15], "easing": "ease-out" },
+    { "target": "box", "time": [0.4, 0.6], "scale": [1.15, 1], "easing": "ease-in" },
+    { "target": "text_highlight", "time": [1.0, 1.8], "scaleX": [0, 1], "anchor": "left-center", "easing": "ease-out" },
+    { "target": "subtitle", "time": [2.2, 2.8], "opacity": [0, 1], "easing": "ease-out" },
+    { "target": "subtitle", "time": [2.2, 2.8], "y": [120, 80], "easing": "ease-out" }
+  ]
+}
 `;
 
 const SYSTEM_PROMPT = `You are an expert Motion Graphics Specification Generator.
@@ -653,10 +749,23 @@ The spec has 5 top-level keys: scene, duration, fps, canvas, bg, objects, timeli
 
 1. SCENE METADATA
    - "scene": short snake_case name derived from the prompt
-   - "duration": total duration in seconds (number)
+   - "duration": total duration in seconds (number). Must match the "Total duration" stated in the prompt exactly.
    - "fps": always 30
-   - "canvas": { "w": 1920, "h": 1080 }
-   - "bg": background color as hex string. For gradients use: { "type": "gradient", "from": "#hex", "to": "#hex", "direction": "to bottom" }
+   - "canvas": { "w": W, "h": H } — read dimensions from the prompt:
+     - If prompt says "Canvas 1920x1080": { "w": 1920, "h": 1080 } (16:9 landscape)
+     - If prompt says "Canvas 1080x1920": { "w": 1080, "h": 1920 } (9:16 portrait)
+     - Default to { "w": 1920, "h": 1080 } if not specified
+   - "bg": background color or gradient. Formats:
+     - Solid color: "#hex" (e.g., "#FFFFFF")
+     - Linear gradient: { "type": "gradient", "from": "#hex", "to": "#hex", "direction": "to bottom" }
+       Directions: "to bottom", "to right", "to top-right", "to bottom-left", etc.
+     - Radial gradient: { "type": "gradient", "from": "#hex", "to": "#hex", "direction": "radial" }
+     - Radial with glow: { "type": "gradient", "from": "#hex", "to": "#hex", "direction": "radial", "glow": "#bright_hex" }
+       The glow color creates a bright center point that fades outward.
+     - With grid overlay: { "color": "#hex", "grid": true, "gridSpacing": 50, "gridColor": "rgba(200,200,200,0.3)" }
+       Or combine with gradient: { "type": "gradient", "from": "#hex", "to": "#hex", "direction": "radial", "grid": true, "gridSpacing": 50, "gridColor": "rgba(255,255,255,0.1)" }
+     IMPORTANT: Do NOT create separate circle or rectangle objects to simulate background gradients or glows. Use the bg field.
+     IMPORTANT: Do NOT create individual line objects for grid backgrounds. Use bg.grid instead.
 
 2. OBJECTS ARRAY
    Each object has ONLY the properties it needs. Omit any property that uses its default value.
@@ -718,15 +827,18 @@ The spec has 5 top-level keys: scene, duration, fps, canvas, bg, objects, timeli
 
    POSITIONING — CENTER-RELATIVE COORDINATE SYSTEM (CRITICAL)
 
-   The canvas is 1920x1080 pixels, but ALL coordinates use a CENTER-RELATIVE system:
+   ALL coordinates use a CENTER-RELATIVE system where halfW = canvas.w / 2, halfH = canvas.h / 2:
    - Origin (0, 0) = the exact center of the canvas
-   - x ranges from -960 (left edge) to +960 (right edge)
-   - y ranges from -540 (top edge) to +540 (bottom edge)
+   - x ranges from -halfW (left edge) to +halfW (right edge)
+   - y ranges from -halfH (top edge) to +halfH (bottom edge)
    - Positive x = rightward, Positive y = downward
+
+   For 1920x1080 (16:9): halfW=960, halfH=540. x: [-960, +960], y: [-540, +540]
+   For 1080x1920 (9:16): halfW=540, halfH=960. x: [-540, +540], y: [-960, +960]
 
    This is NOT a top-left pixel coordinate system. Do NOT use absolute pixel positions.
 
-   REFERENCE POSITIONS:
+   REFERENCE POSITIONS (for 1920x1080):
      Canvas center:       [0, 0]
      Top-left corner:     [-960, -540]
      Top-right corner:    [960, -540]
@@ -736,6 +848,29 @@ The spec has 5 top-level keys: scene, duration, fps, canvas, bg, objects, timeli
      Off-screen right:    [1080, 0]    (beyond right edge)
      Off-screen top:      [0, -640]    (beyond top edge)
      Off-screen bottom:   [0, 640]     (beyond bottom edge)
+
+   REFERENCE POSITIONS (for 1080x1920):
+     Canvas center:       [0, 0]
+     Top-left corner:     [-540, -960]
+     Top-right corner:    [540, -960]
+     Bottom-left corner:  [-540, 960]
+     Bottom-right corner: [540, 960]
+     Off-screen left:     [-660, 0]    (beyond left edge)
+     Off-screen right:    [660, 0]     (beyond right edge)
+     Off-screen top:      [0, -1080]   (beyond top edge)
+     Off-screen bottom:   [0, 1080]    (beyond bottom edge)
+
+   SAFE ZONE (mandatory for all on-screen objects):
+   - Keep objects within: x: [-(halfW - 60), +(halfW - 60)], y: [-(halfH - 60), +(halfH - 60)]
+   - For 1920x1080: safe x: [-900, 900], safe y: [-480, 480]
+   - For 1080x1920: safe x: [-480, 480], safe y: [-900, 900]
+   - Exception: objects intentionally off-screen for enter/exit animations
+   - Object EDGES (center +/- half-dimension) must stay within the safe zone
+   - For circles: center.x +/- radius must be within safe x range
+   - For rectangles: center.x +/- width/2 and center.y +/- height/2 must be within safe range
+   - For text: estimate width as fontSize * 0.6 * text.length. Center +/- estimated_width/2 must fit.
+   - No two text objects should overlap. Keep at least 80px vertical gap between text items at similar positions.
+   - Minimum gap between any two objects: 40px between their edges
 
    WRONG vs RIGHT examples:
      "Object at canvas center"        WRONG: [960, 540]    RIGHT: [0, 0]
@@ -893,7 +1028,30 @@ ${EXAMPLES}
 
 ---
 
-COORDINATE SYSTEM REMINDER: All pos, x, y values must use center-relative coordinates where (0,0) is canvas center. Values like [960, 540] or [1920, 1080] are ABSOLUTE coordinates and are WRONG. Canvas center = [0, 0]. Always.
+DURATION CONSISTENCY RULES:
+- The "duration" field MUST match the "Total duration: Ns" stated in the prompt exactly
+- Every timeline entry's time[1] MUST be <= duration
+- No timeline entry may have time[0] >= duration (animation cannot start after the video ends)
+- The last visible animation should end at or near the duration value
+- Do not leave large gaps of idle time — fill the duration with purposeful animation
+
+COORDINATE SYSTEM REMINDER: All pos, x, y values must use center-relative coordinates where (0,0) is canvas center. halfW = canvas.w / 2, halfH = canvas.h / 2. Values like [960, 540] or [1920, 1080] are ABSOLUTE coordinates and are WRONG. Canvas center = [0, 0]. Always.
+
+ALIGNMENT REMINDER: All on-screen objects must have their edges within the safe zone (60px inset from canvas edges). Text objects must not overlap each other. Use proper spacing between labels, titles, and visual content.
+
+KINETIC TYPOGRAPHY PATTERNS:
+When the prompt describes text effects, compose them from existing timeline primitives:
+- "scale pop" / "pop in" → two sequential scale entries: [0, 1.15] then [1.15, 1] with ease-out / ease-in
+- "blur reveal" / "focus in" → simultaneous blur [12, 0] + opacity [0, 1] in the same time range
+- "slide up" / "rise up" → y [finalPos + 40, finalPos] + opacity [0, 1] with ease-out
+- "typewriter" → chars [0, N] with NO overlapping opacity animation (typewriter IS the reveal)
+- "underline draw" → child rectangle with parent: "text_id", width [0, W], anchor "left-center", offset below text
+- "highlight reveal" / "highlight box" → child rectangle behind text with scaleX [0, 1], lower zIndex, anchor "left-center"
+- "stagger" / "one by one" → separate text objects with 0.2-0.3s offset start times, each with its own timeline entries
+- "text in box" / "container" / "badge" → rectangle parent + text child with parent field and offset [0, 0]
+- "counter" / "counting number" → counter [0, N] on text object
+- "fade in" → simple opacity [0, 1]
+- Compound effects: combine the above. E.g., "pop in with underline" = scalePop entries + underline child rectangle with width animation
 
 Convert the following prompt into a Sparse Motion Spec JSON. Return ONLY the JSON.`;
 
@@ -935,6 +1093,14 @@ function validateSpec(spec) {
     }
   }
 
+  // Dynamic canvas bounds
+  const canvasW = (spec.canvas && spec.canvas.w) || 1920;
+  const canvasH = (spec.canvas && spec.canvas.h) || 1080;
+  const halfW = canvasW / 2;
+  const halfH = canvasH / 2;
+  const offScreenThresholdX = halfW + 140;
+  const offScreenThresholdY = halfH + 160;
+
   // Validate timeline entries
   if (Array.isArray(spec.timeline)) {
     for (let i = 0; i < spec.timeline.length; i++) {
@@ -942,8 +1108,19 @@ function validateSpec(spec) {
       if (!entry.target) errors.push("Timeline[" + i + "] missing 'target'");
       if (!Array.isArray(entry.time) || entry.time.length !== 2) {
         errors.push("Timeline[" + i + "] missing or invalid 'time'");
-      } else if (entry.time[0] >= entry.time[1]) {
-        errors.push("Timeline[" + i + "] time[0] must be < time[1]");
+      } else {
+        if (entry.time[0] >= entry.time[1]) {
+          errors.push("Timeline[" + i + "] time[0] must be < time[1]");
+        }
+        // Duration consistency: timeline must not exceed spec duration
+        if (typeof spec.duration === "number") {
+          if (entry.time[1] > spec.duration + 0.1) {
+            errors.push("Timeline[" + i + "] time[1]=" + entry.time[1] + "s exceeds spec duration=" + spec.duration + "s");
+          }
+          if (entry.time[0] >= spec.duration) {
+            errors.push("Timeline[" + i + "] starts at " + entry.time[0] + "s which is at or past duration=" + spec.duration + "s");
+          }
+        }
       }
       if (entry.target && !objectIds.has(entry.target)) {
         errors.push("Timeline[" + i + "] references unknown target '" + entry.target + "'");
@@ -960,7 +1137,7 @@ function validateSpec(spec) {
         if (x === 960 && y === 540) {
           errors.push("Object '" + (obj.id || "unknown") + "' pos [960,540] looks like absolute center — should be [0,0] in center-relative coords");
         }
-        if (Math.abs(x) > 1100 || Math.abs(y) > 700) {
+        if (Math.abs(x) > offScreenThresholdX || Math.abs(y) > offScreenThresholdY) {
           errors.push("Object '" + (obj.id || "unknown") + "' pos [" + x + "," + y + "] is far off-screen — verify center-relative coordinates");
         }
       }
@@ -979,13 +1156,110 @@ function validateSpec(spec) {
     }
   }
 
+  // Typewriter + opacity conflict check (warning)
+  if (Array.isArray(spec.timeline)) {
+    const charEntries = spec.timeline.filter(function(e) { return e.chars || e.words; });
+    for (const ce of charEntries) {
+      const overlappingOpacity = spec.timeline.find(function(e) {
+        return e.target === ce.target && e.opacity &&
+          Array.isArray(e.time) && Array.isArray(ce.time) &&
+          e.time[0] < ce.time[1] && e.time[1] > ce.time[0];
+      });
+      if (overlappingOpacity) {
+        console.warn("  WARNING: Target '" + ce.target + "' has chars/words animation overlapping with opacity animation at time [" + overlappingOpacity.time + "]. This makes text invisible during typewriter reveal. Fix: complete opacity fade-in BEFORE starting chars animation.");
+      }
+    }
+  }
+
+  // Layout validation (warnings only — logged but do not trigger retry)
+  const layoutWarnings = validateLayout(spec, halfW, halfH);
+  if (layoutWarnings.length > 0) {
+    console.warn("  Layout warnings:");
+    layoutWarnings.forEach(function(w) { console.warn("    - " + w); });
+  }
+
   return errors;
+}
+
+// ---------------------------------------------------------------------------
+// Layout validation — checks safe zones, text overlap, object spacing
+// ---------------------------------------------------------------------------
+function validateLayout(spec, halfW, halfH) {
+  const warnings = [];
+  const safeX = halfW - 60;
+  const safeY = halfH - 60;
+
+  if (!Array.isArray(spec.objects)) return warnings;
+
+  // Collect bounding boxes for text objects
+  const textBoxes = [];
+
+  for (const obj of spec.objects) {
+    if (!Array.isArray(obj.pos)) continue;
+    const x = obj.pos[0];
+    const y = obj.pos[1];
+
+    // Skip off-screen objects (intentional enter/exit)
+    if (Math.abs(x) > halfW || Math.abs(y) > halfH) continue;
+
+    // Calculate half-dimensions
+    let hw = 0;
+    let hh = 0;
+    if (obj.shape === "circle" && obj.diameter) {
+      hw = obj.diameter / 2;
+      hh = obj.diameter / 2;
+    } else if (obj.size && Array.isArray(obj.size)) {
+      hw = obj.size[0] / 2;
+      hh = obj.size[1] / 2;
+    } else if (obj.shape === "text") {
+      var fontSize = obj.fontSize || 48;
+      var textLen = (obj.text || "").length;
+      hw = (fontSize * 0.6 * textLen) / 2;
+      hh = (fontSize * 1.2) / 2;
+    }
+
+    // Check safe zone
+    if (hw > 0 || hh > 0) {
+      if (Math.abs(x) + hw > safeX + 10) {
+        warnings.push("Object '" + obj.id + "' edge exceeds horizontal safe zone (x=" + x + ", half-width=" + hw + ", safe=" + safeX + ")");
+      }
+      if (Math.abs(y) + hh > safeY + 10) {
+        warnings.push("Object '" + obj.id + "' edge exceeds vertical safe zone (y=" + y + ", half-height=" + hh + ", safe=" + safeY + ")");
+      }
+    }
+
+    // Collect text bounding boxes for overlap detection
+    if (obj.shape === "text" && hw > 0) {
+      textBoxes.push({
+        id: obj.id,
+        left: x - hw,
+        right: x + hw,
+        top: y - hh,
+        bottom: y + hh
+      });
+    }
+  }
+
+  // Check text-text overlap
+  for (var i = 0; i < textBoxes.length; i++) {
+    for (var j = i + 1; j < textBoxes.length; j++) {
+      var a = textBoxes[i];
+      var b = textBoxes[j];
+      var overlapX = a.left < b.right && a.right > b.left;
+      var overlapY = a.top < b.bottom && a.bottom > b.top;
+      if (overlapX && overlapY) {
+        warnings.push("Text '" + a.id + "' and '" + b.id + "' bounding boxes overlap — add more spacing");
+      }
+    }
+  }
+
+  return warnings;
 }
 
 async function convertPrompt(promptText) {
   const response = await client.responses.create({
-    model: "gpt-4o",
-    temperature: 0,
+    model: "gpt-5-mini",
+    
     input: [
       {
         role: "system",
@@ -998,7 +1272,7 @@ async function convertPrompt(promptText) {
     ]
   });
 
-  return response.output[0].content[0].text;
+  return response.output_text;
 }
 
 async function main() {

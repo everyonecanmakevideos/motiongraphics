@@ -96,7 +96,33 @@ Output:
 {
   "id": 5,
   "category": "progress",
-  "prompt": "Loading Progress Bar. Light neutral background (#F5F5F5). Canvas 1920x1080. A horizontal rectangle strip (600px wide, 40px tall, rounded corners 20px) centered on canvas with light grey base color (#E0E0E0). A green (#4CAF50) fill rectangle inside the strip starts at 0px width. Text '0%' (24px bold Arial, dark grey #333333) centered above the bar. Animation (8s): 0-1s: Base bar and text fade in from opacity 0 to 1 with ease-out. 1-6s: Green fill grows from 0px to 600px width from left to right with ease-in-out. Simultaneously the text counts from '0%' to '100%'. 6-7s: Text scales from 100% to 115% and back to 100% with ease-in-out as a completion pulse. 7-8s: Hold completed state. Total duration: 8s."
+  "prompt": "Loading Progress Bar. Light neutral background (#F5F5F5). Canvas 1920x1080. A horizontal rectangle strip (600px wide, 40px tall, rounded corners 20px) centered on canvas with light grey base color (#E0E0E0). A green (#4CAF50) fill rectangle inside the strip starts at 0px width. Text '0%' (24px bold Arial, dark grey #333333) centered 80px above the bar. Animation (8s): 0-1s: Base bar and text fade in from opacity 0 to 1 with ease-out. 1-6s: Green fill grows from 0px to 600px width from left to right with ease-in-out. Simultaneously the text counts from '0%' to '100%'. 6-7s: Text scales from 100% to 115% and back to 100% with ease-in-out as a completion pulse. 7-8s: Hold completed state. Total duration: 8s."
+}
+
+---
+
+EXAMPLE 6 — Vertical/portrait (9:16)
+
+Input: "vertical reel of a heart beating"
+
+Output:
+{
+  "id": 6,
+  "category": "coordination",
+  "prompt": "Heart Beat Reel. White background (#FFFFFF). Canvas 1080x1920. A red heart asset (160px, color #E53935) centered on canvas. Text 'LOVE' (64px bold Arial, #E53935) positioned 200px below center. Animation (5s): 0-0.5s: Heart and text fade in from opacity 0 to 1 with ease-out. 0.5-1.5s: Heart scales from 100% to 130% with ease-out. 1.5-2s: Heart scales back from 130% to 100% with ease-in. 2-3s: Heart scales from 100% to 130% again with ease-out. 3-3.5s: Heart scales back from 130% to 100% with ease-in. 3.5-5s: Hold final state. Total duration: 5s."
+}
+
+---
+
+EXAMPLE 7 — Kinetic typography with compound effects
+
+Input: "announcement text pops in with a highlight and subtitle slides up"
+
+Output:
+{
+  "id": 7,
+  "category": "effects",
+  "prompt": "Announcement Typography. Dark background (#1A1A2E). Canvas 1920x1080. A white bold text 'ANNOUNCEMENT' (72px Arial) centered 60px above canvas center. A yellow (#FDD835) highlight box expands behind the text from left to right. A subtitle text 'Details below' (36px Arial, light grey #E0E0E0) positioned 60px below canvas center. Animation (7s): 0-0.4s: Main text appears with scale pop effect (scale from 0% to 115% with ease-out). 0.4-0.6s: Main text scale settles from 115% to 100% with ease-in. 0.8-1.5s: Yellow highlight box expands from left to right behind the main text with ease-out. 1.5-2.2s: Subtitle slides up from 40px below its final position while fading in from opacity 0 to 1 with ease-out. 2.2-7s: Hold final state. Total duration: 7s."
 }
 `;
 
@@ -117,7 +143,9 @@ DETERMINISTIC EXPANSION RULES
 Follow these rules strictly to produce consistent, deterministic output.
 
 CANVAS AND BACKGROUND:
-- Canvas: always 1920x1080
+- Default: 16:9 landscape (Canvas 1920x1080)
+- If the user mentions "vertical", "portrait", "reel", "story", "stories", "9:16", "shorts", or "tiktok": use 9:16 portrait (Canvas 1080x1920)
+- Always state the exact canvas dimensions in the prompt
 - Background defaults by category:
   - Shapes/coordination: white (#FFFFFF)
   - UI/progress: light neutral (#F5F5F5)
@@ -125,12 +153,25 @@ CANVAS AND BACKGROUND:
   - Data visualization: white (#FFFFFF)
 - Always include the hex color code for the background
 
-DURATION DEFAULTS:
-- 1 object, simple animation: 4-6s
-- 2-3 objects, moderate coordination: 6-8s
-- 4+ objects or complex coordination: 8-12s
-- Data visualization: 6-10s
-- If user specifies a duration, use exactly that
+DURATION RULES:
+- If user specifies a duration (e.g., "5 seconds", "10s", "in 3 seconds"), use EXACTLY that duration. Do not deviate.
+- If user says "quick" or "fast": use 3-4s total
+- If user says "slow" or "detailed": use 10-15s total
+- Otherwise, calculate duration based on complexity:
+  - 1 object, simple animation (1-2 actions): 4-5s
+  - 1 object, complex animation (3+ actions): 5-7s
+  - 2-3 objects, moderate coordination: 6-8s
+  - 4+ objects or complex coordination: 8-12s
+  - Data visualization with labels: 6-10s
+- Minimum duration: 3s. Maximum duration: 15s.
+
+DURATION ENFORCEMENT:
+- Every animation phase start/end time MUST be within [0, total_duration]
+- No timeline phase may extend beyond the stated total duration
+- The sum of all phase durations must equal total_duration exactly
+- The final hold phase should be 1-2s. Do not waste more than 2s on a hold.
+- Animation phases must be contiguous — no gaps between phases
+- Phase times must be stated in ascending order
 
 SHAPE SIZE DEFAULTS (when user does not specify):
 - Circle: diameter 120px
@@ -161,11 +202,60 @@ SEMANTIC POSITIONS (use these terms, NOT pixel coordinates):
 - middle-left, middle-right
 - top-left, top-right, bottom-left, bottom-right
 - off-screen-left, off-screen-right, off-screen-top, off-screen-bottom
-Layout rules:
+Layout rules for 16:9 (1920x1080):
 - "side by side" = place objects 200px apart horizontally from center
-- "spread out" = distribute evenly across canvas width
+- "spread out" = distribute evenly across usable canvas width
 - "stacked" = same horizontal position, 150px vertical spacing
 - "surrounding" = arranged in a circle around center at 200px radius
+Layout rules for 9:16 (1080x1920):
+- "side by side" = place objects 150px apart horizontally (narrower canvas)
+- "spread out" = distribute evenly across usable canvas width
+- "stacked" = same horizontal position, 200px vertical spacing (taller canvas)
+- "surrounding" = arranged in a circle around center at 160px radius
+
+SAFE MARGINS AND ALIGNMENT:
+- No object's visible edge should be closer than 60px to any canvas edge
+- For 16:9: safe area is roughly center +/- 900px horizontal, +/- 480px vertical
+- For 9:16: safe area is roughly center +/- 480px horizontal, +/- 900px vertical
+- Exception: objects intentionally entering/exiting the frame (off-screen starts)
+- Minimum gap between any two objects: 40px between their edges
+- TEXT PLACEMENT: Title text goes in the top 20% of canvas. Labels/captions go in the bottom 30%. Main content in the center 50%.
+- TEXT SPACING: Multiple text items at similar y-positions must be at least 200px apart horizontally. No two text objects should overlap.
+- When objects need to be spread across the canvas, keep them within the safe area
+
+BACKGROUND EFFECTS:
+- "gradient background" → describe as a background gradient with direction (linear/radial), two hex colors, and type
+- "radial glow" / "brightness glow in center" / "soft glow" → describe as a radial gradient background with a bright center color fading to edges. Example: "Radial gradient background from deep purple (#7B1FA2) to blue (#2196F3) with a soft white (#FFFFFF) brightness glow in the center."
+- "soft gradient" → subtle color transition between close hues as a background gradient
+- Do NOT describe glows or gradient effects as separate circle objects or shapes. They are BACKGROUND properties, not foreground objects.
+- State the gradient type (linear/radial), both colors with hex codes, and direction explicitly.
+
+TYPEWRITER / TEXT REVEAL ANIMATIONS:
+- "typewriter effect" / "typing effect" / "reveals letter by letter" / "character by character" → describe as typewriter character-by-character reveal, NOT as an opacity fade-in
+- When typewriter is requested, the text should NOT "fade in" simultaneously. The character reveal IS the appearance animation.
+- Describe as: "Text reveals character by character over Ns with typewriter effect"
+- If the user wants a cursor, add "with blinking cursor" to the description
+- The text starts visible (full opacity) but shows 0 characters initially — the typewriter animation gradually reveals characters
+
+KINETIC TYPOGRAPHY EFFECTS:
+- "pop" / "pop in" / "bounce in" / "scale pop" → describe as "appears with scale pop effect (scale from 0% to 115% then settles to 100%)"
+- "blur reveal" / "focus in" / "appears with blur" → describe as "reveals with blur effect (starts blurred at 12px and sharpens to 0 while fading in from opacity 0 to 1)"
+- "slide up" / "rise up" / "float up" → describe as "slides up from 40px below final position while fading in from opacity 0 to 1"
+- "slide down" / "drop in" → describe as "slides down from 40px above final position while fading in"
+- "underline" / "underline draws" / "underline appears" → describe as "an animated underline (4px tall rectangle) draws from left to right beneath the text"
+- "highlight" / "highlight box" / "text highlight" → describe as "a colored highlight box expands behind the text from left to right"
+- "stagger" / "one by one" / "sequential" / "cascading" / "one after another" → describe as "text elements appear with staggered timing, each delayed by 0.2-0.3 seconds after the previous"
+- "text in box" / "boxed text" / "badge" / "pill" / "inside a box" / "inside a container" → describe as "text centered inside a rounded rectangle container"
+- "counter" / "counting" / "number counts up" → describe as "number counts up from 0 to target value"
+- For compound effects: combine descriptions in sequence. E.g., "pops in with highlight" → "appears with scale pop effect (0% to 115% to 100%), then a colored highlight box expands behind the text from left to right"
+- IMPORTANT: When multiple text elements appear with the same effect, always describe the stagger delay between them
+
+GRID / PATTERN BACKGROUNDS:
+- "grid background" / "grid lines" / "grid pattern" → describe as a subtle grid line overlay with spacing and color
+- "dot grid" → describe as small dots at regular intervals on the background
+- Small grid lines should use 40-60px spacing with very low opacity (0.1-0.3)
+- Grid is a BACKGROUND pattern — do NOT describe it as individual line objects
+- Example: "Light grey (#F5F5F5) background with subtle grid lines (50px spacing, rgba(200,200,200,0.3))."
 
 TIMELINE GENERATION:
 - Every animation begins with a 0.5-1s fade-in phase (unless user says "instant" or "sudden")
@@ -210,16 +300,19 @@ REQUIRED OUTPUT CHECKLIST — Before producing your JSON, verify:
 1. Every object has an explicit hex color code
 2. Every animation phase has exact start and end seconds (e.g., "0-1s:")
 3. Total duration is stated at the end
-4. Canvas dimensions (1920x1080) are mentioned
+4. Canvas dimensions (1920x1080 or 1080x1920) are mentioned
 5. Background color with hex code is mentioned
 6. No ambiguous words: "random", "approximately", "about", "maybe", "roughly", "vary", "sometimes", "perhaps"
 7. All positions use semantic terms (center, middle-left, etc.) not pixel coordinates
 8. Easing is specified for every motion (ease-in, ease-out, ease-in-out, bounce, linear)
 9. The prompt field is a single continuous string, not multi-line
+10. The last timeline phase ends exactly at the total duration (no gaps, no overflows)
+11. All objects are described within the safe area (60px from edges) unless entering/exiting frame
+12. Text objects do not overlap each other — proper spacing between titles, labels, and captions
 
 PROMPT STRUCTURE:
 Follow this structure in the "prompt" field:
-[Scene Title]. [Background color + hex]. Canvas 1920x1080. [Object descriptions with shapes, sizes, colors, positions]. Animation ([duration]s): [Phase 1 timing: description]. [Phase 2 timing: description]. ... Total duration: [N]s.
+[Scene Title]. [Background color + hex]. Canvas [WxH]. [Object descriptions with shapes, sizes, colors, positions]. Animation ([duration]s): [Phase 1 timing: description]. [Phase 2 timing: description]. ... Total duration: [N]s.
 
 ---
 
@@ -267,9 +360,14 @@ function validateExpansion(result) {
     errors.push("No hex color code found in prompt");
   }
 
-  // Must mention canvas dimensions
-  if (!result.prompt.includes("1920") || !result.prompt.includes("1080")) {
-    errors.push("Canvas dimensions (1920x1080) not mentioned in prompt");
+  // Must mention canvas dimensions (either 1920x1080 or 1080x1920)
+  var hasLandscape = result.prompt.includes("1920x1080") || result.prompt.includes("1920 x 1080");
+  var hasPortrait = result.prompt.includes("1080x1920") || result.prompt.includes("1080 x 1920");
+  if (!hasLandscape && !hasPortrait) {
+    // Fallback: at least both numbers must be present
+    if (!result.prompt.includes("1920") || !result.prompt.includes("1080")) {
+      errors.push("Canvas dimensions (1920x1080 or 1080x1920) not mentioned in prompt");
+    }
   }
 
   // Must contain duration
@@ -280,6 +378,27 @@ function validateExpansion(result) {
   // Must contain timing phases
   if (!/\d+[\-\u2013]\d+(\.\d+)?s/.test(result.prompt)) {
     errors.push("No timing phases (e.g., '0-1s:') found in prompt");
+  }
+
+  // Duration consistency: extract total duration and check phase times
+  var totalDurationMatch = result.prompt.match(/Total duration:\s*(\d+(?:\.\d+)?)s/i);
+  if (totalDurationMatch) {
+    var totalDuration = parseFloat(totalDurationMatch[1]);
+    // Find all phase end times (patterns like "5-8s:" or "5-8s.")
+    var phaseMatches = result.prompt.match(/(\d+(?:\.\d+)?)\s*[\-\u2013]\s*(\d+(?:\.\d+)?)s/g);
+    if (phaseMatches) {
+      var maxEndTime = 0;
+      for (var p = 0; p < phaseMatches.length; p++) {
+        var parts = phaseMatches[p].match(/(\d+(?:\.\d+)?)\s*[\-\u2013]\s*(\d+(?:\.\d+)?)s/);
+        if (parts) {
+          var endTime = parseFloat(parts[2]);
+          if (endTime > maxEndTime) maxEndTime = endTime;
+        }
+      }
+      if (maxEndTime > totalDuration + 0.5) {
+        errors.push("Timeline phase ends at " + maxEndTime + "s but total duration is " + totalDuration + "s — phases exceed duration");
+      }
+    }
   }
 
   // Must NOT contain banned words
@@ -304,6 +423,40 @@ function validateExpansion(result) {
 }
 
 // ---------------------------------------------------------------------------
+// DETECT DURATION — Extract explicit duration from simple prompt
+// ---------------------------------------------------------------------------
+function detectDuration(simplePrompt) {
+  var lower = simplePrompt.toLowerCase();
+  // Match patterns like "5 seconds", "10s", "in 3 seconds", "3 second video"
+  var match = lower.match(/(\d+(?:\.\d+)?)\s*(?:seconds?|s\b)/);
+  if (match) {
+    return parseFloat(match[1]);
+  }
+  if (lower.includes("quick") || lower.includes("fast")) {
+    return "fast";
+  }
+  if (lower.includes("slow") || lower.includes("detailed")) {
+    return "slow";
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// DETECT ASPECT RATIO — Check for vertical/portrait keywords
+// ---------------------------------------------------------------------------
+var PORTRAIT_KEYWORDS = ["vertical", "portrait", "reel", "story", "stories", "9:16", "9x16", "shorts", "tiktok"];
+
+function detectAspectRatio(simplePrompt) {
+  var lower = simplePrompt.toLowerCase();
+  for (var i = 0; i < PORTRAIT_KEYWORDS.length; i++) {
+    if (lower.includes(PORTRAIT_KEYWORDS[i])) {
+      return "9:16";
+    }
+  }
+  return "16:9";
+}
+
+// ---------------------------------------------------------------------------
 // EXPAND SINGLE PROMPT — Call LLM to expand
 // ---------------------------------------------------------------------------
 async function expandSinglePrompt(simplePrompt, id, category) {
@@ -313,9 +466,25 @@ async function expandSinglePrompt(simplePrompt, id, category) {
   }
   userMessage += "\nAssign id: " + id;
 
+  // Pass duration constraint if detected
+  var duration = detectDuration(simplePrompt);
+  if (typeof duration === "number") {
+    userMessage += "\nIMPORTANT: The user specified a duration of exactly " + duration + " seconds. Use this exact duration.";
+  } else if (duration === "fast") {
+    userMessage += "\nIMPORTANT: The user wants a quick/fast animation. Use 3-4 seconds total.";
+  } else if (duration === "slow") {
+    userMessage += "\nIMPORTANT: The user wants a slow/detailed animation. Use 10-15 seconds total.";
+  }
+
+  // Pass aspect ratio constraint
+  var aspectRatio = detectAspectRatio(simplePrompt);
+  if (aspectRatio === "9:16") {
+    userMessage += "\nIMPORTANT: This is a vertical/portrait video. Use Canvas 1080x1920 (9:16 aspect ratio).";
+  }
+
   var response = await client.responses.create({
-    model: "gpt-4o",
-    temperature: 0.2,
+    model: "gpt-5-mini",
+    
     input: [
       {
         role: "system",
@@ -328,7 +497,7 @@ async function expandSinglePrompt(simplePrompt, id, category) {
     ],
   });
 
-  return response.output[0].content[0].text;
+  return response.output_text;
 }
 
 // ---------------------------------------------------------------------------
@@ -393,8 +562,10 @@ async function main() {
           break;
         }
 
-        // Force correct ID
+        // Force correct ID and add aspect ratio
         parsed.id = id;
+        var detectedAspect = detectAspectRatio(simplePrompt);
+        parsed.aspectRatio = detectedAspect;
 
         // Validate
         var validationErrors = validateExpansion(parsed);

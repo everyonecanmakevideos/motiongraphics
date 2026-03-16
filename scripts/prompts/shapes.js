@@ -28,11 +28,15 @@ top: "50%",
 transform: "translate(-50%, -50%)"
 
 The spec "pos" field is [x, y] relative to canvas center.
-Add the pos values to the translate: "translate(calc(-50% + Xpx), calc(-50% + Ypx))" — but since you cannot use calc, use:
-left: "50%", top: "50%", transform: "translateX(" + (posX - halfWidth) + "px) translateY(" + (posY - halfHeight) + "px)"
-
-Or more simply for a centered shape:
+Use this pattern for a centered shape:
 left: "50%", top: "50%", transform: "translate(-50%, -50%) translateX(" + posX + "px) translateY(" + posY + "px)"
+
+CANVAS-AWARE COORDINATES:
+Read canvas dimensions from the spec: { "w": W, "h": H }.
+halfW = W / 2, halfH = H / 2.
+For 1920x1080: halfW=960, halfH=540.
+For 1080x1920: halfW=540, halfH=960.
+NEVER hardcode 960 or 540 — always derive from the spec canvas field.
 
 OUTLINED SHAPES (stroke)
 If object has "stroke" but "fill" is false:
@@ -96,7 +100,8 @@ Steps:
 1. Find the bounding box of all vertices (minX, maxX, minY, maxY).
 2. Set the div width = maxX - minX, height = maxY - minY.
 3. Position the div so its bounding box aligns with the vertex coordinates on canvas.
-   left: (960 + minX) + "px", top: (540 + minY) + "px"
+   left: (halfW + minX) + "px", top: (halfH + minY) + "px"
+   where halfW = canvas.w / 2, halfH = canvas.h / 2
 4. Convert each vertex to a percentage within the bounding box:
    pctX = ((vx - minX) / (maxX - minX)) * 100
    pctY = ((vy - minY) / (maxY - minY)) * 100
@@ -112,8 +117,9 @@ Steps:
 2. Compute SVG dimensions: svgW = (maxX - minX) + strokeWidth * 2, svgH = (maxY - minY) + strokeWidth * 2.
 3. Position the SVG on canvas:
    position: "absolute",
-   left: (960 + minX - strokeWidth) + "px",
-   top: (540 + minY - strokeWidth) + "px"
+   left: (halfW + minX - strokeWidth) + "px",
+   top: (halfH + minY - strokeWidth) + "px"
+   where halfW = canvas.w / 2, halfH = canvas.h / 2
 4. Convert each vertex to SVG-local coords:
    svgX = vx - minX + strokeWidth
    svgY = vy - minY + strokeWidth
