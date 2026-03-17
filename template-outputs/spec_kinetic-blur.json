@@ -1,0 +1,23 @@
+{
+  "templateId": "kinetic-typography",
+  "params": {
+    "lines": [
+      "THINK",
+      "CREATE",
+      "INSPIRE"
+    ],
+    "defaultColor": "#FFFFFF",
+    "background": {
+      "type": "grain",
+      "baseColor": "#111111",
+      "grainOpacity": 0.08
+    },
+    "fontSize": 72,
+    "fontWeight": "bold",
+    "alignment": "center",
+    "lineSpacing": 1.3,
+    "staggerStyle": "line-by-line",
+    "entranceAnimation": "blur-reveal",
+    "duration": 9
+  }
+}

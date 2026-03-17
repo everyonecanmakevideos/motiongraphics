@@ -1,0 +1,38 @@
+[
+  {
+    "id": "multi-scene-report",
+    "prompt": "Show title 'Q3 Financial Report' with fade in, then a bar chart showing revenue Q1=120K Q2=180K Q3=210K Q4=195K, then a counter showing total revenue 705000 dollars"
+  },
+  {
+    "id": "multi-scene-startup",
+    "prompt": "First show 'Launch Day' as a big headline, then a timeline with Research Design Development Testing Launch milestones, then 3 feature cards: Fast with lightning, Secure with lock, Global with cloud"
+  },
+  {
+    "id": "multi-scene-comparison",
+    "prompt": "Start with title 'Tech Stack Decision', then compare React vs Vue side by side: React has JSX, Virtual DOM, Large Ecosystem and Vue has Templates, Reactivity, Easy Learning Curve, then show a stat counter with 85 percent developer satisfaction"
+  },
+  {
+    "id": "composite-charts",
+    "prompt": "Show a bar chart of monthly sales on the left and a pie chart of product categories on the right, both on a dark background"
+  },
+  {
+    "id": "composite-dashboard",
+    "prompt": "Dashboard view: stat counter showing 1.2M users on the left two-thirds, and a pie chart showing platform distribution iOS 45% Android 35% Web 20% on the right sidebar"
+  },
+  {
+    "id": "composite-grid",
+    "prompt": "Four cards in a 2x2 grid: top-left shows a stat counter with 99.9% uptime, top-right shows a bar chart of response times, bottom-left shows a pie chart of traffic sources, bottom-right shows a stat counter with 50ms latency"
+  },
+  {
+    "id": "mixed-intro-dashboard",
+    "prompt": "Start with a hero title 'Analytics Dashboard', then show a split screen with a bar chart of daily signups on the left and a stat counter showing 25000 total users on the right"
+  },
+  {
+    "id": "animation-fallback-explode",
+    "prompt": "A bar chart showing team scores: Alpha 85, Beta 72, Gamma 91 with bars that explode onto the screen on a dark background"
+  },
+  {
+    "id": "animation-fallback-bounce",
+    "prompt": "Show 'Welcome Back!' with a bouncy elastic animation on a gradient from dark blue to purple"
+  }
+]

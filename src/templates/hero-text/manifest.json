@@ -1,0 +1,10 @@
+{
+  "id": "hero-text",
+  "name": "Hero Text",
+  "description": "Large centered headline with optional subheadline. Ideal for title cards, intro screens, and bold statements.",
+  "tags": ["text", "title", "headline", "hero", "intro", "heading", "announcement", "statement"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "blur-reveal", "typewriter", "none"],
+  "minDuration": 2,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

@@ -1,0 +1,35 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "Team Scores",
+    "bars": [
+      {
+        "label": "Alpha",
+        "value": 85,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Beta",
+        "value": 72,
+        "color": "#81C784"
+      },
+      {
+        "label": "Gamma",
+        "value": 91,
+        "color": "#FFB74D"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "valueColor": "#FFFFFF",
+    "duration": 6,
+    "entranceAnimation": "grow"
+  }
+}

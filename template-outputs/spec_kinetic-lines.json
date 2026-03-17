@@ -1,0 +1,22 @@
+{
+  "templateId": "kinetic-typography",
+  "params": {
+    "lines": [
+      "Stay hungry",
+      "Stay foolish",
+      "— Steve Jobs"
+    ],
+    "defaultColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "fontSize": 72,
+    "fontWeight": "bold",
+    "alignment": "center",
+    "lineSpacing": 1.3,
+    "staggerStyle": "line-by-line",
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

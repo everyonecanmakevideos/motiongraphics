@@ -1,0 +1,41 @@
+{
+  "templateId": "pie-chart",
+  "params": {
+    "title": "Budget Allocation",
+    "segments": [
+      {
+        "label": "Engineering",
+        "value": 40,
+        "color": "#FF6B35"
+      },
+      {
+        "label": "Marketing",
+        "value": 25,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Sales",
+        "value": 20,
+        "color": "#81C784"
+      },
+      {
+        "label": "Operations",
+        "value": 15,
+        "color": "#FFB74D"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A2E",
+      "to": "#0F3460",
+      "direction": "to-bottom"
+    },
+    "donut": true,
+    "showLabels": true,
+    "showPercentages": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "duration": 6,
+    "entranceAnimation": "scale-pop"
+  }
+}

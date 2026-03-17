@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "The Quick Brown Fox Jumps Over The Lazy Dog",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#0D0D0D",
+      "to": "#1A1A1A",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "slide-up",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

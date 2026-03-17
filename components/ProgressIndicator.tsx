@@ -7,6 +7,7 @@ interface Props {
   step: number;
   status: JobStatus;
   error?: string | null;
+  pipelineMode?: "template" | "legacy";
 }
 
 const PHASE_1_MESSAGES = [
@@ -24,15 +25,37 @@ const PHASE_2_MESSAGES = [
   "Finalizing output...",
 ];
 
+const TEMPLATE_PHASE_1_MESSAGES = [
+  "Analyzing your prompt...",
+  "Selecting template...",
+  "Mapping parameters...",
+];
+
+const TEMPLATE_PHASE_2_MESSAGES = [
+  "Rendering template...",
+  "Compositing video...",
+  "Finalizing output...",
+];
+
 type PhaseState = "pending" | "active" | "done" | "failed";
 
-function getPhaseStates(step: number, status: JobStatus): [PhaseState, PhaseState] {
+function getPhaseStates(step: number, status: JobStatus, isTemplate: boolean): [PhaseState, PhaseState] {
   if (status === "failed") {
+    if (isTemplate) {
+      return [step <= 2 ? "failed" : "done", step > 2 ? "failed" : "pending"];
+    }
     return [step <= 6 ? "failed" : "done", step > 6 ? "failed" : "pending"];
   }
   if (status === "done") return ["done", "done"];
 
-  // Phase 1: steps 1-6 (expand + spec + code), Phase 2: steps 7-8 (render + done)
+  if (isTemplate) {
+    // Template: Phase 1 = analyzing_intent (step 2), Phase 2 = template_rendering (step 3+)
+    const p1: PhaseState = step <= 2 ? "active" : "done";
+    const p2: PhaseState = step <= 2 ? "pending" : "active";
+    return [p1, p2];
+  }
+
+  // Legacy: Phase 1: steps 1-6 (expand + spec + code), Phase 2: steps 7-8 (render + done)
   const p1: PhaseState = step <= 6 ? "active" : "done";
   const p2: PhaseState = step <= 6 ? "pending" : "active";
   return [p1, p2];
@@ -106,16 +129,21 @@ function PhaseSegment({
   );
 }
 
-export default function ProgressIndicator({ step, status, error }: Props) {
-  const [p1, p2] = getPhaseStates(step, status);
+export default function ProgressIndicator({ step, status, error, pipelineMode }: Props) {
+  const isTemplate = pipelineMode === "template";
+  const [p1, p2] = getPhaseStates(step, status, isTemplate);
 
   const activePhase = p1 === "active" ? 1 : p2 === "active" ? 2 : 0;
+
+  const p1Label = isTemplate ? "Analyzing" : "Generating";
+  const p1Messages = isTemplate ? TEMPLATE_PHASE_1_MESSAGES : PHASE_1_MESSAGES;
+  const p2Messages = isTemplate ? TEMPLATE_PHASE_2_MESSAGES : PHASE_2_MESSAGES;
 
   return (
     <div className="flex flex-col gap-3">
       {/* Progress bar */}
       <div className="flex gap-1">
-        <PhaseSegment label="Generating" state={p1} position="left" />
+        <PhaseSegment label={p1Label} state={p1} position="left" />
         <PhaseSegment label="Rendering" state={p2} position="right" />
       </div>
 
@@ -133,12 +161,12 @@ export default function ProgressIndicator({ step, status, error }: Props) {
         )}
         {activePhase === 1 && (
           <span className="text-sm text-neutral-400">
-            <CyclingMessage messages={PHASE_1_MESSAGES} />
+            <CyclingMessage messages={p1Messages} />
           </span>
         )}
         {activePhase === 2 && (
           <span className="text-sm text-neutral-400">
-            <CyclingMessage messages={PHASE_2_MESSAGES} />
+            <CyclingMessage messages={p2Messages} />
           </span>
         )}
       </div>

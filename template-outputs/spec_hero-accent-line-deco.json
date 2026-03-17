@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Chapter One",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A2E",
+      "to": "#0F3460",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "none",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "accent-line"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "templateId": "card-layout",
+  "params": {
+    "title": "Our Team",
+    "cards": [
+      {
+        "heading": "Alice Chen",
+        "body": "CEO",
+        "iconId": "user"
+      },
+      {
+        "heading": "Bob Smith",
+        "body": "CTO",
+        "iconId": "gear"
+      },
+      {
+        "heading": "Carol Davis",
+        "body": "Designer",
+        "iconId": "camera"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0F0F0F",
+      "to": "#1A1A1A",
+      "direction": "to-bottom"
+    },
+    "columns": 3,
+    "cardBackground": "#1E1E2E",
+    "titleColor": "#FFFFFF",
+    "headingColor": "#FFFFFF",
+    "bodyColor": "#B0BEC5",
+    "iconColor": "#4FC3F7",
+    "entranceAnimation": "fade-in",
+    "duration": 7
+  }
+}

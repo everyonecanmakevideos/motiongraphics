@@ -1,0 +1,10 @@
+{
+  "id": "timeline-scene",
+  "name": "Timeline Scene",
+  "description": "Horizontal timeline with milestones appearing sequentially. Ideal for roadmaps, history, processes, step-by-step guides, and progress tracking.",
+  "tags": ["timeline", "roadmap", "milestones", "steps", "process", "history", "progress", "sequence"],
+  "compatibleAnimations": ["progressive", "fade-in", "slide-up", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

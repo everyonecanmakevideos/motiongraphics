@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "FOCUS",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#333333",
+      "to": "#1A1A1A",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "blur-reveal",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

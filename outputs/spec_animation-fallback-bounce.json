@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Welcome Back!",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#3A0CA3",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "fade-in",
+    "duration": 4,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

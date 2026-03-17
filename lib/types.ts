@@ -6,6 +6,8 @@ export type JobStatus =
   | "code_generating"
   | "code_ready"
   | "rendering"
+  | "analyzing_intent"
+  | "template_rendering"
   | "done"
   | "failed";
 
@@ -20,6 +22,8 @@ export interface Job {
   code_r2_key: string | null;
   video_r2_key: string | null;
   spec_json: object | null;
+  template_id: string | null;
+  template_params: object | null;
   created_at: string;
   updated_at: string;
 }
@@ -33,6 +37,8 @@ export interface SSEEvent {
   specJson?: object;
   videoKey?: string;
   detailedPrompt?: string;
+  templateId?: string;
+  pipelineMode?: "template" | "legacy";
 }
 
 export const STEP_LABELS: Record<number, string> = {
@@ -44,4 +50,12 @@ export const STEP_LABELS: Record<number, string> = {
   6: "Code ready",
   7: "Rendering video...",
   8: "Video ready",
+};
+
+// Template pipeline step labels (used when template path is chosen)
+export const TEMPLATE_STEP_LABELS: Record<number, string> = {
+  1: "Prompt received",
+  2: "Analyzing intent...",
+  3: "Rendering template...",
+  4: "Video ready",
 };

@@ -1,0 +1,27 @@
+{
+  "templateId": "comparison-layout",
+  "params": {
+    "leftTitle": "Pros",
+    "rightTitle": "Cons",
+    "leftItems": [
+      "Fast delivery",
+      "Low cost",
+      "High quality"
+    ],
+    "rightItems": [
+      "Limited support",
+      "Complex setup"
+    ],
+    "vsText": "VS",
+    "leftColor": "#4FC3F7",
+    "rightColor": "#FF8A65",
+    "textColor": "#FFFFFF",
+    "vsColor": "#FFD700",
+    "background": {
+      "type": "solid",
+      "color": "#0F0F0F"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 7
+  }
+}

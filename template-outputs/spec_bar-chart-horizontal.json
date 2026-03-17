@@ -1,0 +1,47 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "Programming Languages Popularity",
+    "bars": [
+      {
+        "label": "Python",
+        "value": 85,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "JavaScript",
+        "value": 78,
+        "color": "#81C784"
+      },
+      {
+        "label": "TypeScript",
+        "value": 65,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Rust",
+        "value": 45,
+        "color": "#E57373"
+      },
+      {
+        "label": "Go",
+        "value": 52,
+        "color": "#BA68C8"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "to-bottom"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "valueColor": "#FFFFFF",
+    "duration": 8,
+    "entranceAnimation": "grow"
+  }
+}

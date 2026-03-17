@@ -34,6 +34,8 @@ export interface UpdateJobFields {
   code_r2_key?: string;
   video_r2_key?: string;
   spec_json?: object;
+  template_id?: string;
+  template_params?: object;
 }
 
 export async function updateJob(id: string, fields: UpdateJobFields): Promise<void> {
@@ -60,6 +62,10 @@ export async function updateJob(id: string, fields: UpdateJobFields): Promise<vo
       await sql`UPDATE jobs SET video_r2_key = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "spec_json") {
       await sql`UPDATE jobs SET spec_json = ${JSON.stringify(value)}::jsonb, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "template_id") {
+      await sql`UPDATE jobs SET template_id = ${value as string}, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "template_params") {
+      await sql`UPDATE jobs SET template_params = ${JSON.stringify(value)}::jsonb, updated_at = now() WHERE id = ${id}`;
     }
   }
 }
@@ -94,4 +100,6 @@ export async function initDb(): Promise<void> {
   `;
   // Migration for existing tables
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS detailed_prompt TEXT`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS template_id TEXT`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS template_params JSONB`;
 }

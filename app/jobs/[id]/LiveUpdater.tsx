@@ -31,6 +31,8 @@ export default function LiveUpdater({ jobId, initialJob, onUpdate }: Props) {
         error: job.error ?? undefined,
         specJson: job.spec_json ?? undefined,
         videoKey: job.video_r2_key ?? undefined,
+        pipelineMode: job.template_id ? "template" : "legacy",
+        templateId: job.template_id ?? undefined,
       });
     },
     [onUpdate]

@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { getJob } from "@/lib/db";
 import { subscribe, unsubscribe } from "@/lib/queue";
 import type { SSEEvent } from "@/lib/types";
-import { STEP_LABELS } from "@/lib/types";
+import { STEP_LABELS, TEMPLATE_STEP_LABELS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -24,14 +24,20 @@ export async function GET(
       controller = c;
       subscribe(jobId, controller);
 
+      // Detect pipeline mode from stored template_id
+      const isTemplatePipeline = !!job.template_id;
+      const labels = isTemplatePipeline ? TEMPLATE_STEP_LABELS : STEP_LABELS;
+
       // Send the current job state immediately so the client has something to render
       const currentEvent: SSEEvent = {
         jobId,
         step: job.step,
         status: job.status,
-        label: STEP_LABELS[job.step] ?? job.status,
+        label: labels[job.step] ?? job.status,
         specJson: job.spec_json ?? undefined,
         videoKey: job.video_r2_key ?? undefined,
+        pipelineMode: isTemplatePipeline ? "template" : "legacy",
+        templateId: job.template_id ?? undefined,
       };
       const encoded = new TextEncoder().encode(
         "data: " + JSON.stringify(currentEvent) + "\n\n"

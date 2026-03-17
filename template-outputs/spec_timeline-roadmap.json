@@ -1,0 +1,36 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Project Roadmap",
+    "milestones": [
+      {
+        "label": "Research"
+      },
+      {
+        "label": "Design"
+      },
+      {
+        "label": "Development"
+      },
+      {
+        "label": "Testing"
+      },
+      {
+        "label": "Launch"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A2E",
+      "to": "#0F3460",
+      "direction": "to-right"
+    },
+    "lineColor": "#4FC3F7",
+    "dotColor": "#FFFFFF",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 210,
+      "startFrame": 0,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "layout": "main-sidebar",
+      "background": {
+        "type": "solid",
+        "color": "#1A1A2E"
+      },
+      "regions": [
+        {
+          "templateId": "stat-counter",
+          "params": {
+            "value": 1200000,
+            "prefix": "",
+            "suffix": "",
+            "label": "Users",
+            "valueColor": "#FFFFFF",
+            "labelColor": "#B0BEC5",
+            "background": {
+              "type": "solid",
+              "color": "#1A1A2E"
+            },
+            "duration": 7,
+            "entranceAnimation": "count-up"
+          },
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 1080
+        },
+        {
+          "templateId": "pie-chart",
+          "params": {
+            "title": "Platform Distribution",
+            "segments": [
+              {
+                "label": "iOS",
+                "value": 45,
+                "color": "#4FC3F7"
+              },
+              {
+                "label": "Android",
+                "value": 35,
+                "color": "#81C784"
+              },
+              {
+                "label": "Web",
+                "value": 20,
+                "color": "#FFB74D"
+              }
+            ],
+            "background": {
+              "type": "solid",
+              "color": "#1A1A2E"
+            },
+            "donut": false,
+            "showLabels": true,
+            "showPercentages": true,
+            "titleColor": "#FFFFFF",
+            "labelColor": "#B0BEC5",
+            "duration": 7,
+            "entranceAnimation": "spin"
+          },
+          "x": 1280,
+          "y": 0,
+          "width": 640,
+          "height": 1080
+        }
+      ]
+    }
+  ]
+}

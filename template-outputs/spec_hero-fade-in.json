@@ -1,0 +1,18 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Welcome Back",
+    "subheadline": "We missed you",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "entranceAnimation": "fade-in",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

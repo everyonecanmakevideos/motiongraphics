@@ -1,5 +1,7 @@
 import { Composition } from "remotion";
 import { GeneratedMotion } from "./GeneratedMotion";
+import { TemplateRouter } from "./TemplateRouter";
+import { SceneSequencer } from "./SceneSequencer";
 
 // Read duration from environment variable, fallback to 120 frames (4s)
 const durationInFrames = parseInt(
@@ -28,6 +30,29 @@ export const RemotionRoot = () => {
         fps={30}
         width={videoWidth}
         height={videoHeight}
+      />
+      <Composition
+        id="TemplateScene"
+        component={TemplateRouter}
+        durationInFrames={durationInFrames}
+        fps={30}
+        width={videoWidth}
+        height={videoHeight}
+        defaultProps={{
+          templateId: "hero-text",
+          params: {},
+        }}
+      />
+      <Composition
+        id="SceneSequence"
+        component={SceneSequencer as React.FC<Record<string, unknown>>}
+        durationInFrames={durationInFrames}
+        fps={30}
+        width={videoWidth}
+        height={videoHeight}
+        defaultProps={{
+          scenes: [],
+        }}
       />
     </>
   );

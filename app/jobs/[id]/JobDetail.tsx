@@ -14,8 +14,12 @@ interface Props {
 
 export default function JobDetail({ initialJob }: Props) {
   const [job, setJob] = useState<Job>(initialJob);
+  const [pipelineMode, setPipelineMode] = useState<"template" | "legacy" | undefined>(
+    initialJob.template_id ? "template" : undefined
+  );
 
   const handleUpdate = useCallback((event: SSEEvent) => {
+    if (event.pipelineMode) setPipelineMode(event.pipelineMode);
     setJob((prev) => ({
       ...prev,
       step: event.step > 0 ? event.step : prev.step,
@@ -24,6 +28,7 @@ export default function JobDetail({ initialJob }: Props) {
       detailed_prompt: event.detailedPrompt ?? prev.detailed_prompt,
       spec_json: event.specJson ?? prev.spec_json,
       video_r2_key: event.videoKey ?? prev.video_r2_key,
+      template_id: event.templateId ?? prev.template_id,
     }));
   }, []);
 
@@ -58,7 +63,24 @@ export default function JobDetail({ initialJob }: Props) {
 
       {/* Progress */}
       <div className="glass-strong rounded-2xl p-5">
-        <ProgressIndicator step={job.step} status={job.status} error={job.error} />
+        {pipelineMode && (
+          <div className="flex items-center gap-2 mb-3">
+            <span className={
+              "text-xs px-2 py-0.5 rounded-full font-medium " +
+              (pipelineMode === "template"
+                ? "bg-indigo-500/20 text-indigo-300"
+                : "bg-amber-500/20 text-amber-300")
+            }>
+              {pipelineMode === "template" ? "Template" : "Legacy"}
+            </span>
+            {job.template_id && (
+              <span className="text-xs text-neutral-500">
+                {job.template_id}
+              </span>
+            )}
+          </div>
+        )}
+        <ProgressIndicator step={job.step} status={job.status} error={job.error} pipelineMode={pipelineMode} />
       </div>
 
       {/* Video */}

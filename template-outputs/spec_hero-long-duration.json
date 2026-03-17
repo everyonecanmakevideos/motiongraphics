@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Once Upon a Time",
+    "subheadline": "A story worth telling",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "grain",
+      "baseColor": "#1A1A1A",
+      "grainOpacity": 0.08
+    },
+    "entranceAnimation": "fade-in",
+    "subheadlineAnimation": "fade-in",
+    "duration": 12,
+    "style": "centered",
+    "decoration": "none"
+  }
+}
