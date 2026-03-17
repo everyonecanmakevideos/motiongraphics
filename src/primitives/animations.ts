@@ -181,3 +181,167 @@ export function underlineDraw(
 ): number {
   return interpolate(frame, [range.startFrame, range.endFrame], [0, 100], CLAMP);
 }
+
+// ── Advanced Animation Presets ──────────────────────────────────────────
+
+export type ClipDirection =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "center-h"
+  | "center-v"
+  | "circle"
+  | "diagonal";
+
+/** Build a clipPath string for a given progress (0→1) and direction. */
+function buildClipPath(progress: number, direction: ClipDirection): string {
+  const p = Math.max(0, Math.min(1, progress));
+  switch (direction) {
+    case "left":
+      return `inset(0 ${(1 - p) * 100}% 0 0)`;
+    case "right":
+      return `inset(0 0 0 ${(1 - p) * 100}%)`;
+    case "top":
+      return `inset(0 0 ${(1 - p) * 100}% 0)`;
+    case "bottom":
+      return `inset(${(1 - p) * 100}% 0 0 0)`;
+    case "center-h": {
+      const half = ((1 - p) * 100) / 2;
+      return `inset(0 ${half}% 0 ${half}%)`;
+    }
+    case "center-v": {
+      const half = ((1 - p) * 100) / 2;
+      return `inset(${half}% 0 ${half}% 0)`;
+    }
+    case "circle":
+      return `circle(${p * 75}% at 50% 50%)`;
+    case "diagonal": {
+      const x = p * 150;
+      return `polygon(${x - 50}% 0%, ${x}% 0%, ${x - 50}% 100%, ${x - 100}% 100%)`;
+    }
+    default:
+      return `inset(0 0 0 0)`;
+  }
+}
+
+/** Clip reveal: animates clipPath from hidden to fully visible. */
+export function clipReveal(
+  frame: number,
+  range: FrameRange,
+  direction: ClipDirection = "left"
+): { clipPath: string } {
+  const progress = interpolate(frame, [range.startFrame, range.endFrame], [0, 1], CLAMP);
+  return { clipPath: buildClipPath(progress, direction) };
+}
+
+/** Clip exit: animates clipPath from fully visible to hidden. */
+export function clipExit(
+  frame: number,
+  range: FrameRange,
+  direction: ClipDirection = "left"
+): { clipPath: string } {
+  const progress = interpolate(frame, [range.startFrame, range.endFrame], [1, 0], CLAMP);
+  return { clipPath: buildClipPath(progress, direction) };
+}
+
+/** Camera drift: slow Ken Burns-style pan + zoom over the range. */
+export function cameraDrift(
+  frame: number,
+  range: FrameRange,
+  driftX: number = 20,
+  driftY: number = 10,
+  zoomStart: number = 1.0,
+  zoomEnd: number = 1.05
+): { x: number; y: number; scale: number } {
+  return {
+    x: interpolate(frame, [range.startFrame, range.endFrame], [0, driftX], CLAMP),
+    y: interpolate(frame, [range.startFrame, range.endFrame], [0, driftY], CLAMP),
+    scale: interpolate(frame, [range.startFrame, range.endFrame], [zoomStart, zoomEnd], CLAMP),
+  };
+}
+
+/** Parallax layer: depth-based horizontal translation. depth 0=slow bg, 1=fast fg. */
+export function parallaxLayer(
+  frame: number,
+  range: FrameRange,
+  depth: number,
+  basePx: number = 50
+): { x: number } {
+  const travel = basePx * depth;
+  return {
+    x: interpolate(frame, [range.startFrame, range.endFrame], [0, -travel], CLAMP),
+  };
+}
+
+/** Glow pulse: deterministic sine-like pulse using segmented interpolation. */
+export function glowPulse(
+  frame: number,
+  range: FrameRange,
+  cycles: number = 2
+): { opacity: number; spread: number } {
+  const totalDuration = range.endFrame - range.startFrame;
+  const cycleFrames = totalDuration / cycles;
+  const halfCycle = cycleFrames / 2;
+  const elapsed = Math.max(0, frame - range.startFrame);
+  const posInCycle = elapsed % cycleFrames;
+  const pulseValue =
+    posInCycle < halfCycle
+      ? interpolate(posInCycle, [0, halfCycle], [0.3, 1], CLAMP)
+      : interpolate(posInCycle, [halfCycle, cycleFrames], [1, 0.3], CLAMP);
+  return {
+    opacity: frame < range.startFrame || frame > range.endFrame ? 0 : pulseValue,
+    spread: frame < range.startFrame || frame > range.endFrame ? 0 : pulseValue * 20,
+  };
+}
+
+/** Spring in: multi-phase overshoot entrance (0→1.2→0.95→1.0 for bounces=2). */
+export function springIn(
+  frame: number,
+  range: FrameRange,
+  bounces: number = 2
+): { scale: number; opacity: number } {
+  const segments = bounces + 1;
+  const segLen = Math.round((range.endFrame - range.startFrame) / segments);
+  const keyframes = [0];
+  for (let i = 1; i <= bounces; i++) {
+    const overshoot = i % 2 === 1 ? 1 + 0.2 / i : 1 - 0.1 / i;
+    keyframes.push(overshoot);
+  }
+  keyframes.push(1);
+
+  let scale = 0;
+  for (let i = 0; i < segments; i++) {
+    const segStart = range.startFrame + i * segLen;
+    const segEnd = i === segments - 1 ? range.endFrame : segStart + segLen;
+    if (frame >= segStart && frame <= segEnd) {
+      scale = interpolate(frame, [segStart, segEnd], [keyframes[i], keyframes[i + 1]], CLAMP);
+      break;
+    }
+    if (frame > segEnd) {
+      scale = keyframes[i + 1];
+    }
+  }
+
+  const opacityEnd = range.startFrame + segLen;
+  const opacity = interpolate(frame, [range.startFrame, opacityEnd], [0, 1], CLAMP);
+  return { scale, opacity };
+}
+
+/** Stagger cascade: center-out or edges-in stagger ordering. */
+export function staggerCascade(
+  index: number,
+  totalItems: number,
+  totalFrames: number,
+  direction: "center-out" | "edges-in" = "center-out"
+): FrameRange {
+  const mid = (totalItems - 1) / 2;
+  const maxDist = mid;
+  const dist = Math.abs(index - mid);
+  const order = direction === "center-out" ? dist : maxDist - dist;
+  const normalizedOrder = maxDist > 0 ? order / maxDist : 0;
+  const itemDuration = Math.round(totalFrames * 0.6);
+  const maxDelay = totalFrames - itemDuration;
+  const startFrame = Math.round(normalizedOrder * maxDelay);
+  return { startFrame, endFrame: startFrame + itemDuration };
+}

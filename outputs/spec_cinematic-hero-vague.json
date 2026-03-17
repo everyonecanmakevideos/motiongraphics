@@ -1,0 +1,16 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "Project Phoenix",
+    "headlineColor": "#FFFFFF",
+    "accentColor": "#FF4500",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "duration": 6,
+    "lightSweep": true
+  }
+}

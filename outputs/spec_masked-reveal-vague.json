@@ -1,0 +1,17 @@
+{
+  "templateId": "masked-text-reveal",
+  "params": {
+    "headline": "Hello World",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "maskShape": "diagonal-slice",
+    "exitStyle": "fade",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "fontSize": "large",
+    "duration": 6
+  }
+}

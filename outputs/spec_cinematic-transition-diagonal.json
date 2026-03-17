@@ -1,0 +1,20 @@
+{
+  "templateId": "cinematic-transition",
+  "params": {
+    "labelColor": "#FFFFFF",
+    "wipeColor": "#800080",
+    "transitionStyle": "diagonal",
+    "trailEffect": true,
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "backgroundAfter": {
+      "type": "solid",
+      "color": "#0A0A0A"
+    },
+    "speed": "slow",
+    "labelAnimation": "scale-pop",
+    "duration": 3
+  }
+}

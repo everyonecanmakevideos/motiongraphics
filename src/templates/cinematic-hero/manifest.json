@@ -1,0 +1,10 @@
+{
+  "id": "cinematic-hero",
+  "name": "Cinematic Hero",
+  "description": "A dramatic, After Effects-quality title reveal with layered depth, camera drift, parallax geometric accents, light sweep, and clip-mask text reveal. Best for opening scenes, brand intros, epic section openers, and cinematic title cards.",
+  "tags": ["cinematic", "dramatic", "hero", "title", "epic", "opening", "intro", "brand", "movie", "premium"],
+  "compatibleAnimations": ["clip-reveal", "fade-in", "camera-drift", "none"],
+  "minDuration": 4,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

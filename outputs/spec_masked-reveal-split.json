@@ -1,0 +1,17 @@
+{
+  "templateId": "masked-text-reveal",
+  "params": {
+    "headline": "WELCOME",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#FFD700",
+    "maskShape": "vertical-split",
+    "exitStyle": "fade",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "fontSize": "medium",
+    "duration": 6
+  }
+}

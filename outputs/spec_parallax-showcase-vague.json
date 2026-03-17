@@ -1,0 +1,19 @@
+{
+  "templateId": "parallax-showcase",
+  "params": {
+    "title": "Welcome to the Future",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#00FFFF",
+    "parallaxDirection": "left",
+    "depthIntensity": "strong",
+    "foregroundStyle": "dots",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1A",
+      "to": "#1A1A2E",
+      "direction": "to-right"
+    },
+    "entranceAnimation": "clip-reveal",
+    "duration": 8
+  }
+}

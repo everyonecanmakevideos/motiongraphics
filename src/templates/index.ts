@@ -56,6 +56,21 @@ import processStepsManifest from "./process-steps/manifest.json";
 import { MapHighlight } from "./map-highlight/MapHighlight";
 import { MapHighlightSchema } from "./map-highlight/schema";
 import mapHighlightManifest from "./map-highlight/manifest.json";
+import { MaskedTextReveal } from "./masked-text-reveal/MaskedTextReveal";
+import { MaskedTextRevealSchema } from "./masked-text-reveal/schema";
+import maskedTextRevealManifest from "./masked-text-reveal/manifest.json";
+import { CinematicHero } from "./cinematic-hero/CinematicHero";
+import { CinematicHeroSchema } from "./cinematic-hero/schema";
+import cinematicHeroManifest from "./cinematic-hero/manifest.json";
+import { CinematicTransition } from "./cinematic-transition/CinematicTransition";
+import { CinematicTransitionSchema } from "./cinematic-transition/schema";
+import cinematicTransitionManifest from "./cinematic-transition/manifest.json";
+import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
+import { DynamicShowcaseSchema } from "./dynamic-showcase/schema";
+import dynamicShowcaseManifest from "./dynamic-showcase/manifest.json";
+import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
+import { ParallaxShowcaseSchema } from "./parallax-showcase/schema";
+import parallaxShowcaseManifest from "./parallax-showcase/manifest.json";
 
 export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> = {
   "hero-text": {
@@ -171,6 +186,36 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> = {
     component: MapHighlight as TemplateEntry["component"],
     schema: MapHighlightSchema,
     manifest: mapHighlightManifest as TemplateEntry["manifest"],
+  },
+  "masked-text-reveal": {
+    id: "masked-text-reveal",
+    component: MaskedTextReveal as TemplateEntry["component"],
+    schema: MaskedTextRevealSchema,
+    manifest: maskedTextRevealManifest as TemplateEntry["manifest"],
+  },
+  "cinematic-hero": {
+    id: "cinematic-hero",
+    component: CinematicHero as TemplateEntry["component"],
+    schema: CinematicHeroSchema,
+    manifest: cinematicHeroManifest as TemplateEntry["manifest"],
+  },
+  "cinematic-transition": {
+    id: "cinematic-transition",
+    component: CinematicTransition as TemplateEntry["component"],
+    schema: CinematicTransitionSchema,
+    manifest: cinematicTransitionManifest as TemplateEntry["manifest"],
+  },
+  "dynamic-showcase": {
+    id: "dynamic-showcase",
+    component: DynamicShowcase as TemplateEntry["component"],
+    schema: DynamicShowcaseSchema,
+    manifest: dynamicShowcaseManifest as TemplateEntry["manifest"],
+  },
+  "parallax-showcase": {
+    id: "parallax-showcase",
+    component: ParallaxShowcase as TemplateEntry["component"],
+    schema: ParallaxShowcaseSchema,
+    manifest: parallaxShowcaseManifest as TemplateEntry["manifest"],
   },
 };
 

@@ -1,0 +1,20 @@
+{
+  "templateId": "parallax-showcase",
+  "params": {
+    "title": "Rising Above",
+    "subtitle": "Reaching new heights in performance",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#00FF00",
+    "parallaxDirection": "up",
+    "depthIntensity": "strong",
+    "foregroundStyle": "geometric",
+    "background": {
+      "type": "gradient",
+      "from": "#000000",
+      "to": "#004400",
+      "direction": "to-top"
+    },
+    "entranceAnimation": "clip-reveal",
+    "duration": 8
+  }
+}

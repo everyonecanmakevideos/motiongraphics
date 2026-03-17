@@ -1,0 +1,20 @@
+{
+  "templateId": "parallax-showcase",
+  "params": {
+    "title": "Our Journey",
+    "subtitle": "From garage startup to global platform",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#00FFFF",
+    "parallaxDirection": "right",
+    "depthIntensity": "strong",
+    "foregroundStyle": "dots",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1A",
+      "to": "#1A1A2E",
+      "direction": "to-right"
+    },
+    "entranceAnimation": "slide-up",
+    "duration": 8
+  }
+}

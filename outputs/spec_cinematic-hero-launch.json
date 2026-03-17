@@ -1,0 +1,19 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "Nebula AI",
+    "kicker": "INTRODUCING",
+    "headlineColor": "#FFFFFF",
+    "accentColor": "#4FC3F7",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#000000",
+      "to": "#0A0A1A",
+      "direction": "to-bottom"
+    },
+    "duration": 8,
+    "lightSweep": true
+  }
+}

@@ -17,7 +17,7 @@ AVAILABLE TEMPLATES:
 
 AVAILABLE TEMPLATE IDS: {TEMPLATE_IDS}
 
-AVAILABLE ICON IDS (for icon-callout, card-layout, feature-highlight, split-screen, problem-solution templates):
+AVAILABLE ICON IDS (for icon-callout, card-layout, feature-highlight, split-screen, problem-solution, dynamic-showcase templates):
 rocket, car, airplane, bicycle, bus, ship, train, truck, smartphone, tablet, laptop, monitor, server, cpu, wifi, database, cloud, sun, moon, tree, fire, mountain, water, flower, heart, user, users, brain, eye, hand, briefcase, target, lightbulb, trophy, dollar, chart-up, lightning, gear, arrow-right, checkmark, home, bell, lock, star-icon, music, camera, microphone, play
 
 TEMPLATE SELECTION RULES — follow these strictly:
@@ -43,6 +43,11 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Before and after, transformation, change, improvement | "before-after" |
 | Numbered steps, process flow, workflow, procedure, how-to | "process-steps" |
 | Map, locations, geographic markers, global presence, offices | "map-highlight" |
+| Masked text reveal, cinematic unveil, text behind mask, wipe reveal, circle reveal | "masked-text-reveal" |
+| Cinematic title, movie-style intro, dramatic opening, epic hero title, film title card | "cinematic-hero" |
+| Scene transition, wipe between scenes, iris transition, chapter break wipe | "cinematic-transition" |
+| Product spotlight, feature showcase, icon spotlight, premium showcase, orbiting elements | "dynamic-showcase" |
+| Parallax depth scene, layered depth, 3D-like depth, immersive layers, parallax | "parallax-showcase" |
 
 BACKGROUND STYLES:
 Each template accepts a "background" parameter. Choose one of these types:
@@ -79,6 +84,28 @@ PROBLEM-SOLUTION ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has
 BEFORE-AFTER ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "revealStyle": "wipe"|"fade"|"split"
 PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in", "slide-up", "none"
 MAP-HIGHLIGHT ANIMATION: "fade-in", "scale-pop", "progressive" (markers appear one by one), "none"
+
+MASKED-TEXT-REVEAL MASK SHAPES:
+| User says... | maskShape |
+|--------------|-----------|
+| "wipe", "wipe from left", "left to right reveal" | "wipe-left" |
+| "wipe right", "right to left" | "wipe-right" |
+| "circle", "circle expand", "radial", "iris", "expanding circle" | "circle-expand" |
+| "diagonal", "diagonal slice", "angled", "diagonal wipe" | "diagonal-slice" |
+| "split", "vertical split", "open from center", "center split" | "vertical-split" |
+| "horizontal split", "top bottom split" | "horizontal-split" |
+MASKED-TEXT-REVEAL EXIT: "fade" (opacity fade out — default), "reverse-mask" (mask closes back)
+MASKED-TEXT-REVEAL FONT SIZE: "medium", "large" (default), "xlarge"
+
+DYNAMIC-SHOWCASE PARAMS: "iconId" must be one of the AVAILABLE ICON IDS listed above. "orbitStyle": "dots"|"rings"|"mixed". "orbitCount": 3-8 (default 5). "layout": "center"|"left-focus". "glowColor" is the color of the glow behind the icon (hex color).
+
+PARALLAX-SHOWCASE PARAMS:
+| User says... | parallaxDirection |
+|--------------|-------------------|
+| "leftward", "moves left", default | "left" |
+| "rightward", "moves right" | "right" |
+| "upward", "moves up", "rising" | "up" |
+PARALLAX-SHOWCASE: "depthIntensity": "subtle"|"medium"|"strong". "foregroundStyle": "dots"|"lines"|"geometric". "entranceAnimation": "clip-reveal"|"fade-in"|"slide-up".
 
 ASPECT RATIO RULES:
 - "aspect_ratio" is an optional top-level field. Default is "16:9".
@@ -175,6 +202,15 @@ Response: { "templateId": "pie-chart", "params": { "title": "Budget Split", "seg
 
 Prompt: "TikTok vertical video: big number 500K with label 'Followers' and green upward trend +25%. Count-up animation on dark background."
 Response: { "templateId": "data-callout", "params": { "value": 500000, "label": "Followers", "context": "Social media growth", "trend": "up", "trendValue": "+25%", "background": { "type": "solid", "color": "#111111" }, "entranceAnimation": "count-up", "duration": 5 }, "confidence": "high", "reasoning": "TikTok vertical → portrait 9:16, big number with trend → data-callout with count-up", "aspect_ratio": "9:16" }
+
+Prompt: "Cinematic circle expand reveal showing 'Launching Soon' in extra large text on dark background"
+Response: { "templateId": "masked-text-reveal", "params": { "headline": "Launching Soon", "headlineColor": "#FFFFFF", "accentColor": "#4FC3F7", "maskShape": "circle-expand", "exitStyle": "fade", "background": { "type": "solid", "color": "#111111" }, "fontSize": "xlarge", "duration": 6 }, "confidence": "high", "reasoning": "Circle expand reveal of text → masked-text-reveal with circle-expand mask", "aspect_ratio": "16:9" }
+
+Prompt: "Spotlight showcase for a rocket icon with title 'Launch Faster' and description 'Deploy in seconds', orbiting rings, blue glow on dark gradient"
+Response: { "templateId": "dynamic-showcase", "params": { "iconId": "rocket", "title": "Launch Faster", "description": "Deploy in seconds", "titleColor": "#FFFFFF", "accentColor": "#4FC3F7", "glowColor": "#4FC3F7", "orbitStyle": "rings", "orbitCount": 5, "background": { "type": "gradient", "from": "#0D1B2A", "to": "#1B2838", "direction": "radial" }, "layout": "center", "duration": 7 }, "confidence": "high", "reasoning": "Product spotlight with icon and orbiting elements → dynamic-showcase", "aspect_ratio": "16:9" }
+
+Prompt: "Layered parallax scene: title 'Our Journey', strong depth intensity, rightward motion, dots foreground, cyan accent on dark blue gradient"
+Response: { "templateId": "parallax-showcase", "params": { "title": "Our Journey", "titleColor": "#FFFFFF", "accentColor": "#00FFFF", "parallaxDirection": "right", "depthIntensity": "strong", "foregroundStyle": "dots", "background": { "type": "gradient", "from": "#0A0A1A", "to": "#1A1A2E", "direction": "to-right" }, "entranceAnimation": "clip-reveal", "duration": 8 }, "confidence": "high", "reasoning": "Layered depth with rightward parallax → parallax-showcase with right direction and dots foreground", "aspect_ratio": "16:9" }
 
 MULTI-SCENE RULES:
 If the user describes MULTIPLE DISTINCT content segments that should appear SEQUENTIALLY (e.g., "show title, then chart, then counter"), decompose into multiple scenes.

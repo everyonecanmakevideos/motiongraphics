@@ -1,0 +1,19 @@
+{
+  "templateId": "dynamic-showcase",
+  "params": {
+    "iconId": "lightning",
+    "title": "Real-Time Processing",
+    "description": "Process millions of events per second with sub-millisecond latency",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#FFA500",
+    "glowColor": "#FFA500",
+    "orbitStyle": "mixed",
+    "orbitCount": 5,
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "layout": "left-focus",
+    "duration": 7
+  }
+}

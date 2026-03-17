@@ -1,0 +1,102 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 90,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "Launch Day",
+        "headlineColor": "#FFFFFF",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "entranceAnimation": "fade-in",
+        "subheadlineAnimation": "fade-in",
+        "duration": 3,
+        "style": "centered",
+        "decoration": "none"
+      }
+    },
+    {
+      "durationFrames": 210,
+      "startFrame": 75,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "timeline-scene",
+      "params": {
+        "title": "Project Timeline",
+        "milestones": [
+          {
+            "label": "Research"
+          },
+          {
+            "label": "Design"
+          },
+          {
+            "label": "Development"
+          },
+          {
+            "label": "Testing"
+          },
+          {
+            "label": "Launch"
+          }
+        ],
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "lineColor": "#4FC3F7",
+        "dotColor": "#FFFFFF",
+        "titleColor": "#FFFFFF",
+        "textColor": "#FFFFFF",
+        "descriptionColor": "#B0BEC5",
+        "entranceAnimation": "progressive",
+        "duration": 7
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 270,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "card-layout",
+      "params": {
+        "title": "Key Features",
+        "cards": [
+          {
+            "heading": "Fast",
+            "body": "Lightning-fast performance",
+            "iconId": "lightning"
+          },
+          {
+            "heading": "Secure",
+            "body": "Enterprise-grade security",
+            "iconId": "lock"
+          },
+          {
+            "heading": "Global",
+            "body": "Worldwide accessibility",
+            "iconId": "cloud"
+          }
+        ],
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "columns": 3,
+        "cardBackground": "#1E1E2E",
+        "titleColor": "#FFFFFF",
+        "headingColor": "#FFFFFF",
+        "bodyColor": "#B0BEC5",
+        "iconColor": "#4FC3F7",
+        "entranceAnimation": "fade-in",
+        "duration": 6
+      }
+    }
+  ]
+}

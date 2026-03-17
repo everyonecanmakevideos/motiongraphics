@@ -1,0 +1,18 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "ShapeFlow Studio",
+    "headlineColor": "#FFFFFF",
+    "accentColor": "#800080",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#4B0082",
+      "to": "#000000",
+      "direction": "to-bottom"
+    },
+    "duration": 6,
+    "lightSweep": true
+  }
+}

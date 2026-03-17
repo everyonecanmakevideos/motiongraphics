@@ -1,0 +1,19 @@
+{
+  "templateId": "dynamic-showcase",
+  "params": {
+    "iconId": "shield",
+    "title": "Fortress Security",
+    "description": "Military-grade protection for your most sensitive data",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#00FF00",
+    "glowColor": "#00FF00",
+    "orbitStyle": "rings",
+    "orbitCount": 6,
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "layout": "center",
+    "duration": 7
+  }
+}

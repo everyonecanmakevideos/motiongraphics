@@ -1,0 +1,10 @@
+{
+  "id": "cinematic-transition",
+  "name": "Cinematic Transition",
+  "description": "A full-screen cinematic transition scene for use between content scenes. Features dramatic wipe, iris, diagonal, or split animations with optional section label. Best for scene breaks, chapter transitions, topic changes, and visual separators in multi-scene compositions.",
+  "tags": ["transition", "scene-break", "chapter", "wipe", "cinematic", "separator", "divider"],
+  "compatibleAnimations": ["clip-reveal", "scale-pop", "spring", "fade-in", "none"],
+  "minDuration": 2,
+  "maxDuration": 8,
+  "defaultDuration": 3
+}

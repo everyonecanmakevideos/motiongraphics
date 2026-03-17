@@ -50,6 +50,9 @@ export const AnimationPresetSchema = z.enum([
   "scale-pop",
   "blur-reveal",
   "typewriter",
+  "clip-reveal",
+  "spring",
+  "camera-drift",
   "none",
 ]);
 

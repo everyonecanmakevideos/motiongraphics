@@ -1,0 +1,17 @@
+{
+  "templateId": "masked-text-reveal",
+  "params": {
+    "headline": "The Future is Now",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "maskShape": "wipe-left",
+    "exitStyle": "fade",
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "fontSize": "large",
+    "duration": 6
+  }
+}

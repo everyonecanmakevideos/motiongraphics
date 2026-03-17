@@ -1,118 +1,107 @@
 [
+
   {
-    "id": "multi-scene-report",
-    "prompt": "Show title 'Q3 Financial Report' with fade in, then a bar chart showing revenue Q1=120K Q2=180K Q3=210K Q4=195K, then a counter showing total revenue 705000 dollars"
+    "id": "masked-reveal-startup",
+    "prompt": "Reveal the text 'The Future is Now' with a dramatic wipe from left effect, subtitle 'Redefining how teams build software', on a solid black background"
   },
   {
-    "id": "multi-scene-startup",
-    "prompt": "First show 'Launch Day' as a big headline, then a timeline with Research Design Development Testing Launch milestones, then 3 feature cards: Fast with lightning, Secure with lock, Global with cloud"
+    "id": "masked-reveal-circle",
+    "prompt": "Cinematic circle expand reveal showing 'Introducing Arc' in extra large text, with tagline 'A browser designed for you' and subtitle 'Fast. Beautiful. Yours.' on dark background"
   },
   {
-    "id": "multi-scene-comparison",
-    "prompt": "Start with title 'Tech Stack Decision', then compare React vs Vue side by side: React has JSX, Virtual DOM, Large Ecosystem and Vue has Templates, Reactivity, Easy Learning Curve, then show a stat counter with 85 percent developer satisfaction"
+    "id": "masked-reveal-diagonal",
+    "prompt": "Unveil the headline 'Game Changer' with a diagonal slice mask, subtitle 'The platform that rewrites the rules' with reverse mask exit, cyan accent color on a dark navy background"
   },
   {
-    "id": "composite-charts",
-    "prompt": "Show a bar chart of monthly sales on the left and a pie chart of product categories on the right, both on a dark background"
+    "id": "masked-reveal-split",
+    "prompt": "Show 'WELCOME' with a vertical split reveal opening from center, medium font size, gold accent color on black background"
   },
   {
-    "id": "composite-dashboard",
-    "prompt": "Dashboard view: stat counter showing 1.2M users on the left two-thirds, and a pie chart showing platform distribution iOS 45% Android 35% Web 20% on the right sidebar"
+    "id": "masked-reveal-vague",
+    "prompt": "Dramatic text reveal saying 'Hello World' with a creative mask animation"
+  },
+
+  {
+    "id": "cinematic-hero-launch",
+    "prompt": "Epic cinematic opening title 'Nebula AI' with kicker 'INTRODUCING' and subtitle 'The next generation of artificial intelligence', bold mood with light sweep on a dark gradient from black to deep blue"
   },
   {
-    "id": "composite-grid",
-    "prompt": "Four cards in a 2x2 grid: top-left shows a stat counter with 99.9% uptime, top-right shows a bar chart of response times, bottom-left shows a pie chart of traffic sources, bottom-right shows a stat counter with 50ms latency"
+    "id": "cinematic-hero-minimal",
+    "prompt": "Minimal cinematic hero showing 'Less is More' with right-side reveal, no subtitle, minimal mood, accent color white, on solid black background with light sweep"
   },
   {
-    "id": "mixed-intro-dashboard",
-    "prompt": "Start with a hero title 'Analytics Dashboard', then show a split screen with a bar chart of daily signups on the left and a stat counter showing 25000 total users on the right"
+    "id": "cinematic-hero-elegant",
+    "prompt": "Elegant movie-style title card: headline 'The Art of Motion' with kicker 'A VISUAL JOURNEY' and subtitle 'Exploring the boundaries of digital design', elegant mood, center reveal, gold accent on a dark gradient"
   },
   {
-    "id": "animation-fallback-explode",
-    "prompt": "A bar chart showing team scores: Alpha 85, Beta 72, Gamma 91 with bars that explode onto the screen on a dark background"
+    "id": "cinematic-hero-brand",
+    "prompt": "Dramatic brand intro: 'ShapeFlow Studio' with subtitle 'Where creativity meets precision', bold mood, bottom reveal direction, purple accent color on a gradient from deep purple to black"
   },
   {
-    "id": "animation-fallback-bounce",
-    "prompt": "Show 'Welcome Back!' with a bouncy elastic animation on a gradient from dark blue to purple"
+    "id": "cinematic-hero-vague",
+    "prompt": "Make a really dramatic and cinematic opening for 'Project Phoenix'"
+  },
+
+  {
+    "id": "cinematic-transition-chapter",
+    "prompt": "Scene transition with horizontal wipe showing 'CHAPTER 2' in the middle, cyan wipe color, with trail effect, on dark background transitioning to dark blue"
   },
   {
-    "id": "section-title-basic",
-    "prompt": "Section title 'Chapter 2: Design Principles' with subtitle 'Building beautiful interfaces' and a blue accent line on the left side"
+    "id": "cinematic-transition-iris",
+    "prompt": "Iris transition with label 'NEXT' in white, orange wipe color, fast speed, on black background"
   },
   {
-    "id": "section-title-centered",
-    "prompt": "Show a centered section heading 'Our Mission' with a line accent at the bottom and subtitle 'Making technology accessible to everyone' on a dark gradient background"
+    "id": "cinematic-transition-diagonal",
+    "prompt": "Diagonal cinematic transition between scenes, no label, purple wipe color, slow speed with trails, transitioning from dark background to dark green"
   },
   {
-    "id": "bullet-list-agenda",
-    "prompt": "Display a bullet list titled 'Meeting Agenda' with items: Review Q3 metrics, Discuss hiring plan, Product roadmap update, Budget allocation, Open floor Q&A. Use checkmark bullets with green color."
+    "id": "cinematic-transition-split",
+    "prompt": "Split transition showing 'Part B' with spring label animation, red wipe color, on a dark gradient background"
   },
   {
-    "id": "bullet-list-features",
-    "prompt": "Show key features as a numbered list: Real-time sync, End-to-end encryption, Cross-platform support, Offline mode, Custom integrations, API access. Slide up animation on dark background."
+    "id": "cinematic-transition-vague",
+    "prompt": "Add a cool transition between my two scenes"
+  },
+
+  {
+    "id": "dynamic-showcase-app",
+    "prompt": "Spotlight showcase for a rocket icon with title 'Launch Faster' and description 'Deploy your applications in seconds, not hours. Our platform handles the complexity so you can focus on building.' with orbiting dots and blue glow on a dark radial gradient"
   },
   {
-    "id": "quote-highlight-famous",
-    "prompt": "Display the quote 'Innovation distinguishes between a leader and a follower' attributed to Steve Jobs, Apple Co-founder. Use large decorative quotation marks with a blue accent."
+    "id": "dynamic-showcase-security",
+    "prompt": "Premium product spotlight: shield icon, title 'Fortress Security', description 'Military-grade protection for your most sensitive data', green accent and glow, ring orbit style with 6 elements, center layout"
   },
   {
-    "id": "quote-highlight-typewriter",
-    "prompt": "Show this testimonial with typewriter effect: 'This product changed the way our team works. We saved 40 hours per week.' by Sarah Chen, VP of Engineering at TechCorp"
+    "id": "dynamic-showcase-left",
+    "prompt": "Feature spotlight with lightning bolt icon on the left side, title 'Real-Time Processing', description 'Process millions of events per second with sub-millisecond latency', mixed orbit style, orange glow on dark background"
   },
   {
-    "id": "data-callout-revenue",
-    "prompt": "Big number showing 4,750,000 with dollar sign prefix, label 'Annual Revenue', trend up arrow showing +23% growth, on a dark blue gradient background with count-up animation"
+    "id": "dynamic-showcase-minimal",
+    "prompt": "Clean product showcase: star icon, title 'Five Star Experience', 3 orbit dots, purple accent, centered on dark gradient"
   },
   {
-    "id": "data-callout-users",
-    "prompt": "Display the number 12500 with suffix 'users' and label 'Active This Month' with context 'Highest monthly active users since launch'. Show a green upward trend of +8.5%"
+    "id": "dynamic-showcase-vague",
+    "prompt": "Show a premium spotlight for our new AI feature with a brain icon"
+  },
+
+  {
+    "id": "parallax-showcase-product",
+    "prompt": "Immersive parallax scene: title 'Depth of Innovation', subtitle 'Building the future, layer by layer', description 'Our platform creates experiences that feel alive', leftward parallax with medium depth, geometric foreground, clip reveal entrance on dark purple radial gradient"
   },
   {
-    "id": "feature-highlight-security",
-    "prompt": "Feature highlight with lock icon: title 'Enterprise Security', description 'Bank-grade encryption protects your data at rest and in transit', bullet points: 'SOC 2 Type II certified', 'GDPR compliant', 'AES-256 encryption', 'Zero-trust architecture'. Icon on the left."
+    "id": "parallax-showcase-story",
+    "prompt": "Layered depth effect: title 'Our Journey', subtitle 'From garage startup to global platform', strong parallax intensity moving right, dots foreground, cyan accent, slide-up entrance on dark blue gradient"
   },
   {
-    "id": "feature-highlight-speed",
-    "prompt": "Showcase a feature with the lightning icon on top: title 'Blazing Fast', description 'Sub-millisecond response times powered by edge computing' with scale-pop animation"
+    "id": "parallax-showcase-minimal",
+    "prompt": "Subtle parallax presentation showing 'Clean Design' with description 'Every pixel has a purpose', subtle depth, lines foreground, white accent on solid dark background"
   },
   {
-    "id": "split-screen-cloud",
-    "prompt": "Split screen comparing Cloud vs On-Premise: left side title 'Cloud' with body 'Scalable, pay-as-you-go, managed infrastructure' and cloud icon, right side title 'On-Premise' with body 'Full control, data sovereignty, one-time cost' and server icon. Slide in animation."
+    "id": "parallax-showcase-upward",
+    "prompt": "Upward parallax scene: title 'Rising Above', subtitle 'Reaching new heights in performance', strong depth, geometric foreground, green accent on dark gradient from black to dark green"
   },
   {
-    "id": "split-screen-plans",
-    "prompt": "Two-panel layout: left side 'Starter Plan' with description 'Perfect for small teams up to 10 members', right side 'Enterprise Plan' with description 'Unlimited seats with dedicated support and SLA'. Use a line divider."
-  },
-  {
-    "id": "problem-solution-deploy",
-    "prompt": "Problem: 'Manual deployments take hours and are error-prone, causing downtime and frustration.' Solution: 'Our automated CI/CD pipeline deploys in minutes with zero-downtime rollbacks.' Use fire icon for problem and checkmark for solution, fade-switch transition."
-  },
-  {
-    "id": "problem-solution-sidebyside",
-    "prompt": "Show problem and solution side by side: Problem is 'Data silos prevent teams from collaborating effectively' and Solution is 'Unified platform gives everyone a single source of truth'. Use side-by-side layout."
-  },
-  {
-    "id": "before-after-testing",
-    "prompt": "Before and after comparison with wipe reveal: Before title 'Manual Testing' with items '3-day test cycles', 'Human error prone', 'Limited coverage'. After title 'Automated Testing' with items 'Instant feedback', 'Consistent results', '95% coverage'. Orange before, blue after."
-  },
-  {
-    "id": "before-after-workflow",
-    "prompt": "Show a before/after split view: Before 'Legacy Workflow' with items 'Email chains', 'Spreadsheet tracking', 'Weekly status meetings'. After 'Modern Workflow' with items 'Real-time chat', 'Automated dashboards', 'Async updates'."
-  },
-  {
-    "id": "process-steps-onboarding",
-    "prompt": "Show the onboarding process with 4 steps: Sign Up, Verify Email, Set Up Profile, Start Exploring. Use arrow connectors and progressive animation on a dark blue gradient."
-  },
-  {
-    "id": "process-steps-devops",
-    "prompt": "Display a DevOps pipeline flow: Code, Build, Test, Deploy, Monitor, Feedback. Use dashed connectors with slide-up animation. Title: 'CI/CD Pipeline'"
-  },
-  {
-    "id": "map-highlight-offices",
-    "prompt": "Show our global offices on a world dot map: New York at position 22,40 and London at 47,25 and Tokyo at 82,38 and Sydney at 86,72 and São Paulo at 30,65. Use red markers with pulse effect and connection lines."
-  },
-  {
-    "id": "map-highlight-expansion",
-    "prompt": "Map showing market expansion: San Francisco (18,38), Berlin (49,27), Singapore (75,55), Dubai (58,42). Title: '2024 Market Expansion'. Progressive animation with blue markers on dark background."
+    "id": "parallax-showcase-vague",
+    "prompt": "Create an immersive 3D-like depth scene for 'Welcome to the Future'"
   }
 ]

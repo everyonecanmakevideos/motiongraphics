@@ -1,0 +1,10 @@
+{
+  "id": "dynamic-showcase",
+  "name": "Dynamic Showcase",
+  "description": "A premium product or feature spotlight with a central icon, orbiting accent elements, pulsing glow effects, and spring-based entrance. Creates an Apple-style product launch feel. Best for product spotlights, feature showcases, app highlights, and premium presentations.",
+  "tags": ["showcase", "product", "spotlight", "feature", "premium", "glow", "app", "launch", "highlight"],
+  "compatibleAnimations": ["spring", "fade-in", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

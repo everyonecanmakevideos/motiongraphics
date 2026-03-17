@@ -42,6 +42,16 @@ import { ProcessStepsSchema } from "./process-steps/schema";
 import processStepsManifest from "./process-steps/manifest.json";
 import { MapHighlightSchema } from "./map-highlight/schema";
 import mapHighlightManifest from "./map-highlight/manifest.json";
+import { MaskedTextRevealSchema } from "./masked-text-reveal/schema";
+import maskedTextRevealManifest from "./masked-text-reveal/manifest.json";
+import { CinematicHeroSchema } from "./cinematic-hero/schema";
+import cinematicHeroManifest from "./cinematic-hero/manifest.json";
+import { CinematicTransitionSchema } from "./cinematic-transition/schema";
+import cinematicTransitionManifest from "./cinematic-transition/manifest.json";
+import { DynamicShowcaseSchema } from "./dynamic-showcase/schema";
+import dynamicShowcaseManifest from "./dynamic-showcase/manifest.json";
+import { ParallaxShowcaseSchema } from "./parallax-showcase/schema";
+import parallaxShowcaseManifest from "./parallax-showcase/manifest.json";
 
 export interface ServerTemplateEntry {
   id: string;
@@ -144,6 +154,31 @@ export const SERVER_TEMPLATE_REGISTRY: Record<string, ServerTemplateEntry> = {
     id: "map-highlight",
     schema: MapHighlightSchema,
     manifest: mapHighlightManifest as TemplateManifest,
+  },
+  "masked-text-reveal": {
+    id: "masked-text-reveal",
+    schema: MaskedTextRevealSchema,
+    manifest: maskedTextRevealManifest as TemplateManifest,
+  },
+  "cinematic-hero": {
+    id: "cinematic-hero",
+    schema: CinematicHeroSchema,
+    manifest: cinematicHeroManifest as TemplateManifest,
+  },
+  "cinematic-transition": {
+    id: "cinematic-transition",
+    schema: CinematicTransitionSchema,
+    manifest: cinematicTransitionManifest as TemplateManifest,
+  },
+  "dynamic-showcase": {
+    id: "dynamic-showcase",
+    schema: DynamicShowcaseSchema,
+    manifest: dynamicShowcaseManifest as TemplateManifest,
+  },
+  "parallax-showcase": {
+    id: "parallax-showcase",
+    schema: ParallaxShowcaseSchema,
+    manifest: parallaxShowcaseManifest as TemplateManifest,
   },
 };
 

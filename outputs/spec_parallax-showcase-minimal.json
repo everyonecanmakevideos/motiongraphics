@@ -1,0 +1,18 @@
+{
+  "templateId": "parallax-showcase",
+  "params": {
+    "title": "Clean Design",
+    "description": "Every pixel has a purpose",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#FFFFFF",
+    "parallaxDirection": "left",
+    "depthIntensity": "subtle",
+    "foregroundStyle": "lines",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "clip-reveal",
+    "duration": 8
+  }
+}

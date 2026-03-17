@@ -1,0 +1,21 @@
+{
+  "templateId": "dynamic-showcase",
+  "params": {
+    "iconId": "rocket",
+    "title": "Launch Faster",
+    "description": "Deploy your applications in seconds, not hours. Our platform handles the complexity so you can focus on building.",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#4FC3F7",
+    "glowColor": "#4FC3F7",
+    "orbitStyle": "dots",
+    "orbitCount": 5,
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "radial"
+    },
+    "layout": "center",
+    "duration": 7
+  }
+}

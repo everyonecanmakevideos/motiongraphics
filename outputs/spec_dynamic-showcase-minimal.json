@@ -1,0 +1,21 @@
+{
+  "templateId": "dynamic-showcase",
+  "params": {
+    "iconId": "star-icon",
+    "title": "Five Star Experience",
+    "description": "",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#800080",
+    "glowColor": "#800080",
+    "orbitStyle": "dots",
+    "orbitCount": 3,
+    "background": {
+      "type": "gradient",
+      "from": "#0D0D0D",
+      "to": "#1A1A1A",
+      "direction": "radial"
+    },
+    "layout": "center",
+    "duration": 7
+  }
+}

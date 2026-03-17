@@ -1,0 +1,21 @@
+{
+  "templateId": "cinematic-transition",
+  "params": {
+    "sectionLabel": "NEXT",
+    "labelColor": "#FFFFFF",
+    "wipeColor": "#FFA500",
+    "transitionStyle": "wipe-horizontal",
+    "trailEffect": true,
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "backgroundAfter": {
+      "type": "solid",
+      "color": "#0A0A0A"
+    },
+    "speed": "normal",
+    "labelAnimation": "scale-pop",
+    "duration": 3
+  }
+}
