@@ -1,0 +1,25 @@
+{
+  "templateId": "data-callout",
+  "params": {
+    "value": 4750000,
+    "prefix": "",
+    "suffix": "",
+    "label": "Annual Revenue",
+    "context": "This year's performance",
+    "trend": "up",
+    "trendValue": "+23%",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "contextColor": "#888888",
+    "trendUpColor": "#51CF66",
+    "trendDownColor": "#FF6B6B",
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "count-up",
+    "duration": 6
+  }
+}

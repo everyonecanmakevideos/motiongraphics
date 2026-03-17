@@ -1,0 +1,46 @@
+{
+  "templateId": "map-highlight",
+  "params": {
+    "title": "Global Offices",
+    "locations": [
+      {
+        "label": "New York",
+        "x": 22,
+        "y": 40
+      },
+      {
+        "label": "London",
+        "x": 47,
+        "y": 25
+      },
+      {
+        "label": "Tokyo",
+        "x": 82,
+        "y": 38
+      },
+      {
+        "label": "Sydney",
+        "x": 86,
+        "y": 72
+      },
+      {
+        "label": "São Paulo",
+        "x": 30,
+        "y": 65
+      }
+    ],
+    "mapStyle": "world-dots",
+    "markerColor": "#FF0000",
+    "markerPulse": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#FFFFFF",
+    "mapColor": "#2A2A3A",
+    "connectionLines": true,
+    "background": {
+      "type": "solid",
+      "color": "#0A0A1A"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

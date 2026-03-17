@@ -1,0 +1,38 @@
+{
+  "templateId": "process-steps",
+  "params": {
+    "title": "CI/CD Pipeline",
+    "steps": [
+      {
+        "label": "Code"
+      },
+      {
+        "label": "Build"
+      },
+      {
+        "label": "Test"
+      },
+      {
+        "label": "Deploy"
+      },
+      {
+        "label": "Monitor"
+      },
+      {
+        "label": "Feedback"
+      }
+    ],
+    "connectorStyle": "dashed",
+    "stepColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "numberColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-up",
+    "duration": 7
+  }
+}

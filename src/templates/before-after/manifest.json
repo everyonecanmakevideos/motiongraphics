@@ -1,0 +1,10 @@
+{
+  "id": "before-after",
+  "name": "Before After",
+  "description": "Before/after comparison with reveal transition. Ideal for transformations, improvements, and change showcases.",
+  "tags": ["before", "after", "comparison", "transformation", "change", "reveal", "wipe"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

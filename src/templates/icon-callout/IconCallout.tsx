@@ -3,12 +3,14 @@ import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame, fadeIn, slideUp, scalePop } from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { IconCalloutProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 export const IconCallout: React.FC<IconCalloutProps> = (props) => {
   const frame = useCurrentFrame();
+  const { width, isPortrait, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
@@ -53,7 +55,7 @@ export const IconCallout: React.FC<IconCalloutProps> = (props) => {
     descY = interpolate(frame, [descStart, descEnd], [15, 0], CLAMP);
   }
 
-  const isHorizontal = props.layout === "icon-left" || props.layout === "icon-right";
+  const isHorizontal = !isPortrait && (props.layout === "icon-left" || props.layout === "icon-right");
   const isRight = props.layout === "icon-right";
 
   return (
@@ -101,7 +103,7 @@ export const IconCallout: React.FC<IconCalloutProps> = (props) => {
         >
           <div
             style={{
-              fontSize: "56px",
+              fontSize: Math.round(56 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.headlineColor,
@@ -116,12 +118,12 @@ export const IconCallout: React.FC<IconCalloutProps> = (props) => {
           {props.description && (
             <div
               style={{
-                fontSize: "26px",
+                fontSize: Math.round(26 * scale) + "px",
                 fontFamily: "Arial, Helvetica, sans-serif",
                 color: props.descriptionColor,
                 lineHeight: 1.4,
                 marginTop: "16px",
-                maxWidth: "600px",
+                maxWidth: Math.round(width * 0.55) + "px",
                 opacity: descOpacity,
                 transform: "translateY(" + descY + "px)",
               }}

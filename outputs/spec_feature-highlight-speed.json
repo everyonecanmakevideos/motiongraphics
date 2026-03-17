@@ -1,0 +1,19 @@
+{
+  "templateId": "icon-callout",
+  "params": {
+    "iconId": "lightning",
+    "headline": "Blazing Fast",
+    "description": "Sub-millisecond response times powered by edge computing",
+    "iconColor": "#FF6B35",
+    "headlineColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "iconSize": 120,
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "layout": "icon-top",
+    "entranceAnimation": "scale-pop",
+    "duration": 6
+  }
+}

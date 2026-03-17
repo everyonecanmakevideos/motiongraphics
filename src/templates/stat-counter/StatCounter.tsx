@@ -2,12 +2,14 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame, countUp, fadeIn, scalePop } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { StatCounterProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 export const StatCounter: React.FC<StatCounterProps> = (props) => {
   const frame = useCurrentFrame();
+  const { scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
@@ -63,7 +65,7 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
         {/* Big number */}
         <div
           style={{
-            fontSize: "140px",
+            fontSize: Math.round(140 * scale) + "px",
             fontWeight: "bold",
             fontFamily: "Arial, Helvetica, sans-serif",
             color: props.valueColor,
@@ -80,7 +82,7 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
         {props.label && (
           <div
             style={{
-              fontSize: "36px",
+              fontSize: Math.round(36 * scale) + "px",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.labelColor,
               marginTop: "20px",
@@ -96,7 +98,7 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
         {props.sublabel && (
           <div
             style={{
-              fontSize: "22px",
+              fontSize: Math.round(22 * scale) + "px",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.labelColor,
               marginTop: "10px",

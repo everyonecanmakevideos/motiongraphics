@@ -2,12 +2,11 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { PieChartProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 const TAU = 2 * Math.PI;
-const SIZE = 400;
-const CENTER = SIZE / 2;
 
 function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
   return {
@@ -58,7 +57,12 @@ function describeDonutArc(
 
 export const PieChart: React.FC<PieChartProps> = (props) => {
   const frame = useCurrentFrame();
+  const { width, isPortrait, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
+
+  // Dynamic pie size based on composition
+  const SIZE = Math.round(Math.min(width, 1080) * 0.37);
+  const CENTER = SIZE / 2;
 
   // Phase timing
   const titleEnd = Math.round(totalFrames * 0.15);
@@ -125,7 +129,7 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
         {props.title && (
           <div
             style={{
-              fontSize: "48px",
+              fontSize: Math.round(48 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.titleColor,
@@ -137,7 +141,7 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
           </div>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: "60px" }}>
+        <div style={{ display: "flex", flexDirection: isPortrait ? "column" : "row", alignItems: "center", gap: Math.round((isPortrait ? 30 : 60) * scale) + "px" }}>
           {/* Pie/Donut SVG */}
           <svg
             width={SIZE}

@@ -1,0 +1,24 @@
+{
+  "templateId": "bullet-list",
+  "params": {
+    "title": "Key Features",
+    "items": [
+      "Real-time sync",
+      "End-to-end encryption",
+      "Cross-platform support",
+      "Offline mode",
+      "Custom integrations",
+      "API access"
+    ],
+    "bulletStyle": "number",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "bulletColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-up",
+    "duration": 6
+  }
+}

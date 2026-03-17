@@ -10,6 +10,7 @@ import {
   blurReveal,
   typewriter,
 } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { KineticTypographyProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -47,6 +48,7 @@ function applyAnimation(
 
 export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
   const frame = useCurrentFrame();
+  const { scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   const entranceFrames = Math.round(totalFrames * 0.6);
@@ -111,7 +113,7 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
                 <span
                   key={i}
                   style={{
-                    fontSize: props.fontSize + "px",
+                    fontSize: Math.round(props.fontSize * scale) + "px",
                     fontWeight: props.fontWeight === "black" ? 900 : props.fontWeight === "bold" ? 700 : 400,
                     fontFamily: "Arial, Helvetica, sans-serif",
                     color: item.color,
@@ -139,7 +141,7 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
               <div
                 key={i}
                 style={{
-                  fontSize: props.fontSize + "px",
+                  fontSize: Math.round(props.fontSize * scale) + "px",
                   fontWeight: props.fontWeight === "black" ? 900 : props.fontWeight === "bold" ? 700 : 400,
                   fontFamily: "Arial, Helvetica, sans-serif",
                   color: item.color,

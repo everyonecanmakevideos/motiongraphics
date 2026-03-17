@@ -1,0 +1,10 @@
+{
+  "id": "bullet-list",
+  "name": "Bullet List",
+  "description": "Animated bullet point list with staggered reveal. Ideal for key points, agendas, and feature lists.",
+  "tags": ["text", "list", "bullets", "points", "agenda", "features", "items"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

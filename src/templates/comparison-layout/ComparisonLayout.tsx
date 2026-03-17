@@ -2,12 +2,14 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame, fadeIn, scalePop } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { ComparisonLayoutProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
   const frame = useCurrentFrame();
+  const { isPortrait, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
@@ -67,8 +69,9 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           top: "50%",
           transform: "translate(-50%, -50%)",
           display: "flex",
-          alignItems: "flex-start",
-          gap: "60px",
+          flexDirection: isPortrait ? "column" : "row",
+          alignItems: isPortrait ? "center" : "flex-start",
+          gap: Math.round((isPortrait ? 30 : 60) * scale) + "px",
           opacity: exitOpacity,
           width: "85%",
         }}
@@ -83,7 +86,7 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
         >
           <div
             style={{
-              fontSize: "48px",
+              fontSize: Math.round(48 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.leftColor,
@@ -133,7 +136,7 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
         >
           <div
             style={{
-              fontSize: "40px",
+              fontSize: Math.round(40 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.vsColor,
@@ -161,7 +164,7 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
         >
           <div
             style={{
-              fontSize: "48px",
+              fontSize: Math.round(48 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.rightColor,

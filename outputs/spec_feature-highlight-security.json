@@ -1,0 +1,26 @@
+{
+  "templateId": "feature-highlight",
+  "params": {
+    "iconId": "lock",
+    "title": "Enterprise Security",
+    "description": "Bank-grade encryption protects your data at rest and in transit",
+    "bulletPoints": [
+      "SOC 2 Type II certified",
+      "GDPR compliant",
+      "AES-256 encryption",
+      "Zero-trust architecture"
+    ],
+    "iconColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "bulletColor": "#FFFFFF",
+    "accentColor": "#4FC3F7",
+    "layout": "icon-left",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

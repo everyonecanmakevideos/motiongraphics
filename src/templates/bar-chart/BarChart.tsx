@@ -2,12 +2,14 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame, fadeIn, slideUp } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { BarChartProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 export const BarChart: React.FC<BarChartProps> = (props) => {
   const frame = useCurrentFrame();
+  const { width, height, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
   const isVertical = props.orientation === "vertical";
 
@@ -26,9 +28,9 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
   // Find max value for scaling
   const maxValue = Math.max(...props.bars.map((b) => b.value), 1);
 
-  // Chart area dimensions
-  const chartWidth = isVertical ? 1400 : 1200;
-  const chartHeight = isVertical ? 500 : 600;
+  // Chart area dimensions — adapt to composition size
+  const chartWidth = Math.round(width * (isVertical ? 0.85 : 0.75));
+  const chartHeight = Math.round(height * (isVertical ? 0.5 : 0.55));
   const barGap = isVertical
     ? Math.max(8, (chartWidth - props.bars.length * props.barWidth) / (props.bars.length + 1))
     : Math.max(6, (chartHeight - props.bars.length * props.barWidth) / (props.bars.length + 1));
@@ -53,7 +55,7 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
         {props.title && (
           <div
             style={{
-              fontSize: "48px",
+              fontSize: Math.round(48 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.titleColor,

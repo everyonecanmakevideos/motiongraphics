@@ -1,0 +1,41 @@
+{
+  "templateId": "map-highlight",
+  "params": {
+    "title": "2024 Market Expansion",
+    "locations": [
+      {
+        "label": "San Francisco",
+        "x": 18,
+        "y": 38
+      },
+      {
+        "label": "Berlin",
+        "x": 49,
+        "y": 27
+      },
+      {
+        "label": "Singapore",
+        "x": 75,
+        "y": 55
+      },
+      {
+        "label": "Dubai",
+        "x": 58,
+        "y": 42
+      }
+    ],
+    "mapStyle": "world-dots",
+    "markerColor": "#FF6B6B",
+    "markerPulse": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#FFFFFF",
+    "mapColor": "#2A2A3A",
+    "connectionLines": true,
+    "background": {
+      "type": "solid",
+      "color": "#0A0A1A"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

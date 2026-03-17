@@ -1,0 +1,10 @@
+{
+  "id": "problem-solution",
+  "name": "Problem Solution",
+  "description": "Two-section layout showing problem then solution with visual transition. Ideal for presenting challenges and answers.",
+  "tags": ["problem", "solution", "challenge", "answer", "transition"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

@@ -1,0 +1,61 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 210,
+      "startFrame": 0,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "layout": "grid-2x2",
+      "background": {
+        "type": "solid",
+        "color": "#111111"
+      },
+      "regions": [
+        {
+          "templateId": "card-layout",
+          "params": {
+            "title": "Fast",
+            "cards": [
+              {
+                "heading": "Fast",
+                "body": "Lightning-fast performance",
+                "iconId": "lightning"
+              },
+              {
+                "heading": "Secure",
+                "body": "Enterprise-grade security",
+                "iconId": "lock"
+              },
+              {
+                "heading": "Reliable",
+                "body": "99.9% uptime guaranteed",
+                "iconId": "shield"
+              },
+              {
+                "heading": "Simple",
+                "body": "User-friendly interface",
+                "iconId": "star-icon"
+              }
+            ],
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "columns": 2,
+            "cardBackground": "#1E1E2E",
+            "titleColor": "#FFFFFF",
+            "headingColor": "#FFFFFF",
+            "bodyColor": "#B0BEC5",
+            "iconColor": "#4FC3F7",
+            "entranceAnimation": "slide-up",
+            "duration": 7
+          },
+          "x": 0,
+          "y": 0,
+          "width": 960,
+          "height": 540
+        }
+      ]
+    }
+  ]
+}

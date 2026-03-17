@@ -2,12 +2,14 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame, fadeIn, slideUp } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { TimelineSceneProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
   const frame = useCurrentFrame();
+  const { width, isPortrait, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
   const count = props.milestones.length;
 
@@ -28,8 +30,8 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
       ? interpolate(frame, [timelineStart, timelineEnd], [0, 100], CLAMP)
       : 100;
 
-  // Spacing
-  const timelineWidth = 1400;
+  // Spacing — adapt to actual width
+  const timelineWidth = Math.round(width * 0.85);
   const segmentWidth = timelineWidth / (count - 1 || 1);
 
   return (
@@ -52,7 +54,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
         {props.title && (
           <div
             style={{
-              fontSize: "48px",
+              fontSize: Math.round(48 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.titleColor,

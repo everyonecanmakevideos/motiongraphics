@@ -3,12 +3,14 @@ import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import { secToFrame, staggerDelay, fadeIn, slideUp, scalePop } from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { CardLayoutProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 export const CardLayout: React.FC<CardLayoutProps> = (props) => {
   const frame = useCurrentFrame();
+  const { width, isPortrait, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
@@ -25,10 +27,11 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
   const entranceFrames = cardsEnd - cardsStart;
   const cardCount = props.cards.length;
 
-  // Card dimensions
-  const gap = 24;
-  const cols = Math.min(props.columns, cardCount);
-  const cardWidth = Math.round((1400 - gap * (cols - 1)) / cols);
+  // Card dimensions — adapt columns for portrait
+  const gap = Math.round(24 * scale);
+  const cols = isPortrait ? Math.min(props.columns, 1) : Math.min(props.columns, cardCount);
+  const containerWidth = Math.round(width * 0.85);
+  const cardWidth = Math.round((containerWidth - gap * (cols - 1)) / cols);
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -50,7 +53,7 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
         {props.title && (
           <div
             style={{
-              fontSize: "48px",
+              fontSize: Math.round(48 * scale) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.titleColor,
@@ -69,7 +72,7 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
             flexWrap: "wrap",
             gap: gap + "px",
             justifyContent: "center",
-            maxWidth: "1440px",
+            maxWidth: containerWidth + "px",
           }}
         >
           {props.cards.map((card, i) => {

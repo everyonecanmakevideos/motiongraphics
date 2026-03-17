@@ -1,0 +1,82 @@
+[
+  {
+    "id": "portrait-hero",
+    "prompt": "Create a portrait vertical video for Instagram story: big bold headline 'Summer Sale 2024' with subtitle '50% off everything' on a vibrant orange gradient. Fade-in animation."
+  },
+  {
+    "id": "portrait-bullet",
+    "prompt": "Make a vertical mobile-friendly video listing 5 tips: Wake up early, Exercise daily, Read 30 minutes, Meditate, Plan your day. Title: 'Morning Routine'. Use checkmark bullets with green accent."
+  },
+  {
+    "id": "portrait-stat",
+    "prompt": "TikTok-style portrait video showing the number 2.5 million with suffix followers, label 'Community Growth', green upward trend +340%. Count-up animation on dark background."
+  },
+  {
+    "id": "portrait-quote",
+    "prompt": "Instagram story quote: 'The only way to do great work is to love what you do.' by Steve Jobs. Large decorative quote marks, blue accent, typewriter effect."
+  },
+  {
+    "id": "portrait-split",
+    "prompt": "Vertical reel comparing Free vs Pro plan side by side: Free has '5 projects, Basic support, 1GB storage', Pro has 'Unlimited projects, Priority support, 100GB storage'. Slide-in animation."
+  },
+  {
+    "id": "portrait-process",
+    "prompt": "Portrait video showing a 5-step recipe: Prep Ingredients, Mix Batter, Preheat Oven, Bake 25 min, Cool and Serve. Arrow connectors, progressive animation, title 'Perfect Brownies'."
+  },
+  {
+    "id": "portrait-bar-chart",
+    "prompt": "Vertical story video with a bar chart showing weekly workout minutes: Mon=45, Tue=30, Wed=60, Thu=0, Fri=50, Sat=90, Sun=40. Title: 'This Week's Activity'. Grow animation."
+  },
+  {
+    "id": "portrait-pie",
+    "prompt": "Mobile vertical video: pie chart showing time spent today — Work 40%, Sleep 33%, Exercise 7%, Leisure 12%, Commute 8%. Title 'Daily Breakdown'. Donut style, spin animation."
+  },
+  {
+    "id": "square-hero",
+    "prompt": "Square Instagram post video: headline 'New Product Launch' with subtitle 'Available now worldwide' on a dark navy gradient. Scale-pop entrance."
+  },
+  {
+    "id": "square-comparison",
+    "prompt": "1:1 square video comparing Node.js vs Deno: Node has 'NPM ecosystem, Mature tooling, Huge community', Deno has 'Built-in TypeScript, Secure by default, Modern APIs'. VS badge in center."
+  },
+  {
+    "id": "square-data-callout",
+    "prompt": "Square format: big number 99.97 with percent suffix, label 'Uptime SLA', context 'Industry-leading reliability across all regions'. Green up trend +0.02%. Scale-pop animation."
+  },
+  {
+    "id": "square-cards",
+    "prompt": "Square Instagram video: 4 feature cards in a 2x2 grid — 'Fast' with lightning icon, 'Secure' with lock icon, 'Reliable' with shield icon, 'Simple' with star icon. Slide-up animation, dark background."
+  },
+  {
+    "id": "landscape-timeline",
+    "prompt": "Widescreen 16:9 video showing company timeline: 2019 Founded, 2020 First Product, 2021 Series A, 2022 Global Launch, 2023 IPO. Title 'Our Journey'. Progressive animation, blue dots."
+  },
+  {
+    "id": "landscape-map",
+    "prompt": "16:9 landscape video: world map showing data centers in Virginia (20,38), Frankfurt (48,28), Mumbai (65,45), Tokyo (82,35). Title 'Global Infrastructure'. Pulse markers, connection lines, dark background."
+  },
+  {
+    "id": "seq-portrait-startup",
+    "prompt": "Vertical story sequence: first show hero text 'Introducing Flux', then display 3 feature cards showing Speed, Security, and Scale with icons, then end with a stat counter showing 10000 beta signups."
+  },
+  {
+    "id": "seq-portrait-report",
+    "prompt": "Portrait mobile video sequence: start with section title 'Weekly Health Report', then a bar chart of steps per day Mon through Sun (8K 6K 10K 7K 12K 15K 9K), then a data callout showing 67000 total steps with upward trend."
+  },
+  {
+    "id": "seq-square-pitch",
+    "prompt": "Square video sequence: begin with hero 'Why Choose Us?', then a comparison of Us vs Competitors side by side with 3 points each, then close with a quote 'Best tool we have ever used' by Jamie Lee, CTO."
+  },
+  {
+    "id": "seq-landscape-product",
+    "prompt": "Widescreen 16:9 sequence: first a hero title 'Product Roadmap 2024', then a timeline showing Q1 Research, Q2 Design, Q3 Build, Q4 Launch, then a pie chart of budget allocation Design 25% Engineering 50% Marketing 15% Operations 10%."
+  },
+  {
+    "id": "composite-portrait-dashboard",
+    "prompt": "Vertical mobile dashboard: stat counter showing 3.2M downloads on the top half, and a pie chart showing platform split iOS 55% Android 38% Other 7% on the bottom half."
+  },
+  {
+    "id": "composite-square-overview",
+    "prompt": "Square format composite: bar chart of quarterly revenue on the left and a stat counter showing 12.4M annual revenue on the right, dark gradient background."
+  }
+]

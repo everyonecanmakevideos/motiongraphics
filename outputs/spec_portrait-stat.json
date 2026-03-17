@@ -1,0 +1,23 @@
+{
+  "templateId": "data-callout",
+  "params": {
+    "value": 2500000,
+    "prefix": "",
+    "suffix": "",
+    "label": "Community Growth",
+    "context": "Followers",
+    "trend": "up",
+    "trendValue": "+340%",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "contextColor": "#888888",
+    "trendUpColor": "#51CF66",
+    "trendDownColor": "#FF6B6B",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "count-up",
+    "duration": 5
+  }
+}

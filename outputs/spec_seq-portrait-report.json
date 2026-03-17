@@ -1,0 +1,110 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 90,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "section-title",
+      "params": {
+        "title": "Weekly Health Report",
+        "titleColor": "#FFFFFF",
+        "subtitleColor": "#B0BEC5",
+        "accentColor": "#4FC3F7",
+        "accentStyle": "line-left",
+        "alignment": "center",
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "entranceAnimation": "fade-in",
+        "duration": 3
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 75,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "bar-chart",
+      "params": {
+        "title": "Steps Per Day",
+        "bars": [
+          {
+            "label": "Mon",
+            "value": 8000,
+            "color": "#4FC3F7"
+          },
+          {
+            "label": "Tue",
+            "value": 6000,
+            "color": "#81C784"
+          },
+          {
+            "label": "Wed",
+            "value": 10000,
+            "color": "#FFB74D"
+          },
+          {
+            "label": "Thu",
+            "value": 7000,
+            "color": "#E57373"
+          },
+          {
+            "label": "Fri",
+            "value": 12000,
+            "color": "#64B5F6"
+          },
+          {
+            "label": "Sat",
+            "value": 15000,
+            "color": "#FFD54F"
+          },
+          {
+            "label": "Sun",
+            "value": 9000,
+            "color": "#4DB6AC"
+          }
+        ],
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "showValues": true,
+        "orientation": "vertical",
+        "barWidth": 60,
+        "titleColor": "#FFFFFF",
+        "labelColor": "#B0BEC5",
+        "valueColor": "#FFFFFF",
+        "duration": 5,
+        "entranceAnimation": "grow"
+      }
+    },
+    {
+      "durationFrames": 120,
+      "startFrame": 210,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "templateId": "data-callout",
+      "params": {
+        "value": 67000,
+        "prefix": "",
+        "suffix": "",
+        "label": "Total Steps",
+        "trend": "up",
+        "trendValue": "+5%",
+        "valueColor": "#FFFFFF",
+        "labelColor": "#B0BEC5",
+        "contextColor": "#888888",
+        "trendUpColor": "#51CF66",
+        "trendDownColor": "#FF6B6B",
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "entranceAnimation": "count-up",
+        "duration": 4
+      }
+    }
+  ]
+}

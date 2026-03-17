@@ -1,0 +1,17 @@
+{
+  "templateId": "quote-highlight",
+  "params": {
+    "quote": "The only way to do great work is to love what you do.",
+    "attribution": "Steve Jobs",
+    "quoteColor": "#FFFFFF",
+    "attributionColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "quoteMarkStyle": "large",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "typewriter",
+    "duration": 6
+  }
+}

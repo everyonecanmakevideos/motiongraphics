@@ -13,6 +13,7 @@ export interface IntentResult {
   params: Record<string, unknown>;
   confidence: "high" | "medium" | "low";
   reasoning: string;
+  aspect_ratio?: string;
 }
 
 /**

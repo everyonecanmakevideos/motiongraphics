@@ -1,0 +1,63 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 180,
+      "startFrame": 0,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "layout": "split-horizontal",
+      "background": {
+        "type": "solid",
+        "color": "#111111"
+      },
+      "regions": [
+        {
+          "templateId": "icon-callout",
+          "params": {
+            "iconId": "users",
+            "headline": "Starter Plan",
+            "description": "Perfect for small teams up to 10 members",
+            "iconColor": "#4FC3F7",
+            "headlineColor": "#FFFFFF",
+            "descriptionColor": "#B0BEC5",
+            "iconSize": 120,
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "layout": "icon-top",
+            "entranceAnimation": "fade-in",
+            "duration": 6
+          },
+          "x": 0,
+          "y": 0,
+          "width": 960,
+          "height": 1080
+        },
+        {
+          "templateId": "icon-callout",
+          "params": {
+            "iconId": "users",
+            "headline": "Enterprise Plan",
+            "description": "Unlimited seats with dedicated support and SLA",
+            "iconColor": "#81C784",
+            "headlineColor": "#FFFFFF",
+            "descriptionColor": "#B0BEC5",
+            "iconSize": 120,
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "layout": "icon-top",
+            "entranceAnimation": "fade-in",
+            "duration": 6
+          },
+          "x": 960,
+          "y": 0,
+          "width": 960,
+          "height": 1080
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "section-title",
+  "name": "Section Title",
+  "description": "Section divider with large title, optional subtitle, and decorative accent. Ideal for chapter breaks and topic transitions.",
+  "tags": ["text", "title", "section", "divider", "heading", "chapter", "transition"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "blur-reveal", "none"],
+  "minDuration": 2,
+  "maxDuration": 10,
+  "defaultDuration": 4
+}

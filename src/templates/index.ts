@@ -26,6 +26,36 @@ import timelineSceneManifest from "./timeline-scene/manifest.json";
 import { CardLayout } from "./card-layout/CardLayout";
 import { CardLayoutSchema } from "./card-layout/schema";
 import cardLayoutManifest from "./card-layout/manifest.json";
+import { SectionTitle } from "./section-title/SectionTitle";
+import { SectionTitleSchema } from "./section-title/schema";
+import sectionTitleManifest from "./section-title/manifest.json";
+import { BulletList } from "./bullet-list/BulletList";
+import { BulletListSchema } from "./bullet-list/schema";
+import bulletListManifest from "./bullet-list/manifest.json";
+import { QuoteHighlight } from "./quote-highlight/QuoteHighlight";
+import { QuoteHighlightSchema } from "./quote-highlight/schema";
+import quoteHighlightManifest from "./quote-highlight/manifest.json";
+import { DataCallout } from "./data-callout/DataCallout";
+import { DataCalloutSchema } from "./data-callout/schema";
+import dataCalloutManifest from "./data-callout/manifest.json";
+import { FeatureHighlight } from "./feature-highlight/FeatureHighlight";
+import { FeatureHighlightSchema } from "./feature-highlight/schema";
+import featureHighlightManifest from "./feature-highlight/manifest.json";
+import { SplitScreen } from "./split-screen/SplitScreen";
+import { SplitScreenSchema } from "./split-screen/schema";
+import splitScreenManifest from "./split-screen/manifest.json";
+import { ProblemSolution } from "./problem-solution/ProblemSolution";
+import { ProblemSolutionSchema } from "./problem-solution/schema";
+import problemSolutionManifest from "./problem-solution/manifest.json";
+import { BeforeAfter } from "./before-after/BeforeAfter";
+import { BeforeAfterSchema } from "./before-after/schema";
+import beforeAfterManifest from "./before-after/manifest.json";
+import { ProcessSteps } from "./process-steps/ProcessSteps";
+import { ProcessStepsSchema } from "./process-steps/schema";
+import processStepsManifest from "./process-steps/manifest.json";
+import { MapHighlight } from "./map-highlight/MapHighlight";
+import { MapHighlightSchema } from "./map-highlight/schema";
+import mapHighlightManifest from "./map-highlight/manifest.json";
 
 export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> = {
   "hero-text": {
@@ -81,6 +111,66 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> = {
     component: CardLayout as TemplateEntry["component"],
     schema: CardLayoutSchema,
     manifest: cardLayoutManifest as TemplateEntry["manifest"],
+  },
+  "section-title": {
+    id: "section-title",
+    component: SectionTitle as TemplateEntry["component"],
+    schema: SectionTitleSchema,
+    manifest: sectionTitleManifest as TemplateEntry["manifest"],
+  },
+  "bullet-list": {
+    id: "bullet-list",
+    component: BulletList as TemplateEntry["component"],
+    schema: BulletListSchema,
+    manifest: bulletListManifest as TemplateEntry["manifest"],
+  },
+  "quote-highlight": {
+    id: "quote-highlight",
+    component: QuoteHighlight as TemplateEntry["component"],
+    schema: QuoteHighlightSchema,
+    manifest: quoteHighlightManifest as TemplateEntry["manifest"],
+  },
+  "data-callout": {
+    id: "data-callout",
+    component: DataCallout as TemplateEntry["component"],
+    schema: DataCalloutSchema,
+    manifest: dataCalloutManifest as TemplateEntry["manifest"],
+  },
+  "feature-highlight": {
+    id: "feature-highlight",
+    component: FeatureHighlight as TemplateEntry["component"],
+    schema: FeatureHighlightSchema,
+    manifest: featureHighlightManifest as TemplateEntry["manifest"],
+  },
+  "split-screen": {
+    id: "split-screen",
+    component: SplitScreen as TemplateEntry["component"],
+    schema: SplitScreenSchema,
+    manifest: splitScreenManifest as TemplateEntry["manifest"],
+  },
+  "problem-solution": {
+    id: "problem-solution",
+    component: ProblemSolution as TemplateEntry["component"],
+    schema: ProblemSolutionSchema,
+    manifest: problemSolutionManifest as TemplateEntry["manifest"],
+  },
+  "before-after": {
+    id: "before-after",
+    component: BeforeAfter as TemplateEntry["component"],
+    schema: BeforeAfterSchema,
+    manifest: beforeAfterManifest as TemplateEntry["manifest"],
+  },
+  "process-steps": {
+    id: "process-steps",
+    component: ProcessSteps as TemplateEntry["component"],
+    schema: ProcessStepsSchema,
+    manifest: processStepsManifest as TemplateEntry["manifest"],
+  },
+  "map-highlight": {
+    id: "map-highlight",
+    component: MapHighlight as TemplateEntry["component"],
+    schema: MapHighlightSchema,
+    manifest: mapHighlightManifest as TemplateEntry["manifest"],
   },
 };
 

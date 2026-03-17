@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Summer Sale 2024",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#FFA726",
+      "to": "#FB8C00",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "fade-in",
+    "subheadlineAnimation": "fade-in",
+    "duration": 4,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

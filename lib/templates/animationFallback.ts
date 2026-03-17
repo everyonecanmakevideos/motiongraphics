@@ -80,6 +80,23 @@ const SIMILARITY_MAP: Record<string, string[]> = {
   "slide-in": ["slide-in", "slide-up"],
   converge: ["slide-in", "slide-up"],
   merge: ["slide-in", "fade-in"],
+
+  // → progressive candidates (process/map)
+  stagger: ["progressive", "fade-in"],
+  sequential: ["progressive", "fade-in"],
+  step: ["progressive", "fade-in"],
+  flow: ["progressive", "slide-up"],
+
+  // → map/location candidates
+  marker: ["progressive", "scale-pop"],
+  pin: ["progressive", "scale-pop"],
+  locate: ["progressive", "fade-in"],
+  place: ["progressive", "fade-in"],
+
+  // → wipe candidates (before-after)
+  "wipe-reveal": ["fade-in", "slide-up"],
+  transition: ["fade-in", "slide-up"],
+  transform: ["fade-in", "scale-pop"],
 };
 
 /**

@@ -1,0 +1,19 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "New Product Launch",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1A",
+      "to": "#1A1A2E",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "scale-pop",
+    "duration": 4,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

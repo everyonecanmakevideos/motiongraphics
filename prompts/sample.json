@@ -34,5 +34,85 @@
   {
     "id": "animation-fallback-bounce",
     "prompt": "Show 'Welcome Back!' with a bouncy elastic animation on a gradient from dark blue to purple"
+  },
+  {
+    "id": "section-title-basic",
+    "prompt": "Section title 'Chapter 2: Design Principles' with subtitle 'Building beautiful interfaces' and a blue accent line on the left side"
+  },
+  {
+    "id": "section-title-centered",
+    "prompt": "Show a centered section heading 'Our Mission' with a line accent at the bottom and subtitle 'Making technology accessible to everyone' on a dark gradient background"
+  },
+  {
+    "id": "bullet-list-agenda",
+    "prompt": "Display a bullet list titled 'Meeting Agenda' with items: Review Q3 metrics, Discuss hiring plan, Product roadmap update, Budget allocation, Open floor Q&A. Use checkmark bullets with green color."
+  },
+  {
+    "id": "bullet-list-features",
+    "prompt": "Show key features as a numbered list: Real-time sync, End-to-end encryption, Cross-platform support, Offline mode, Custom integrations, API access. Slide up animation on dark background."
+  },
+  {
+    "id": "quote-highlight-famous",
+    "prompt": "Display the quote 'Innovation distinguishes between a leader and a follower' attributed to Steve Jobs, Apple Co-founder. Use large decorative quotation marks with a blue accent."
+  },
+  {
+    "id": "quote-highlight-typewriter",
+    "prompt": "Show this testimonial with typewriter effect: 'This product changed the way our team works. We saved 40 hours per week.' by Sarah Chen, VP of Engineering at TechCorp"
+  },
+  {
+    "id": "data-callout-revenue",
+    "prompt": "Big number showing 4,750,000 with dollar sign prefix, label 'Annual Revenue', trend up arrow showing +23% growth, on a dark blue gradient background with count-up animation"
+  },
+  {
+    "id": "data-callout-users",
+    "prompt": "Display the number 12500 with suffix 'users' and label 'Active This Month' with context 'Highest monthly active users since launch'. Show a green upward trend of +8.5%"
+  },
+  {
+    "id": "feature-highlight-security",
+    "prompt": "Feature highlight with lock icon: title 'Enterprise Security', description 'Bank-grade encryption protects your data at rest and in transit', bullet points: 'SOC 2 Type II certified', 'GDPR compliant', 'AES-256 encryption', 'Zero-trust architecture'. Icon on the left."
+  },
+  {
+    "id": "feature-highlight-speed",
+    "prompt": "Showcase a feature with the lightning icon on top: title 'Blazing Fast', description 'Sub-millisecond response times powered by edge computing' with scale-pop animation"
+  },
+  {
+    "id": "split-screen-cloud",
+    "prompt": "Split screen comparing Cloud vs On-Premise: left side title 'Cloud' with body 'Scalable, pay-as-you-go, managed infrastructure' and cloud icon, right side title 'On-Premise' with body 'Full control, data sovereignty, one-time cost' and server icon. Slide in animation."
+  },
+  {
+    "id": "split-screen-plans",
+    "prompt": "Two-panel layout: left side 'Starter Plan' with description 'Perfect for small teams up to 10 members', right side 'Enterprise Plan' with description 'Unlimited seats with dedicated support and SLA'. Use a line divider."
+  },
+  {
+    "id": "problem-solution-deploy",
+    "prompt": "Problem: 'Manual deployments take hours and are error-prone, causing downtime and frustration.' Solution: 'Our automated CI/CD pipeline deploys in minutes with zero-downtime rollbacks.' Use fire icon for problem and checkmark for solution, fade-switch transition."
+  },
+  {
+    "id": "problem-solution-sidebyside",
+    "prompt": "Show problem and solution side by side: Problem is 'Data silos prevent teams from collaborating effectively' and Solution is 'Unified platform gives everyone a single source of truth'. Use side-by-side layout."
+  },
+  {
+    "id": "before-after-testing",
+    "prompt": "Before and after comparison with wipe reveal: Before title 'Manual Testing' with items '3-day test cycles', 'Human error prone', 'Limited coverage'. After title 'Automated Testing' with items 'Instant feedback', 'Consistent results', '95% coverage'. Orange before, blue after."
+  },
+  {
+    "id": "before-after-workflow",
+    "prompt": "Show a before/after split view: Before 'Legacy Workflow' with items 'Email chains', 'Spreadsheet tracking', 'Weekly status meetings'. After 'Modern Workflow' with items 'Real-time chat', 'Automated dashboards', 'Async updates'."
+  },
+  {
+    "id": "process-steps-onboarding",
+    "prompt": "Show the onboarding process with 4 steps: Sign Up, Verify Email, Set Up Profile, Start Exploring. Use arrow connectors and progressive animation on a dark blue gradient."
+  },
+  {
+    "id": "process-steps-devops",
+    "prompt": "Display a DevOps pipeline flow: Code, Build, Test, Deploy, Monitor, Feedback. Use dashed connectors with slide-up animation. Title: 'CI/CD Pipeline'"
+  },
+  {
+    "id": "map-highlight-offices",
+    "prompt": "Show our global offices on a world dot map: New York at position 22,40 and London at 47,25 and Tokyo at 82,38 and Sydney at 86,72 and São Paulo at 30,65. Use red markers with pulse effect and connection lines."
+  },
+  {
+    "id": "map-highlight-expansion",
+    "prompt": "Map showing market expansion: San Francisco (18,38), Berlin (49,27), Singapore (75,55), Dubai (58,42). Title: '2024 Market Expansion'. Progressive animation with blue markers on dark background."
   }
 ]

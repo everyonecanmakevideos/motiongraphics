@@ -1,0 +1,23 @@
+{
+  "templateId": "data-callout",
+  "params": {
+    "value": 12500,
+    "prefix": "",
+    "suffix": "",
+    "label": "Active This Month",
+    "context": "Highest monthly active users since launch",
+    "trend": "up",
+    "trendValue": "+8.5%",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "contextColor": "#888888",
+    "trendUpColor": "#51CF66",
+    "trendDownColor": "#FF6B6B",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "count-up",
+    "duration": 6
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "feature-highlight",
+  "name": "Feature Highlight",
+  "description": "Feature showcase with icon, title, description, and optional bullet points. Ideal for product features, capabilities, and highlights.",
+  "tags": ["feature", "highlight", "showcase", "icon", "product", "capability", "detail"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

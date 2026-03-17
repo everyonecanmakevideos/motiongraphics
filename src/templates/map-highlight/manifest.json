@@ -1,0 +1,10 @@
+{
+  "id": "map-highlight",
+  "name": "Map Highlight",
+  "description": "Location markers on a simplified map visualization. Ideal for geographic data, office locations, and global presence.",
+  "tags": ["map", "location", "geography", "global", "markers", "world", "places"],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

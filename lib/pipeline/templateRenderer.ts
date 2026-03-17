@@ -6,6 +6,21 @@ import type { ResolvedScene } from "../templates/sceneTypes";
 
 const PROJECT_ROOT = path.resolve(process.cwd());
 
+const ASPECT_RATIO_PRESETS: Record<string, { width: number; height: number }> = {
+  "16:9": { width: 1920, height: 1080 },
+  "9:16": { width: 1080, height: 1920 },
+  "1:1":  { width: 1080, height: 1080 },
+  "4:3":  { width: 1440, height: 1080 },
+  "3:4":  { width: 1080, height: 1440 },
+};
+
+function resolveDimensions(aspectRatio?: string): { width: number; height: number } {
+  if (aspectRatio && ASPECT_RATIO_PRESETS[aspectRatio]) {
+    return ASPECT_RATIO_PRESETS[aspectRatio];
+  }
+  return { width: 1920, height: 1080 };
+}
+
 /**
  * Renders a template scene by passing inputProps to Remotion's TemplateScene composition.
  * No source file is overwritten — the template component is pre-compiled.
@@ -14,11 +29,11 @@ export async function renderTemplate(
   jobId: string,
   templateId: string,
   params: Record<string, unknown>,
-  durationSec: number
+  durationSec: number,
+  aspectRatio?: string
 ): Promise<{ videoKey: string; specKey: string }> {
   const durationFrames = Math.floor(durationSec * 30);
-  const width = 1920;
-  const height = 1080;
+  const { width, height } = resolveDimensions(aspectRatio);
 
   const videoLocalPath = path.join(PROJECT_ROOT, "outputs", "video_" + jobId + ".mp4");
   const propsFilePath = path.join(PROJECT_ROOT, "outputs", "props_" + jobId + ".json");
@@ -84,10 +99,10 @@ export async function renderTemplate(
 export async function renderMultiScene(
   jobId: string,
   scenes: ResolvedScene[],
-  totalDurationFrames: number
+  totalDurationFrames: number,
+  aspectRatio?: string
 ): Promise<{ videoKey: string; specKey: string }> {
-  const width = 1920;
-  const height = 1080;
+  const { width, height } = resolveDimensions(aspectRatio);
 
   const videoLocalPath = path.join(PROJECT_ROOT, "outputs", "video_" + jobId + ".mp4");
   const propsFilePath = path.join(PROJECT_ROOT, "outputs", "props_" + jobId + ".json");

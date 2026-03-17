@@ -1,0 +1,76 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 210,
+      "startFrame": 0,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "layout": "split-vertical",
+      "background": {
+        "type": "solid",
+        "color": "#111111"
+      },
+      "regions": [
+        {
+          "templateId": "stat-counter",
+          "params": {
+            "value": 3200000,
+            "prefix": "",
+            "suffix": "",
+            "label": "Downloads",
+            "valueColor": "#FFFFFF",
+            "labelColor": "#B0BEC5",
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "duration": 7,
+            "entranceAnimation": "count-up"
+          },
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 540
+        },
+        {
+          "templateId": "pie-chart",
+          "params": {
+            "title": "Platform Split",
+            "segments": [
+              {
+                "label": "iOS",
+                "value": 55,
+                "color": "#4FC3F7"
+              },
+              {
+                "label": "Android",
+                "value": 38,
+                "color": "#81C784"
+              },
+              {
+                "label": "Other",
+                "value": 7,
+                "color": "#FFB74D"
+              }
+            ],
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "donut": false,
+            "showLabels": true,
+            "showPercentages": true,
+            "titleColor": "#FFFFFF",
+            "labelColor": "#B0BEC5",
+            "duration": 7,
+            "entranceAnimation": "spin"
+          },
+          "x": 0,
+          "y": 540,
+          "width": 1920,
+          "height": 540
+        }
+      ]
+    }
+  ]
+}

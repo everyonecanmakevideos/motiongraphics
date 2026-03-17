@@ -47,14 +47,31 @@ for (let i = 0; i < args.length; i++) {
   }
 }
 
+const ASPECT_RATIO_PRESETS: Record<string, { width: number; height: number }> = {
+  "16:9": { width: 1920, height: 1080 },
+  "9:16": { width: 1080, height: 1920 },
+  "1:1":  { width: 1080, height: 1080 },
+  "4:3":  { width: 1440, height: 1080 },
+  "3:4":  { width: 1080, height: 1440 },
+};
+
+function resolveDimensions(aspectRatio?: string): { width: number; height: number } {
+  if (aspectRatio && ASPECT_RATIO_PRESETS[aspectRatio]) {
+    return ASPECT_RATIO_PRESETS[aspectRatio];
+  }
+  return { width: 1920, height: 1080 };
+}
+
 // ── Render a single spec to video ───────────────────────────────────────────
 function renderToVideo(
   jobId: string,
   templateId: string,
   params: Record<string, unknown>,
-  durationSec: number
+  durationSec: number,
+  aspectRatio?: string
 ): string {
   const durationFrames = Math.floor(durationSec * 30);
+  const { width, height } = resolveDimensions(aspectRatio);
   const outputDir = path.join(PROJECT_ROOT, "outputs");
   fs.mkdirSync(outputDir, { recursive: true });
 
@@ -64,7 +81,7 @@ function renderToVideo(
   const inputProps = { templateId, params };
   fs.writeFileSync(propsPath, JSON.stringify(inputProps, null, 2), "utf-8");
 
-  console.log(`  Rendering ${durationFrames} frames (${durationSec}s) ...`);
+  console.log(`  Rendering ${durationFrames} frames (${durationSec}s) at ${width}x${height} ...`);
 
   try {
     execSync(
@@ -75,8 +92,8 @@ function renderToVideo(
         env: {
           ...process.env,
           REMOTION_APP_DURATION_FRAMES: String(durationFrames),
-          REMOTION_APP_VIDEO_WIDTH: "1920",
-          REMOTION_APP_VIDEO_HEIGHT: "1080",
+          REMOTION_APP_VIDEO_WIDTH: String(width),
+          REMOTION_APP_VIDEO_HEIGHT: String(height),
         },
       }
     );
@@ -95,8 +112,10 @@ function renderToVideo(
 function renderMultiSceneToVideo(
   jobId: string,
   scenes: unknown[],
-  totalDurationFrames: number
+  totalDurationFrames: number,
+  aspectRatio?: string
 ): string {
+  const { width, height } = resolveDimensions(aspectRatio);
   const outputDir = path.join(PROJECT_ROOT, "outputs");
   fs.mkdirSync(outputDir, { recursive: true });
 
@@ -106,7 +125,7 @@ function renderMultiSceneToVideo(
   const inputProps = { scenes };
   fs.writeFileSync(propsPath, JSON.stringify(inputProps, null, 2), "utf-8");
 
-  console.log(`  Rendering ${totalDurationFrames} frames (${scenes.length} scenes) ...`);
+  console.log(`  Rendering ${totalDurationFrames} frames (${scenes.length} scenes) at ${width}x${height} ...`);
 
   try {
     execSync(
@@ -117,8 +136,8 @@ function renderMultiSceneToVideo(
         env: {
           ...process.env,
           REMOTION_APP_DURATION_FRAMES: String(totalDurationFrames),
-          REMOTION_APP_VIDEO_WIDTH: "1920",
-          REMOTION_APP_VIDEO_HEIGHT: "1080",
+          REMOTION_APP_VIDEO_WIDTH: String(width),
+          REMOTION_APP_VIDEO_HEIGHT: String(height),
         },
       }
     );
@@ -226,7 +245,9 @@ async function main() {
 
       // Render
       try {
-        const videoPath = renderMultiSceneToVideo(jobId, resolution.scenes!, resolution.totalDurationFrames!);
+        const aspectRatio = intent.aspect_ratio;
+        console.log(`  → Aspect ratio: ${aspectRatio ?? "16:9 (default)"}`);
+        const videoPath = renderMultiSceneToVideo(jobId, resolution.scenes!, resolution.totalDurationFrames!, aspectRatio);
         console.log(`  ✓ Video saved: ${videoPath}\n`);
       } catch {
         console.error(`  ✗ Multi-scene render failed for ${jobId}\n`);
@@ -259,8 +280,10 @@ async function main() {
 
     // Step 4: Render video locally
     const duration = (resolution.params as Record<string, unknown>).duration as number ?? 6;
+    const aspectRatio = intent.aspect_ratio;
+    console.log(`  → Aspect ratio: ${aspectRatio ?? "16:9 (default)"}`);
     try {
-      const videoPath = renderToVideo(jobId, resolution.templateId!, resolution.params!, duration);
+      const videoPath = renderToVideo(jobId, resolution.templateId!, resolution.params!, duration, aspectRatio);
       console.log(`  ✓ Video saved: ${videoPath}\n`);
     } catch {
       console.error(`  ✗ Render failed for ${jobId}\n`);

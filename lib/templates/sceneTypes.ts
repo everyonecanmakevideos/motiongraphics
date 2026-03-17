@@ -42,6 +42,7 @@ export interface MultiSceneResult {
   scenes: SceneDefinition[];
   confidence: "high" | "medium" | "low";
   reasoning: string;
+  aspect_ratio?: string;
 }
 
 // ── Resolved Scene (after validation + frame computation) ─────────────────

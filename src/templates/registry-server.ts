@@ -22,6 +22,26 @@ import { TimelineSceneSchema } from "./timeline-scene/schema";
 import timelineSceneManifest from "./timeline-scene/manifest.json";
 import { CardLayoutSchema } from "./card-layout/schema";
 import cardLayoutManifest from "./card-layout/manifest.json";
+import { SectionTitleSchema } from "./section-title/schema";
+import sectionTitleManifest from "./section-title/manifest.json";
+import { BulletListSchema } from "./bullet-list/schema";
+import bulletListManifest from "./bullet-list/manifest.json";
+import { QuoteHighlightSchema } from "./quote-highlight/schema";
+import quoteHighlightManifest from "./quote-highlight/manifest.json";
+import { DataCalloutSchema } from "./data-callout/schema";
+import dataCalloutManifest from "./data-callout/manifest.json";
+import { FeatureHighlightSchema } from "./feature-highlight/schema";
+import featureHighlightManifest from "./feature-highlight/manifest.json";
+import { SplitScreenSchema } from "./split-screen/schema";
+import splitScreenManifest from "./split-screen/manifest.json";
+import { ProblemSolutionSchema } from "./problem-solution/schema";
+import problemSolutionManifest from "./problem-solution/manifest.json";
+import { BeforeAfterSchema } from "./before-after/schema";
+import beforeAfterManifest from "./before-after/manifest.json";
+import { ProcessStepsSchema } from "./process-steps/schema";
+import processStepsManifest from "./process-steps/manifest.json";
+import { MapHighlightSchema } from "./map-highlight/schema";
+import mapHighlightManifest from "./map-highlight/manifest.json";
 
 export interface ServerTemplateEntry {
   id: string;
@@ -74,6 +94,56 @@ export const SERVER_TEMPLATE_REGISTRY: Record<string, ServerTemplateEntry> = {
     id: "card-layout",
     schema: CardLayoutSchema,
     manifest: cardLayoutManifest as TemplateManifest,
+  },
+  "section-title": {
+    id: "section-title",
+    schema: SectionTitleSchema,
+    manifest: sectionTitleManifest as TemplateManifest,
+  },
+  "bullet-list": {
+    id: "bullet-list",
+    schema: BulletListSchema,
+    manifest: bulletListManifest as TemplateManifest,
+  },
+  "quote-highlight": {
+    id: "quote-highlight",
+    schema: QuoteHighlightSchema,
+    manifest: quoteHighlightManifest as TemplateManifest,
+  },
+  "data-callout": {
+    id: "data-callout",
+    schema: DataCalloutSchema,
+    manifest: dataCalloutManifest as TemplateManifest,
+  },
+  "feature-highlight": {
+    id: "feature-highlight",
+    schema: FeatureHighlightSchema,
+    manifest: featureHighlightManifest as TemplateManifest,
+  },
+  "split-screen": {
+    id: "split-screen",
+    schema: SplitScreenSchema,
+    manifest: splitScreenManifest as TemplateManifest,
+  },
+  "problem-solution": {
+    id: "problem-solution",
+    schema: ProblemSolutionSchema,
+    manifest: problemSolutionManifest as TemplateManifest,
+  },
+  "before-after": {
+    id: "before-after",
+    schema: BeforeAfterSchema,
+    manifest: beforeAfterManifest as TemplateManifest,
+  },
+  "process-steps": {
+    id: "process-steps",
+    schema: ProcessStepsSchema,
+    manifest: processStepsManifest as TemplateManifest,
+  },
+  "map-highlight": {
+    id: "map-highlight",
+    schema: MapHighlightSchema,
+    manifest: mapHighlightManifest as TemplateManifest,
   },
 };
 

@@ -154,7 +154,8 @@ async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boole
         pipelineMode: "template", templateId: firstTemplateId,
       });
 
-      const result = await renderMultiScene(jobId, resolution.scenes!, resolution.totalDurationFrames!);
+      const aspectRatio = intent.aspect_ratio;
+      const result = await renderMultiScene(jobId, resolution.scenes!, resolution.totalDurationFrames!, aspectRatio);
 
       // Done
       await updateJob(jobId, {
@@ -200,7 +201,8 @@ async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boole
     });
 
     const durationSec = (templateParams.duration as number) ?? 6;
-    const result = await renderTemplate(jobId, templateId, templateParams, durationSec);
+    const aspectRatio = intent.aspect_ratio;
+    const result = await renderTemplate(jobId, templateId, templateParams, durationSec, aspectRatio);
 
     // Step 4: Done
     await updateJob(jobId, {

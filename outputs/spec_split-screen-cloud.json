@@ -1,0 +1,63 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 210,
+      "startFrame": 0,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "layout": "split-horizontal",
+      "background": {
+        "type": "solid",
+        "color": "#111111"
+      },
+      "regions": [
+        {
+          "templateId": "icon-callout",
+          "params": {
+            "iconId": "cloud",
+            "headline": "Cloud",
+            "description": "Scalable, pay-as-you-go, managed infrastructure",
+            "iconColor": "#4FC3F7",
+            "headlineColor": "#FFFFFF",
+            "descriptionColor": "#B0BEC5",
+            "iconSize": 120,
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "layout": "icon-top",
+            "entranceAnimation": "slide-up",
+            "duration": 7
+          },
+          "x": 0,
+          "y": 0,
+          "width": 960,
+          "height": 1080
+        },
+        {
+          "templateId": "icon-callout",
+          "params": {
+            "iconId": "server",
+            "headline": "On-Premise",
+            "description": "Full control, data sovereignty, one-time cost",
+            "iconColor": "#FF6B35",
+            "headlineColor": "#FFFFFF",
+            "descriptionColor": "#B0BEC5",
+            "iconSize": 120,
+            "background": {
+              "type": "solid",
+              "color": "#111111"
+            },
+            "layout": "icon-top",
+            "entranceAnimation": "slide-up",
+            "duration": 7
+          },
+          "x": 960,
+          "y": 0,
+          "width": 960,
+          "height": 1080
+        }
+      ]
+    }
+  ]
+}

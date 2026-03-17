@@ -1,0 +1,41 @@
+{
+  "templateId": "map-highlight",
+  "params": {
+    "title": "Global Infrastructure",
+    "locations": [
+      {
+        "label": "Virginia",
+        "x": 20,
+        "y": 38
+      },
+      {
+        "label": "Frankfurt",
+        "x": 48,
+        "y": 28
+      },
+      {
+        "label": "Mumbai",
+        "x": 65,
+        "y": 45
+      },
+      {
+        "label": "Tokyo",
+        "x": 82,
+        "y": 35
+      }
+    ],
+    "mapStyle": "world-dots",
+    "markerColor": "#FF6B6B",
+    "markerPulse": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#FFFFFF",
+    "mapColor": "#2A2A3A",
+    "connectionLines": true,
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

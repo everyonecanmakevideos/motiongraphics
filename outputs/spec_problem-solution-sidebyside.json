@@ -1,0 +1,28 @@
+{
+  "templateId": "split-screen",
+  "params": {
+    "left": {
+      "title": "Problem",
+      "body": "Data silos prevent teams from collaborating effectively",
+      "iconId": "briefcase"
+    },
+    "right": {
+      "title": "Solution",
+      "body": "Unified platform gives everyone a single source of truth",
+      "iconId": "checkmark"
+    },
+    "dividerStyle": "line",
+    "dividerColor": "#333333",
+    "leftAccentColor": "#4FC3F7",
+    "rightAccentColor": "#FF8A65",
+    "titleColor": "#FFFFFF",
+    "bodyColor": "#B0BEC5",
+    "iconColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-in",
+    "duration": 6
+  }
+}

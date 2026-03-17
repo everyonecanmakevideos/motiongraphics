@@ -1,0 +1,29 @@
+{
+  "templateId": "before-after",
+  "params": {
+    "beforeLabel": "Before",
+    "afterLabel": "After",
+    "beforeTitle": "Legacy Workflow",
+    "afterTitle": "Modern Workflow",
+    "beforeItems": [
+      "Email chains",
+      "Spreadsheet tracking",
+      "Weekly status meetings"
+    ],
+    "afterItems": [
+      "Real-time chat",
+      "Automated dashboards",
+      "Async updates"
+    ],
+    "beforeColor": "#FF8A65",
+    "afterColor": "#4FC3F7",
+    "textColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "revealStyle": "wipe",
+    "entranceAnimation": "fade-in",
+    "duration": 7
+  }
+}

@@ -12,6 +12,7 @@ import {
   highlightReveal,
   underlineDraw,
 } from "../../primitives/animations";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { HeroTextProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -53,6 +54,7 @@ function applyEntrance(
 
 export const HeroText: React.FC<HeroTextProps> = (props) => {
   const frame = useCurrentFrame();
+  const { width, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // ── Phase timing ───────────────────────────────────────────────────────
@@ -92,8 +94,9 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
   const containerTransform = isLeft || isSplit ? "translateY(-50%)" : "translate(-50%, -50%)";
   const maxWidth = isSplit ? "55%" : "85%";
 
-  // Font sizing: scale down for longer headlines
-  const baseFontSize = props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96;
+  // Font sizing: scale down for longer headlines, adapt to aspect ratio
+  const rawFontSize = props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96;
+  const baseFontSize = Math.round(rawFontSize * scale);
   const subFontSize = Math.round(baseFontSize * 0.4);
 
   // Estimated headline width for decoration
@@ -147,7 +150,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
                     ? "translate(-50%, -50%) scaleX(" + decoProgress + ")"
                     : "translateY(-50%) scaleX(" + decoProgress + ")",
                 transformOrigin: "0% 50%",
-                width: Math.min(headlineWidth + 32, 1600) + "px",
+                width: Math.min(headlineWidth + 32, width * 0.85) + "px",
                 height: baseFontSize + 24 + "px",
                 backgroundColor: accentColor,
                 opacity: 0.2,
@@ -183,7 +186,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
                   textAlign === "center"
                     ? "translateX(-50%)"
                     : "none",
-                width: (decoProgress / 100) * Math.min(headlineWidth, 1400) + "px",
+                width: (decoProgress / 100) * Math.min(headlineWidth, width * 0.75) + "px",
                 height: "4px",
                 backgroundColor: accentColor,
                 borderRadius: "2px",

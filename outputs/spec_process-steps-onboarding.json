@@ -1,0 +1,34 @@
+{
+  "templateId": "process-steps",
+  "params": {
+    "title": "Onboarding Process",
+    "steps": [
+      {
+        "label": "Sign Up"
+      },
+      {
+        "label": "Verify Email"
+      },
+      {
+        "label": "Set Up Profile"
+      },
+      {
+        "label": "Start Exploring"
+      }
+    ],
+    "connectorStyle": "arrow",
+    "stepColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "numberColor": "#FFFFFF",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A2E",
+      "to": "#0F3460",
+      "direction": "to-right"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}
