@@ -20,6 +20,9 @@ export const CardLayoutSchema = z.object({
   iconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#4FC3F7"),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "none"]).default("fade-in"),
   duration: z.number().min(3).max(15).default(7),
+  cardBorderRadius: z.number().min(0).max(32).default(12),
+  cardBorderColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  cardPadding: z.enum(["compact", "normal", "spacious"]).default("normal"),
 });
 
 export type CardLayoutProps = z.infer<typeof CardLayoutSchema>;

@@ -96,7 +96,9 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
 
   // Font sizing: scale down for longer headlines, adapt to aspect ratio
   const rawFontSize = props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96;
-  const baseFontSize = Math.round(rawFontSize * scale);
+  const fontSizeMultiplier = props.fontSize === "medium" ? 0.75 : props.fontSize === "xlarge" ? 1.3 : 1;
+  const baseFontSize = Math.round(rawFontSize * scale * fontSizeMultiplier);
+  const fontWeightValue = props.fontWeight === "normal" ? 400 : props.fontWeight === "black" ? 900 : 700;
   const subFontSize = Math.round(baseFontSize * 0.4);
 
   // Estimated headline width for decoration
@@ -162,7 +164,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
           <span
             style={{
               fontSize: baseFontSize + "px",
-              fontWeight: "bold",
+              fontWeight: fontWeightValue,
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.headlineColor,
               lineHeight: 1.1,

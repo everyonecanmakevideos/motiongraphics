@@ -29,6 +29,9 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
 
   const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
 
+  // Value size multiplier
+  const valueSizeMultiplier = props.valueSize === "medium" ? 0.7 : props.valueSize === "xlarge" ? 1.4 : 1;
+
   // Value animation
   let displayValue = props.value;
   let valueOpacity = 1;
@@ -95,7 +98,7 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
         <div style={{ display: "flex", alignItems: "baseline", gap: "20px" }}>
           <div
             style={{
-              fontSize: Math.round(130 * scale) + "px",
+              fontSize: Math.round(130 * scale * valueSizeMultiplier) + "px",
               fontWeight: "bold",
               fontFamily: "Arial, Helvetica, sans-serif",
               color: props.valueColor,

@@ -1,0 +1,19 @@
+{
+  "templateId": "masked-text-reveal",
+  "params": {
+    "headline": "SUCCESS",
+    "headlineColor": "#F8FAFC",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#FFD700",
+    "maskShape": "diagonal-slice",
+    "exitStyle": "fade",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A0A",
+      "to": "#1A1A1A",
+      "direction": "to-bottom"
+    },
+    "fontSize": "xlarge",
+    "duration": 6
+  }
+}

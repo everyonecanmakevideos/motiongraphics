@@ -12,6 +12,7 @@ export const SectionTitleSchema = z.object({
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "blur-reveal", "none"]).default("fade-in"),
   duration: z.number().min(2).max(10).default(4),
+  fontSize: z.enum(["medium", "large", "xlarge"]).default("large"),
 });
 
 export type SectionTitleProps = z.infer<typeof SectionTitleSchema>;

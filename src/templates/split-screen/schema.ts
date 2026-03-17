@@ -18,6 +18,7 @@ export const SplitScreenSchema = z.object({
   bodyColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#B0BEC5"),
   iconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
+  balance: z.enum(["equal", "left-heavy", "right-heavy"]).default("equal"),
   entranceAnimation: z.enum(["fade-in", "slide-in", "scale-pop", "none"]).default("slide-in"),
   duration: z.number().min(3).max(15).default(6),
 });

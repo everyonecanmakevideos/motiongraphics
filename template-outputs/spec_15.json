@@ -1,0 +1,35 @@
+{
+  "templateId": "card-layout",
+  "params": {
+    "title": "Our Features",
+    "cards": [
+      {
+        "heading": "Speed",
+        "body": "Experience lightning-fast performance",
+        "iconId": "lightning"
+      },
+      {
+        "heading": "Security",
+        "body": "Top-notch security measures",
+        "iconId": "lock"
+      },
+      {
+        "heading": "Reliability",
+        "body": "Consistent and dependable service",
+        "iconId": "checkmark"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "columns": 3,
+    "cardBackground": "#1E1E2E",
+    "titleColor": "#FFFFFF",
+    "headingColor": "#FFFFFF",
+    "bodyColor": "#B0BEC5",
+    "iconColor": "#4FC3F7",
+    "entranceAnimation": "fade-in",
+    "duration": 7
+  }
+}

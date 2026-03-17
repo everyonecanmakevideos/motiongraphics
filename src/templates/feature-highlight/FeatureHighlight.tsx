@@ -83,8 +83,23 @@ export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
             opacity: iconOpacity,
             transform: `translateY(${iconY}px) scale(${iconScale})`,
             flexShrink: 0,
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          {props.iconBackground && (
+            <div
+              style={{
+                position: "absolute",
+                width: 180,
+                height: 180,
+                borderRadius: "50%",
+                backgroundColor: props.iconBackground + "26",
+              }}
+            />
+          )}
           <Asset
             id={props.iconId}
             width={120}

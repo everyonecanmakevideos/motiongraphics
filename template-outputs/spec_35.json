@@ -1,0 +1,31 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Project Timeline",
+    "milestones": [
+      {
+        "label": "2019 Idea"
+      },
+      {
+        "label": "2020 Prototype"
+      },
+      {
+        "label": "2021 Launch"
+      },
+      {
+        "label": "2022 Scale"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "lineColor": "#4FC3F7",
+    "dotColor": "#FFFFFF",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

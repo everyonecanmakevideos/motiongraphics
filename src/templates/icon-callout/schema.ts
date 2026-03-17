@@ -8,6 +8,7 @@ export const IconCalloutSchema = z.object({
   iconColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   headlineColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   descriptionColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#B0BEC5"),
+  accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   iconSize: z.number().min(40).max(300).default(120),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   layout: z.enum(["icon-top", "icon-left", "icon-right"]).default("icon-top"),

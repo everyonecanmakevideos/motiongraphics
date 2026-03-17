@@ -1,0 +1,25 @@
+{
+  "templateId": "feature-highlight",
+  "params": {
+    "iconId": "lightning",
+    "title": "Fast Performance",
+    "description": "Experience lightning-fast speeds and seamless scalability.",
+    "bulletPoints": [
+      "Zero downtime",
+      "Auto-scaling",
+      "Global CDN"
+    ],
+    "iconColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "bulletColor": "#FFFFFF",
+    "accentColor": "#4FC3F7",
+    "layout": "icon-left",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

@@ -99,6 +99,7 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
             }
 
             const accent = card.accentColor ?? props.iconColor;
+            const paddingMap = { compact: "20px 16px", normal: "32px 28px", spacious: "44px 36px" };
 
             return (
               <div
@@ -106,9 +107,9 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
                 style={{
                   width: cardWidth + "px",
                   backgroundColor: props.cardBackground,
-                  borderRadius: "12px",
-                  padding: "32px 28px",
-                  borderTop: "3px solid " + accent,
+                  borderRadius: props.cardBorderRadius + "px",
+                  padding: paddingMap[props.cardPadding],
+                  borderTop: "3px solid " + (props.cardBorderColor ?? accent),
                   opacity: cardOpacity,
                   transform: "translateY(" + cardY + "px) scale(" + cardScale + ")",
                   display: "flex",

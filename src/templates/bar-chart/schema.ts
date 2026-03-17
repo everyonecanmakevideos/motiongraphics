@@ -19,6 +19,9 @@ export const BarChartSchema = z.object({
   valueColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   duration: z.number().min(2).max(15).default(6),
   entranceAnimation: z.enum(["grow", "fade-in", "slide-up", "none"]).default("grow"),
+  barRadius: z.number().min(0).max(16).default(6),
+  gridLines: z.boolean().default(false),
+  gridColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#333333"),
 });
 
 export type BarChartProps = z.infer<typeof BarChartSchema>;

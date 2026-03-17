@@ -20,6 +20,9 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
 
   const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
 
+  // Value size multiplier
+  const valueSizeMultiplier = props.valueSize === "medium" ? 0.7 : props.valueSize === "xlarge" ? 1.4 : 1;
+
   // Number display
   let displayValue = props.value;
   let numberOpacity = 1;
@@ -65,7 +68,7 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
         {/* Big number */}
         <div
           style={{
-            fontSize: Math.round(140 * scale) + "px",
+            fontSize: Math.round(140 * scale * valueSizeMultiplier) + "px",
             fontWeight: "bold",
             fontFamily: "Arial, Helvetica, sans-serif",
             color: props.valueColor,
@@ -77,6 +80,19 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
         >
           {numberText}
         </div>
+
+        {/* Accent line */}
+        {props.accentColor && (
+          <div
+            style={{
+              width: "80px",
+              height: "4px",
+              backgroundColor: props.accentColor,
+              marginTop: "16px",
+              borderRadius: "2px",
+            }}
+          />
+        )}
 
         {/* Label */}
         {props.label && (

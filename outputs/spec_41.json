@@ -1,0 +1,45 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "Server Uptime",
+    "bars": [
+      {
+        "label": "Q1",
+        "value": 99.9,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Q2",
+        "value": 99.5,
+        "color": "#81C784"
+      },
+      {
+        "label": "Q3",
+        "value": 100,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Q4",
+        "value": 99.8,
+        "color": "#E57373"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1A",
+      "to": "#1A1A2E",
+      "direction": "to-bottom"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#00FF88",
+    "valueColor": "#F8FAFC",
+    "duration": 7,
+    "entranceAnimation": "grow",
+    "barRadius": 8,
+    "gridLines": false,
+    "gridColor": "#333333"
+  }
+}

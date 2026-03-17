@@ -102,7 +102,7 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
                 display: "flex",
                 alignItems: "baseline",
                 gap: "16px",
-                padding: "12px 0",
+                padding: (props.spacing === "tight" ? 6 : props.spacing === "relaxed" ? 20 : 12) + "px 0",
                 opacity: itemOpacity,
                 transform: `translateY(${itemY}px) scale(${itemScale})`,
               }}

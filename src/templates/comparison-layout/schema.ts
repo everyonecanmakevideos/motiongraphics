@@ -11,6 +11,7 @@ export const ComparisonLayoutSchema = z.object({
   rightColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FF8A65"),
   textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   vsColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFD700"),
+  dividerColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#333333"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "slide-in", "scale-pop", "none"]).default("slide-in"),
   duration: z.number().min(3).max(15).default(7),

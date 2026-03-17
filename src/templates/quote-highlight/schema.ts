@@ -8,6 +8,7 @@ export const QuoteHighlightSchema = z.object({
   quoteColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   attributionColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#B0BEC5"),
   accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#4FC3F7"),
+  quoteStyle: z.enum(["sans", "serif", "italic"]).default("italic"),
   quoteMarkStyle: z.enum(["large", "small", "bar", "none"]).default("large"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "blur-reveal", "typewriter", "none"]).default("fade-in"),

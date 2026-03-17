@@ -197,7 +197,7 @@ export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
                     y2={`${next.y}%`}
                     stroke={props.markerColor}
                     strokeWidth="1.5"
-                    strokeDasharray="6 4"
+                    strokeDasharray={props.connectionStyle === "dashed" ? "6 4" : props.connectionStyle === "dotted" ? "2 4" : "none"}
                   />
                 );
               })}

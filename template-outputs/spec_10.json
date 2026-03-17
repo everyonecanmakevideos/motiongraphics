@@ -1,0 +1,29 @@
+{
+  "templateId": "process-steps",
+  "params": {
+    "title": "3 Steps to Learn Coding",
+    "steps": [
+      {
+        "label": "1. Choose a Language"
+      },
+      {
+        "label": "2. Practice Regularly"
+      },
+      {
+        "label": "3. Build Projects"
+      }
+    ],
+    "connectorStyle": "arrow",
+    "stepColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "numberColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 6
+  }
+}

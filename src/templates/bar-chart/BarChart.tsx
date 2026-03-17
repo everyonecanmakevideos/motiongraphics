@@ -80,6 +80,45 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
             gap: barGap + "px",
           }}
         >
+          {/* Grid lines */}
+          {props.gridLines && isVertical && (
+            <>
+              {[0, 1, 2, 3, 4].map((idx) => (
+                <div
+                  key={"grid-" + idx}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: Math.round((chartHeight * idx) / 4) + "px",
+                    height: "1px",
+                    backgroundColor: props.gridColor,
+                    opacity: 0.5,
+                    pointerEvents: "none",
+                  }}
+                />
+              ))}
+            </>
+          )}
+          {props.gridLines && !isVertical && (
+            <>
+              {[0, 1, 2, 3, 4].map((idx) => (
+                <div
+                  key={"grid-" + idx}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: Math.round((chartWidth * idx) / 4) + "px",
+                    width: "1px",
+                    backgroundColor: props.gridColor,
+                    opacity: 0.5,
+                    pointerEvents: "none",
+                  }}
+                />
+              ))}
+            </>
+          )}
           {props.bars.map((bar, i) => {
             // Stagger the bar animations
             const staggerDelay = Math.round(
@@ -153,7 +192,7 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
                       width: props.barWidth + "px",
                       height: barLength + "px",
                       backgroundColor: bar.color,
-                      borderRadius: "6px 6px 0 0",
+                      borderRadius: props.barRadius + "px " + props.barRadius + "px 0 0",
                     }}
                   />
                   {/* Label below bar */}
@@ -204,7 +243,7 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
                     width: barLength + "px",
                     height: props.barWidth + "px",
                     backgroundColor: bar.color,
-                    borderRadius: "0 6px 6px 0",
+                    borderRadius: "0 " + props.barRadius + "px " + props.barRadius + "px 0",
                   }}
                 />
                 {/* Value right of bar */}

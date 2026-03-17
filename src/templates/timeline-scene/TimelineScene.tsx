@@ -135,14 +135,15 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
                   alignItems: "center",
                 }}
               >
-                {/* Dot */}
+                {/* Marker */}
                 <div
                   style={{
                     width: "16px",
                     height: "16px",
-                    borderRadius: "50%",
-                    backgroundColor: props.dotColor,
-                    border: "3px solid " + props.lineColor,
+                    borderRadius: props.markerStyle === "diamond" ? "2px" : "50%",
+                    backgroundColor: props.markerStyle === "ring" ? "transparent" : props.dotColor,
+                    border: "3px solid " + (props.markerStyle === "ring" ? props.dotColor : props.lineColor),
+                    transform: props.markerStyle === "diamond" ? "rotate(45deg)" : undefined,
                     position: "absolute",
                     top: "12px",
                     opacity: dotOpacity,

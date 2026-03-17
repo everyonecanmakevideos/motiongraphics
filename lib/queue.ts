@@ -17,6 +17,7 @@ import { analyzeIntent, isMultiSceneResult } from "./pipeline/intentAnalyzer";
 import { resolveTemplate } from "./templates/resolver";
 import { renderTemplate, renderMultiScene } from "./pipeline/templateRenderer";
 import { resolveMultiScene } from "./templates/multiSceneResolver";
+import { applyCreativeLayer } from "./templates/creativeEnhancer";
 import type { JobStatus, SSEEvent } from "./types";
 import { STEP_LABELS, TEMPLATE_STEP_LABELS } from "./types";
 
@@ -127,7 +128,10 @@ async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boole
     // Step 2: Analyze intent
     await setStep(jobId, 2, "analyzing_intent");
     emit(jobId, { jobId, step: 2, status: "analyzing_intent", label: TEMPLATE_STEP_LABELS[2], pipelineMode: "template" });
-    const intent = await analyzeIntent(prompt);
+    const rawIntent = await analyzeIntent(prompt);
+
+    // ── Creative enhancement ──────────────────────────────────────────
+    const intent = await applyCreativeLayer(prompt, rawIntent);
 
     // ── Multi-scene path ────────────────────────────────────────────────
     if (isMultiSceneResult(intent)) {

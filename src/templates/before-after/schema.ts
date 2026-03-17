@@ -12,6 +12,7 @@ export const BeforeAfterSchema = z.object({
   afterColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#4FC3F7"),
   textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
+  accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#4FC3F7"),
   revealStyle: z.enum(["wipe", "fade", "split"]).default("wipe"),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "none"]).default("fade-in"),
   duration: z.number().min(4).max(15).default(7),

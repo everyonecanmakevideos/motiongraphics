@@ -1,0 +1,53 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 180,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "dynamic-showcase",
+      "params": {
+        "iconId": "cloud",
+        "title": "Hashtag Cloud",
+        "description": "Forming and Scattering",
+        "titleColor": "#F8FAFC",
+        "accentColor": "#FF3E8A",
+        "glowColor": "#FF3E8A",
+        "orbitStyle": "dots",
+        "orbitCount": 5,
+        "background": {
+          "type": "gradient",
+          "from": "#2E1A47",
+          "to": "#4A2A67",
+          "direction": "to-bottom-right"
+        },
+        "layout": "center",
+        "duration": 6
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 165,
+      "transition": "fade-through-black",
+      "transitionDurationFrames": 15,
+      "templateId": "stat-counter",
+      "params": {
+        "value": 12345,
+        "prefix": "",
+        "suffix": "",
+        "label": "Engagement Stats",
+        "valueColor": "#FFFFFF",
+        "labelColor": "#B0BEC5",
+        "background": {
+          "type": "gradient",
+          "from": "#2E1A47",
+          "to": "#4A2A67",
+          "direction": "to-bottom"
+        },
+        "duration": 5,
+        "entranceAnimation": "scale-pop",
+        "valueSize": "large"
+      }
+    }
+  ]
+}

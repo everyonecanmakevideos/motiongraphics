@@ -17,6 +17,7 @@ export const DataCalloutSchema = z.object({
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["count-up", "fade-in", "scale-pop", "none"]).default("count-up"),
   duration: z.number().min(2).max(15).default(6),
+  valueSize: z.enum(["medium", "large", "xlarge"]).default("large"),
 });
 
 export type DataCalloutProps = z.infer<typeof DataCalloutSchema>;

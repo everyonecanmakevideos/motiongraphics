@@ -1,0 +1,34 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Story Timeline",
+    "milestones": [
+      {
+        "label": "Chapter 1: Idea"
+      },
+      {
+        "label": "Chapter 2: Build"
+      },
+      {
+        "label": "Chapter 3: Launch"
+      },
+      {
+        "label": "Chapter 4: Success"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0F172A",
+      "to": "#1E293B",
+      "direction": "to-bottom"
+    },
+    "lineColor": "#3B82F6",
+    "dotColor": "#4FC3F7",
+    "titleColor": "#F8FAFC",
+    "textColor": "#94A3B8",
+    "descriptionColor": "#B0BEC5",
+    "markerStyle": "ring",
+    "entranceAnimation": "slide-up",
+    "duration": 8
+  }
+}

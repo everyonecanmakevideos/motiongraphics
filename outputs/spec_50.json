@@ -1,0 +1,104 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 120,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "dynamic-showcase",
+      "params": {
+        "iconId": "chart-up",
+        "title": "Q1 Sales",
+        "description": "Circle",
+        "titleColor": "#F8FAFC",
+        "accentColor": "#FF6B35",
+        "glowColor": "#FF6B35",
+        "orbitStyle": "rings",
+        "orbitCount": 5,
+        "background": {
+          "type": "gradient",
+          "from": "#0F172A",
+          "to": "#1E293B",
+          "direction": "to-bottom"
+        },
+        "layout": "center",
+        "duration": 4
+      }
+    },
+    {
+      "durationFrames": 120,
+      "startFrame": 105,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "dynamic-showcase",
+      "params": {
+        "iconId": "chart-up",
+        "title": "Q2 Sales",
+        "description": "Square",
+        "titleColor": "#F8FAFC",
+        "accentColor": "#FF6B35",
+        "glowColor": "#FF6B35",
+        "orbitStyle": "rings",
+        "orbitCount": 5,
+        "background": {
+          "type": "gradient",
+          "from": "#0F172A",
+          "to": "#1E293B",
+          "direction": "to-bottom"
+        },
+        "layout": "center",
+        "duration": 4
+      }
+    },
+    {
+      "durationFrames": 120,
+      "startFrame": 210,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "dynamic-showcase",
+      "params": {
+        "iconId": "chart-up",
+        "title": "Q3 Sales",
+        "description": "Triangle",
+        "titleColor": "#F8FAFC",
+        "accentColor": "#FF6B35",
+        "glowColor": "#FF6B35",
+        "orbitStyle": "rings",
+        "orbitCount": 5,
+        "background": {
+          "type": "gradient",
+          "from": "#0F172A",
+          "to": "#1E293B",
+          "direction": "to-bottom"
+        },
+        "layout": "center",
+        "duration": 4
+      }
+    },
+    {
+      "durationFrames": 120,
+      "startFrame": 315,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "dynamic-showcase",
+      "params": {
+        "iconId": "chart-up",
+        "title": "Q4 Sales",
+        "description": "Star",
+        "titleColor": "#F8FAFC",
+        "accentColor": "#FF6B35",
+        "glowColor": "#FF6B35",
+        "orbitStyle": "rings",
+        "orbitCount": 5,
+        "background": {
+          "type": "gradient",
+          "from": "#0F172A",
+          "to": "#1E293B",
+          "direction": "to-bottom"
+        },
+        "layout": "center",
+        "duration": 4
+      }
+    }
+  ]
+}

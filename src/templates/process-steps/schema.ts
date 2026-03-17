@@ -16,6 +16,7 @@ export const ProcessStepsSchema = z.object({
   descriptionColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#B0BEC5"),
   numberColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
+  markerStyle: z.enum(["circle", "square", "pill"]).default("circle"),
   entranceAnimation: z.enum(["progressive", "fade-in", "slide-up", "none"]).default("progressive"),
   duration: z.number().min(3).max(15).default(7),
 });

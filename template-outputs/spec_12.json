@@ -1,0 +1,34 @@
+{
+  "templateId": "pie-chart",
+  "params": {
+    "title": "Browser Usage",
+    "segments": [
+      {
+        "label": "Chrome",
+        "value": 60,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Firefox",
+        "value": 20,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Safari",
+        "value": 20,
+        "color": "#81C784"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "donut": false,
+    "showLabels": true,
+    "showPercentages": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "duration": 6,
+    "entranceAnimation": "spin"
+  }
+}

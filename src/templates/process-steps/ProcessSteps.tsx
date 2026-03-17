@@ -117,12 +117,12 @@ export const ProcessSteps: React.FC<ProcessStepsProps> = (props) => {
                     minWidth: "120px",
                   }}
                 >
-                  {/* Number circle */}
+                  {/* Number marker */}
                   <div
                     style={{
-                      width: `${CIRCLE_SIZE}px`,
+                      width: props.markerStyle === "pill" ? `${CIRCLE_SIZE * 1.5}px` : `${CIRCLE_SIZE}px`,
                       height: `${CIRCLE_SIZE}px`,
-                      borderRadius: "50%",
+                      borderRadius: props.markerStyle === "circle" ? "50%" : props.markerStyle === "square" ? "6px" : "16px",
                       backgroundColor: props.stepColor,
                       display: "flex",
                       alignItems: "center",

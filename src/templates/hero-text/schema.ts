@@ -17,6 +17,8 @@ export const HeroTextSchema = z.object({
   duration: z.number().min(2).max(15).default(6),
   style: z.enum(["centered", "left-aligned", "split"]).default("centered"),
   decoration: z.enum(["none", "underline", "highlight-box", "accent-line"]).default("none"),
+  fontSize: z.enum(["medium", "large", "xlarge"]).default("large"),
+  fontWeight: z.enum(["normal", "bold", "black"]).default("bold"),
 });
 
 export type HeroTextProps = z.infer<typeof HeroTextSchema>;

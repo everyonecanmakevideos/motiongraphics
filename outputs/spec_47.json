@@ -1,0 +1,43 @@
+{
+  "templateId": "pie-chart",
+  "params": {
+    "title": "Workout Goals Progress",
+    "segments": [
+      {
+        "label": "Week 1",
+        "value": 70,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Week 2",
+        "value": 85,
+        "color": "#81C784"
+      },
+      {
+        "label": "Week 3",
+        "value": 92,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Week 4",
+        "value": 100,
+        "color": "#E57373"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0F172A",
+      "to": "#1E293B",
+      "direction": "to-bottom"
+    },
+    "donut": true,
+    "showLabels": true,
+    "showPercentages": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "duration": 6,
+    "entranceAnimation": "scale-pop",
+    "strokeWidth": 0,
+    "strokeColor": "#1E293B"
+  }
+}

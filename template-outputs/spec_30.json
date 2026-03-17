@@ -1,0 +1,17 @@
+{
+  "templateId": "section-title",
+  "params": {
+    "title": "Introducing Our New Platform",
+    "titleColor": "#FFFFFF",
+    "subtitleColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "accentStyle": "line-left",
+    "alignment": "center",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 4
+  }
+}

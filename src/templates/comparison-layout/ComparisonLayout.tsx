@@ -123,17 +123,27 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           })}
         </div>
 
-        {/* VS badge */}
+        {/* VS badge with divider */}
         <div
           style={{
             display: "flex",
+            flexDirection: isPortrait ? "row" : "column",
             alignItems: "center",
             justifyContent: "center",
             alignSelf: "center",
+            gap: "12px",
             opacity: vsOpacity,
             transform: "scale(" + vsScale + ")",
           }}
         >
+          <div
+            style={{
+              width: isPortrait ? "40px" : "3px",
+              height: isPortrait ? "3px" : "40px",
+              backgroundColor: props.dividerColor,
+              borderRadius: "2px",
+            }}
+          />
           <div
             style={{
               fontSize: Math.round(40 * scale) + "px",
@@ -152,6 +162,14 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           >
             {props.vsText}
           </div>
+          <div
+            style={{
+              width: isPortrait ? "40px" : "3px",
+              height: isPortrait ? "3px" : "40px",
+              backgroundColor: props.dividerColor,
+              borderRadius: "2px",
+            }}
+          />
         </div>
 
         {/* Right side */}

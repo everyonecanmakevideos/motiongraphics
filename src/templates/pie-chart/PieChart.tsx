@@ -157,7 +157,7 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
               const d = props.donut
                 ? describeDonutArc(CENTER, CENTER, outerR, innerR, seg.start, seg.end)
                 : describeArc(CENTER, CENTER, outerR, seg.start, seg.end);
-              return <path key={i} d={d} fill={seg.color} />;
+              return <path key={i} d={d} fill={seg.color} stroke={props.strokeColor} strokeWidth={props.strokeWidth} />;
             })}
           </svg>
 

@@ -1,0 +1,22 @@
+{
+  "templateId": "problem-solution",
+  "params": {
+    "problemLabel": "Problem",
+    "solutionLabel": "Solution",
+    "problem": "Startups struggle with limited resources and time constraints",
+    "solution": "Our platform automates key processes, saving time and reducing costs",
+    "problemIconId": "briefcase",
+    "solutionIconId": "gear",
+    "problemColor": "#FF6B6B",
+    "solutionColor": "#51CF66",
+    "textColor": "#FFFFFF",
+    "labelColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-up",
+    "transitionStyle": "fade-switch",
+    "duration": 7
+  }
+}

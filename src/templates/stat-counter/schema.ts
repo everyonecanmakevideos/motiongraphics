@@ -12,6 +12,8 @@ export const StatCounterSchema = z.object({
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   duration: z.number().min(2).max(15).default(6),
   entranceAnimation: z.enum(["count-up", "fade-in", "scale-pop", "none"]).default("count-up"),
+  valueSize: z.enum(["medium", "large", "xlarge"]).default("large"),
+  accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
 });
 
 export type StatCounterProps = z.infer<typeof StatCounterSchema>;

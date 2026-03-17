@@ -1,107 +1,23 @@
 [
+  {"id": 41, "prompt": "animate server uptime bars 99.9% Q1 99.5% Q2 100% Q3 99.8% Q4 with digital glitch effects"},
+  {"id": 42, "prompt": "line graph of app downloads Jan=5k Feb=12k Mar=8k Apr=20k with smooth curve and sparkles"},
+  {"id": 43, "prompt": "pie chart user growth 20% new 30% retained 50% churn segments rotating in"},
+  
+  {"id": 44, "prompt": "likes counter exploding from 0 to 1M with hearts particles and kinetic numbers"},
+  {"id": 45, "prompt": "bar race followers vs likes Mon=150 Tue=220 Wed=180 Thu=300 with competitive slide-in"},
+  {"id": 46, "prompt": "hashtag cloud forming then scattering with engagement stats typing below in indian village vibe"},
+  
+  {"id": 47, "prompt": "progress rings filling workout goals Week1=70% Week2=85% Week3=92% Week4=100%"},
+  {"id": 48, "prompt": "steps counter rolling up daily targets 8k 10k 9k 12k with footstep particle trails"},
+  {"id": 49, "prompt": "calories burned bars stacking upward 500 750 600 900 with fire glow effects"},
+  
+  {"id": 50, "prompt": "geometric shapes morphing into sales icons Q1 circle Q2 square Q3 triangle Q4 star"},
+  {"id": 51, "prompt": "liquid metal text \"INNOVATE\" pouring and solidifying with ripple waves"},
+  {"id": 52, "prompt": "neon grid lines weaving through data points forming constellation chart"},
+  
+  {"id": 53, "prompt": "story timeline sliding chapters Chapter1=idea Chapter2=build Chapter3=launch Chapter4=success"},
+  {"id": 54, "prompt": "word cloud \"SUCCESS\" letters assembling from chaos with victory sparks"},
+  {"id": 55, "prompt": "portal opening revealing stats dashboard with swirling vortex entrance"}
 
-  {
-    "id": "masked-reveal-startup",
-    "prompt": "Reveal the text 'The Future is Now' with a dramatic wipe from left effect, subtitle 'Redefining how teams build software', on a solid black background"
-  },
-  {
-    "id": "masked-reveal-circle",
-    "prompt": "Cinematic circle expand reveal showing 'Introducing Arc' in extra large text, with tagline 'A browser designed for you' and subtitle 'Fast. Beautiful. Yours.' on dark background"
-  },
-  {
-    "id": "masked-reveal-diagonal",
-    "prompt": "Unveil the headline 'Game Changer' with a diagonal slice mask, subtitle 'The platform that rewrites the rules' with reverse mask exit, cyan accent color on a dark navy background"
-  },
-  {
-    "id": "masked-reveal-split",
-    "prompt": "Show 'WELCOME' with a vertical split reveal opening from center, medium font size, gold accent color on black background"
-  },
-  {
-    "id": "masked-reveal-vague",
-    "prompt": "Dramatic text reveal saying 'Hello World' with a creative mask animation"
-  },
 
-  {
-    "id": "cinematic-hero-launch",
-    "prompt": "Epic cinematic opening title 'Nebula AI' with kicker 'INTRODUCING' and subtitle 'The next generation of artificial intelligence', bold mood with light sweep on a dark gradient from black to deep blue"
-  },
-  {
-    "id": "cinematic-hero-minimal",
-    "prompt": "Minimal cinematic hero showing 'Less is More' with right-side reveal, no subtitle, minimal mood, accent color white, on solid black background with light sweep"
-  },
-  {
-    "id": "cinematic-hero-elegant",
-    "prompt": "Elegant movie-style title card: headline 'The Art of Motion' with kicker 'A VISUAL JOURNEY' and subtitle 'Exploring the boundaries of digital design', elegant mood, center reveal, gold accent on a dark gradient"
-  },
-  {
-    "id": "cinematic-hero-brand",
-    "prompt": "Dramatic brand intro: 'ShapeFlow Studio' with subtitle 'Where creativity meets precision', bold mood, bottom reveal direction, purple accent color on a gradient from deep purple to black"
-  },
-  {
-    "id": "cinematic-hero-vague",
-    "prompt": "Make a really dramatic and cinematic opening for 'Project Phoenix'"
-  },
-
-  {
-    "id": "cinematic-transition-chapter",
-    "prompt": "Scene transition with horizontal wipe showing 'CHAPTER 2' in the middle, cyan wipe color, with trail effect, on dark background transitioning to dark blue"
-  },
-  {
-    "id": "cinematic-transition-iris",
-    "prompt": "Iris transition with label 'NEXT' in white, orange wipe color, fast speed, on black background"
-  },
-  {
-    "id": "cinematic-transition-diagonal",
-    "prompt": "Diagonal cinematic transition between scenes, no label, purple wipe color, slow speed with trails, transitioning from dark background to dark green"
-  },
-  {
-    "id": "cinematic-transition-split",
-    "prompt": "Split transition showing 'Part B' with spring label animation, red wipe color, on a dark gradient background"
-  },
-  {
-    "id": "cinematic-transition-vague",
-    "prompt": "Add a cool transition between my two scenes"
-  },
-
-  {
-    "id": "dynamic-showcase-app",
-    "prompt": "Spotlight showcase for a rocket icon with title 'Launch Faster' and description 'Deploy your applications in seconds, not hours. Our platform handles the complexity so you can focus on building.' with orbiting dots and blue glow on a dark radial gradient"
-  },
-  {
-    "id": "dynamic-showcase-security",
-    "prompt": "Premium product spotlight: shield icon, title 'Fortress Security', description 'Military-grade protection for your most sensitive data', green accent and glow, ring orbit style with 6 elements, center layout"
-  },
-  {
-    "id": "dynamic-showcase-left",
-    "prompt": "Feature spotlight with lightning bolt icon on the left side, title 'Real-Time Processing', description 'Process millions of events per second with sub-millisecond latency', mixed orbit style, orange glow on dark background"
-  },
-  {
-    "id": "dynamic-showcase-minimal",
-    "prompt": "Clean product showcase: star icon, title 'Five Star Experience', 3 orbit dots, purple accent, centered on dark gradient"
-  },
-  {
-    "id": "dynamic-showcase-vague",
-    "prompt": "Show a premium spotlight for our new AI feature with a brain icon"
-  },
-
-  {
-    "id": "parallax-showcase-product",
-    "prompt": "Immersive parallax scene: title 'Depth of Innovation', subtitle 'Building the future, layer by layer', description 'Our platform creates experiences that feel alive', leftward parallax with medium depth, geometric foreground, clip reveal entrance on dark purple radial gradient"
-  },
-  {
-    "id": "parallax-showcase-story",
-    "prompt": "Layered depth effect: title 'Our Journey', subtitle 'From garage startup to global platform', strong parallax intensity moving right, dots foreground, cyan accent, slide-up entrance on dark blue gradient"
-  },
-  {
-    "id": "parallax-showcase-minimal",
-    "prompt": "Subtle parallax presentation showing 'Clean Design' with description 'Every pixel has a purpose', subtle depth, lines foreground, white accent on solid dark background"
-  },
-  {
-    "id": "parallax-showcase-upward",
-    "prompt": "Upward parallax scene: title 'Rising Above', subtitle 'Reaching new heights in performance', strong depth, geometric foreground, green accent on dark gradient from black to dark green"
-  },
-  {
-    "id": "parallax-showcase-vague",
-    "prompt": "Create an immersive 3D-like depth scene for 'Welcome to the Future'"
-  }
 ]

@@ -66,6 +66,15 @@ HERO-TEXT ANIMATION RULES:
 | "pop", "pops", "bounce", "bouncy", "overshoot", "scale" | "scale-pop" |
 | "no animation", "static", "instant", "no effect", "simple" | "none" |
 
+STAT-COUNTER / DATA-CALLOUT ANIMATION RULES:
+| User says... | entranceAnimation |
+|--------------|-------------------|
+| "count", "counter", "counting", "counts up", "increment", "rolling", "ticking", "odometer", "from 0", "from zero" | "count-up" |
+| "pop", "pops", "bounce", "scale", "explode", "burst" | "scale-pop" |
+| "fade", "gently", "appear" | "fade-in" |
+| "static", "instant", "no animation" | "none" |
+| (default for stat-counter / data-callout when not specified) | "count-up" |
+
 BAR-CHART ANIMATION: "grow" (bars grow from zero), "fade-in", "slide-up", "none"
 PIE-CHART ANIMATION: "spin" (segments sweep in), "fade-in", "scale-pop", "none"
 STAT-COUNTER ANIMATION: "count-up" (number counts from 0), "fade-in", "scale-pop", "none"
@@ -118,7 +127,12 @@ ASPECT RATIO RULES:
 CRITICAL RULES:
 1. Read the prompt carefully. Pick the template that best matches the user's intent. Fill ALL required parameters.
 2. "background" is REQUIRED for every template, scene, and region. If user doesn't specify, use { "type": "solid", "color": "#111111" }.
-3. "entranceAnimation" is REQUIRED. If user doesn't specify, use "fade-in" as default.
+3. "entranceAnimation" is REQUIRED. Template-specific defaults when user doesn't specify:
+   - stat-counter, data-callout: default "count-up"
+   - bar-chart: default "grow"
+   - pie-chart: default "spin"
+   - timeline-scene, process-steps: default "progressive"
+   - All other templates: default "fade-in"
 4. Array size constraints — ALWAYS respect these minimums:
    - bar-chart "bars": minimum 2, maximum 10
    - pie-chart "segments": minimum 2, maximum 8
@@ -145,6 +159,9 @@ Response: { "templateId": "pie-chart", "params": { "title": "Market Share", "seg
 
 Prompt: "A big counter showing 1,250,000 users with the label 'Active Users' counting up on a gradient background"
 Response: { "templateId": "stat-counter", "params": { "value": 1250000, "label": "Active Users", "background": { "type": "gradient", "from": "#1A1A2E", "to": "#16213E", "direction": "to-bottom" }, "entranceAnimation": "count-up", "duration": 5 }, "confidence": "high", "reasoning": "User wants a big counting number → stat-counter with count-up animation", "aspect_ratio": "16:9" }
+
+Prompt: "likes counter from 0 to 500K with label 'Total Likes'"
+Response: { "templateId": "stat-counter", "params": { "value": 500000, "label": "Total Likes", "background": { "type": "gradient", "from": "#0D1B2A", "to": "#1B2838", "direction": "to-bottom" }, "entranceAnimation": "count-up", "duration": 5 }, "confidence": "high", "reasoning": "Counter from 0 to value → stat-counter with count-up animation", "aspect_ratio": "16:9" }
 
 Prompt: "Quote appearing line by line: 'Stay hungry' then 'Stay foolish' then '— Steve Jobs' with a fade in on dark background"
 Response: { "templateId": "kinetic-typography", "params": { "lines": ["Stay hungry", "Stay foolish", "— Steve Jobs"], "defaultColor": "#FFFFFF", "background": { "type": "solid", "color": "#111111" }, "entranceAnimation": "fade-in", "staggerStyle": "line-by-line", "duration": 6, "fontSize": 72 }, "confidence": "high", "reasoning": "Multi-line quote with line-by-line reveal → kinetic-typography with fade-in", "aspect_ratio": "16:9" }

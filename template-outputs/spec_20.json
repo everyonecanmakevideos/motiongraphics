@@ -1,0 +1,29 @@
+{
+  "templateId": "before-after",
+  "params": {
+    "beforeLabel": "Before",
+    "afterLabel": "After",
+    "beforeTitle": "Messy Code",
+    "afterTitle": "Clean Code",
+    "beforeItems": [
+      "Unorganized",
+      "Hard to read",
+      "Bug-prone"
+    ],
+    "afterItems": [
+      "Structured",
+      "Easy to read",
+      "Reliable"
+    ],
+    "beforeColor": "#FF8A65",
+    "afterColor": "#4FC3F7",
+    "textColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "revealStyle": "wipe",
+    "entranceAnimation": "fade-in",
+    "duration": 7
+  }
+}

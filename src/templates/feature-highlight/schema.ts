@@ -11,6 +11,7 @@ export const FeatureHighlightSchema = z.object({
   descriptionColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#B0BEC5"),
   bulletColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#4FC3F7"),
+  iconBackground: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   layout: z.enum(["icon-left", "icon-top", "icon-right"]).default("icon-left"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "none"]).default("fade-in"),

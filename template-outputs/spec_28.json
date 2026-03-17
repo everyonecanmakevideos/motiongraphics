@@ -1,0 +1,19 @@
+{
+  "templateId": "icon-callout",
+  "params": {
+    "iconId": "lock",
+    "headline": "Security Feature",
+    "description": "Advanced protection for your data",
+    "iconColor": "#4FC3F7",
+    "headlineColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "iconSize": 120,
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "layout": "icon-top",
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

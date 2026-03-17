@@ -82,8 +82,23 @@ export const IconCallout: React.FC<IconCalloutProps> = (props) => {
             opacity: iconOpacity,
             transform: "translateY(" + iconY + "px) scale(" + iconScale + ")",
             flexShrink: 0,
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          {props.accentColor && (
+            <div
+              style={{
+                position: "absolute",
+                width: props.iconSize * 1.5,
+                height: props.iconSize * 1.5,
+                borderRadius: "50%",
+                backgroundColor: props.accentColor + "26",
+              }}
+            />
+          )}
           <Asset
             id={props.iconId}
             width={props.iconSize}

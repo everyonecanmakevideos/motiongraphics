@@ -1,0 +1,28 @@
+{
+  "templateId": "comparison-layout",
+  "params": {
+    "leftTitle": "iPhone",
+    "rightTitle": "Android",
+    "leftItems": [
+      "Seamless ecosystem",
+      "iOS updates",
+      "App Store"
+    ],
+    "rightItems": [
+      "Customizable",
+      "Variety of devices",
+      "Google Play"
+    ],
+    "vsText": "VS",
+    "leftColor": "#4FC3F7",
+    "rightColor": "#FF8A65",
+    "textColor": "#FFFFFF",
+    "vsColor": "#FFD700",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-in",
+    "duration": 6
+  }
+}

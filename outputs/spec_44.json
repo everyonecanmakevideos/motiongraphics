@@ -1,0 +1,21 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 1000000,
+    "prefix": "",
+    "suffix": "",
+    "label": "Likes",
+    "valueColor": "#F8FAFC",
+    "labelColor": "#94A3B8",
+    "background": {
+      "type": "gradient",
+      "from": "#0F172A",
+      "to": "#1E293B",
+      "direction": "to-bottom"
+    },
+    "duration": 5,
+    "entranceAnimation": "scale-pop",
+    "valueSize": "xlarge",
+    "accentColor": "#FF3E8A"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Startup Journey",
+    "milestones": [
+      {
+        "label": "Idea"
+      },
+      {
+        "label": "Research"
+      },
+      {
+        "label": "Prototype"
+      },
+      {
+        "label": "Funding"
+      },
+      {
+        "label": "Launch"
+      },
+      {
+        "label": "Growth"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "lineColor": "#4FC3F7",
+    "dotColor": "#FFFFFF",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "entranceAnimation": "progressive",
+    "duration": 8
+  }
+}

@@ -18,6 +18,7 @@ export const MapHighlightSchema = z.object({
   labelColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   mapColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#2A2A3A"),
   connectionLines: z.boolean().default(false),
+  connectionStyle: z.enum(["solid", "dashed", "dotted"]).default("solid"),
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "scale-pop", "progressive", "none"]).default("progressive"),
   duration: z.number().min(3).max(15).default(7),

@@ -163,7 +163,7 @@ function renderSideBySide(
         </div>
 
         {/* Divider */}
-        <div style={{ width: isPortrait ? "50%" : "2px", alignSelf: "center", height: isPortrait ? "2px" : "50%", backgroundColor: "#333" }} />
+        <div style={{ width: isPortrait ? "50%" : "2px", alignSelf: "center", height: isPortrait ? "2px" : "50%", backgroundColor: props.accentColor }} />
 
         {/* Solution side */}
         <div

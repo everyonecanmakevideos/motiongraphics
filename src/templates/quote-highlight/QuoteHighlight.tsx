@@ -58,6 +58,12 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
     attrY = interpolate(frame, [attrStart, attrEnd], [15, 0], CLAMP);
   }
 
+  const quoteFontFamily =
+    props.quoteStyle === "sans"
+      ? "Arial, Helvetica, sans-serif"
+      : "Georgia, 'Times New Roman', serif";
+  const quoteFontStyle = props.quoteStyle === "italic" ? "italic" : undefined;
+
   const quoteFontSize = Math.round((props.quote.length > 200 ? 32 : props.quote.length > 100 ? 40 : 48) * scale);
 
   const displayedQuote = props.entranceAnimation === "typewriter"
@@ -119,10 +125,10 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
         <div
           style={{
             fontSize: `${quoteFontSize}px`,
-            fontFamily: "Georgia, serif",
+            fontFamily: quoteFontFamily,
             color: props.quoteColor,
             lineHeight: 1.5,
-            fontStyle: "italic",
+            fontStyle: quoteFontStyle,
             opacity: quoteOpacity,
             transform: `translateY(${quoteY}px) scale(${quoteScale})`,
             filter: quoteBlur > 0 ? `blur(${quoteBlur}px)` : undefined,

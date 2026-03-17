@@ -1,0 +1,17 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Simplicity Wins",
+    "headlineColor": "#000000",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#FFFFFF"
+    },
+    "entranceAnimation": "fade-in",
+    "subheadlineAnimation": "fade-in",
+    "duration": 4,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

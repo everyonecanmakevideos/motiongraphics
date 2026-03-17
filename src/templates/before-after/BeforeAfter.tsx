@@ -173,7 +173,7 @@ function renderOverlay(
               bottom: 0,
               left: `${wipeProgress}%`,
               width: "3px",
-              backgroundColor: "#FFFFFF",
+              backgroundColor: props.accentColor,
               boxShadow: "0 0 20px rgba(255,255,255,0.5)",
               opacity: exitOpacity,
             }}
@@ -268,7 +268,7 @@ function renderSplit(
         </div>
 
         {/* Divider */}
-        <div style={{ width: isPortrait ? "60%" : "2px", alignSelf: "center", height: isPortrait ? "2px" : "60%", backgroundColor: "#333" }} />
+        <div style={{ width: isPortrait ? "60%" : "2px", alignSelf: "center", height: isPortrait ? "2px" : "60%", backgroundColor: props.accentColor }} />
 
         {/* After side */}
         <div

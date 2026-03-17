@@ -49,14 +49,19 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
     ? interpolate(frame, [dividerStart, dividerEnd], [0, 1], CLAMP)
     : 0;
 
+  // Balance flex values
+  const leftFlex = props.balance === "left-heavy" ? 3 : props.balance === "right-heavy" ? 2 : 1;
+  const rightFlex = props.balance === "left-heavy" ? 2 : props.balance === "right-heavy" ? 3 : 1;
+
   const renderPanel = (
     side: { title: string; body?: string; iconId?: string },
     accentColor: string,
-    anim: { opacity: number; x: number; scale: number }
+    anim: { opacity: number; x: number; scale: number },
+    flex: number
   ) => (
     <div
       style={{
-        flex: 1,
+        flex,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -135,7 +140,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
         }}
       >
         {/* Left panel */}
-        {renderPanel(props.left, props.leftAccentColor, leftAnim)}
+        {renderPanel(props.left, props.leftAccentColor, leftAnim, leftFlex)}
 
         {/* Divider */}
         {props.dividerStyle === "line" && (
@@ -155,7 +160,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
         )}
 
         {/* Right panel */}
-        {renderPanel(props.right, props.rightAccentColor, rightAnim)}
+        {renderPanel(props.right, props.rightAccentColor, rightAnim, rightFlex)}
       </div>
     </AbsoluteFill>
   );

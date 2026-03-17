@@ -15,6 +15,7 @@ export const TimelineSceneSchema = z.object({
   titleColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
   descriptionColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#B0BEC5"),
+  markerStyle: z.enum(["dot", "ring", "diamond"]).default("dot"),
   entranceAnimation: z.enum(["progressive", "fade-in", "slide-up", "none"]).default("progressive"),
   duration: z.number().min(3).max(15).default(7),
 });

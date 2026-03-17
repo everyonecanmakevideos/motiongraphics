@@ -61,7 +61,8 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
 
   const isLeft = props.alignment === "left";
 
-  const baseFontSize = Math.round((props.title.length > 40 ? 52 : props.title.length > 20 ? 64 : 80) * scale);
+  const fontSizeMultiplier = props.fontSize === "medium" ? 0.75 : props.fontSize === "xlarge" ? 1.3 : 1;
+  const baseFontSize = Math.round((props.title.length > 40 ? 52 : props.title.length > 20 ? 64 : 80) * scale * fontSizeMultiplier);
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
