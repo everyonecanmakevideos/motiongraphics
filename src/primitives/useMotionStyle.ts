@@ -22,6 +22,8 @@ const EASING_MAP: Record<string, (t: number) => number> = {
   smooth: Easing.bezier(0.4, 0, 0.2, 1),
   snappy: Easing.bezier(0.25, 0.1, 0.25, 1.0),
   elastic: Easing.bezier(0.68, -0.55, 0.265, 1.55),
+  dramatic: Easing.bezier(0.7, 0, 0.3, 1),     // slow start, slow end — cinematic
+  playful: Easing.bezier(0.34, 1.56, 0.64, 1),  // overshoot, bouncy
 };
 
 const DEFAULT_CONFIG: MotionConfig = {

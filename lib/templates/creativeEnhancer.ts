@@ -300,6 +300,14 @@ DESIGN PRINCIPLES:
    - "bold-startup" for energetic, startup, launch vibes
    - "neon-tech" for tech, futuristic, cyberpunk vibes
    - "minimal-luxury" for premium, elegant, luxury vibes
+   - "cinematic-noir" for movie, dramatic, film noir vibes (slow dramatic easing, strong shadows)
+   - "retro-arcade" for gaming, retro, 80s vibes (snappy fast, neon glow)
+   - "editorial" for news, magazine, storytelling (dramatic easing, clash-display font)
+   - "brutalist" for bold raw statements (black weight, tight spacing, strong shadows)
+   - "glass-morphism" for modern UI, translucent, futuristic (subtle glow + blur)
+   - "gradient-dream" for creative, artistic, dreamy vibes (elastic motion, clash-display)
+   - "tech-terminal" for hacker, code, developer vibes (snappy fast, neon glow + blur)
+   - "warm-organic" for wellness, nature, calm vibes (smooth slow, soft shadows)
    Only set this if the mood is clear. It acts as a shorthand for typography + motion + effects.
 
 8. TYPOGRAPHY — Set when specific typographic character is needed:
@@ -310,7 +318,7 @@ DESIGN PRINCIPLES:
    ALL sub-fields are required when setting typography.
 
 9. MOTION STYLE — Set to control animation feel:
-   - easing: "smooth" for luxury/corporate, "snappy" for startup/CTA, "elastic" for playful/fun
+   - easing: "smooth" for luxury/corporate, "snappy" for startup/CTA, "elastic" for playful/fun, "dramatic" for cinematic/film (slow start+end), "playful" for bouncy/overshoot
    - speed: "slow" for cinematic/elegant, "medium" for balanced, "fast" for urgent/energetic
    - stagger: true for templates with multiple items (cards, bullets, steps, bars)
    - microMotion: true for premium/cinematic templates (adds subtle floating)
@@ -321,6 +329,32 @@ DESIGN PRINCIPLES:
     - glow: "neon" ONLY for neon-tech style, "subtle" for premium, "none" for clean
     - blur: "transition" for cinematic exits, "subtle" for layered depth, "none" for clean
     ALL sub-fields are required when setting effects.
+
+11. PACING PROFILE — Controls the rhythm of entrance/main/exit timing:
+    - "dramatic": slow reveals, long entrance (35%), shorter main. Use for cinematic/movie/dramatic prompts.
+    - "energetic": fast entrance (12%), long main display. Use for sale/CTA/urgent prompts.
+    - "elegant": leisurely pace, balanced timing. Use for luxury/premium/editorial prompts.
+    - "standard": default balanced 20/60/20 timing. Use when no strong mood signal.
+    - "suspense": very long build-up (40%), short main. Use for reveals, mystery, trailer-style.
+    Set this when the prompt has a clear emotional rhythm. Omit for default standard pacing.
+
+12. SECONDARY MOTION — Continuous subtle motion during the main phase (keeps elements alive):
+    - type "breathe": subtle scale pulsing (1.0→1.015→1.0). Best for luxury, elegant, cinematic.
+    - type "float": gentle vertical bobbing. Best for playful, creative, dreamy.
+    - type "drift": gentle horizontal swaying. Best for cinematic, editorial, organic.
+    - type "rotate": subtle pendulum rotation. Best for retro, arcade, playful.
+    - type "none": static during hold phase. Only for brutalist, minimal, or when stillness is intentional.
+    - intensity: "subtle" (barely noticeable), "medium" (visible but gentle), "strong" (clear movement).
+    ALL sub-fields (type + intensity) are required when setting secondaryMotion.
+    STRONGLY RECOMMENDED for any video > 3 seconds — prevents the "frozen" look.
+
+13. DECORATIVE THEME — Adds depth with background accent shapes:
+    - "geometric": hollow circles + rotated squares + thin lines. Use for tech, premium, corporate.
+    - "minimal-dots": scattered small dots at varying opacities. Use for modern, clean, minimal.
+    - "light-streaks": diagonal gradient sweeps. Use for cinematic, dramatic, epic.
+    - "corner-accents": L-shaped brackets in two corners. Use for editorial, corporate, formal.
+    - "none": no decorative elements. Use for brutalist, minimal, or when background is already complex (stripe/grain).
+    Set this to add visual depth. Works best with gradient or solid backgrounds. Avoid with stripe backgrounds.
 
 DIVERSITY ENFORCEMENT — THIS IS MANDATORY:
 - You MUST change the background from the input params. The intent analyzer sets bland defaults — your job is to replace them with mood-appropriate variants from the palettes above.
@@ -356,10 +390,13 @@ EXAMPLE — Input: hero-text template with bland defaults (solid #111111 bg, #FF
     "fontWeight": "normal",
     "stylePreset": "minimal-luxury",
     "typography": { "fontFamily": "inter", "weight": "regular", "letterSpacing": "wide", "lineHeight": "compact" },
-    "motionStyle": { "easing": "smooth", "speed": "slow", "stagger": false, "microMotion": true },
-    "effects": { "shadow": "soft", "glow": "subtle", "blur": "transition" }
+    "motionStyle": { "easing": "dramatic", "speed": "slow", "stagger": false, "microMotion": true },
+    "effects": { "shadow": "soft", "glow": "subtle", "blur": "transition" },
+    "pacingProfile": "elegant",
+    "secondaryMotion": { "type": "breathe", "intensity": "subtle" },
+    "decorativeTheme": "geometric"
   },
-  "changes": ["Replaced solid black with grain texture for premium feel", "Changed #FFFFFF to cream #FFF8E1 for warmth", "Gold accent #D4AF37 for luxury mood", "blur-reveal animation for elegant slow entrance", "minimal-luxury preset with wide letter spacing"]
+  "changes": ["Replaced solid black with grain texture for premium feel", "Changed #FFFFFF to cream #FFF8E1 for warmth", "Gold accent #D4AF37 for luxury mood", "blur-reveal animation for elegant slow entrance", "minimal-luxury preset with wide letter spacing", "Elegant pacing for leisurely reveal", "Subtle breathe motion keeps elements alive", "Geometric decoratives add depth"]
 }
 
 EXAMPLE 2 — Input: stat-counter with bland defaults for a "neon cyberpunk gaming stats" prompt:
@@ -371,12 +408,35 @@ EXAMPLE 2 — Input: stat-counter with bland defaults for a "neon cyberpunk gami
     "background": { "type": "gradient", "from": "#000000", "to": "#0A1A0A", "direction": "to-bottom" },
     "entranceAnimation": "count-up",
     "valueSize": "xlarge",
-    "stylePreset": "neon-tech",
+    "stylePreset": "tech-terminal",
     "typography": { "fontFamily": "space-grotesk", "weight": "bold", "letterSpacing": "wide", "lineHeight": "compact" },
-    "motionStyle": { "easing": "elastic", "speed": "fast", "stagger": false, "microMotion": true },
-    "effects": { "shadow": "none", "glow": "neon", "blur": "none" }
+    "motionStyle": { "easing": "snappy", "speed": "fast", "stagger": false, "microMotion": true },
+    "effects": { "shadow": "none", "glow": "neon", "blur": "subtle" },
+    "pacingProfile": "energetic",
+    "secondaryMotion": { "type": "rotate", "intensity": "subtle" },
+    "decorativeTheme": "minimal-dots"
   },
-  "changes": ["Hacker-green value color for cyberpunk", "Matrix-style dark gradient background", "Neon glow effect for electric feel", "Hot pink accent for cyberpunk contrast"]
+  "changes": ["Hacker-green value color for cyberpunk", "Matrix-style dark gradient background", "Neon glow + blur effect for electric feel", "Hot pink accent for cyberpunk contrast", "Energetic pacing for fast reveals", "Subtle rotate keeps numbers alive", "Minimal dots add tech depth"]
+}
+
+EXAMPLE 3 — Input: quote-highlight for a "dramatic movie trailer quote" prompt:
+{
+  "enhancedParams": {
+    "quoteColor": "#F8FAFC",
+    "attributionColor": "#A855F7",
+    "accentColor": "#A855F7",
+    "background": { "type": "gradient", "from": "#050510", "to": "#0A0A20", "direction": "to-bottom" },
+    "entranceAnimation": "blur-reveal",
+    "quoteStyle": "serif",
+    "quoteMarkStyle": "large",
+    "stylePreset": "cinematic-noir",
+    "motionStyle": { "easing": "dramatic", "speed": "slow", "stagger": false, "microMotion": true },
+    "effects": { "shadow": "strong", "glow": "none", "blur": "transition" },
+    "pacingProfile": "suspense",
+    "secondaryMotion": { "type": "drift", "intensity": "subtle" },
+    "decorativeTheme": "light-streaks"
+  },
+  "changes": ["Noir gradient for cinematic depth", "Suspense pacing for long dramatic build", "Drift motion adds cinematic life", "Light streaks add epic visual depth", "Strong shadows for drama"]
 }`;
 
 const MULTI_SCENE_ADDENDUM = `
@@ -401,10 +461,13 @@ MULTI-SCENE RULES:
 // so the LLM cannot accidentally modify text, data, or structure.
 
 const SHARED_CREATIVE_FIELDS: Record<string, string> = {
-  stylePreset: "modern-clean|bold-startup|neon-tech|minimal-luxury",
+  stylePreset: "modern-clean|bold-startup|neon-tech|minimal-luxury|cinematic-noir|retro-arcade|editorial|brutalist|glass-morphism|gradient-dream|tech-terminal|warm-organic",
   typography: "{ fontFamily: inter|clash-display|space-grotesk, weight: regular|medium|bold|black, letterSpacing: tight|normal|wide, lineHeight: compact|normal|relaxed }",
-  motionStyle: "{ easing: smooth|snappy|elastic, speed: slow|medium|fast, stagger: boolean, microMotion: boolean }",
+  motionStyle: "{ easing: smooth|snappy|elastic|dramatic|playful, speed: slow|medium|fast, stagger: boolean, microMotion: boolean }",
   effects: "{ shadow: none|soft|strong, glow: none|subtle|neon, blur: none|subtle|transition }",
+  pacingProfile: "dramatic|energetic|elegant|standard|suspense (controls entrance/main/exit phase timing ratios)",
+  secondaryMotion: "{ type: breathe|float|drift|rotate|none, intensity: subtle|medium|strong } (continuous motion during main phase)",
+  decorativeTheme: "geometric|minimal-dots|light-streaks|corner-accents|none (adds depth with decorative background elements)",
 };
 
 const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {

@@ -1,0 +1,47 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "SPRING COLLECTION 2025",
+    "subheadline": "Redefining modern elegance",
+    "headlineColor": "#FFF8E1",
+    "subheadlineColor": "#E8A598",
+    "accentColor": "#EC4899",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A0A",
+      "to": "#1A101A",
+      "direction": "to-bottom-right"
+    },
+    "entranceAnimation": "blur-reveal",
+    "subheadlineAnimation": "blur-reveal",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "accent-line",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "editorial",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "wide",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "dramatic",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "transition"
+    },
+    "pacingProfile": "elegant",
+    "secondaryMotion": {
+      "type": "breathe",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "corner-accents"
+  }
+}

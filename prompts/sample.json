@@ -1,7 +1,122 @@
 [
- {
-    "id": "kt_10",
-    "prompt": "make 'next level' text color yellow ,font-Manrope,  scale up from 0 to 4  from small to big with easing moving from top to bottom , background - dark brown"
+  {
+    "id": "luxury-watch-reveal",
+    "prompt": "Premium luxury watch brand reveal: headline 'Timeless Elegance' with subtitle 'The new Chronos Collection'. Blur-reveal entrance, grain texture background, gold accent. Elegant and cinematic."
+  },
+  {
+    "id": "cyberpunk-stats",
+    "prompt": "Neon cyberpunk gaming stats: show the number 1.2 million with label 'Active Players' and subtitle 'across all servers'. Electric green on dark, hacker terminal feel, count-up animation."
+  },
+  {
+    "id": "startup-launch",
+    "prompt": "Bold startup launch announcement: 'Introducing Orbit' with subtitle 'The future of team collaboration'. Scale-pop entrance, energetic and fast-paced, deep blue gradient."
+  },
+  {
+    "id": "cinematic-movie-quote",
+    "prompt": "Dramatic movie trailer quote: 'In a world where nothing is certain, courage becomes everything.' by Director James Chen. Large quote marks, cinematic noir style, suspenseful build-up, blur-reveal."
+  },
+  {
+    "id": "wellness-breathe",
+    "prompt": "Calm wellness meditation intro: 'Find Your Center' with subtitle 'A 10-minute guided journey'. Warm organic feel, slow and gentle, soft shadows, nature-inspired green palette."
+  },
+  {
+    "id": "retro-arcade-score",
+    "prompt": "Retro 80s arcade high score display: show 999999 with label 'NEW HIGH SCORE' and subtitle 'Player 1'. Neon glow, pixel-style, snappy fast animation, synthwave colors."
+  },
+  {
+    "id": "editorial-headline",
+    "prompt": "Magazine editorial section title: 'The State of AI in 2024' with subtitle 'A comprehensive analysis'. Clean serif typography, dramatic pacing, left-aligned with accent line, minimal."
+  },
+  {
+    "id": "brutalist-statement",
+    "prompt": "Bold brutalist design statement: 'BREAK THE RULES' in black heavy type. Raw, sharp, no-nonsense. Strong shadows, fast snappy animation, no decorations."
+  },
+  {
+    "id": "glass-morphism-tech",
+    "prompt": "Modern glass morphism UI showcase: 'Next-Gen Dashboard' with subtitle 'Redesigned for clarity'. Translucent feel, subtle blur and glow, smooth medium-pace animation."
+  },
+  {
+    "id": "gradient-dream-art",
+    "prompt": "Dreamy creative art exhibition: 'Chromatic Visions' with subtitle 'An immersive digital art experience by Studio Prism'. Colorful gradient, elastic playful motion, clash-display font."
+  },
+  {
+    "id": "tech-terminal-dev",
+    "prompt": "Developer conference kinetic typography: lines are 'SHIP FAST', 'BREAK NOTHING', 'SCALE EVERYTHING'. Hacker terminal green, monospace feel, line-by-line stagger, neon glow."
+  },
+  {
+    "id": "sale-flash-urgent",
+    "prompt": "Flash sale urgent CTA: 'FLASH SALE' with subtitle 'Ends in 2 hours — Up to 70% off everything'. Red and fire orange, energetic pacing, scale-pop, stripe background."
+  },
+  {
+    "id": "nature-eco-organic",
+    "prompt": "Eco-friendly product launch: 'Made from Nature' with subtitle '100% biodegradable packaging'. Earth tones, warm organic style, slow gentle entrance, forest green accent."
+  },
+  {
+    "id": "space-scifi-epic",
+    "prompt": "Sci-fi space exploration hero: 'Beyond the Stars' with subtitle 'Humanity reaches for the infinite'. Deep space gradient, dramatic suspense pacing, light streaks, purple nebula accent."
+  },
+  {
+    "id": "corporate-quarterly",
+    "prompt": "Corporate quarterly results: show number 24.7 with suffix '% growth', label 'Revenue Growth Q4', sublabel 'Year-over-year increase'. Professional blue, count-up, clean modern style."
+  },
+  {
+    "id": "kinetic-motivational",
+    "prompt": "Motivational kinetic typography: 'DREAM BIG', 'WORK HARD', 'STAY FOCUSED', 'NEVER QUIT'. Word-by-word reveal, bold energetic, gradient background, scale-pop entrance."
+  },
+  {
+    "id": "food-culinary-quote",
+    "prompt": "Fine dining restaurant quote: 'Cooking is an art, and patience is the brush that paints the masterpiece.' by Chef Marco Rossi, Executive Chef. Warm kitchen tones, italic serif, elegant pacing."
+  },
+  {
+    "id": "music-album-drop",
+    "prompt": "Music album release hero: 'MIDNIGHT ECHOES' with subtitle 'The new album — streaming everywhere now'. Dark moody gradient, neon accent, cinematic-noir style, blur-reveal."
+  },
+  {
+    "id": "fitness-progress",
+    "prompt": "Fitness progress stat: show 42 with suffix 'lbs lost', label 'Transformation Complete', sublabel '12-week challenge results'. Vitality purple gradient, scale-pop, energetic."
+  },
+  {
+    "id": "education-course",
+    "prompt": "Online course announcement section title: 'Master Machine Learning' with subtitle 'From zero to deployment in 8 weeks'. Chalkboard feel, scholar tones, fade-in, dot accent."
+  },
+  {
+    "id": "seq-product-story",
+    "prompt": "Product story sequence: first a cinematic hero 'Introducing Aura', then kinetic typography lines 'Intelligent', 'Adaptive', 'Beautiful', then stat counter 50000 beta users, then a quote 'This changes everything' by TechCrunch."
+  },
+  {
+    "id": "seq-startup-pitch",
+    "prompt": "Startup pitch deck sequence: hero text 'The Problem with Email', then bullet list of 5 pain points (Too many threads, Lost attachments, No context, Slow search, Zero AI), then hero 'Meet Flowbox — Email Reimagined', then stat 3x productivity boost."
+  },
+  {
+    "id": "seq-cinematic-trailer",
+    "prompt": "Cinematic trailer sequence: dramatic section title 'From the creators of Nebula', then quote 'A breathtaking journey through time' by Variety Magazine, then hero text 'ECHOES OF TOMORROW' with subtitle 'Coming December 2024', then kinetic typography 'Mystery', 'Adventure', 'Discovery'."
+  },
+  {
+    "id": "seq-wellness-journey",
+    "prompt": "Wellness brand story: hero 'Your Journey Begins Here', then 3 process steps (Assess your goals, Build your plan, Track progress), then stat counter 92 percent satisfaction rate, then quote 'I finally found balance' by Sarah M."
+  },
+  {
+    "id": "gothic-mystery",
+    "prompt": "Dark mystery book reveal: 'THE VANISHING' with subtitle 'A novel by R.K. Blackwell — coming this fall'. Gothic midnight gradient, suspense pacing, strong shadows, dramatic entrance."
+  },
+  {
+    "id": "ocean-marine",
+    "prompt": "Ocean conservation hero: 'Save Our Seas' with subtitle 'Every action counts — join the movement'. Deep ocean gradient, coral accent, elegant pacing, breathe motion."
+  },
+  {
+    "id": "winter-holiday",
+    "prompt": "Holiday season greeting: 'Season of Wonder' with subtitle 'Wishing you peace and joy'. Frost gradient, ice blue accent, slow cinematic entrance, geometric decoratives, minimal luxury feel."
+  },
+  {
+    "id": "fashion-vogue",
+    "prompt": "Fashion week hero: 'SPRING COLLECTION 2025' with subtitle 'Redefining modern elegance'. Vogue-style dark gradient, rose accent, editorial preset, blur-reveal, corner accents."
+  },
+  {
+    "id": "sports-champion",
+    "prompt": "Championship victory stat: show 47 with label 'Points Scored' and sublabel 'New franchise record'. Arena gradient, red and gold, bold energetic, scale-pop, xlarge value."
+  },
+  {
+    "id": "travel-adventure",
+    "prompt": "Travel adventure kinetic: lines are 'EXPLORE', 'DISCOVER', 'WANDER', 'LIVE'. Sunset trail colors, warm gradient, word-by-word stagger, playful elastic motion."
   }
-
 ]

@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import {
-  secToFrame,
+  phaseFrames,
   fadeIn,
   slideUp,
   scalePop,
@@ -11,13 +11,14 @@ import {
   fadeOut,
   highlightReveal,
   underlineDraw,
-  microFloat,
+  choreograph,
 } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
-import { resolveMotionStyle } from "../../primitives/useMotionStyle";
 import { resolveEffects } from "../../primitives/useEffects";
+import { resolveSecondaryMotion } from "../../primitives/useSecondaryMotion";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import type { HeroTextProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -52,7 +53,6 @@ function applyEntrance(
     result.chars = typewriter(frame, range, textLength);
     result.opacity = 1;
   }
-  // "none" leaves defaults
 
   return result;
 }
@@ -60,7 +60,6 @@ function applyEntrance(
 export const HeroText: React.FC<HeroTextProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, scale } = useResponsiveConfig();
-  const totalFrames = secToFrame(props.duration);
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -70,38 +69,41 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
     props.effects,
   );
   const typo = resolveTypography(resolved.typography);
-  const motion = resolveMotionStyle(resolved.motionStyle);
   const fx = resolveEffects(resolved.effects, props.accentColor);
 
-  // ── Phase timing (adjusted by motion speed) ────────────────────────────
-  const entranceEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
-  const subStart = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
-  const subEnd = Math.round(totalFrames * 0.4 * motion.durationMultiplier);
-  const exitStart = Math.round(totalFrames * 0.82);
-  const exitEnd = totalFrames;
+  // ── Adaptive phase timing ──────────────────────────────────────────────
+  const phases = phaseFrames(props.duration, props.pacingProfile);
+
+  // ── Choreographed entrance sequencing ──────────────────────────────────
+  const entranceDur = phases.entrance.endFrame;
+  const seq = choreograph(0, [
+    { id: "decoration", startOffset: 0, duration: Math.round(entranceDur * 0.5) },
+    { id: "headline", startOffset: Math.round(entranceDur * 0.1), duration: Math.round(entranceDur * 0.9) },
+    { id: "subtitle", startOffset: Math.round(entranceDur * 0.4), duration: Math.round(entranceDur * 0.7) },
+  ]);
+
+  const headlineRange = seq.get("headline")!;
+  const subtitleRange = seq.get("subtitle")!;
+  const decoRange = seq.get("decoration")!;
 
   // ── Headline entrance ──────────────────────────────────────────────────
-  const h = applyEntrance(frame, props.entranceAnimation, 0, entranceEnd, props.headline.length);
+  const h = applyEntrance(frame, props.entranceAnimation, headlineRange.startFrame, headlineRange.endFrame, props.headline.length);
 
   // ── Subheadline entrance ───────────────────────────────────────────────
   const sub = props.subheadline
-    ? applyEntrance(frame, props.subheadlineAnimation, subStart, subEnd, props.subheadline.length)
+    ? applyEntrance(frame, props.subheadlineAnimation, subtitleRange.startFrame, subtitleRange.endFrame, props.subheadline.length)
     : null;
 
-  // ── Exit fade (with optional blur transition) ──────────────────────────
-  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  // ── Exit fade ──────────────────────────────────────────────────────────
+  const exitOpacity = interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [1, 0], CLAMP);
   const exitBlur = fx.blurTransition
-    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    ? interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [0, 8], CLAMP)
     : 0;
 
-  // ── Micro motion during main phase ─────────────────────────────────────
-  const isMainPhase = frame >= entranceEnd && frame < exitStart;
-  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+  // ── Secondary motion during main phase ─────────────────────────────────
+  const secondaryM = resolveSecondaryMotion(frame, phases.main, props.secondaryMotion);
 
-  // ── Decoration ─────────────────────────────────────────────────────────
-  const decoStart = entranceEnd;
-  const decoEnd = Math.round(entranceEnd + totalFrames * 0.12);
-  const decoRange = { startFrame: decoStart, endFrame: decoEnd };
+  // ── Decoration animation ───────────────────────────────────────────────
   const decoProgress =
     props.decoration === "underline"
       ? underlineDraw(frame, decoRange)
@@ -117,14 +119,11 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
   const containerTransform = isLeft || isSplit ? "translateY(-50%)" : "translate(-50%, -50%)";
   const maxWidth = isSplit ? "55%" : "85%";
 
-  // Font sizing: scale down for longer headlines, adapt to aspect ratio
   const rawFontSize = props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96;
   const fontSizeMultiplier = props.fontSize === "medium" ? 0.75 : props.fontSize === "xlarge" ? 1.3 : 1;
   const baseFontSize = Math.round(rawFontSize * scale * fontSizeMultiplier);
   const fontWeightValue = typo.fontWeight ?? (props.fontWeight === "normal" ? 400 : props.fontWeight === "black" ? 900 : 700);
   const subFontSize = Math.round(baseFontSize * 0.4);
-
-  // Estimated headline width for decoration
   const headlineWidth = baseFontSize * 0.6 * props.headline.length;
 
   const headlineText =
@@ -132,13 +131,19 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
       ? props.headline.slice(0, h.chars)
       : props.headline;
 
-  const subText = props.subheadline;
-
   const accentColor = props.accentColor ?? props.headlineColor;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
-      <Background config={props.background} />
+      <Background config={props.background} frame={frame} />
+
+      {/* Decorative depth layer */}
+      <DecorativeLayer
+        theme={props.decorativeTheme ?? "none"}
+        accentColor={accentColor}
+        frame={frame}
+        totalFrames={phases.total}
+      />
 
       {/* Content container */}
       <div
@@ -146,7 +151,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
           position: "absolute",
           left: containerLeft,
           top: "50%",
-          transform: `${containerTransform} translateY(${floatY}px)`,
+          transform: `${containerTransform} translateY(${secondaryM.y}px) translateX(${secondaryM.x}px) scale(${secondaryM.scale}) rotate(${secondaryM.rotation}deg)`,
           maxWidth,
           textAlign: textAlign as React.CSSProperties["textAlign"],
           opacity: exitOpacity,
@@ -160,12 +165,10 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
             position: "relative",
             display: "inline-block",
             opacity: h.opacity,
-            transform:
-              "translateY(" + h.y + "px) scale(" + h.scale + ")",
+            transform: "translateY(" + h.y + "px) scale(" + h.scale + ")",
             filter: h.blur > 0 ? "blur(" + h.blur + "px)" : "none",
           }}
         >
-          {/* Highlight box decoration (behind text) */}
           {props.decoration === "highlight-box" && (
             <div
               style={{
@@ -202,17 +205,13 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
             {headlineText}
           </span>
 
-          {/* Underline decoration */}
           {props.decoration === "underline" && (
             <div
               style={{
                 position: "absolute",
                 bottom: "-8px",
                 left: textAlign === "center" ? "50%" : "0",
-                transform:
-                  textAlign === "center"
-                    ? "translateX(-50%)"
-                    : "none",
+                transform: textAlign === "center" ? "translateX(-50%)" : "none",
                 width: (decoProgress / 100) * Math.min(headlineWidth, width * 0.75) + "px",
                 height: "4px",
                 backgroundColor: accentColor,
@@ -221,35 +220,30 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
             />
           )}
 
-          {/* Accent line decoration */}
           {props.decoration === "accent-line" && (
             <div
               style={{
                 position: "absolute",
                 top: "-16px",
                 left: textAlign === "center" ? "50%" : "0",
-                transform:
-                  textAlign === "center"
-                    ? "translateX(-50%)"
-                    : "none",
+                transform: textAlign === "center" ? "translateX(-50%)" : "none",
                 width: "60px",
                 height: "4px",
                 backgroundColor: accentColor,
                 borderRadius: "2px",
-                opacity: interpolate(frame, [decoStart, decoEnd], [0, 1], CLAMP),
+                opacity: interpolate(frame, [decoRange.startFrame, decoRange.endFrame], [0, 1], CLAMP),
               }}
             />
           )}
         </div>
 
         {/* Subheadline */}
-        {sub && subText && (
+        {sub && props.subheadline && (
           <div
             style={{
               marginTop: Math.round(baseFontSize * 0.35) + "px",
               opacity: sub.opacity,
-              transform:
-                "translateY(" + sub.y + "px) scale(" + sub.scale + ")",
+              transform: "translateY(" + sub.y + "px) scale(" + sub.scale + ")",
               filter: sub.blur > 0 ? "blur(" + sub.blur + "px)" : "none",
             }}
           >
@@ -263,7 +257,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
                 letterSpacing: typo.letterSpacing ?? "0.01em",
               }}
             >
-              {subText}
+              {props.subheadline}
             </span>
           </div>
         )}

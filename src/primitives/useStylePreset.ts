@@ -27,6 +27,46 @@ const PRESET_MAP: Record<StylePreset, PresetDefaults> = {
     motionStyle: { easing: "smooth", speed: "slow", stagger: false, microMotion: true },
     effects: { shadow: "soft", glow: "none", blur: "none" },
   },
+  "cinematic-noir": {
+    typography: { fontFamily: "inter", weight: "regular", letterSpacing: "normal", lineHeight: "relaxed" },
+    motionStyle: { easing: "dramatic", speed: "slow", stagger: false, microMotion: true },
+    effects: { shadow: "strong", glow: "none", blur: "transition" },
+  },
+  "retro-arcade": {
+    typography: { fontFamily: "space-grotesk", weight: "black", letterSpacing: "wide", lineHeight: "compact" },
+    motionStyle: { easing: "snappy", speed: "fast", stagger: true, microMotion: false },
+    effects: { shadow: "none", glow: "neon", blur: "none" },
+  },
+  "editorial": {
+    typography: { fontFamily: "clash-display", weight: "medium", letterSpacing: "normal", lineHeight: "relaxed" },
+    motionStyle: { easing: "dramatic", speed: "slow", stagger: false, microMotion: true },
+    effects: { shadow: "soft", glow: "none", blur: "none" },
+  },
+  "brutalist": {
+    typography: { fontFamily: "space-grotesk", weight: "black", letterSpacing: "tight", lineHeight: "compact" },
+    motionStyle: { easing: "snappy", speed: "fast", stagger: false, microMotion: false },
+    effects: { shadow: "strong", glow: "none", blur: "none" },
+  },
+  "glass-morphism": {
+    typography: { fontFamily: "inter", weight: "medium", letterSpacing: "normal", lineHeight: "normal" },
+    motionStyle: { easing: "smooth", speed: "medium", stagger: false, microMotion: true },
+    effects: { shadow: "none", glow: "subtle", blur: "subtle" },
+  },
+  "gradient-dream": {
+    typography: { fontFamily: "clash-display", weight: "bold", letterSpacing: "wide", lineHeight: "normal" },
+    motionStyle: { easing: "elastic", speed: "medium", stagger: true, microMotion: true },
+    effects: { shadow: "none", glow: "subtle", blur: "none" },
+  },
+  "tech-terminal": {
+    typography: { fontFamily: "space-grotesk", weight: "bold", letterSpacing: "normal", lineHeight: "compact" },
+    motionStyle: { easing: "snappy", speed: "fast", stagger: true, microMotion: true },
+    effects: { shadow: "none", glow: "neon", blur: "subtle" },
+  },
+  "warm-organic": {
+    typography: { fontFamily: "inter", weight: "regular", letterSpacing: "normal", lineHeight: "relaxed" },
+    motionStyle: { easing: "smooth", speed: "slow", stagger: false, microMotion: true },
+    effects: { shadow: "soft", glow: "none", blur: "none" },
+  },
 };
 
 /**

@@ -1,11 +1,18 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, countUp, fadeIn, scalePop, microFloat } from "../../primitives/animations";
+import {
+  phaseFrames,
+  countUp,
+  fadeIn,
+  scalePop,
+  choreograph,
+} from "../../primitives/animations";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
-import { resolveMotionStyle } from "../../primitives/useMotionStyle";
 import { resolveEffects } from "../../primitives/useEffects";
+import { resolveSecondaryMotion } from "../../primitives/useSecondaryMotion";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { StatCounterProps } from "./schema";
 
@@ -14,7 +21,6 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const StatCounter: React.FC<StatCounterProps> = (props) => {
   const frame = useCurrentFrame();
   const { scale } = useResponsiveConfig();
-  const totalFrames = secToFrame(props.duration);
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -24,24 +30,28 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
     props.effects,
   );
   const typo = resolveTypography(resolved.typography);
-  const motion = resolveMotionStyle(resolved.motionStyle);
   const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
 
-  // Phase timing
-  const entranceEnd = Math.round(totalFrames * 0.6 * motion.durationMultiplier);
-  const labelStart = Math.round(totalFrames * 0.15);
-  const labelEnd = Math.round(totalFrames * 0.35);
-  const exitStart = Math.round(totalFrames * 0.85);
+  // ── Adaptive phase timing ──────────────────────────────────────────────
+  const phases = phaseFrames(props.duration, props.pacingProfile);
 
-  const exitEnd = totalFrames;
-  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  // ── Choreographed entrance ─────────────────────────────────────────────
+  const entranceDur = phases.entrance.endFrame + Math.round((phases.main.endFrame - phases.main.startFrame) * 0.3);
+  const seq = choreograph(0, [
+    { id: "number", startOffset: 0, duration: entranceDur },
+    { id: "label", startOffset: Math.round(entranceDur * 0.2), duration: Math.round(entranceDur * 0.5) },
+  ]);
 
-  const isMainPhase = frame >= entranceEnd && frame < exitStart;
-  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+  const numberRange = seq.get("number")!;
+  const labelRange = seq.get("label")!;
 
+  const exitOpacity = interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [1, 0], CLAMP);
   const exitBlur = fx.blurTransition
-    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    ? interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [0, 8], CLAMP)
     : 0;
+
+  // ── Secondary motion during main phase ─────────────────────────────────
+  const secondaryM = resolveSecondaryMotion(frame, phases.main, props.secondaryMotion);
 
   // Value size multiplier
   const valueSizeMultiplier = props.valueSize === "medium" ? 0.7 : props.valueSize === "xlarge" ? 1.4 : 1;
@@ -52,36 +62,43 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
   let numberScale = 1;
 
   if (props.entranceAnimation === "count-up") {
-    displayValue = countUp(frame, { startFrame: 0, endFrame: entranceEnd }, 0, props.value);
-    numberOpacity = interpolate(frame, [0, Math.round(totalFrames * 0.08)], [0, 1], CLAMP);
+    displayValue = countUp(frame, numberRange, 0, props.value);
+    numberOpacity = interpolate(frame, [0, Math.round(numberRange.endFrame * 0.1)], [0, 1], CLAMP);
   } else if (props.entranceAnimation === "fade-in") {
-    const f = fadeIn(frame, { startFrame: 0, endFrame: Math.round(totalFrames * 0.25) });
+    const f = fadeIn(frame, { startFrame: 0, endFrame: Math.round(numberRange.endFrame * 0.4) });
     numberOpacity = f.opacity;
   } else if (props.entranceAnimation === "scale-pop") {
-    const p = scalePop(frame, { startFrame: 0, endFrame: Math.round(totalFrames * 0.3) }, 1.15);
+    const p = scalePop(frame, { startFrame: 0, endFrame: Math.round(numberRange.endFrame * 0.5) }, 1.15);
     numberOpacity = p.opacity;
     numberScale = p.scale;
   }
 
   // Label animation
-  const labelOpacity = interpolate(frame, [labelStart, labelEnd], [0, 1], CLAMP);
-  const labelY = interpolate(frame, [labelStart, labelEnd], [20, 0], CLAMP);
+  const labelOpacity = interpolate(frame, [labelRange.startFrame, labelRange.endFrame], [0, 1], CLAMP);
+  const labelY = interpolate(frame, [labelRange.startFrame, labelRange.endFrame], [20, 0], CLAMP);
 
-  // Format number with commas
+  // Format number
   const formatted = Math.abs(displayValue).toLocaleString("en-US");
   const sign = props.value < 0 && displayValue !== 0 ? "-" : "";
   const numberText = props.prefix + sign + formatted + props.suffix;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
-      <Background config={props.background} />
+      <Background config={props.background} frame={frame} />
+
+      <DecorativeLayer
+        theme={props.decorativeTheme ?? "none"}
+        accentColor={props.accentColor ?? props.valueColor}
+        frame={frame}
+        totalFrames={phases.total}
+      />
 
       <div
         style={{
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          transform: `translate(-50%, -50%) translateY(${secondaryM.y}px) translateX(${secondaryM.x}px) scale(${secondaryM.scale}) rotate(${secondaryM.rotation}deg)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -90,7 +107,6 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
-        {/* Big number */}
         <div
           style={{
             fontSize: Math.round(140 * scale * valueSizeMultiplier) + "px",
@@ -106,7 +122,6 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           {numberText}
         </div>
 
-        {/* Accent line */}
         {props.accentColor && (
           <div
             style={{
@@ -119,7 +134,6 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           />
         )}
 
-        {/* Label */}
         {props.label && (
           <div
             style={{
@@ -135,7 +149,6 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           </div>
         )}
 
-        {/* Sublabel */}
         {props.sublabel && (
           <div
             style={{

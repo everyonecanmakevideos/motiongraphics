@@ -1,0 +1,38 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "BREAK THE RULES",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "fade-in",
+    "duration": 4,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "brutalist",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "black",
+      "letterSpacing": "tight",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": false
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "none",
+      "blur": "none"
+    },
+    "pacingProfile": "energetic"
+  }
+}

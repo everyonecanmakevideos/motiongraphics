@@ -1,8 +1,9 @@
 import { interpolate } from "remotion";
+import type { PacingProfile } from "../templates/types";
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
-interface FrameRange {
+export interface FrameRange {
   startFrame: number;
   endFrame: number;
 }
@@ -16,16 +17,27 @@ export function secToFrame(sec: number): number {
   return Math.round(sec * 30);
 }
 
-/** Compute entrance/main/exit frame boundaries for a given total duration (seconds). */
-export function phaseFrames(durationSec: number): {
+// ── Adaptive Phase Timing ────────────────────────────────────────────────
+
+const PACING_MAP: Record<PacingProfile, { entrance: number; main: number; exit: number }> = {
+  dramatic:  { entrance: 0.35, main: 0.40, exit: 0.25 },
+  energetic: { entrance: 0.12, main: 0.63, exit: 0.25 },
+  elegant:   { entrance: 0.25, main: 0.55, exit: 0.20 },
+  standard:  { entrance: 0.20, main: 0.60, exit: 0.20 },
+  suspense:  { entrance: 0.40, main: 0.35, exit: 0.25 },
+};
+
+/** Compute entrance/main/exit frame boundaries with mood-adaptive pacing. */
+export function phaseFrames(durationSec: number, profile: PacingProfile = "standard"): {
   entrance: FrameRange;
   main: FrameRange;
   exit: FrameRange;
   total: number;
 } {
+  const p = PACING_MAP[profile] ?? PACING_MAP.standard;
   const total = secToFrame(durationSec);
-  const entranceEnd = Math.round(total * 0.2);
-  const exitStart = Math.round(total * 0.8);
+  const entranceEnd = Math.round(total * p.entrance);
+  const exitStart = Math.round(total * (p.entrance + p.main));
   return {
     entrance: { startFrame: 0, endFrame: entranceEnd },
     main: { startFrame: entranceEnd, endFrame: exitStart },
@@ -52,12 +64,13 @@ export function staggerDelay(
   };
 }
 
-// ── Animation Presets ─────────────────────────────────────────────────────
+// ── Entrance Animation Presets (with anticipation & follow-through) ─────
 
-/** Fade in: opacity 0 → 1 */
-export function fadeIn(frame: number, range: FrameRange): { opacity: number } {
+/** Fade in: opacity 0 → 1, with optional subtle scale for physical feel. */
+export function fadeIn(frame: number, range: FrameRange): { opacity: number; scale: number } {
   return {
     opacity: interpolate(frame, [range.startFrame, range.endFrame], [0, 1], CLAMP),
+    scale: interpolate(frame, [range.startFrame, range.endFrame], [0.97, 1], CLAMP),
   };
 }
 
@@ -68,65 +81,125 @@ export function fadeOut(frame: number, range: FrameRange): { opacity: number } {
   };
 }
 
-/** Slide up: translateY from +offset to 0, with opacity fade. */
+/**
+ * Slide up with anticipation + overshoot + settle.
+ * Phase 1 (0-8%):  anticipation dip (slight downward)
+ * Phase 2 (8-70%): main rise past target (overshoot)
+ * Phase 3 (70-100%): settle to final position
+ */
 export function slideUp(
   frame: number,
   range: FrameRange,
   offsetPx: number = 40
 ): { y: number; opacity: number } {
-  return {
-    y: interpolate(frame, [range.startFrame, range.endFrame], [offsetPx, 0], CLAMP),
-    opacity: interpolate(frame, [range.startFrame, range.endFrame], [0, 1], CLAMP),
-  };
+  const dur = range.endFrame - range.startFrame;
+  const antic = range.startFrame + Math.round(dur * 0.08);
+  const main = range.startFrame + Math.round(dur * 0.70);
+
+  const y = interpolate(
+    frame,
+    [range.startFrame, antic, main, range.endFrame],
+    [offsetPx + 5, offsetPx + 10, -6, 0],
+    CLAMP
+  );
+  const opacity = interpolate(frame, [range.startFrame, antic + 4], [0, 1], CLAMP);
+  return { y, opacity };
 }
 
-/** Slide down: translateY from -offset to 0, with opacity fade. */
+/**
+ * Slide down with anticipation + overshoot + settle.
+ */
 export function slideDown(
   frame: number,
   range: FrameRange,
   offsetPx: number = 40
 ): { y: number; opacity: number } {
-  return {
-    y: interpolate(frame, [range.startFrame, range.endFrame], [-offsetPx, 0], CLAMP),
-    opacity: interpolate(frame, [range.startFrame, range.endFrame], [0, 1], CLAMP),
-  };
+  const dur = range.endFrame - range.startFrame;
+  const antic = range.startFrame + Math.round(dur * 0.08);
+  const main = range.startFrame + Math.round(dur * 0.70);
+
+  const y = interpolate(
+    frame,
+    [range.startFrame, antic, main, range.endFrame],
+    [-(offsetPx + 5), -(offsetPx + 10), 6, 0],
+    CLAMP
+  );
+  const opacity = interpolate(frame, [range.startFrame, antic + 4], [0, 1], CLAMP);
+  return { y, opacity };
 }
 
-/** Slide left: translateX from +offset to 0, with opacity fade. */
+/**
+ * Slide left with anticipation + overshoot + settle.
+ */
 export function slideLeft(
   frame: number,
   range: FrameRange,
   offsetPx: number = 60
 ): { x: number; opacity: number } {
-  return {
-    x: interpolate(frame, [range.startFrame, range.endFrame], [offsetPx, 0], CLAMP),
-    opacity: interpolate(frame, [range.startFrame, range.endFrame], [0, 1], CLAMP),
-  };
+  const dur = range.endFrame - range.startFrame;
+  const antic = range.startFrame + Math.round(dur * 0.08);
+  const main = range.startFrame + Math.round(dur * 0.70);
+
+  const x = interpolate(
+    frame,
+    [range.startFrame, antic, main, range.endFrame],
+    [offsetPx + 8, offsetPx + 14, -5, 0],
+    CLAMP
+  );
+  const opacity = interpolate(frame, [range.startFrame, antic + 4], [0, 1], CLAMP);
+  return { x, opacity };
 }
 
-/** Slide right: translateX from -offset to 0, with opacity fade. */
+/**
+ * Slide right with anticipation + overshoot + settle.
+ */
 export function slideRight(
   frame: number,
   range: FrameRange,
   offsetPx: number = 60
 ): { x: number; opacity: number } {
-  return {
-    x: interpolate(frame, [range.startFrame, range.endFrame], [-offsetPx, 0], CLAMP),
-    opacity: interpolate(frame, [range.startFrame, range.endFrame], [0, 1], CLAMP),
-  };
+  const dur = range.endFrame - range.startFrame;
+  const antic = range.startFrame + Math.round(dur * 0.08);
+  const main = range.startFrame + Math.round(dur * 0.70);
+
+  const x = interpolate(
+    frame,
+    [range.startFrame, antic, main, range.endFrame],
+    [-(offsetPx + 8), -(offsetPx + 14), 5, 0],
+    CLAMP
+  );
+  const opacity = interpolate(frame, [range.startFrame, antic + 4], [0, 1], CLAMP);
+  return { x, opacity };
 }
 
-/** Scale pop: two-phase overshoot (0 → 1.15 → 1) with opacity fade in first half. */
+/**
+ * Scale pop: 4-phase spring with anticipation squish, overshoot, undershoot, settle.
+ * 0 → 0.95 (squish) → 1.12 (overshoot) → 0.98 (undershoot) → 1.0 (settle)
+ */
 export function scalePop(
   frame: number,
   range: FrameRange,
-  overshoot: number = 1.15
+  _overshoot?: number
 ): { scale: number; opacity: number } {
-  const mid = Math.round((range.startFrame + range.endFrame) / 2);
-  const phase1 = interpolate(frame, [range.startFrame, mid], [0, overshoot], CLAMP);
-  const phase2 = interpolate(frame, [mid, range.endFrame], [overshoot, 1], CLAMP);
-  const scale = frame < mid ? phase1 : phase2;
-  const opacity = interpolate(frame, [range.startFrame, mid], [0, 1], CLAMP);
+  const dur = range.endFrame - range.startFrame;
+  const scale = interpolate(
+    frame,
+    [
+      range.startFrame,
+      range.startFrame + Math.round(dur * 0.15),
+      range.startFrame + Math.round(dur * 0.50),
+      range.startFrame + Math.round(dur * 0.75),
+      range.endFrame,
+    ],
+    [0, 0.95, 1.12, 0.98, 1.0],
+    CLAMP
+  );
+  const opacity = interpolate(
+    frame,
+    [range.startFrame, range.startFrame + Math.round(dur * 0.3)],
+    [0, 1],
+    CLAMP
+  );
   return { scale, opacity };
 }
 
@@ -249,14 +322,14 @@ export function clipExit(
 export function cameraDrift(
   frame: number,
   range: FrameRange,
-  driftX: number = 20,
-  driftY: number = 10,
+  driftXPx: number = 20,
+  driftYPx: number = 10,
   zoomStart: number = 1.0,
   zoomEnd: number = 1.05
 ): { x: number; y: number; scale: number } {
   return {
-    x: interpolate(frame, [range.startFrame, range.endFrame], [0, driftX], CLAMP),
-    y: interpolate(frame, [range.startFrame, range.endFrame], [0, driftY], CLAMP),
+    x: interpolate(frame, [range.startFrame, range.endFrame], [0, driftXPx], CLAMP),
+    y: interpolate(frame, [range.startFrame, range.endFrame], [0, driftYPx], CLAMP),
     scale: interpolate(frame, [range.startFrame, range.endFrame], [zoomStart, zoomEnd], CLAMP),
   };
 }
@@ -346,9 +419,101 @@ export function staggerCascade(
   return { startFrame, endFrame: startFrame + itemDuration };
 }
 
-// ── Micro Motion ────────────────────────────────────────────────────────
+// ── Secondary Motion (continuous during main phase) ─────────────────────
+
+/** Scale breathing: oscillates 1.0 → 1+amplitude → 1.0 deterministically. */
+export function breathe(
+  frame: number,
+  range: FrameRange,
+  amplitude: number = 0.015,
+  period: number = 90
+): { scale: number } {
+  if (frame < range.startFrame || frame > range.endFrame) return { scale: 1 };
+  const elapsed = frame - range.startFrame;
+  const halfPeriod = period / 2;
+  const posInCycle = elapsed % period;
+  const scale =
+    posInCycle < halfPeriod
+      ? interpolate(posInCycle, [0, halfPeriod], [1, 1 + amplitude], CLAMP)
+      : interpolate(posInCycle, [halfPeriod, period], [1 + amplitude, 1], CLAMP);
+  return { scale };
+}
+
+/** Gentle horizontal drift: oscillates left/right deterministically. */
+export function driftX(
+  frame: number,
+  range: FrameRange,
+  amplitude: number = 3,
+  period: number = 100
+): { x: number } {
+  if (frame < range.startFrame || frame > range.endFrame) return { x: 0 };
+  const elapsed = frame - range.startFrame;
+  const halfPeriod = period / 2;
+  const posInCycle = elapsed % period;
+  const raw =
+    posInCycle < halfPeriod
+      ? interpolate(posInCycle, [0, halfPeriod], [0, amplitude], CLAMP)
+      : interpolate(posInCycle, [halfPeriod, period], [amplitude, 0], CLAMP);
+  return { x: raw - amplitude / 2 };
+}
+
+/** Gentle rotation oscillation: deterministic pendulum. */
+export function gentleRotate(
+  frame: number,
+  range: FrameRange,
+  maxDeg: number = 1.5,
+  period: number = 120
+): { rotation: number } {
+  if (frame < range.startFrame || frame > range.endFrame) return { rotation: 0 };
+  const elapsed = frame - range.startFrame;
+  const quarterPeriod = period / 4;
+  const posInCycle = elapsed % period;
+  let rotation: number;
+  if (posInCycle < quarterPeriod) {
+    rotation = interpolate(posInCycle, [0, quarterPeriod], [0, maxDeg], CLAMP);
+  } else if (posInCycle < quarterPeriod * 2) {
+    rotation = interpolate(posInCycle, [quarterPeriod, quarterPeriod * 2], [maxDeg, 0], CLAMP);
+  } else if (posInCycle < quarterPeriod * 3) {
+    rotation = interpolate(posInCycle, [quarterPeriod * 2, quarterPeriod * 3], [0, -maxDeg], CLAMP);
+  } else {
+    rotation = interpolate(posInCycle, [quarterPeriod * 3, period], [-maxDeg, 0], CLAMP);
+  }
+  return { rotation };
+}
 
 /** Deterministic subtle floating motion based on frame number. */
-export function microFloat(frame: number, amplitude: number = 2): { y: number } {
-  return { y: Math.sin(frame * 0.1) * amplitude };
+export function microFloat(frame: number, amplitude: number = 2, period: number = 60): { y: number } {
+  const halfPeriod = period / 2;
+  const posInCycle = frame % period;
+  const raw =
+    posInCycle < halfPeriod
+      ? interpolate(posInCycle, [0, halfPeriod], [0, amplitude], CLAMP)
+      : interpolate(posInCycle, [halfPeriod, period], [amplitude, 0], CLAMP);
+  return { y: raw - amplitude / 2 };
+}
+
+// ── Choreography ────────────────────────────────────────────────────────
+
+export interface ChoreographyStep {
+  id: string;
+  startOffset: number;  // frames after sequence start
+  duration: number;     // frames for this element's entrance
+}
+
+/**
+ * Compute absolute FrameRanges for a choreographed entrance sequence.
+ * Each step has a relative startOffset and duration within the entrance window.
+ */
+export function choreograph(
+  entranceStartFrame: number,
+  steps: ChoreographyStep[]
+): Map<string, FrameRange> {
+  const result = new Map<string, FrameRange>();
+  for (const step of steps) {
+    result.set(step.id, {
+      startFrame: entranceStartFrame + step.startOffset,
+      endFrame: entranceStartFrame + step.startOffset + step.duration,
+    });
+  }
+  return result;
 }

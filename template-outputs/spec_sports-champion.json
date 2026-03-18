@@ -1,0 +1,43 @@
+{
+  "templateId": "data-callout",
+  "params": {
+    "value": 47,
+    "prefix": "",
+    "suffix": "",
+    "label": "Points Scored",
+    "context": "New franchise record",
+    "trend": "none",
+    "valueColor": "#EF4444",
+    "labelColor": "#F8FAFC",
+    "contextColor": "#F59E0B",
+    "trendUpColor": "#51CF66",
+    "trendDownColor": "#FF6B6B",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1A",
+      "to": "#1A1A30",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "scale-pop",
+    "duration": 5,
+    "valueSize": "large",
+    "stylePreset": "bold-startup",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "tight",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "none",
+      "blur": "subtle"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Save Our Seas",
+    "subheadline": "Every action counts — join the movement",
+    "headlineColor": "#F0FFF4",
+    "subheadlineColor": "#67E8F9",
+    "accentColor": "#FB923C",
+    "background": {
+      "type": "gradient",
+      "from": "#000A1A",
+      "to": "#001530",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "blur-reveal",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "warm-organic",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "medium",
+      "letterSpacing": "normal",
+      "lineHeight": "relaxed"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "transition"
+    },
+    "pacingProfile": "elegant",
+    "secondaryMotion": {
+      "type": "breathe",
+      "intensity": "medium"
+    },
+    "decorativeTheme": "light-streaks"
+  }
+}

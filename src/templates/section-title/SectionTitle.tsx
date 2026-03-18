@@ -1,11 +1,21 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, blurReveal, underlineDraw, highlightReveal, microFloat } from "../../primitives/animations";
+import {
+  phaseFrames,
+  fadeIn,
+  slideUp,
+  scalePop,
+  blurReveal,
+  underlineDraw,
+  highlightReveal,
+  choreograph,
+} from "../../primitives/animations";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
-import { resolveMotionStyle } from "../../primitives/useMotionStyle";
 import { resolveEffects } from "../../primitives/useEffects";
+import { resolveSecondaryMotion } from "../../primitives/useSecondaryMotion";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { SectionTitleProps } from "./schema";
 
@@ -13,8 +23,7 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 
 export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, scale } = useResponsiveConfig();
-  const totalFrames = secToFrame(props.duration);
+  const { scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -24,25 +33,30 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
     props.effects,
   );
   const typo = resolveTypography(resolved.typography);
-  const motion = resolveMotionStyle(resolved.motionStyle);
   const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
 
-  const entrEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
-  const subtitleStart = Math.round(totalFrames * 0.12);
-  const subtitleEnd = Math.round(totalFrames * 0.35);
-  const accentStart = Math.round(totalFrames * 0.08);
-  const accentEnd = Math.round(totalFrames * 0.3);
-  const exitStart = Math.round(totalFrames * 0.82);
+  // ── Adaptive phase timing ──────────────────────────────────────────────
+  const phases = phaseFrames(props.duration, props.pacingProfile);
 
-  const exitEnd = totalFrames;
-  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  // ── Choreographed entrance ─────────────────────────────────────────────
+  const entranceDur = phases.entrance.endFrame;
+  const seq = choreograph(0, [
+    { id: "accent", startOffset: 0, duration: Math.round(entranceDur * 0.6) },
+    { id: "title", startOffset: Math.round(entranceDur * 0.1), duration: Math.round(entranceDur * 0.9) },
+    { id: "subtitle", startOffset: Math.round(entranceDur * 0.4), duration: Math.round(entranceDur * 0.7) },
+  ]);
 
-  const isMainPhase = frame >= entrEnd && frame < exitStart;
-  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+  const accentRange = seq.get("accent")!;
+  const titleRange = seq.get("title")!;
+  const subtitleRange = seq.get("subtitle")!;
 
+  const exitOpacity = interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [1, 0], CLAMP);
   const exitBlur = fx.blurTransition
-    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    ? interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [0, 8], CLAMP)
     : 0;
+
+  // ── Secondary motion during main phase ─────────────────────────────────
+  const secondaryM = resolveSecondaryMotion(frame, phases.main, props.secondaryMotion);
 
   // Title entrance animation
   let titleOpacity = 1;
@@ -51,17 +65,17 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
   let titleBlur = 0;
 
   if (props.entranceAnimation === "fade-in") {
-    titleOpacity = fadeIn(frame, { startFrame: 0, endFrame: entrEnd }).opacity;
+    titleOpacity = fadeIn(frame, titleRange).opacity;
   } else if (props.entranceAnimation === "slide-up") {
-    const s = slideUp(frame, { startFrame: 0, endFrame: entrEnd }, 50);
+    const s = slideUp(frame, titleRange, 50);
     titleOpacity = s.opacity;
     titleY = s.y;
   } else if (props.entranceAnimation === "scale-pop") {
-    const p = scalePop(frame, { startFrame: 0, endFrame: entrEnd }, 1.15);
+    const p = scalePop(frame, titleRange, 1.15);
     titleOpacity = p.opacity;
     titleScale = p.scale;
   } else if (props.entranceAnimation === "blur-reveal") {
-    const b = blurReveal(frame, { startFrame: 0, endFrame: entrEnd });
+    const b = blurReveal(frame, titleRange);
     titleOpacity = b.opacity;
     titleScale = b.scale;
     titleBlur = b.blur;
@@ -71,32 +85,38 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
   let subtitleOpacity = 1;
   let subtitleY = 0;
   if (props.entranceAnimation !== "none" && props.subtitle) {
-    subtitleOpacity = interpolate(frame, [subtitleStart, subtitleEnd], [0, 1], CLAMP);
-    subtitleY = interpolate(frame, [subtitleStart, subtitleEnd], [20, 0], CLAMP);
+    subtitleOpacity = interpolate(frame, [subtitleRange.startFrame, subtitleRange.endFrame], [0, 1], CLAMP);
+    subtitleY = interpolate(frame, [subtitleRange.startFrame, subtitleRange.endFrame], [20, 0], CLAMP);
   }
 
   // Accent animation
   const accentProgress = props.accentStyle !== "none"
     ? (props.accentStyle === "dot"
-      ? highlightReveal(frame, { startFrame: accentStart, endFrame: accentEnd })
-      : underlineDraw(frame, { startFrame: accentStart, endFrame: accentEnd }))
+      ? highlightReveal(frame, accentRange)
+      : underlineDraw(frame, accentRange))
     : 1;
 
   const isLeft = props.alignment === "left";
-
   const fontSizeMultiplier = props.fontSize === "medium" ? 0.75 : props.fontSize === "xlarge" ? 1.3 : 1;
   const baseFontSize = Math.round((props.title.length > 40 ? 52 : props.title.length > 20 ? 64 : 80) * scale * fontSizeMultiplier);
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
-      <Background config={props.background} />
+      <Background config={props.background} frame={frame} />
+
+      <DecorativeLayer
+        theme={props.decorativeTheme ?? "none"}
+        accentColor={props.accentColor}
+        frame={frame}
+        totalFrames={phases.total}
+      />
 
       <div
         style={{
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          transform: `translate(-50%, -50%) translateY(${secondaryM.y}px) translateX(${secondaryM.x}px) scale(${secondaryM.scale}) rotate(${secondaryM.rotation}deg)`,
           display: "flex",
           flexDirection: "column",
           alignItems: isLeft ? "flex-start" : "center",
@@ -108,7 +128,6 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
-        {/* Accent: line-top */}
         {props.accentStyle === "line-top" && (
           <div
             style={{
@@ -121,7 +140,6 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           />
         )}
 
-        {/* Accent: dot */}
         {props.accentStyle === "dot" && (
           <div
             style={{
@@ -136,7 +154,6 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           />
         )}
 
-        {/* Title row with optional line-left */}
         <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
           {props.accentStyle === "line-left" && (
             <div
@@ -167,7 +184,6 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           </div>
         </div>
 
-        {/* Accent: line-bottom */}
         {props.accentStyle === "line-bottom" && (
           <div
             style={{
@@ -180,7 +196,6 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           />
         )}
 
-        {/* Subtitle */}
         {props.subtitle && (
           <div
             style={{

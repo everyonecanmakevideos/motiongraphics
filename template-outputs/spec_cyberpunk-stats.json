@@ -1,0 +1,45 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 1200000,
+    "prefix": "",
+    "suffix": "",
+    "label": "Active Players",
+    "valueColor": "#39FF14",
+    "labelColor": "#00D4FF",
+    "background": {
+      "type": "gradient",
+      "from": "#000000",
+      "to": "#0A1A0A",
+      "direction": "to-bottom"
+    },
+    "duration": 5,
+    "entranceAnimation": "count-up",
+    "valueSize": "xlarge",
+    "accentColor": "#FF00FF",
+    "stylePreset": "tech-terminal",
+    "typography": {
+      "fontFamily": "space-grotesk",
+      "weight": "bold",
+      "letterSpacing": "wide",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "none",
+      "glow": "neon",
+      "blur": "subtle"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "rotate",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

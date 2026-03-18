@@ -6,26 +6,68 @@ const canvasW = 1920;
 const canvasH = 1080;
 const halfW = canvasW / 2;
 const halfH = canvasH / 2;
-const startFadeIn = 0 * 30;
-const endFadeIn = 0.5 * 30;
-const startScale = 0.5 * 30;
-const endScale = 4.5 * 30;
-const startFadeOut = 5.5 * 30;
-const endFadeOut = 6 * 30;
-const opacityIn = interpolate(frame, [startFadeIn, endFadeIn], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const opacityOut = interpolate(frame, [startFadeOut, endFadeOut], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const opacity = Math.min(opacityIn, opacityOut);
-const scaleVal = interpolate(frame, [startScale, endScale], [0, 4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const posX = interpolate(frame, [startScale, endScale], [0, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const posY = interpolate(frame, [startScale, endScale], [-640, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const objFontSize = 0;
-const fontSizeVal = objFontSize > 0 ? objFontSize : 80;
-const transform = "translate(-50%, -50%) translateX(" + posX + "px) translateY(" + posY + "px) scale(" + scaleVal + ")";
+const hackStart = 0;
+const hackEnd = 30;
+const hackOpacity = interpolate(frame, [hackStart, hackEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const hackGlowBlur = interpolate(frame, [hackStart, hackEnd], [0, 10], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const hackGlowSpread = interpolate(frame, [hackStart, hackEnd], [0.5, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const hackGlowColor = "#2196F3";
+const hackPosX = 0;
+const hackPosY = 0;
+const binStart = 30;
+const binEnd = 210;
+const binaryY = interpolate(frame, [binStart, binEnd], [-540, 540], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const binaryPosX = 0;
+const binaryColor = "#2196F3";
 return (
-<AbsoluteFill style={{ backgroundColor: "#654321", overflow: "hidden" }}>
-<div style={{ position: "absolute", left: "50%", top: "50%", transform: transform, color: "#FDD835", fontSize: fontSizeVal + "px", fontWeight: 700, fontFamily: "Manrope", whiteSpace: "nowrap", lineHeight: "1", letterSpacing: 0 + "px", textAlign: "center", textTransform: "none", userSelect: "none", pointerEvents: "none", opacity: opacity, zIndex: 1 }}>
-Next Level
-</div>
-</AbsoluteFill>
+  <AbsoluteFill style={{ backgroundColor: "#0F0F23", overflow: "hidden" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%) translateX(" + hackPosX + "px) translateY(" + hackPosY + "px)",
+        color: "#2196F3",
+        fontSize: 90 + "px",
+        fontWeight: "700",
+        fontFamily: "monospace",
+        whiteSpace: "nowrap",
+        lineHeight: "1",
+        letterSpacing: 0 + "px",
+        textAlign: "center",
+        textTransform: "none",
+        userSelect: "none",
+        pointerEvents: "none",
+        opacity: hackOpacity,
+        boxShadow: "0px 0px " + hackGlowBlur + "px " + hackGlowSpread + "px " + hackGlowColor,
+        zIndex: 2
+      }}
+    >
+      HACK
+    </div>
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%) translateX(" + binaryPosX + "px) translateY(" + binaryY + "px)",
+        color: binaryColor,
+        fontSize: 20 + "px",
+        fontWeight: "400",
+        fontFamily: "monospace",
+        whiteSpace: "nowrap",
+        lineHeight: "1",
+        letterSpacing: 0 + "px",
+        textAlign: "center",
+        textTransform: "none",
+        userSelect: "none",
+        pointerEvents: "none",
+        opacity: 1,
+        zIndex: 2
+      }}
+    >
+      0101010101010101
+    </div>
+  </AbsoluteFill>
 );
 };

@@ -1,0 +1,45 @@
+{
+  "templateId": "section-title",
+  "params": {
+    "title": "The State of AI in 2024",
+    "subtitle": "A comprehensive analysis",
+    "titleColor": "#F8FAFC",
+    "subtitleColor": "#94A3B8",
+    "accentColor": "#A855F7",
+    "accentStyle": "line-left",
+    "alignment": "center",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1F",
+      "to": "#1A0A3A",
+      "direction": "radial"
+    },
+    "entranceAnimation": "blur-reveal",
+    "duration": 4,
+    "fontSize": "large",
+    "stylePreset": "editorial",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "medium",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "dramatic",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "none",
+      "blur": "transition"
+    },
+    "pacingProfile": "dramatic",
+    "secondaryMotion": {
+      "type": "drift",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "corner-accents"
+  }
+}

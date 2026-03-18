@@ -1,0 +1,37 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "THE VANISHING",
+    "subheadline": "A novel by R.K. Blackwell — coming this fall",
+    "headlineColor": "#FFF8E1",
+    "accentColor": "#9333EA",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#050005",
+      "to": "#100010",
+      "direction": "to-bottom"
+    },
+    "duration": 6,
+    "lightSweep": true,
+    "stylePreset": "cinematic-noir",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "dramatic",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "none",
+      "blur": "transition"
+    }
+  }
+}

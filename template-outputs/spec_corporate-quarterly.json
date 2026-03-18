@@ -1,0 +1,46 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 24.7,
+    "prefix": "",
+    "suffix": "% growth",
+    "label": "Revenue Growth Q4",
+    "sublabel": "Year-over-year increase",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#F8FAFC",
+    "background": {
+      "type": "gradient",
+      "from": "#111827",
+      "to": "#1F2937",
+      "direction": "to-bottom"
+    },
+    "duration": 5,
+    "entranceAnimation": "count-up",
+    "valueSize": "large",
+    "accentColor": "#3B82F6",
+    "stylePreset": "modern-clean",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "normal"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "medium",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "none",
+      "blur": "none"
+    },
+    "pacingProfile": "standard",
+    "secondaryMotion": {
+      "type": "breathe",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

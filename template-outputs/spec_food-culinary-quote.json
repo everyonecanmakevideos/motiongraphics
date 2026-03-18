@@ -1,0 +1,45 @@
+{
+  "templateId": "quote-highlight",
+  "params": {
+    "quote": "Cooking is an art, and patience is the brush that paints the masterpiece.",
+    "attribution": "Chef Marco Rossi",
+    "attributionTitle": "Executive Chef",
+    "quoteColor": "#FFF8E1",
+    "attributionColor": "#F59E0B",
+    "accentColor": "#E11D48",
+    "quoteStyle": "italic",
+    "quoteMarkStyle": "large",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1008",
+      "to": "#2A1A10",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "blur-reveal",
+    "duration": 6,
+    "stylePreset": "minimal-luxury",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "regular",
+      "letterSpacing": "normal",
+      "lineHeight": "relaxed"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "transition"
+    },
+    "pacingProfile": "elegant",
+    "secondaryMotion": {
+      "type": "breathe",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "corner-accents"
+  }
+}

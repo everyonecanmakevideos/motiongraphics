@@ -1,0 +1,46 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Chromatic Visions",
+    "subheadline": "An immersive digital art experience by Studio Prism",
+    "headlineColor": "#FFF0F5",
+    "subheadlineColor": "#FFD700",
+    "accentColor": "#FF3E8A",
+    "background": {
+      "type": "gradient",
+      "from": "#1A0A2E",
+      "to": "#2E1A47",
+      "direction": "to-bottom-right"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "gradient-dream",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "normal"
+    },
+    "motionStyle": {
+      "easing": "elastic",
+      "speed": "medium",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    },
+    "secondaryMotion": {
+      "type": "float",
+      "intensity": "medium"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

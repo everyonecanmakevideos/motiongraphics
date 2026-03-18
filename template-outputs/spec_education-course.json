@@ -1,0 +1,45 @@
+{
+  "templateId": "section-title",
+  "params": {
+    "title": "Master Machine Learning",
+    "subtitle": "From zero to deployment in 8 weeks",
+    "titleColor": "#F59E0B",
+    "subtitleColor": "#A78BFA",
+    "accentColor": "#A78BFA",
+    "accentStyle": "dot",
+    "alignment": "center",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A0A",
+      "to": "#2A2A15",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 4,
+    "fontSize": "large",
+    "stylePreset": "editorial",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "relaxed"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "medium",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    },
+    "pacingProfile": "elegant",
+    "secondaryMotion": {
+      "type": "breathe",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

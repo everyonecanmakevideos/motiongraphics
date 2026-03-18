@@ -1,0 +1,37 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "Season of Wonder",
+    "subheadline": "Wishing you peace and joy",
+    "headlineColor": "#FFF8E1",
+    "accentColor": "#67E8F9",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#0A1520",
+      "to": "#152535",
+      "direction": "to-bottom"
+    },
+    "duration": 6,
+    "lightSweep": true,
+    "stylePreset": "minimal-luxury",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "regular",
+      "letterSpacing": "wide",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "transition"
+    }
+  }
+}

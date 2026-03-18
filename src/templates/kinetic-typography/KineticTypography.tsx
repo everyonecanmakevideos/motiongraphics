@@ -2,19 +2,20 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
 import {
-  secToFrame,
+  phaseFrames,
   staggerDelay,
   fadeIn,
   slideUp,
   scalePop,
   blurReveal,
   typewriter,
-  microFloat,
 } from "../../primitives/animations";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
 import { resolveMotionStyle } from "../../primitives/useMotionStyle";
 import { resolveEffects } from "../../primitives/useEffects";
+import { resolveSecondaryMotion } from "../../primitives/useSecondaryMotion";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { KineticTypographyProps } from "./schema";
 
@@ -54,7 +55,6 @@ function applyAnimation(
 export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
   const frame = useCurrentFrame();
   const { scale } = useResponsiveConfig();
-  const totalFrames = secToFrame(props.duration);
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -67,19 +67,19 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
   const motion = resolveMotionStyle(resolved.motionStyle);
   const fx = resolveEffects(resolved.effects);
 
-  const entranceFrames = Math.round(totalFrames * 0.6 * motion.durationMultiplier);
-  const exitStart = Math.round(totalFrames * 0.82);
-  const exitEnd = totalFrames;
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  // ── Adaptive phase timing ──────────────────────────────────────────────
+  const phases = phaseFrames(props.duration, props.pacingProfile);
 
-  const isMainPhase = frame >= entranceFrames && frame < exitStart;
-  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
-
+  const entranceFrames = Math.round((phases.entrance.endFrame + phases.main.startFrame) * 0.8 * motion.durationMultiplier);
+  const exitOpacity = interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [1, 0], CLAMP);
   const exitBlur = fx.blurTransition
-    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    ? interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [0, 8], CLAMP)
     : 0;
 
-  // Build items to animate (lines or words depending on staggerStyle)
+  // ── Secondary motion during main phase ─────────────────────────────────
+  const secondaryM = resolveSecondaryMotion(frame, phases.main, props.secondaryMotion);
+
+  // Build items to animate
   const items: Array<{ text: string; color: string; lineIndex: number }> = [];
 
   if (props.staggerStyle === "word-by-word") {
@@ -100,14 +100,21 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
-      <Background config={props.background} />
+      <Background config={props.background} frame={frame} />
+
+      <DecorativeLayer
+        theme={props.decorativeTheme ?? "none"}
+        accentColor={props.defaultColor}
+        frame={frame}
+        totalFrames={phases.total}
+      />
 
       <div
         style={{
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          transform: `translate(-50%, -50%) translateY(${secondaryM.y}px) translateX(${secondaryM.x}px) scale(${secondaryM.scale}) rotate(${secondaryM.rotation}deg)`,
           display: "flex",
           flexDirection: "column",
           alignItems: props.alignment === "center" ? "center" : props.alignment === "right" ? "flex-end" : "flex-start",
@@ -118,7 +125,6 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
         }}
       >
         {props.staggerStyle === "word-by-word" ? (
-          // Word-by-word: render as wrapped flex lines
           <div
             style={{
               display: "flex",
@@ -155,7 +161,6 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
             })}
           </div>
         ) : (
-          // Line-by-line or all-at-once
           items.map((item, i) => {
             const range = isAllAtOnce
               ? { startFrame: 0, endFrame: Math.round(entranceFrames * 0.4) }

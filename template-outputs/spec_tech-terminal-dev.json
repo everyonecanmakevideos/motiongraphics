@@ -1,0 +1,48 @@
+{
+  "templateId": "kinetic-typography",
+  "params": {
+    "lines": [
+      "SHIP FAST",
+      "BREAK NOTHING",
+      "SCALE EVERYTHING"
+    ],
+    "defaultColor": "#00FF00",
+    "background": {
+      "type": "gradient",
+      "from": "#000000",
+      "to": "#0A1A0A",
+      "direction": "to-bottom"
+    },
+    "fontSize": 72,
+    "fontWeight": "bold",
+    "alignment": "center",
+    "lineSpacing": 1.3,
+    "staggerStyle": "line-by-line",
+    "entranceAnimation": "typewriter",
+    "duration": 6,
+    "stylePreset": "tech-terminal",
+    "typography": {
+      "fontFamily": "space-grotesk",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": true,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "none",
+      "glow": "neon",
+      "blur": "subtle"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "rotate",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}
