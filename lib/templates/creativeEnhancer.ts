@@ -36,19 +36,182 @@ OUTPUT: Return ONLY a JSON object with:
 
 DESIGN PRINCIPLES:
 
-1. MOOD DETECTION — Read the original prompt for emotional/thematic signals:
-   - "tech", "AI", "cyber", "digital", "code", "dev", "software", "hack" → Dark base (#0A0A1A), neon accents (#00FF88, #4FC3F7, #A855F7), grain backgrounds
-   - "premium", "luxury", "elegant", "exclusive", "gold", "high-end" → Black base (#0A0A0A), gold accent (#D4AF37), warm white text (#FAF0E6), gradient to-bottom-right
-   - "startup", "launch", "rocket", "grow", "scale", "disrupt" → Deep blue base (#0D1B2A), energetic accent (#FF6B35 or #4FC3F7), radial gradients
-   - "creative", "design", "art", "colorful", "fun", "playful", "party" → Rich dark base (#1A0A2E), vibrant accents (#FF3E8A, #00D9FF), stripe or gradient backgrounds
-   - "business", "corporate", "professional", "enterprise", "B2B" → Charcoal base (#111827), blue accent (#3B82F6), clean gradient to-bottom
-   - "health", "fitness", "wellness", "medical", "pharma" → Dark teal base (#0A1A1A), green accent (#10B981), grain backgrounds
-   - "education", "learn", "course", "knowledge", "school" → Navy base (#0F172A), amber accent (#F59E0B), gradient to-bottom-right
-   - "minimal", "clean", "simple", "modern", "sleek" → Near-black (#111111), white text, subtle grain (0.04-0.06), muted accent (#94A3B8)
-   - "nature", "eco", "green", "organic", "earth", "sustainable" → Forest base (#0A1A0A), green accents (#22C55E, #86EFAC), gradient backgrounds
-   - "urgent", "sale", "deal", "offer", "CTA", "limited", "now" → Dark red base (#1A0A0A), red/orange accents (#EF4444, #F97316), scale-pop animation
-   - "cinematic", "movie", "film", "dramatic", "epic" → Deep dark (#050510), accent (#A855F7 or #4FC3F7), gradient to-bottom, blur-reveal or clip-reveal
-   - If NO clear mood keywords: apply a modern, confident default — deep blue-black gradient (#0F172A → #1E293B), warm white text (#F8FAFC), blue accent (#3B82F6), blur-reveal or slide-up animation
+1. MOOD DETECTION — Read the original prompt for emotional/thematic signals.
+   Each mood below has multiple BACKGROUND VARIANTS. Pick the one that best fits the prompt's specific tone. Do NOT always pick Variant A — choose based on sub-theme.
+
+   ── TECH / AI / DIGITAL ──
+   Keywords: "tech", "AI", "cyber", "digital", "code", "dev", "software", "hack", "data", "algorithm"
+   Variant A (Matrix): gradient #0A0A1A → #0D2818, direction to-bottom, accent #00FF88
+   Variant B (Neural): grain baseColor #0A0A1F, grainOpacity 0.08, accent #4FC3F7
+   Variant C (Hacker): gradient #000000 → #0A1A0A, direction to-bottom, accent #39FF14
+   Variant D (AI Glow): gradient #0F0520 → #1A0A3A, direction radial, accent #A855F7
+
+   ── SCI-FI / FUTURISTIC / SPACE ──
+   Keywords: "sci-fi", "space", "galaxy", "alien", "mars", "cosmic", "nebula", "interstellar", "future", "spacecraft"
+   Variant A (Deep Space): gradient #020010 → #0A0030, direction radial, accent #7C3AED
+   Variant B (Nebula): gradient #1A0028 → #0A1A3A, direction to-bottom-right, accent #E879F9
+   Variant C (Mars Colony): gradient #1A0A00 → #2A1500, direction to-bottom, accent #F97316
+   Variant D (Starfield): grain baseColor #050515, grainOpacity 0.10, accent #60A5FA
+
+   ── NEON / CYBERPUNK / GLOW ──
+   Keywords: "neon", "cyberpunk", "glow", "electric", "nightlife", "club", "rave", "synth", "retrowave"
+   Variant A (Hot Pink): gradient #1A0020 → #2A0040, direction to-bottom-right, accent #FF00FF
+   Variant B (Electric Blue): gradient #000A1A → #001A3A, direction radial, accent #00D4FF
+   Variant C (Toxic Green): gradient #0A0A00 → #1A2A00, direction to-bottom, accent #ADFF2F
+   Variant D (Dual Neon): stripe baseColor #0A001A, stripeColor #FF006620, angle 35, density sparse, accent #FF0066
+
+   ── PREMIUM / LUXURY / ELEGANT ──
+   Keywords: "premium", "luxury", "elegant", "exclusive", "gold", "high-end", "vip", "prestige", "opulent"
+   Variant A (Black Gold): gradient #0A0A0A → #1A1508, direction to-bottom-right, accent #D4AF37
+   Variant B (Champagne): grain baseColor #0F0A05, grainOpacity 0.06, accent #C9A96E
+   Variant C (Platinum): gradient #0A0A10 → #1A1A28, direction to-bottom, accent #C0C0C0
+   Variant D (Rose Gold): gradient #1A0A0A → #2A1515, direction to-bottom-right, accent #E8A598
+
+   ── STARTUP / LAUNCH / GROWTH ──
+   Keywords: "startup", "launch", "rocket", "grow", "scale", "disrupt", "mvp", "pitch", "venture"
+   Variant A (Deep Blue): gradient #0D1B2A → #1B2838, direction radial, accent #FF6B35
+   Variant B (Midnight Teal): gradient #0A1A20 → #152A30, direction to-bottom, accent #4FC3F7
+   Variant C (Launch Pad): gradient #10101A → #1A2040, direction to-bottom-right, accent #818CF8
+   Variant D (Hustle): stripe baseColor #0D1B2A, stripeColor #FF6B3510, angle 45, density sparse, accent #FF6B35
+
+   ── CREATIVE / ART / PLAYFUL ──
+   Keywords: "creative", "design", "art", "colorful", "fun", "playful", "party", "festival", "vibrant", "pop"
+   Variant A (Purple Pop): gradient #1A0A2E → #2E1A47, direction to-bottom-right, accent #FF3E8A
+   Variant B (Candy): gradient #1A0A20 → #0A1A2A, direction radial, accent #00D9FF
+   Variant C (Carnival): stripe baseColor #1A0A2E, stripeColor #FF3E8A15, angle 30, density normal, accent #FFD700
+   Variant D (Graffiti): grain baseColor #1A1A0A, grainOpacity 0.10, accent #FF6B35
+
+   ── CORPORATE / PROFESSIONAL / B2B ──
+   Keywords: "business", "corporate", "professional", "enterprise", "B2B", "meeting", "report", "strategy"
+   Variant A (Boardroom): gradient #111827 → #1F2937, direction to-bottom, accent #3B82F6
+   Variant B (Executive): grain baseColor #111827, grainOpacity 0.05, accent #6366F1
+   Variant C (Steel): gradient #0F1219 → #1E2330, direction to-bottom-right, accent #94A3B8
+   Variant D (Blue Chip): gradient #0A1628 → #162844, direction radial, accent #38BDF8
+
+   ── HEALTH / FITNESS / WELLNESS ──
+   Keywords: "health", "fitness", "wellness", "medical", "pharma", "yoga", "gym", "nutrition", "therapy"
+   Variant A (Healing Green): gradient #0A1A1A → #0A2A20, direction to-bottom, accent #10B981
+   Variant B (Clinical): grain baseColor #0A1215, grainOpacity 0.05, accent #06B6D4
+   Variant C (Vitality): gradient #0A0A1A → #1A0A2A, direction to-bottom-right, accent #8B5CF6
+   Variant D (Zen): gradient #0F1A15 → #1A2A20, direction radial, accent #86EFAC
+
+   ── EDUCATION / LEARNING / KNOWLEDGE ──
+   Keywords: "education", "learn", "course", "knowledge", "school", "university", "tutorial", "study"
+   Variant A (Chalkboard): gradient #0F172A → #1E293B, direction to-bottom-right, accent #F59E0B
+   Variant B (Campus): gradient #1A1A0A → #2A2A15, direction to-bottom, accent #FBBF24
+   Variant C (Scholar): grain baseColor #0F172A, grainOpacity 0.06, accent #A78BFA
+   Variant D (Library): gradient #1A1008 → #2A2010, direction to-bottom, accent #D97706
+
+   ── MINIMAL / CLEAN / MODERN ──
+   Keywords: "minimal", "clean", "simple", "modern", "sleek", "understated", "whitespace"
+   Variant A (Ink): grain baseColor #111111, grainOpacity 0.04, accent #94A3B8
+   Variant B (Charcoal): gradient #111111 → #1A1A1A, direction to-bottom, accent #E2E8F0
+   Variant C (Fog): gradient #0F0F0F → #1C1C1C, direction radial, accent #CBD5E1
+   Variant D (Shadow): gradient #0A0A0A → #171717, direction to-bottom-right, accent #F8FAFC
+
+   ── NATURE / ECO / ORGANIC ──
+   Keywords: "nature", "eco", "green", "organic", "earth", "sustainable", "forest", "plant", "garden"
+   Variant A (Forest): gradient #0A1A0A → #152A15, direction to-bottom, accent #22C55E
+   Variant B (Earth): grain baseColor #1A150A, grainOpacity 0.08, accent #A3E635
+   Variant C (Ocean Breeze): gradient #0A1A1A → #0A2A2A, direction to-bottom-right, accent #34D399
+   Variant D (Moss): gradient #0A150A → #1A2A10, direction radial, accent #86EFAC
+
+   ── URGENT / SALE / CTA ──
+   Keywords: "urgent", "sale", "deal", "offer", "CTA", "limited", "now", "flash", "hurry", "discount"
+   Variant A (Red Alert): gradient #1A0A0A → #2A0A0A, direction to-bottom, accent #EF4444
+   Variant B (Fire): gradient #1A0A00 → #2A1500, direction to-bottom-right, accent #F97316
+   Variant C (Warning): stripe baseColor #1A0A0A, stripeColor #EF444415, angle 45, density normal, accent #FBBF24
+   Variant D (Flash): gradient #1A1A00 → #2A2A00, direction radial, accent #EAB308
+
+   ── CINEMATIC / MOVIE / DRAMATIC ──
+   Keywords: "cinematic", "movie", "film", "dramatic", "epic", "trailer", "theatrical"
+   Variant A (Noir): gradient #050510 → #0A0A20, direction to-bottom, accent #A855F7
+   Variant B (Blockbuster): gradient #0A0510 → #1A1030, direction to-bottom-right, accent #4FC3F7
+   Variant C (Golden Age): grain baseColor #0A0A05, grainOpacity 0.08, accent #D4AF37
+   Variant D (Thriller): gradient #0A0000 → #1A0510, direction radial, accent #F43F5E
+
+   ── VILLAGE / RUSTIC / VINTAGE ──
+   Keywords: "village", "rustic", "vintage", "retro", "old", "classic", "antique", "nostalgic", "heritage", "traditional", "countryside"
+   Variant A (Sepia): grain baseColor #1A1508, grainOpacity 0.10, accent #C8A96E
+   Variant B (Farmhouse): gradient #1A150A → #2A2015, direction to-bottom, accent #D4A574
+   Variant C (Parchment): gradient #151008 → #201A10, direction to-bottom-right, accent #B8860B
+   Variant D (Aged Wood): grain baseColor #12100A, grainOpacity 0.12, accent #8B7355
+
+   ── OCEAN / MARINE / AQUATIC ──
+   Keywords: "ocean", "sea", "marine", "underwater", "aqua", "deep sea", "coral", "wave", "surf"
+   Variant A (Deep Ocean): gradient #000A1A → #001530, direction to-bottom, accent #0EA5E9
+   Variant B (Coral Reef): gradient #0A1520 → #0A2030, direction radial, accent #FB923C
+   Variant C (Arctic): gradient #0A1A2A → #152838, direction to-bottom-right, accent #67E8F9
+   Variant D (Abyss): grain baseColor #000A15, grainOpacity 0.08, accent #22D3EE
+
+   ── RETRO / 80s / SYNTHWAVE ──
+   Keywords: "retro", "80s", "synthwave", "vaporwave", "outrun", "arcade", "pixel", "nostalgic-tech"
+   Variant A (Sunset Grid): gradient #1A0030 → #300A40, direction to-bottom, accent #FF6EC7
+   Variant B (VHS): grain baseColor #0A0020, grainOpacity 0.12, accent #00FFFF
+   Variant C (Arcade): gradient #0A001A → #1A0A30, direction to-bottom-right, accent #FFD700
+   Variant D (Chrome): stripe baseColor #1A0030, stripeColor #FF6EC720, angle 50, density sparse, accent #FF6EC7
+
+   ── GOTHIC / DARK / HORROR ──
+   Keywords: "gothic", "dark", "horror", "spooky", "halloween", "creepy", "haunted", "shadow", "mystery"
+   Variant A (Midnight): gradient #050005 → #100010, direction to-bottom, accent #9333EA
+   Variant B (Blood Moon): gradient #0A0000 → #1A0508, direction radial, accent #DC2626
+   Variant C (Fog): grain baseColor #080808, grainOpacity 0.10, accent #6B7280
+   Variant D (Grave): gradient #0A0A08 → #15150A, direction to-bottom-right, accent #A3A3A3
+
+   ── FOOD / CULINARY / RESTAURANT ──
+   Keywords: "food", "restaurant", "chef", "culinary", "recipe", "cooking", "bakery", "cafe", "dining"
+   Variant A (Warm Kitchen): gradient #1A1008 → #2A1A10, direction to-bottom, accent #F59E0B
+   Variant B (Fine Dining): gradient #0A0A0A → #1A1518, direction to-bottom-right, accent #E11D48
+   Variant C (Rustic Table): grain baseColor #1A150A, grainOpacity 0.08, accent #D97706
+   Variant D (Fresh): gradient #0A1A0A → #152A10, direction radial, accent #84CC16
+
+   ── MUSIC / AUDIO / SOUND ──
+   Keywords: "music", "audio", "sound", "beats", "DJ", "concert", "playlist", "album", "spotify", "podcast"
+   Variant A (Vinyl): grain baseColor #0A0A0A, grainOpacity 0.10, accent #8B5CF6
+   Variant B (Stage): gradient #0A001A → #1A0A30, direction radial, accent #F43F5E
+   Variant C (Acoustic): gradient #1A1508 → #2A2015, direction to-bottom, accent #D4A574
+   Variant D (EDM): gradient #0A0020 → #1A0040, direction to-bottom-right, accent #00FF88
+
+   ── SPORTS / ATHLETIC / COMPETITION ──
+   Keywords: "sports", "athletic", "gym", "football", "basketball", "race", "champion", "trophy", "competition"
+   Variant A (Arena): gradient #0A0A1A → #1A1A30, direction to-bottom, accent #EF4444
+   Variant B (Field): gradient #0A150A → #0A2A10, direction to-bottom-right, accent #22C55E
+   Variant C (Victory): gradient #1A1500 → #2A2A00, direction radial, accent #EAB308
+   Variant D (Energy): stripe baseColor #0A0A1A, stripeColor #EF444410, angle 40, density sparse, accent #F97316
+
+   ── TRAVEL / ADVENTURE / EXPLORE ──
+   Keywords: "travel", "adventure", "explore", "journey", "road trip", "wander", "destination", "tourism", "backpack"
+   Variant A (Passport): gradient #0D1B2A → #1A2840, direction to-bottom-right, accent #F59E0B
+   Variant B (Sunset Trail): gradient #1A0A05 → #2A1510, direction to-bottom, accent #FB923C
+   Variant C (Mountain): grain baseColor #0A1015, grainOpacity 0.08, accent #38BDF8
+   Variant D (Jungle): gradient #0A1A0A → #102A10, direction radial, accent #4ADE80
+
+   ── FASHION / STYLE / BEAUTY ──
+   Keywords: "fashion", "style", "beauty", "makeup", "model", "vogue", "couture", "runway", "glamour"
+   Variant A (Vogue): gradient #0A0A0A → #1A101A, direction to-bottom-right, accent #EC4899
+   Variant B (Haute): grain baseColor #0A0508, grainOpacity 0.06, accent #F472B6
+   Variant C (Noir Chic): gradient #050505 → #151515, direction to-bottom, accent #E2E8F0
+   Variant D (Glam): gradient #1A0A1A → #2A1530, direction radial, accent #D946EF
+
+   ── WINTER / COLD / ICE ──
+   Keywords: "winter", "snow", "ice", "cold", "frost", "arctic", "frozen", "blizzard", "christmas"
+   Variant A (Frost): gradient #0A1520 → #152535, direction to-bottom, accent #67E8F9
+   Variant B (Blizzard): grain baseColor #0F1520, grainOpacity 0.10, accent #E2E8F0
+   Variant C (Aurora): gradient #001520 → #0A2A30, direction to-bottom-right, accent #34D399
+   Variant D (Ice Crystal): gradient #050A1A → #0A1530, direction radial, accent #93C5FD
+
+   ── WARM / SUMMER / SUNSET ──
+   Keywords: "warm", "summer", "sunset", "sunrise", "golden hour", "tropical", "beach", "sunny", "heat"
+   Variant A (Golden Hour): gradient #1A1005 → #2A1A08, direction to-bottom, accent #F59E0B
+   Variant B (Tropical): gradient #1A0A08 → #2A1510, direction to-bottom-right, accent #FB923C
+   Variant C (Ember): grain baseColor #1A0A05, grainOpacity 0.08, accent #EF4444
+   Variant D (Palm): gradient #0A1A10 → #1A2A15, direction radial, accent #FBBF24
+
+   If NO clear mood keywords, vary between these defaults:
+   Default A: gradient #0F172A → #1E293B, direction to-bottom, warm white text (#F8FAFC), accent #3B82F6
+   Default B: gradient #0A0A1A → #1A1A2E, direction to-bottom-right, accent #6366F1
+   Default C: grain baseColor #0F172A, grainOpacity 0.06, accent #38BDF8
+   Default D: gradient #111827 → #1F2937, direction radial, accent #818CF8
 
 2. COLOR HARMONY — Never use colors in isolation:
    - Background, text, and accent must have intentional contrast
@@ -76,6 +239,14 @@ DESIGN PRINCIPLES:
    - Use stripe for energetic/dynamic/playful feels (angle 30-60, density "sparse" or "normal")
    - Gradient directions: "to-bottom" = grounding, "radial" = spotlight, "to-bottom-right" = dynamic forward motion, "to-right" = horizontal energy
    - NEVER output { "type": "solid", "color": "#0A0A0A" } or "#111111" unless the user explicitly asked for plain/simple/black
+
+   VARIANT SELECTION RULES:
+   - NEVER default to Variant A every time — read the prompt carefully and pick the variant that best matches
+   - If the prompt mentions specific visual qualities (e.g., "grainy", "textured"), pick a grain variant
+   - If the prompt mentions "stripes", "lines", "dynamic", pick a stripe variant where available
+   - If the prompt has a warm sub-tone (gold, fire, sunset), pick variants with warm accent colors
+   - If the prompt has a cool sub-tone (ice, ocean, calm), pick variants with cool accent colors
+   - For multi-scene compositions, use different variants from the SAME mood category across scenes for visual coherence with variety
 
 4. ANIMATION MATCHING — animations should match mood:
    - "premium"/"elegant"/"cinematic" → "blur-reveal" or "fade-in"
@@ -157,7 +328,11 @@ MULTI-SCENE RULES:
 - Return "enhancedScenes" array with one entry per scene (same order).
 - Each entry: { "enhancedParams": {...}, "changes": [...] }
 - enhancedParams should contain ONLY the fields you want to change (partial diff).
-- For composite scenes with regions, enhance each region's params.
+- For composite scenes: enhance BOTH the scene-level "background" AND each region's params (including region backgrounds).
+- Each enhancedScenes entry for composite scenes should have: { "background": {...}, "regions": [{ "enhancedParams": {...} }], "changes": [...] }
+- The scene-level background is the canvas behind all regions. Enhance it using the mood palette variants.
+- Region-level backgrounds (inside params) should also be enhanced — they can differ from the scene background.
+- For single-template scenes: you can include a top-level "background" field alongside "enhancedParams" to override the scene background.
 - Return ONLY valid JSON.`;
 
 // ── Enhanceable Schema Fields per Template ───────────────────────────────────
@@ -605,7 +780,7 @@ export async function enhanceCreatively(
 
     const response = await client.responses.create({
       model: "gpt-4o-mini",
-      temperature: 0.3,
+      temperature: 0.5,
       input: [
         { role: "system", content: CREATIVE_SYSTEM_PROMPT },
         { role: "user", content: userMessage },
@@ -696,6 +871,7 @@ export async function enhanceMultiSceneCreatively(
           index: i,
           type: "composite",
           layout: scene.layout,
+          background: scene.background,
           regions: scene.regions?.map((r) => ({
             templateId: r.templateId,
             params: r.params,
@@ -774,7 +950,8 @@ export async function enhanceMultiSceneCreatively(
           return { ...region, params: validation.data as Record<string, unknown> };
         });
 
-        return { ...scene, regions: enhancedRegions };
+        const enhancedBg = enhancement.background ?? scene.background;
+        return { ...scene, regions: enhancedRegions, background: enhancedBg };
       }
 
       if (scene.templateId && enhancement.enhancedParams) {
@@ -802,7 +979,8 @@ export async function enhanceMultiSceneCreatively(
           }
         }
 
-        return { ...scene, params: validation.data as Record<string, unknown> };
+        const enhancedBg = enhancement.background ?? scene.background;
+        return { ...scene, params: validation.data as Record<string, unknown>, background: enhancedBg };
       }
 
       return scene;

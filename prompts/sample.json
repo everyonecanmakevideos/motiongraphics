@@ -1,23 +1,21 @@
 [
-  {"id": 41, "prompt": "animate server uptime bars 99.9% Q1 99.5% Q2 100% Q3 99.8% Q4 with digital glitch effects"},
-  {"id": 42, "prompt": "line graph of app downloads Jan=5k Feb=12k Mar=8k Apr=20k with smooth curve and sparkles"},
-  {"id": 43, "prompt": "pie chart user growth 20% new 30% retained 50% churn segments rotating in"},
   
-  {"id": 44, "prompt": "likes counter exploding from 0 to 1M with hearts particles and kinetic numbers"},
-  {"id": 45, "prompt": "bar race followers vs likes Mon=150 Tue=220 Wed=180 Thu=300 with competitive slide-in"},
-  {"id": 46, "prompt": "hashtag cloud forming then scattering with engagement stats typing below in indian village vibe"},
-  
-  {"id": 47, "prompt": "progress rings filling workout goals Week1=70% Week2=85% Week3=92% Week4=100%"},
-  {"id": 48, "prompt": "steps counter rolling up daily targets 8k 10k 9k 12k with footstep particle trails"},
-  {"id": 49, "prompt": "calories burned bars stacking upward 500 750 600 900 with fire glow effects"},
-  
-  {"id": 50, "prompt": "geometric shapes morphing into sales icons Q1 circle Q2 square Q3 triangle Q4 star"},
-  {"id": 51, "prompt": "liquid metal text \"INNOVATE\" pouring and solidifying with ripple waves"},
-  {"id": 52, "prompt": "neon grid lines weaving through data points forming constellation chart"},
-  
-  {"id": 53, "prompt": "story timeline sliding chapters Chapter1=idea Chapter2=build Chapter3=launch Chapter4=success"},
-  {"id": 54, "prompt": "word cloud \"SUCCESS\" letters assembling from chaos with victory sparks"},
-  {"id": 55, "prompt": "portal opening revealing stats dashboard with swirling vortex entrance"}
+  { "id": 26, "prompt": "modern dark theme animation with neon blue colors for a dev tool" },
+  { "id": 27, "prompt": "warm earthy design for a village farming project" },
+  { "id": 28, "prompt": "premium black and gold intro for a luxury watch brand" },
+  { "id": 29, "prompt": "playful colorful animation for kids learning app" },
+  { "id": 30, "prompt": "minimal clean white theme product showcase" },
 
+  { "id": 31, "prompt": "quote animation: success is not final failure is not fatal" },
+  { "id": 32, "prompt": "highlight this quote in elegant style: stay hungry stay foolish" },
+  { "id": 33, "prompt": "create a testimonial style animation for a happy customer" },
+  { "id": 34, "prompt": "show a powerful motivational quote with cinematic feel" },
+  { "id": 35, "prompt": "make a bold statement animation saying BUILD IN PUBLIC" },
+
+  { "id": 36, "prompt": "timeline showing product journey idea prototype launch growth" },
+  { "id": 37, "prompt": "process steps for onboarding signup verify start using app" },
+  { "id": 38, "prompt": "feature highlights of a SaaS tool fast secure scalable" },
+  { "id": 39, "prompt": "compare old vs new pricing plans basic vs pro" },
+  { "id": 40, "prompt": "problem solution animation slow website vs optimized fast"}
 
 ]
