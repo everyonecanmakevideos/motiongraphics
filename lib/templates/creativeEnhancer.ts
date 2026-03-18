@@ -322,6 +322,16 @@ DESIGN PRINCIPLES:
     - blur: "transition" for cinematic exits, "subtle" for layered depth, "none" for clean
     ALL sub-fields are required when setting effects.
 
+DIVERSITY ENFORCEMENT — THIS IS MANDATORY:
+- You MUST change the background from the input params. The intent analyzer sets bland defaults — your job is to replace them with mood-appropriate variants from the palettes above.
+- NEVER return the same background you received. Always upgrade it using the mood variants above.
+- NEVER output #FFFFFF as headlineColor/titleColor without considering warm alternatives: #F8FAFC (warm white), #E2E8F0 (cool gray-white), #FFF8E1 (cream), #F0FFF4 (mint white), #FFF0F5 (rose white). Pure #FFFFFF is only for high-contrast needs.
+- NEVER output #4FC3F7 as accent color unless the prompt specifically calls for light blue/cyan. Each mood has its own accent — use it.
+- If you find yourself picking Variant A for a mood, reconsider — Variant B/C/D often produce more distinctive results. Actively rotate through variants.
+- Background type distribution guideline: gradient ~50%, grain ~25%, stripe ~15%, solid ~10%. Avoid overusing any one type.
+- Text colors should reflect the mood: warm prompts get warm whites (#F8FAFC, #FFF8E1), cool prompts get cool whites (#E2E8F0, #F0F9FF), bold prompts get pure white or near-white.
+- EVERY enhancement MUST include a background change and at least one text color change. If you only tweak one color, you are not doing your job.
+
 CRITICAL CONSTRAINTS:
 - NEVER include templateId in enhancedParams
 - NEVER include text content fields (headline, subheadline, title, quote, label, description, body, items, bars, segments, milestones, steps, lines, bullets, attribution, kicker, sectionLabel, vsText, problemLabel, solutionLabel, beforeLabel, afterLabel, beforeTitle, afterTitle, leftTitle, rightTitle)
@@ -332,22 +342,41 @@ CRITICAL CONSTRAINTS:
 - stylePreset, typography, motionStyle, effects are OBJECTS/ENUMS — not hex colors
 - Return ONLY valid JSON, no markdown code fences
 
-EXAMPLE — for a hero-text template with a tech startup prompt:
+EXAMPLE — Input: hero-text template with bland defaults (solid #111111 bg, #FFFFFF text, #4FC3F7 accent) for a "premium luxury watch brand reveal" prompt:
 {
   "enhancedParams": {
-    "headlineColor": "#F8FAFC",
-    "subheadlineColor": "#94A3B8",
-    "accentColor": "#00FF88",
-    "background": { "type": "gradient", "from": "#0A0A1A", "to": "#1A1A2E", "direction": "to-bottom-right" },
-    "entranceAnimation": "scale-pop",
+    "headlineColor": "#FFF8E1",
+    "subheadlineColor": "#C9A96E",
+    "accentColor": "#D4AF37",
+    "background": { "type": "grain", "baseColor": "#0F0A05", "grainOpacity": 0.06 },
+    "entranceAnimation": "blur-reveal",
     "style": "centered",
     "decoration": "accent-line",
+    "fontSize": "xlarge",
+    "fontWeight": "normal",
+    "stylePreset": "minimal-luxury",
+    "typography": { "fontFamily": "inter", "weight": "regular", "letterSpacing": "wide", "lineHeight": "compact" },
+    "motionStyle": { "easing": "smooth", "speed": "slow", "stagger": false, "microMotion": true },
+    "effects": { "shadow": "soft", "glow": "subtle", "blur": "transition" }
+  },
+  "changes": ["Replaced solid black with grain texture for premium feel", "Changed #FFFFFF to cream #FFF8E1 for warmth", "Gold accent #D4AF37 for luxury mood", "blur-reveal animation for elegant slow entrance", "minimal-luxury preset with wide letter spacing"]
+}
+
+EXAMPLE 2 — Input: stat-counter with bland defaults for a "neon cyberpunk gaming stats" prompt:
+{
+  "enhancedParams": {
+    "valueColor": "#39FF14",
+    "labelColor": "#00D4FF",
+    "accentColor": "#FF00FF",
+    "background": { "type": "gradient", "from": "#000000", "to": "#0A1A0A", "direction": "to-bottom" },
+    "entranceAnimation": "count-up",
+    "valueSize": "xlarge",
     "stylePreset": "neon-tech",
     "typography": { "fontFamily": "space-grotesk", "weight": "bold", "letterSpacing": "wide", "lineHeight": "compact" },
     "motionStyle": { "easing": "elastic", "speed": "fast", "stagger": false, "microMotion": true },
-    "effects": { "shadow": "none", "glow": "neon", "blur": "subtle" }
+    "effects": { "shadow": "none", "glow": "neon", "blur": "none" }
   },
-  "changes": ["Upgraded to dark gradient bg for depth", "Neon green accent for tech feel", "scale-pop animation for energy", "neon-tech preset with Space Grotesk and neon glow"]
+  "changes": ["Hacker-green value color for cyberpunk", "Matrix-style dark gradient background", "Neon glow effect for electric feel", "Hot pink accent for cyberpunk contrast"]
 }`;
 
 const MULTI_SCENE_ADDENDUM = `
@@ -815,8 +844,8 @@ export async function enhanceCreatively(
   originalPrompt: string,
   intent: IntentResult,
 ): Promise<IntentResult> {
-  // Skip low-confidence results (they'll fallback to legacy anyway)
-  if (intent.confidence === "low") {
+  // Skip low/medium-confidence results (they'll fallback to legacy anyway)
+  if (intent.confidence === "low" || intent.confidence === "medium") {
     return intent;
   }
 
@@ -842,8 +871,8 @@ export async function enhanceCreatively(
     });
 
     const response = await client.responses.create({
-      model: "gpt-4o-mini",
-      temperature: 0.5,
+      model: "gpt-4o",
+      temperature: 0.7,
       input: [
         { role: "system", content: CREATIVE_SYSTEM_PROMPT },
         { role: "user", content: userMessage },
@@ -920,7 +949,7 @@ export async function enhanceMultiSceneCreatively(
   originalPrompt: string,
   result: MultiSceneResult,
 ): Promise<MultiSceneResult> {
-  if (result.confidence === "low") {
+  if (result.confidence === "low" || result.confidence === "medium") {
     return result;
   }
 
@@ -958,7 +987,7 @@ export async function enhanceMultiSceneCreatively(
 
     const response = await client.responses.create({
       model: "gpt-4o-mini",
-      temperature: 0.3,
+      temperature: 0.6,
       input: [
         { role: "system", content: CREATIVE_SYSTEM_PROMPT + MULTI_SCENE_ADDENDUM },
         { role: "user", content: userMessage },

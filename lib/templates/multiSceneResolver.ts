@@ -76,6 +76,9 @@ function getTransitionFrames(transition: string): number {
 // ── Main Resolver ─────────────────────────────────────────────────────────
 
 export function resolveMultiScene(result: MultiSceneResult): MultiSceneResolution {
+  if (result.confidence === "medium") {
+    return { mode: "legacy", error: "Medium confidence: " + result.reasoning };
+  }
   if (result.confidence === "low") {
     return { mode: "legacy", error: "Low confidence: " + result.reasoning };
   }

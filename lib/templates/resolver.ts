@@ -21,7 +21,10 @@ export interface IntentResult {
  * Returns a TemplateResolution indicating whether to use the template path or fall back.
  */
 export function resolveTemplate(intent: IntentResult): TemplateResolution {
-  // Low confidence → fall back to legacy pipeline
+  // Only high confidence uses the template path
+  if (intent.confidence === "medium") {
+    return { mode: "legacy", error: "Medium confidence: " + intent.reasoning };
+  }
   if (intent.confidence === "low") {
     return { mode: "legacy", error: "Low confidence: " + intent.reasoning };
   }

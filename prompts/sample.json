@@ -1,27 +1,7 @@
 [
-  { "id": 56, "prompt": "neon cyberpunk intro for a hacking simulator game with glowing text" },
-  { "id": 57, "prompt": "minimal luxury watch brand reveal with elegant slow animations" },
-  { "id": 58, "prompt": "bold startup launch announcement: We just raised $10M Series A" },
-  { "id": 59, "prompt": "clean modern SaaS dashboard overview with smooth transitions" },
-  { "id": 60, "prompt": "electric blue tech product showcase with snappy elastic motion" },
-  { "id": 61, "prompt": "premium black and gold stats counter showing 1M+ users" },
-  { "id": 62, "prompt": "playful colorful bar chart comparing Q1 vs Q2 vs Q3 revenue" },
-  { "id": 63, "prompt": "cinematic movie trailer style hero text: THE FUTURE IS NOW" },
-  { "id": 64, "prompt": "fast-paced startup pitch deck timeline: idea to IPO in 5 steps" },
-  { "id": 65, "prompt": "neon green matrix-style code animation for developer conference" },
-  { "id": 66, "prompt": "luxury fashion brand quote: style is a way to say who you are" },
-  { "id": 67, "prompt": "energetic fitness app feature highlights with strong shadows" },
-  { "id": 68, "prompt": "subtle elegant process steps for onboarding: sign up, verify, explore, subscribe" },
-  { "id": 69, "prompt": "cyberpunk neon pie chart showing market share breakdown" },
-  { "id": 70, "prompt": "modern clean comparison: free plan vs pro plan vs enterprise" },
-  { "id": 71, "prompt": "kinetic typography with tight bold letters: MOVE FAST BREAK THINGS" },
-  { "id": 72, "prompt": "slow cinematic parallax showcase for a luxury real estate listing" },
-  { "id": 73, "prompt": "futuristic AI product card layout with glow effects and micro motion" },
-  { "id": 74, "prompt": "corporate professional data callout showing 99.9% uptime with subtle animation" },
-  { "id": 75, "prompt": "retro synthwave icon callout for a music streaming app launch" },
-  { "id": 76, "prompt": "problem solution animation: slow manual process vs automated fast workflow" },
-  { "id": 77, "prompt": "before after split screen showing website redesign transformation" },
-  { "id": 78, "prompt": "wide letter-spaced minimal section title: OUR VISION" },
-  { "id": 79, "prompt": "dynamic showcase with orbit rings for a space tech company" },
-  { "id": 80, "prompt": "masked text reveal with cinematic blur transition: COMING SOON 2026" }
+ {
+    "id": "kt_10",
+    "prompt": "make 'next level' text color yellow ,font-Manrope,  scale up from 0 to 4  from small to big with easing moving from top to bottom , background - dark brown"
+  }
+
 ]
