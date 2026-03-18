@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const ProblemSolutionSchema = z.object({
   problemLabel: z.string().max(20).default("Problem"),
@@ -17,6 +17,10 @@ export const ProblemSolutionSchema = z.object({
   accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#4FC3F7"),
   transitionStyle: z.enum(["fade-switch", "slide-switch", "side-by-side"]).default("fade-switch"),
   duration: z.number().min(4).max(15).default(7),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type ProblemSolutionProps = z.infer<typeof ProblemSolutionSchema>;

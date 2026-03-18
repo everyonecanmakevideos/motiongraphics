@@ -9,9 +9,14 @@ import {
   clipReveal,
   parallaxLayer,
   staggerCascade,
+  microFloat,
 } from "../../primitives/animations";
 import type { ClipDirection } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { ParallaxShowcaseProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -117,13 +122,25 @@ function renderFgElement(el: FgElement, accentColor: string, scale: number): Rea
 export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, height, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const totalFrames = secToFrame(props.duration);
 
   const basePx = DEPTH_PX[props.depthIntensity] || 40;
   const fullRange = { startFrame: 0, endFrame: totalFrames };
 
   // ── Phase timing ───────────────────────────────────────────────────────
-  const entrEnd = Math.round(totalFrames * 0.25);
+  const entrEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
   const fgEntrStart = Math.round(totalFrames * 0.05);
   const fgEntrEnd = Math.round(totalFrames * 0.25);
   const contentEntrStart = Math.round(totalFrames * 0.12);
@@ -134,6 +151,14 @@ export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
   const descEnd = Math.round(totalFrames * 0.44);
   const exitStart = Math.round(totalFrames * 0.82);
   const exitEnd = totalFrames;
+
+  // ── MicroFloat & exit blur ─────────────────────────────────────────────
+  const isMainPhase = frame >= contentEntrEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // ── Parallax layers ────────────────────────────────────────────────────
   const dirMultiplier = props.parallaxDirection === "right" ? -1 : 1;
@@ -257,10 +282,12 @@ export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(calc(-50% + ${contentPrl.x}px), calc(-50% + ${contentPrl.y}px))`,
+          transform: `translate(calc(-50% + ${contentPrl.x}px), calc(-50% + ${contentPrl.y + floatY}px))`,
           maxWidth: "80%",
           textAlign: "center",
           opacity: exit.opacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Title */}
@@ -275,11 +302,11 @@ export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
           <span
             style={{
               fontSize: titleFontSize + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
+              lineHeight: typo.lineHeight ?? 1.1,
+              letterSpacing: typo.letterSpacing ?? "-0.02em",
             }}
           >
             {props.title}
@@ -298,10 +325,10 @@ export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
             <span
               style={{
                 fontSize: subtitleFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "normal",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.titleColor + "CC",
-                lineHeight: 1.4,
+                lineHeight: typo.lineHeight ?? 1.4,
               }}
             >
               {props.subtitle}
@@ -323,10 +350,10 @@ export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
             <span
               style={{
                 fontSize: descFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "normal",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.titleColor + "99",
-                lineHeight: 1.6,
+                lineHeight: typo.lineHeight ?? 1.6,
               }}
             >
               {props.description}

@@ -11,8 +11,13 @@ import {
   fadeOut,
   highlightReveal,
   underlineDraw,
+  microFloat,
 } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { HeroTextProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -57,10 +62,21 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
   const { width, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
-  // ── Phase timing ───────────────────────────────────────────────────────
-  const entranceEnd = Math.round(totalFrames * 0.25);
-  const subStart = Math.round(totalFrames * 0.15);
-  const subEnd = Math.round(totalFrames * 0.4);
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor);
+
+  // ── Phase timing (adjusted by motion speed) ────────────────────────────
+  const entranceEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
+  const subStart = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
+  const subEnd = Math.round(totalFrames * 0.4 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.82);
   const exitEnd = totalFrames;
 
@@ -72,8 +88,15 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
     ? applyEntrance(frame, props.subheadlineAnimation, subStart, subEnd, props.subheadline.length)
     : null;
 
-  // ── Exit fade ──────────────────────────────────────────────────────────
+  // ── Exit fade (with optional blur transition) ──────────────────────────
   const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  // ── Micro motion during main phase ─────────────────────────────────────
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   // ── Decoration ─────────────────────────────────────────────────────────
   const decoStart = entranceEnd;
@@ -98,7 +121,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
   const rawFontSize = props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96;
   const fontSizeMultiplier = props.fontSize === "medium" ? 0.75 : props.fontSize === "xlarge" ? 1.3 : 1;
   const baseFontSize = Math.round(rawFontSize * scale * fontSizeMultiplier);
-  const fontWeightValue = props.fontWeight === "normal" ? 400 : props.fontWeight === "black" ? 900 : 700;
+  const fontWeightValue = typo.fontWeight ?? (props.fontWeight === "normal" ? 400 : props.fontWeight === "black" ? 900 : 700);
   const subFontSize = Math.round(baseFontSize * 0.4);
 
   // Estimated headline width for decoration
@@ -123,10 +146,12 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
           position: "absolute",
           left: containerLeft,
           top: "50%",
-          transform: containerTransform,
+          transform: `${containerTransform} translateY(${floatY}px)`,
           maxWidth,
           textAlign: textAlign as React.CSSProperties["textAlign"],
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : (fx.glowFilter !== "none" ? fx.glowFilter : undefined),
         }}
       >
         {/* Headline */}
@@ -165,10 +190,10 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
             style={{
               fontSize: baseFontSize + "px",
               fontWeight: fontWeightValue,
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.headlineColor,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
+              lineHeight: typo.lineHeight ?? 1.1,
+              letterSpacing: typo.letterSpacing ?? "-0.02em",
               whiteSpace: "pre-wrap",
               position: "relative",
               zIndex: 1,
@@ -231,11 +256,11 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
             <span
               style={{
                 fontSize: subFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? 400,
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.subheadlineColor,
-                lineHeight: 1.4,
-                letterSpacing: "0.01em",
+                lineHeight: typo.lineHeight ?? 1.4,
+                letterSpacing: typo.letterSpacing ?? "0.01em",
               }}
             >
               {subText}

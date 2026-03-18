@@ -1,7 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, countUp, fadeIn, scalePop } from "../../primitives/animations";
+import { secToFrame, countUp, fadeIn, scalePop, microFloat } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { StatCounterProps } from "./schema";
 
@@ -12,13 +16,32 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
   const { scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   // Phase timing
-  const entranceEnd = Math.round(totalFrames * 0.6);
+  const entranceEnd = Math.round(totalFrames * 0.6 * motion.durationMultiplier);
   const labelStart = Math.round(totalFrames * 0.15);
   const labelEnd = Math.round(totalFrames * 0.35);
   const exitStart = Math.round(totalFrames * 0.85);
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // Value size multiplier
   const valueSizeMultiplier = props.valueSize === "medium" ? 0.7 : props.valueSize === "xlarge" ? 1.4 : 1;
@@ -58,24 +81,26 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Big number */}
         <div
           style={{
             fontSize: Math.round(140 * scale * valueSizeMultiplier) + "px",
-            fontWeight: "bold",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontWeight: typo.fontWeight ?? "bold",
+            fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
             color: props.valueColor,
-            lineHeight: 1,
+            lineHeight: typo.lineHeight ?? 1,
             opacity: numberOpacity,
             transform: "scale(" + numberScale + ")",
-            letterSpacing: "-0.02em",
+            letterSpacing: typo.letterSpacing ?? "-0.02em",
           }}
         >
           {numberText}
@@ -99,7 +124,7 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(36 * scale) + "px",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.labelColor,
               marginTop: "20px",
               opacity: labelOpacity,
@@ -115,7 +140,7 @@ export const StatCounter: React.FC<StatCounterProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(22 * scale) + "px",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.labelColor,
               marginTop: "10px",
               opacity: labelOpacity * 0.7,

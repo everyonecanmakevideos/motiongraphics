@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const FeatureHighlightSchema = z.object({
   iconId: z.string().min(1),
@@ -16,6 +16,10 @@ export const FeatureHighlightSchema = z.object({
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "none"]).default("fade-in"),
   duration: z.number().min(3).max(15).default(6),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type FeatureHighlightProps = z.infer<typeof FeatureHighlightSchema>;

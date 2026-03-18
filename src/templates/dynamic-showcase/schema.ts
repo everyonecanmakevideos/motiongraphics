@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const DynamicShowcaseSchema = z.object({
   iconId: z.string().min(1),
@@ -13,6 +13,10 @@ export const DynamicShowcaseSchema = z.object({
   background: BackgroundSchema.default({ type: "gradient", from: "#0A0A0A", to: "#111133", direction: "radial" }),
   layout: z.enum(["center", "left-focus"]).default("center"),
   duration: z.number().min(4).max(15).default(7),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type DynamicShowcaseProps = z.infer<typeof DynamicShowcaseSchema>;

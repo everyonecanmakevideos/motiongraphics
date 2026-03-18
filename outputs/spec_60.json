@@ -1,0 +1,33 @@
+{
+  "templateId": "dynamic-showcase",
+  "params": {
+    "iconId": "gear",
+    "title": "Tech Product",
+    "description": "Innovative Solutions",
+    "titleColor": "#F8FAFC",
+    "accentColor": "#00D4FF",
+    "glowColor": "#00D4FF",
+    "orbitStyle": "mixed",
+    "orbitCount": 5,
+    "background": {
+      "type": "gradient",
+      "from": "#000A1A",
+      "to": "#001A3A",
+      "direction": "to-bottom"
+    },
+    "layout": "center",
+    "duration": 7,
+    "stylePreset": "neon-tech",
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": true,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "neon",
+      "blur": "none"
+    }
+  }
+}

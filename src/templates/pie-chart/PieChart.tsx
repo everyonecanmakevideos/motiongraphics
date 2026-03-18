@@ -1,7 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame } from "../../primitives/animations";
+import { secToFrame, microFloat } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { PieChartProps } from "./schema";
 
@@ -60,12 +64,23 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
   const { width, isPortrait, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   // Dynamic pie size based on composition
   const SIZE = Math.round(Math.min(width, 1080) * 0.37);
   const CENTER = SIZE / 2;
 
   // Phase timing
-  const titleEnd = Math.round(totalFrames * 0.15);
+  const titleEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
   const chartStart = Math.round(totalFrames * 0.08);
   const chartEnd = Math.round(totalFrames * 0.55);
   const labelsStart = Math.round(totalFrames * 0.4);
@@ -75,7 +90,15 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
   const titleOpacity = props.title
     ? interpolate(frame, [0, titleEnd], [0, 1], CLAMP)
     : 0;
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= chartEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
   const labelOpacity = interpolate(frame, [labelsStart, labelsEnd], [0, 1], CLAMP);
 
   // Chart animation progress
@@ -118,11 +141,13 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Title */}
@@ -130,8 +155,8 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
               marginBottom: "30px",
               opacity: titleOpacity,
@@ -187,7 +212,7 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
                     <span
                       style={{
                         fontSize: "22px",
-                        fontFamily: "Arial, sans-serif",
+                        fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                         color: props.labelColor,
                       }}
                     >

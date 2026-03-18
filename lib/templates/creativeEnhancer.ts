@@ -295,13 +295,41 @@ DESIGN PRINCIPLES:
    - data-callout: If trend is "up", use green trendUpColor. If "down", use red. If neutral, use subtle gray.
    - map-highlight: markerPulse=true adds energy. connectionLines=true for network/global-presence feel.
 
+7. STYLE PRESET — If the prompt has a clear vibe, set stylePreset:
+   - "modern-clean" for clean, minimal, professional vibes
+   - "bold-startup" for energetic, startup, launch vibes
+   - "neon-tech" for tech, futuristic, cyberpunk vibes
+   - "minimal-luxury" for premium, elegant, luxury vibes
+   Only set this if the mood is clear. It acts as a shorthand for typography + motion + effects.
+
+8. TYPOGRAPHY — Set when specific typographic character is needed:
+   - fontFamily: "inter" for clean/corporate, "clash-display" for bold/impact, "space-grotesk" for tech/modern
+   - weight: "black" for hero statements, "bold" for headlines, "medium" for body-heavy, "regular" for elegant
+   - letterSpacing: "tight" for dense impact, "normal" for balanced, "wide" for luxury/minimal
+   - lineHeight: "compact" for headlines, "normal" for mixed, "relaxed" for body text
+   ALL sub-fields are required when setting typography.
+
+9. MOTION STYLE — Set to control animation feel:
+   - easing: "smooth" for luxury/corporate, "snappy" for startup/CTA, "elastic" for playful/fun
+   - speed: "slow" for cinematic/elegant, "medium" for balanced, "fast" for urgent/energetic
+   - stagger: true for templates with multiple items (cards, bullets, steps, bars)
+   - microMotion: true for premium/cinematic templates (adds subtle floating)
+   ALL sub-fields are required when setting motionStyle.
+
+10. EFFECTS — Set for visual polish:
+    - shadow: "soft" for most templates, "strong" for bold/dramatic, "none" for minimal
+    - glow: "neon" ONLY for neon-tech style, "subtle" for premium, "none" for clean
+    - blur: "transition" for cinematic exits, "subtle" for layered depth, "none" for clean
+    ALL sub-fields are required when setting effects.
+
 CRITICAL CONSTRAINTS:
 - NEVER include templateId in enhancedParams
 - NEVER include text content fields (headline, subheadline, title, quote, label, description, body, items, bars, segments, milestones, steps, lines, bullets, attribution, kicker, sectionLabel, vsText, problemLabel, solutionLabel, beforeLabel, afterLabel, beforeTitle, afterTitle, leftTitle, rightTitle)
 - NEVER include numeric data (value, stat, duration, x, y coordinates)
 - NEVER include iconId
-- ONLY include aesthetic fields: colors (*Color), background, entranceAnimation, style/layout/mood enums, decoration, boolean toggles (lightSweep, markerPulse, donut, etc.)
+- ONLY include aesthetic fields: colors (*Color), background, entranceAnimation, style/layout/mood enums, decoration, boolean toggles (lightSweep, markerPulse, donut, etc.), stylePreset, typography, motionStyle, effects
 - ALL hex colors MUST be exactly 7 characters: #RRGGBB
+- stylePreset, typography, motionStyle, effects are OBJECTS/ENUMS — not hex colors
 - Return ONLY valid JSON, no markdown code fences
 
 EXAMPLE — for a hero-text template with a tech startup prompt:
@@ -313,9 +341,13 @@ EXAMPLE — for a hero-text template with a tech startup prompt:
     "background": { "type": "gradient", "from": "#0A0A1A", "to": "#1A1A2E", "direction": "to-bottom-right" },
     "entranceAnimation": "scale-pop",
     "style": "centered",
-    "decoration": "accent-line"
+    "decoration": "accent-line",
+    "stylePreset": "neon-tech",
+    "typography": { "fontFamily": "space-grotesk", "weight": "bold", "letterSpacing": "wide", "lineHeight": "compact" },
+    "motionStyle": { "easing": "elastic", "speed": "fast", "stagger": false, "microMotion": true },
+    "effects": { "shadow": "none", "glow": "neon", "blur": "subtle" }
   },
-  "changes": ["Upgraded to dark gradient bg for depth", "Neon green accent for tech feel", "scale-pop animation for energy"]
+  "changes": ["Upgraded to dark gradient bg for depth", "Neon green accent for tech feel", "scale-pop animation for energy", "neon-tech preset with Space Grotesk and neon glow"]
 }`;
 
 const MULTI_SCENE_ADDENDUM = `
@@ -339,8 +371,16 @@ MULTI-SCENE RULES:
 // Only aesthetic fields are listed. Content fields are deliberately excluded
 // so the LLM cannot accidentally modify text, data, or structure.
 
+const SHARED_CREATIVE_FIELDS: Record<string, string> = {
+  stylePreset: "modern-clean|bold-startup|neon-tech|minimal-luxury",
+  typography: "{ fontFamily: inter|clash-display|space-grotesk, weight: regular|medium|bold|black, letterSpacing: tight|normal|wide, lineHeight: compact|normal|relaxed }",
+  motionStyle: "{ easing: smooth|snappy|elastic, speed: slow|medium|fast, stagger: boolean, microMotion: boolean }",
+  effects: "{ shadow: none|soft|strong, glow: none|subtle|neon, blur: none|subtle|transition }",
+};
+
 const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
   "hero-text": {
+    ...SHARED_CREATIVE_FIELDS,
     headlineColor: "hex color #RRGGBB",
     subheadlineColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB (optional)",
@@ -353,6 +393,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     fontWeight: "normal|bold|black",
   },
   "bar-chart": {
+    ...SHARED_CREATIVE_FIELDS,
     titleColor: "hex color #RRGGBB",
     labelColor: "hex color #RRGGBB",
     valueColor: "hex color #RRGGBB",
@@ -365,6 +406,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     gridColor: "hex color #RRGGBB (grid line color)",
   },
   "pie-chart": {
+    ...SHARED_CREATIVE_FIELDS,
     titleColor: "hex color #RRGGBB",
     labelColor: "hex color #RRGGBB",
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
@@ -374,6 +416,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     strokeColor: "hex color #RRGGBB (gap color, usually matches background)",
   },
   "stat-counter": {
+    ...SHARED_CREATIVE_FIELDS,
     valueColor: "hex color #RRGGBB",
     labelColor: "hex color #RRGGBB",
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
@@ -382,6 +425,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     accentColor: "hex color #RRGGBB (optional, accent line under value)",
   },
   "kinetic-typography": {
+    ...SHARED_CREATIVE_FIELDS,
     defaultColor: "hex color #RRGGBB",
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
     entranceAnimation: "fade-in|slide-up|scale-pop|blur-reveal|typewriter|none",
@@ -392,6 +436,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     lineSpacing: "0.8-2.5 (number, line height multiplier)",
   },
   "icon-callout": {
+    ...SHARED_CREATIVE_FIELDS,
     iconColor: "hex color #RRGGBB",
     headlineColor: "hex color #RRGGBB",
     descriptionColor: "hex color #RRGGBB",
@@ -402,6 +447,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     accentColor: "hex color #RRGGBB (optional, icon background circle color)",
   },
   "comparison-layout": {
+    ...SHARED_CREATIVE_FIELDS,
     leftColor: "hex color #RRGGBB",
     rightColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
@@ -411,6 +457,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     dividerColor: "hex color #RRGGBB (VS divider line color)",
   },
   "timeline-scene": {
+    ...SHARED_CREATIVE_FIELDS,
     lineColor: "hex color #RRGGBB",
     dotColor: "hex color #RRGGBB",
     titleColor: "hex color #RRGGBB",
@@ -421,6 +468,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     markerStyle: "dot|ring|diamond",
   },
   "card-layout": {
+    ...SHARED_CREATIVE_FIELDS,
     cardBackground: "hex color #RRGGBB",
     titleColor: "hex color #RRGGBB",
     headingColor: "hex color #RRGGBB",
@@ -434,6 +482,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     cardPadding: "compact|normal|spacious",
   },
   "section-title": {
+    ...SHARED_CREATIVE_FIELDS,
     titleColor: "hex color #RRGGBB",
     subtitleColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB",
@@ -444,6 +493,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     fontSize: "medium|large|xlarge",
   },
   "bullet-list": {
+    ...SHARED_CREATIVE_FIELDS,
     titleColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
     bulletColor: "hex color #RRGGBB",
@@ -453,6 +503,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     spacing: "tight|normal|relaxed",
   },
   "quote-highlight": {
+    ...SHARED_CREATIVE_FIELDS,
     quoteColor: "hex color #RRGGBB",
     attributionColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB",
@@ -462,6 +513,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     quoteStyle: "sans|serif|italic",
   },
   "data-callout": {
+    ...SHARED_CREATIVE_FIELDS,
     valueColor: "hex color #RRGGBB",
     labelColor: "hex color #RRGGBB",
     contextColor: "hex color #RRGGBB",
@@ -472,6 +524,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     valueSize: "medium|large|xlarge",
   },
   "feature-highlight": {
+    ...SHARED_CREATIVE_FIELDS,
     iconColor: "hex color #RRGGBB",
     titleColor: "hex color #RRGGBB",
     descriptionColor: "hex color #RRGGBB",
@@ -483,6 +536,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     iconBackground: "hex color #RRGGBB (optional, icon background circle color)",
   },
   "split-screen": {
+    ...SHARED_CREATIVE_FIELDS,
     dividerStyle: "line|gap|none",
     dividerColor: "hex color #RRGGBB",
     leftAccentColor: "hex color #RRGGBB",
@@ -495,6 +549,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     balance: "equal|left-heavy|right-heavy",
   },
   "problem-solution": {
+    ...SHARED_CREATIVE_FIELDS,
     problemColor: "hex color #RRGGBB",
     solutionColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
@@ -505,6 +560,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     accentColor: "hex color #RRGGBB (divider/separator accent)",
   },
   "before-after": {
+    ...SHARED_CREATIVE_FIELDS,
     beforeColor: "hex color #RRGGBB",
     afterColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
@@ -514,6 +570,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     accentColor: "hex color #RRGGBB (transition/divider accent)",
   },
   "process-steps": {
+    ...SHARED_CREATIVE_FIELDS,
     stepColor: "hex color #RRGGBB",
     titleColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
@@ -525,6 +582,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     markerStyle: "circle|square|pill",
   },
   "map-highlight": {
+    ...SHARED_CREATIVE_FIELDS,
     markerColor: "hex color #RRGGBB",
     markerPulse: "boolean",
     titleColor: "hex color #RRGGBB",
@@ -537,6 +595,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     connectionStyle: "solid|dashed|dotted",
   },
   "masked-text-reveal": {
+    ...SHARED_CREATIVE_FIELDS,
     headlineColor: "hex color #RRGGBB",
     subheadlineColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB",
@@ -546,6 +605,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
   },
   "cinematic-hero": {
+    ...SHARED_CREATIVE_FIELDS,
     headlineColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB",
     mood: "minimal|bold|elegant",
@@ -554,6 +614,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
   },
   "cinematic-transition": {
+    ...SHARED_CREATIVE_FIELDS,
     labelColor: "hex color #RRGGBB",
     wipeColor: "hex color #RRGGBB",
     transitionStyle: "wipe-horizontal|wipe-vertical|diagonal|iris|split",
@@ -564,6 +625,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     backgroundAfter: "BackgroundSchema object (see BACKGROUND FORMAT above)",
   },
   "dynamic-showcase": {
+    ...SHARED_CREATIVE_FIELDS,
     titleColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB",
     glowColor: "hex color #RRGGBB",
@@ -573,6 +635,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
   },
   "parallax-showcase": {
+    ...SHARED_CREATIVE_FIELDS,
     titleColor: "hex color #RRGGBB",
     accentColor: "hex color #RRGGBB",
     parallaxDirection: "left|right|up",

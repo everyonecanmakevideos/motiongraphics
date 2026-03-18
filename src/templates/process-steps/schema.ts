@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 const StepSchema = z.object({
   label: z.string().min(1).max(40),
@@ -19,6 +19,10 @@ export const ProcessStepsSchema = z.object({
   markerStyle: z.enum(["circle", "square", "pill"]).default("circle"),
   entranceAnimation: z.enum(["progressive", "fade-in", "slide-up", "none"]).default("progressive"),
   duration: z.number().min(3).max(15).default(7),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type ProcessStepsProps = z.infer<typeof ProcessStepsSchema>;

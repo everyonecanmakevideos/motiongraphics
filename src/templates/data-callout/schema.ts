@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const DataCalloutSchema = z.object({
   value: z.number(),
@@ -18,6 +18,10 @@ export const DataCalloutSchema = z.object({
   entranceAnimation: z.enum(["count-up", "fade-in", "scale-pop", "none"]).default("count-up"),
   duration: z.number().min(2).max(15).default(6),
   valueSize: z.enum(["medium", "large", "xlarge"]).default("large"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type DataCalloutProps = z.infer<typeof DataCalloutSchema>;

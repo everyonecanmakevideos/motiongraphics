@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const ParallaxShowcaseSchema = z.object({
   title: z.string().min(1).max(60),
@@ -13,6 +13,10 @@ export const ParallaxShowcaseSchema = z.object({
   background: BackgroundSchema.default({ type: "gradient", from: "#0F0F23", to: "#1A1A3E", direction: "radial" }),
   entranceAnimation: z.enum(["fade-in", "slide-up", "clip-reveal"]).default("clip-reveal"),
   duration: z.number().min(5).max(15).default(8),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type ParallaxShowcaseProps = z.infer<typeof ParallaxShowcaseSchema>;

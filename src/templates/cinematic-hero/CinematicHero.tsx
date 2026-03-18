@@ -10,8 +10,13 @@ import {
   cameraDrift,
   parallaxLayer,
   glowPulse,
+  microFloat,
 } from "../../primitives/animations";
 import type { ClipDirection } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { CinematicHeroProps } from "./schema";
 
@@ -134,11 +139,22 @@ export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
   const { width, height, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   // ── Phase timing ───────────────────────────────────────────────────────
   const kickerStart = 0;
-  const kickerEnd = Math.round(totalFrames * 0.15);
+  const kickerEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
   const revealStart = Math.round(totalFrames * 0.05);
-  const revealEnd = Math.round(totalFrames * 0.30);
+  const revealEnd = Math.round(totalFrames * 0.30 * motion.durationMultiplier);
   const sweepEnd = Math.round(totalFrames * 0.25);
   const accentEntrEnd = Math.round(totalFrames * 0.20);
   const subStart = Math.round(totalFrames * 0.30);
@@ -147,6 +163,13 @@ export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
   const glowEnd = Math.round(totalFrames * 0.80);
   const exitStart = Math.round(totalFrames * 0.82);
   const exitEnd = totalFrames;
+
+  const isMainPhase = frame >= revealEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlurValue = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // ── Camera drift (continuous) ──────────────────────────────────────────
   const cam = cameraDrift(
@@ -237,10 +260,12 @@ export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           maxWidth: "85%",
           textAlign: "center",
           opacity: exit.opacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlurValue > 0 ? `blur(${exitBlurValue}px)` : undefined,
         }}
       >
         {/* Kicker */}
@@ -254,10 +279,10 @@ export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
             <span
               style={{
                 fontSize: kickerFontSize + "px",
-                fontWeight: "bold",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "bold",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.accentColor,
-                letterSpacing: "0.2em",
+                letterSpacing: typo.letterSpacing ?? "0.2em",
                 textTransform: "uppercase",
               }}
             >
@@ -276,11 +301,11 @@ export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
           <span
             style={{
               fontSize: baseFontSize + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.headlineColor,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
+              lineHeight: typo.lineHeight ?? 1.1,
+              letterSpacing: typo.letterSpacing ?? "-0.02em",
             }}
           >
             {props.headline}
@@ -312,10 +337,10 @@ export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
             <span
               style={{
                 fontSize: subFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "normal",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.headlineColor + "CC",
-                lineHeight: 1.4,
+                lineHeight: typo.lineHeight ?? 1.4,
               }}
             >
               {props.subheadline}

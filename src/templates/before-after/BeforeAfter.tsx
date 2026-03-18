@@ -1,8 +1,12 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, scalePop, microFloat } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { BeforeAfterProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -10,14 +14,35 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const BeforeAfter: React.FC<BeforeAfterProps> = (props) => {
   const frame = useCurrentFrame();
   const { isPortrait, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const totalFrames = secToFrame(props.duration);
+  const entranceEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   if (props.revealStyle === "split") {
-    return renderSplit(props, frame, totalFrames, exitOpacity, isPortrait, scale);
+    return renderSplit(props, frame, totalFrames, exitOpacity, isPortrait, scale, typo, fx, floatY, exitBlur);
   }
-  return renderOverlay(props, frame, totalFrames, exitOpacity);
+  return renderOverlay(props, frame, totalFrames, exitOpacity, typo, fx, floatY, exitBlur);
 };
 
 function renderStateContent(
@@ -25,7 +50,8 @@ function renderStateContent(
   title: string,
   items: string[] | undefined,
   accentColor: string,
-  textColor: string
+  textColor: string,
+  typo?: ReturnType<typeof resolveTypography>,
 ) {
   return (
     <div
@@ -50,11 +76,11 @@ function renderStateContent(
         <span
           style={{
             fontSize: "18px",
-            fontWeight: "bold",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontWeight: typo?.fontWeight ?? "bold",
+            fontFamily: typo?.fontFamily ?? "Arial, Helvetica, sans-serif",
             color: textColor,
             textTransform: "uppercase",
-            letterSpacing: "2px",
+            letterSpacing: typo?.letterSpacing ?? "2px",
           }}
         >
           {label}
@@ -65,10 +91,10 @@ function renderStateContent(
       <div
         style={{
           fontSize: "44px",
-          fontWeight: "bold",
-          fontFamily: "Arial, Helvetica, sans-serif",
+          fontWeight: typo?.fontWeight ?? "bold",
+          fontFamily: typo?.fontFamily ?? "Arial, Helvetica, sans-serif",
           color: textColor,
-          lineHeight: 1.2,
+          lineHeight: typo?.lineHeight ?? 1.2,
           marginBottom: items && items.length > 0 ? "28px" : undefined,
         }}
       >
@@ -81,10 +107,10 @@ function renderStateContent(
           key={i}
           style={{
             fontSize: "22px",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontFamily: typo?.fontFamily ?? "Arial, Helvetica, sans-serif",
             color: textColor,
             opacity: 0.8,
-            lineHeight: 1.5,
+            lineHeight: typo?.lineHeight ?? 1.5,
             padding: "4px 0",
           }}
         >
@@ -99,7 +125,11 @@ function renderOverlay(
   props: BeforeAfterProps,
   frame: number,
   totalFrames: number,
-  exitOpacity: number
+  exitOpacity: number,
+  typo: ReturnType<typeof resolveTypography>,
+  fx: ReturnType<typeof resolveEffects>,
+  floatY: number,
+  exitBlur: number,
 ) {
   const entrEnd = Math.round(totalFrames * 0.2);
   const revealStart = Math.round(totalFrames * 0.4);
@@ -141,9 +171,12 @@ function renderOverlay(
             alignItems: "center",
             justifyContent: "center",
             opacity: exitOpacity,
+            boxShadow: fx.boxShadow,
+            transform: `translateY(${floatY}px)`,
+            filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
           }}
         >
-          {renderStateContent(props.afterLabel, props.afterTitle, props.afterItems, props.afterColor, props.textColor)}
+          {renderStateContent(props.afterLabel, props.afterTitle, props.afterItems, props.afterColor, props.textColor, typo)}
         </div>
 
         {/* Before state (on top, clipped away) */}
@@ -157,11 +190,11 @@ function renderOverlay(
             clipPath: `inset(0 0 0 0)`,
             WebkitClipPath: `inset(0 ${100 - wipeProgress}% 0 0)`,
             opacity: beforeOpacity * exitOpacity,
-            transform: `translateY(${beforeY}px) scale(${beforeScale})`,
+            transform: `translateY(${beforeY + floatY}px) scale(${beforeScale})`,
           }}
         >
           <Background config={props.background} />
-          {renderStateContent(props.beforeLabel, props.beforeTitle, props.beforeItems, props.beforeColor, props.textColor)}
+          {renderStateContent(props.beforeLabel, props.beforeTitle, props.beforeItems, props.beforeColor, props.textColor, typo)}
         </div>
 
         {/* Wipe line */}
@@ -200,10 +233,12 @@ function renderOverlay(
           alignItems: "center",
           justifyContent: "center",
           opacity: beforeOpacity * beforeFadeOut * exitOpacity,
-          transform: `translateY(${beforeY}px) scale(${beforeScale})`,
+          transform: `translateY(${beforeY + floatY}px) scale(${beforeScale})`,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
-        {renderStateContent(props.beforeLabel, props.beforeTitle, props.beforeItems, props.beforeColor, props.textColor)}
+        {renderStateContent(props.beforeLabel, props.beforeTitle, props.beforeItems, props.beforeColor, props.textColor, typo)}
       </div>
 
       {/* After state */}
@@ -215,9 +250,12 @@ function renderOverlay(
           alignItems: "center",
           justifyContent: "center",
           opacity: afterFadeIn * exitOpacity,
+          transform: `translateY(${floatY}px)`,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
-        {renderStateContent(props.afterLabel, props.afterTitle, props.afterItems, props.afterColor, props.textColor)}
+        {renderStateContent(props.afterLabel, props.afterTitle, props.afterItems, props.afterColor, props.textColor, typo)}
       </div>
     </AbsoluteFill>
   );
@@ -229,7 +267,11 @@ function renderSplit(
   totalFrames: number,
   exitOpacity: number,
   isPortrait: boolean,
-  scale: number
+  scale: number,
+  typo: ReturnType<typeof resolveTypography>,
+  fx: ReturnType<typeof resolveEffects>,
+  floatY: number,
+  exitBlur: number,
 ) {
   const entrEnd = Math.round(totalFrames * 0.25);
 
@@ -249,6 +291,9 @@ function renderSplit(
           display: "flex",
           flexDirection: isPortrait ? "column" : "row",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          transform: `translateY(${floatY}px)`,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Before side */}
@@ -264,7 +309,7 @@ function renderSplit(
             borderTop: `4px solid ${props.beforeColor}`,
           }}
         >
-          {renderStateContent(props.beforeLabel, props.beforeTitle, props.beforeItems, props.beforeColor, props.textColor)}
+          {renderStateContent(props.beforeLabel, props.beforeTitle, props.beforeItems, props.beforeColor, props.textColor, typo)}
         </div>
 
         {/* Divider */}
@@ -283,7 +328,7 @@ function renderSplit(
             borderTop: `4px solid ${props.afterColor}`,
           }}
         >
-          {renderStateContent(props.afterLabel, props.afterTitle, props.afterItems, props.afterColor, props.textColor)}
+          {renderStateContent(props.afterLabel, props.afterTitle, props.afterItems, props.afterColor, props.textColor, typo)}
         </div>
       </div>
     </AbsoluteFill>

@@ -1,0 +1,36 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "Hacking Simulator",
+    "headlineColor": "#F8FAFC",
+    "accentColor": "#FF00FF",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#000A1A",
+      "to": "#1A1A3A",
+      "direction": "to-bottom"
+    },
+    "duration": 6,
+    "lightSweep": true,
+    "stylePreset": "neon-tech",
+    "typography": {
+      "fontFamily": "space-grotesk",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "neon",
+      "blur": "none"
+    }
+  }
+}

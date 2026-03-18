@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const StatCounterSchema = z.object({
   value: z.number(),
@@ -14,6 +14,10 @@ export const StatCounterSchema = z.object({
   entranceAnimation: z.enum(["count-up", "fade-in", "scale-pop", "none"]).default("count-up"),
   valueSize: z.enum(["medium", "large", "xlarge"]).default("large"),
   accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type StatCounterProps = z.infer<typeof StatCounterSchema>;

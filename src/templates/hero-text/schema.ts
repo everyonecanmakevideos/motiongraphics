@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema, AnimationPresetSchema } from "../types";
+import { BackgroundSchema, AnimationPresetSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const HeroTextSchema = z.object({
   headline: z.string().min(1).max(80),
@@ -19,6 +19,10 @@ export const HeroTextSchema = z.object({
   decoration: z.enum(["none", "underline", "highlight-box", "accent-line"]).default("none"),
   fontSize: z.enum(["medium", "large", "xlarge"]).default("large"),
   fontWeight: z.enum(["normal", "bold", "black"]).default("bold"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type HeroTextProps = z.infer<typeof HeroTextSchema>;

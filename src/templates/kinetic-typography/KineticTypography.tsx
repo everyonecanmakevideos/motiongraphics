@@ -9,7 +9,12 @@ import {
   scalePop,
   blurReveal,
   typewriter,
+  microFloat,
 } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { KineticTypographyProps } from "./schema";
 
@@ -51,9 +56,28 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
   const { scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
-  const entranceFrames = Math.round(totalFrames * 0.6);
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
+  const entranceFrames = Math.round(totalFrames * 0.6 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.82);
+  const exitEnd = totalFrames;
   const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= entranceFrames && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // Build items to animate (lines or words depending on staggerStyle)
   const items: Array<{ text: string; color: string; lineIndex: number }> = [];
@@ -83,12 +107,14 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: props.alignment === "center" ? "center" : props.alignment === "right" ? "flex-end" : "flex-start",
           maxWidth: "85%",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {props.staggerStyle === "word-by-word" ? (
@@ -114,8 +140,8 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
                   key={i}
                   style={{
                     fontSize: Math.round(props.fontSize * scale) + "px",
-                    fontWeight: props.fontWeight === "black" ? 900 : props.fontWeight === "bold" ? 700 : 400,
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    fontWeight: typo.fontWeight ?? (props.fontWeight === "black" ? 900 : props.fontWeight === "bold" ? 700 : 400),
+                    fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                     color: item.color,
                     opacity: a.opacity,
                     transform: "translateY(" + a.y + "px) scale(" + a.scale + ")",
@@ -142,10 +168,11 @@ export const KineticTypography: React.FC<KineticTypographyProps> = (props) => {
                 key={i}
                 style={{
                   fontSize: Math.round(props.fontSize * scale) + "px",
-                  fontWeight: props.fontWeight === "black" ? 900 : props.fontWeight === "bold" ? 700 : 400,
-                  fontFamily: "Arial, Helvetica, sans-serif",
+                  fontWeight: typo.fontWeight ?? (props.fontWeight === "black" ? 900 : props.fontWeight === "bold" ? 700 : 400),
+                  fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: item.color,
-                  lineHeight: props.lineSpacing,
+                  lineHeight: typo.lineHeight ?? props.lineSpacing,
+                  letterSpacing: typo.letterSpacing ?? undefined,
                   opacity: a.opacity,
                   transform: "translateY(" + a.y + "px) scale(" + a.scale + ")",
                   filter: a.blur > 0 ? "blur(" + a.blur + "px)" : "none",

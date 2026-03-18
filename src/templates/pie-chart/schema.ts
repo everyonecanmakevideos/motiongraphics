@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 const SegmentSchema = z.object({
   label: z.string().min(1).max(30),
@@ -20,6 +20,10 @@ export const PieChartSchema = z.object({
   entranceAnimation: z.enum(["spin", "fade-in", "scale-pop", "none"]).default("spin"),
   strokeWidth: z.number().min(0).max(4).default(0),
   strokeColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#0A0A0A"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type PieChartProps = z.infer<typeof PieChartSchema>;

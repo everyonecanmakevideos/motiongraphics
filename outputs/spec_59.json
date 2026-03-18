@@ -1,0 +1,240 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 90,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "SaaS Dashboard Overview",
+        "headlineColor": "#F8FAFC",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "gradient",
+          "from": "#0F172A",
+          "to": "#1E293B",
+          "direction": "to-bottom"
+        },
+        "entranceAnimation": "fade-in",
+        "subheadlineAnimation": "fade-in",
+        "duration": 3,
+        "style": "centered",
+        "decoration": "none",
+        "fontSize": "large",
+        "fontWeight": "bold",
+        "stylePreset": "modern-clean",
+        "typography": {
+          "fontFamily": "inter",
+          "weight": "bold",
+          "letterSpacing": "normal",
+          "lineHeight": "normal"
+        },
+        "motionStyle": {
+          "easing": "smooth",
+          "speed": "medium",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        }
+      }
+    },
+    {
+      "durationFrames": 210,
+      "startFrame": 75,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "layout": "grid-2x2",
+      "background": {
+        "type": "gradient",
+        "from": "#0F172A",
+        "to": "#1E293B",
+        "direction": "to-bottom"
+      },
+      "regions": [
+        {
+          "templateId": "bar-chart",
+          "params": {
+            "title": "User Growth",
+            "bars": [
+              {
+                "label": "Jan",
+                "value": 150,
+                "color": "#4FC3F7"
+              },
+              {
+                "label": "Feb",
+                "value": 200,
+                "color": "#81C784"
+              },
+              {
+                "label": "Mar",
+                "value": 250,
+                "color": "#FFB74D"
+              }
+            ],
+            "background": {
+              "type": "gradient",
+              "from": "#0F172A",
+              "to": "#1E293B",
+              "direction": "to-bottom"
+            },
+            "showValues": true,
+            "orientation": "vertical",
+            "barWidth": 60,
+            "titleColor": "#F8FAFC",
+            "labelColor": "#B0BEC5",
+            "valueColor": "#FFFFFF",
+            "duration": 7,
+            "entranceAnimation": "grow",
+            "barRadius": 6,
+            "gridLines": false,
+            "gridColor": "#333333",
+            "motionStyle": {
+              "easing": "smooth",
+              "speed": "medium",
+              "stagger": false,
+              "microMotion": true
+            },
+            "effects": {
+              "shadow": "soft",
+              "glow": "none",
+              "blur": "none"
+            }
+          },
+          "x": 0,
+          "y": 0,
+          "width": 960,
+          "height": 540
+        },
+        {
+          "templateId": "pie-chart",
+          "params": {
+            "title": "Revenue Breakdown",
+            "segments": [
+              {
+                "label": "Subscriptions",
+                "value": 60,
+                "color": "#4FC3F7"
+              },
+              {
+                "label": "Services",
+                "value": 30,
+                "color": "#81C784"
+              },
+              {
+                "label": "Others",
+                "value": 10,
+                "color": "#FFB74D"
+              }
+            ],
+            "background": {
+              "type": "gradient",
+              "from": "#0F172A",
+              "to": "#1E293B",
+              "direction": "to-bottom"
+            },
+            "donut": false,
+            "showLabels": true,
+            "showPercentages": true,
+            "titleColor": "#F8FAFC",
+            "labelColor": "#B0BEC5",
+            "duration": 7,
+            "entranceAnimation": "spin",
+            "strokeWidth": 0,
+            "strokeColor": "#0A0A0A",
+            "motionStyle": {
+              "easing": "smooth",
+              "speed": "medium",
+              "stagger": false,
+              "microMotion": true
+            },
+            "effects": {
+              "shadow": "soft",
+              "glow": "none",
+              "blur": "none"
+            }
+          },
+          "x": 960,
+          "y": 0,
+          "width": 960,
+          "height": 540
+        },
+        {
+          "templateId": "stat-counter",
+          "params": {
+            "value": 5000,
+            "prefix": "",
+            "suffix": "",
+            "label": "Active Users",
+            "valueColor": "#F8FAFC",
+            "labelColor": "#94A3B8",
+            "background": {
+              "type": "gradient",
+              "from": "#0F172A",
+              "to": "#1E293B",
+              "direction": "to-bottom"
+            },
+            "duration": 5,
+            "entranceAnimation": "count-up",
+            "valueSize": "large",
+            "motionStyle": {
+              "easing": "smooth",
+              "speed": "medium",
+              "stagger": false,
+              "microMotion": true
+            },
+            "effects": {
+              "shadow": "soft",
+              "glow": "none",
+              "blur": "none"
+            }
+          },
+          "x": 0,
+          "y": 540,
+          "width": 960,
+          "height": 540
+        },
+        {
+          "templateId": "stat-counter",
+          "params": {
+            "value": 120000,
+            "prefix": "",
+            "suffix": "",
+            "label": "Monthly Revenue",
+            "valueColor": "#F8FAFC",
+            "labelColor": "#94A3B8",
+            "background": {
+              "type": "gradient",
+              "from": "#0F172A",
+              "to": "#1E293B",
+              "direction": "to-bottom"
+            },
+            "duration": 5,
+            "entranceAnimation": "count-up",
+            "valueSize": "large",
+            "motionStyle": {
+              "easing": "smooth",
+              "speed": "medium",
+              "stagger": false,
+              "microMotion": true
+            },
+            "effects": {
+              "shadow": "soft",
+              "glow": "none",
+              "blur": "none"
+            }
+          },
+          "x": 960,
+          "y": 540,
+          "width": 960,
+          "height": 540
+        }
+      ]
+    }
+  ]
+}

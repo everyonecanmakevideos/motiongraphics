@@ -1,8 +1,12 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, scalePop, staggerDelay } from "../../primitives/animations";
+import { secToFrame, fadeIn, scalePop, staggerDelay, microFloat } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { MapHighlightProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -48,6 +52,18 @@ const GRID_ROWS = 30;
 export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, height, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const totalFrames = secToFrame(props.duration);
 
   // Dynamic map dimensions based on composition size
@@ -57,10 +73,19 @@ export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
   const mapFadeEnd = Math.round(totalFrames * 0.15);
   const markersStart = Math.round(totalFrames * 0.12);
   const markersDuration = Math.round(totalFrames * 0.5);
-  const titleEnd = Math.round(totalFrames * 0.12);
+  const titleEnd = Math.round(totalFrames * 0.12 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const entranceEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
   const mapOpacity = fadeIn(frame, { startFrame: 0, endFrame: mapFadeEnd }).opacity;
 
   // Title animation
@@ -91,11 +116,13 @@ export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Title */}
@@ -103,8 +130,8 @@ export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(40 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
               marginBottom: "40px",
               opacity: titleOpacity,
@@ -271,8 +298,8 @@ export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
                   style={{
                     marginTop: "8px",
                     fontSize: "16px",
-                    fontWeight: "bold",
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    fontWeight: typo.fontWeight ?? "bold",
+                    fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                     color: props.labelColor,
                     whiteSpace: "nowrap",
                     textShadow: "0 1px 4px rgba(0,0,0,0.8)",
@@ -286,7 +313,7 @@ export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
                   <div
                     style={{
                       fontSize: "13px",
-                      fontFamily: "Arial, Helvetica, sans-serif",
+                      fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                       color: props.labelColor,
                       opacity: 0.7,
                       whiteSpace: "nowrap",

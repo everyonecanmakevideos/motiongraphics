@@ -1,0 +1,36 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "THE FUTURE IS NOW",
+    "headlineColor": "#F8FAFC",
+    "accentColor": "#A855F7",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0510",
+      "to": "#1A1030",
+      "direction": "to-bottom"
+    },
+    "duration": 5,
+    "lightSweep": true,
+    "stylePreset": "bold-startup",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "black",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    }
+  }
+}

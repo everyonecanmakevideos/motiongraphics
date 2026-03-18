@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 const MilestoneSchema = z.object({
   label: z.string().min(1).max(40),
@@ -18,6 +18,10 @@ export const TimelineSceneSchema = z.object({
   markerStyle: z.enum(["dot", "ring", "diamond"]).default("dot"),
   entranceAnimation: z.enum(["progressive", "fade-in", "slide-up", "none"]).default("progressive"),
   duration: z.number().min(3).max(15).default(7),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type TimelineSceneProps = z.infer<typeof TimelineSceneSchema>;

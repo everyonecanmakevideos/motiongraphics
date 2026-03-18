@@ -1,8 +1,12 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, staggerDelay } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, scalePop, staggerDelay, microFloat } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { BulletListProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -18,14 +22,34 @@ const BULLET_MARKERS: Record<string, (index: number) => string> = {
 export const BulletList: React.FC<BulletListProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const totalFrames = secToFrame(props.duration);
 
-  const titleEnd = Math.round(totalFrames * 0.15);
+  const titleEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
   const itemsStart = Math.round(totalFrames * 0.1);
-  const itemsDuration = Math.round(totalFrames * 0.5);
+  const itemsDuration = Math.round(totalFrames * 0.5 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  const entranceEnd = itemsStart + itemsDuration;
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   // Title animation
   let titleOpacity = 1;
@@ -46,12 +70,14 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           maxWidth: Math.round(width * 0.85) + "px",
           width: "80%",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Title */}
@@ -59,9 +85,10 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
+              letterSpacing: typo.letterSpacing ?? undefined,
               marginBottom: "40px",
               opacity: titleOpacity,
               transform: `translateY(${titleY}px)`,
@@ -110,9 +137,9 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
               <span
                 style={{
                   fontSize: Math.round(28 * scale) + "px",
-                  fontFamily: "Arial, Helvetica, sans-serif",
+                  fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: props.bulletColor,
-                  fontWeight: "bold",
+                  fontWeight: typo.fontWeight ?? "bold",
                   flexShrink: 0,
                   minWidth: props.bulletStyle === "number" ? "36px" : "20px",
                 }}
@@ -122,9 +149,10 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
               <span
                 style={{
                   fontSize: Math.round(30 * scale) + "px",
-                  fontFamily: "Arial, Helvetica, sans-serif",
+                  fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: props.textColor,
-                  lineHeight: 1.4,
+                  lineHeight: typo.lineHeight ?? 1.4,
+                  letterSpacing: typo.letterSpacing ?? undefined,
                 }}
               >
                 {item}

@@ -1,9 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, staggerDelay } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, scalePop, staggerDelay, microFloat } from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { FeatureHighlightProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -11,18 +15,38 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, isPortrait, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const totalFrames = secToFrame(props.duration);
 
-  const iconEnd = Math.round(totalFrames * 0.2);
+  const iconEnd = Math.round(totalFrames * 0.2 * motion.durationMultiplier);
   const titleStart = Math.round(totalFrames * 0.05);
-  const titleEnd = Math.round(totalFrames * 0.25);
+  const titleEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
   const descStart = Math.round(totalFrames * 0.15);
-  const descEnd = Math.round(totalFrames * 0.35);
+  const descEnd = Math.round(totalFrames * 0.35 * motion.durationMultiplier);
   const bulletsStart = Math.round(totalFrames * 0.25);
-  const bulletsDuration = Math.round(totalFrames * 0.35);
+  const bulletsDuration = Math.round(totalFrames * 0.35 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  const entranceEnd = bulletsStart + bulletsDuration;
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   // Icon animation
   let iconOpacity = 1;
@@ -68,13 +92,15 @@ export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: isHorizontal ? (isRight ? "row-reverse" : "row") : "column",
           alignItems: isHorizontal ? "flex-start" : "center",
           gap: isHorizontal ? Math.round(60 * scale) + "px" : "24px",
           maxWidth: "80%",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Icon */}
@@ -121,10 +147,11 @@ export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(44 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
-              lineHeight: 1.1,
+              lineHeight: typo.lineHeight ?? 1.1,
+              letterSpacing: typo.letterSpacing ?? undefined,
               opacity: titleOpacity,
               transform: `translateY(${titleY}px)`,
             }}
@@ -137,9 +164,10 @@ export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
             <div
               style={{
                 fontSize: "24px",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.descriptionColor,
-                lineHeight: 1.4,
+                lineHeight: typo.lineHeight ?? 1.4,
+                letterSpacing: typo.letterSpacing ?? undefined,
                 marginTop: "16px",
                 maxWidth: Math.round(width * 0.55) + "px",
                 opacity: descOpacity,
@@ -191,9 +219,10 @@ export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
                     <span
                       style={{
                         fontSize: "22px",
-                        fontFamily: "Arial, Helvetica, sans-serif",
+                        fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                         color: props.bulletColor,
-                        lineHeight: 1.3,
+                        lineHeight: typo.lineHeight ?? 1.3,
+                        letterSpacing: typo.letterSpacing ?? undefined,
                       }}
                     >
                       {point}

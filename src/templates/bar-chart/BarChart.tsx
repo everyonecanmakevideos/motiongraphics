@@ -1,7 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, microFloat } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { BarChartProps } from "./schema";
 
@@ -13,8 +17,19 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
   const totalFrames = secToFrame(props.duration);
   const isVertical = props.orientation === "vertical";
 
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   // Phase timing
-  const titleEnd = Math.round(totalFrames * 0.15);
+  const titleEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
   const barsStart = Math.round(totalFrames * 0.1);
   const barsEnd = Math.round(totalFrames * 0.55);
   const exitStart = Math.round(totalFrames * 0.85);
@@ -23,7 +38,15 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
   const titleOpacity = props.title
     ? interpolate(frame, [0, titleEnd], [0, 1], CLAMP)
     : 0;
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= barsEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // Find max value for scaling
   const maxValue = Math.max(...props.bars.map((b) => b.value), 1);
@@ -44,11 +67,13 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Title */}
@@ -56,8 +81,8 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
               marginBottom: "40px",
               opacity: titleOpacity,
@@ -176,8 +201,8 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
                     <div
                       style={{
                         fontSize: "20px",
-                        fontFamily: "Arial, sans-serif",
-                        fontWeight: "bold",
+                        fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                        fontWeight: typo.fontWeight ?? "bold",
                         color: props.valueColor,
                         marginBottom: "6px",
                         opacity: progress > 0.3 ? 1 : 0,
@@ -199,7 +224,7 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
                   <div
                     style={{
                       fontSize: "16px",
-                      fontFamily: "Arial, sans-serif",
+                      fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                       color: props.labelColor,
                       marginTop: "8px",
                       textAlign: "center",
@@ -229,7 +254,7 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
                 <div
                   style={{
                     fontSize: "16px",
-                    fontFamily: "Arial, sans-serif",
+                    fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                     color: props.labelColor,
                     width: "120px",
                     textAlign: "right",
@@ -251,8 +276,8 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
                   <div
                     style={{
                       fontSize: "20px",
-                      fontFamily: "Arial, sans-serif",
-                      fontWeight: "bold",
+                      fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                      fontWeight: typo.fontWeight ?? "bold",
                       color: props.valueColor,
                       opacity: progress > 0.3 ? 1 : 0,
                     }}

@@ -6,7 +6,12 @@ import {
   fadeIn,
   scalePop,
   springIn,
+  microFloat,
 } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { CinematicTransitionProps } from "./schema";
 
@@ -19,10 +24,21 @@ export const CinematicTransition: React.FC<CinematicTransitionProps> = (props) =
   const { width, height, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const speedFactor = SPEED_MAP[props.speed] || 1.0;
 
   // ── Phase boundaries ───────────────────────────────────────────────────
-  const wipeInEnd = Math.round(totalFrames * 0.4 * speedFactor);
+  const wipeInEnd = Math.round(totalFrames * 0.4 * speedFactor * motion.durationMultiplier);
   const holdStart = wipeInEnd;
   const holdEnd = Math.round(totalFrames * 0.6);
   const wipeOutStart = holdEnd;
@@ -189,15 +205,16 @@ export const CinematicTransition: React.FC<CinematicTransitionProps> = (props) =
             alignItems: "center",
             justifyContent: "center",
             zIndex: 1,
+            boxShadow: fx.boxShadow,
           }}
         >
           <span
             style={{
               fontSize: labelFontSize + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.labelColor,
-              letterSpacing: "0.15em",
+              letterSpacing: typo.letterSpacing ?? "0.15em",
               textTransform: "uppercase",
               opacity: labelOpacity,
               transform: `scale(${labelScale})`,

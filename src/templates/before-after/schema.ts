@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const BeforeAfterSchema = z.object({
   beforeLabel: z.string().max(20).default("Before"),
@@ -16,6 +16,10 @@ export const BeforeAfterSchema = z.object({
   revealStyle: z.enum(["wipe", "fade", "split"]).default("wipe"),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "none"]).default("fade-in"),
   duration: z.number().min(4).max(15).default(7),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type BeforeAfterProps = z.infer<typeof BeforeAfterSchema>;

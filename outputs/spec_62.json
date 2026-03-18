@@ -1,0 +1,52 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "Quarterly Revenue Comparison",
+    "bars": [
+      {
+        "label": "Q1",
+        "value": 0,
+        "color": "#FF6F61"
+      },
+      {
+        "label": "Q2",
+        "value": 0,
+        "color": "#6B5B95"
+      },
+      {
+        "label": "Q3",
+        "value": 0,
+        "color": "#88B04B"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#1A0A2E",
+      "to": "#2E1A47",
+      "direction": "to-bottom-right"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#F8FAFC",
+    "labelColor": "#FFFFFF",
+    "valueColor": "#FFFFFF",
+    "duration": 6,
+    "entranceAnimation": "grow",
+    "barRadius": 8,
+    "gridLines": false,
+    "gridColor": "#333333",
+    "stylePreset": "bold-startup",
+    "motionStyle": {
+      "easing": "elastic",
+      "speed": "medium",
+      "stagger": true,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "none",
+      "blur": "none"
+    }
+  }
+}

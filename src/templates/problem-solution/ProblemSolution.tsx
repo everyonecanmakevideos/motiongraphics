@@ -1,9 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, scalePop, microFloat } from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { ProblemSolutionProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -11,21 +15,46 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const ProblemSolution: React.FC<ProblemSolutionProps> = (props) => {
   const frame = useCurrentFrame();
   const { isPortrait, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const totalFrames = secToFrame(props.duration);
+  const entranceEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   if (props.transitionStyle === "side-by-side") {
-    return renderSideBySide(props, frame, totalFrames, exitOpacity, isPortrait, scale);
+    return renderSideBySide(props, frame, totalFrames, exitOpacity, isPortrait, scale, typo, fx, floatY, exitBlur);
   }
-  return renderSequential(props, frame, totalFrames, exitOpacity);
+  return renderSequential(props, frame, totalFrames, exitOpacity, typo, fx, floatY, exitBlur);
 };
 
 function renderSequential(
   props: ProblemSolutionProps,
   frame: number,
   totalFrames: number,
-  exitOpacity: number
+  exitOpacity: number,
+  typo: ReturnType<typeof resolveTypography>,
+  fx: ReturnType<typeof resolveEffects>,
+  floatY: number,
+  exitBlur: number,
 ) {
   const problemEntrEnd = Math.round(totalFrames * 0.2);
   const transitionStart = Math.round(totalFrames * 0.4);
@@ -82,10 +111,12 @@ function renderSequential(
           alignItems: "center",
           justifyContent: "center",
           opacity: problemOpacity * exitOpacity,
-          transform: `translateX(${problemX}px) translateY(${problemY}px) scale(${problemScale})`,
+          transform: `translateX(${problemX}px) translateY(${problemY + floatY}px) scale(${problemScale})`,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
-        {renderSection(props.problemLabel, props.problem, props.problemColor, props.problemIconId, props)}
+        {renderSection(props.problemLabel, props.problem, props.problemColor, props.problemIconId, props, typo)}
       </div>
 
       {/* Solution */}
@@ -98,10 +129,12 @@ function renderSequential(
           alignItems: "center",
           justifyContent: "center",
           opacity: solutionOpacity * exitOpacity,
-          transform: `translateX(${solutionX}px) translateY(${solutionY}px)`,
+          transform: `translateX(${solutionX}px) translateY(${solutionY + floatY}px)`,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
-        {renderSection(props.solutionLabel, props.solution, props.solutionColor, props.solutionIconId, props)}
+        {renderSection(props.solutionLabel, props.solution, props.solutionColor, props.solutionIconId, props, typo)}
       </div>
     </AbsoluteFill>
   );
@@ -113,7 +146,11 @@ function renderSideBySide(
   totalFrames: number,
   exitOpacity: number,
   isPortrait: boolean,
-  scale: number
+  scale: number,
+  typo: ReturnType<typeof resolveTypography>,
+  fx: ReturnType<typeof resolveEffects>,
+  floatY: number,
+  exitBlur: number,
 ) {
   const entrEnd = Math.round(totalFrames * 0.25);
 
@@ -143,6 +180,9 @@ function renderSideBySide(
           display: "flex",
           flexDirection: isPortrait ? "column" : "row",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
+          transform: `translateY(${floatY}px)`,
         }}
       >
         {/* Problem side */}
@@ -159,7 +199,7 @@ function renderSideBySide(
             borderTop: `4px solid ${props.problemColor}`,
           }}
         >
-          {renderSection(props.problemLabel, props.problem, props.problemColor, props.problemIconId, props)}
+          {renderSection(props.problemLabel, props.problem, props.problemColor, props.problemIconId, props, typo)}
         </div>
 
         {/* Divider */}
@@ -179,7 +219,7 @@ function renderSideBySide(
             borderTop: `4px solid ${props.solutionColor}`,
           }}
         >
-          {renderSection(props.solutionLabel, props.solution, props.solutionColor, props.solutionIconId, props)}
+          {renderSection(props.solutionLabel, props.solution, props.solutionColor, props.solutionIconId, props, typo)}
         </div>
       </div>
     </AbsoluteFill>
@@ -191,7 +231,8 @@ function renderSection(
   text: string,
   accentColor: string,
   iconId: string | undefined,
-  props: ProblemSolutionProps
+  props: ProblemSolutionProps,
+  typo: ReturnType<typeof resolveTypography>,
 ) {
   return (
     <>
@@ -208,11 +249,11 @@ function renderSection(
         <span
           style={{
             fontSize: "18px",
-            fontWeight: "bold",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontWeight: typo.fontWeight ?? "bold",
+            fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
             color: props.labelColor,
             textTransform: "uppercase",
-            letterSpacing: "2px",
+            letterSpacing: typo.letterSpacing ?? "2px",
           }}
         >
           {label}
@@ -230,10 +271,10 @@ function renderSection(
       <div
         style={{
           fontSize: "32px",
-          fontFamily: "Arial, Helvetica, sans-serif",
+          fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
           color: props.textColor,
           textAlign: "center",
-          lineHeight: 1.4,
+          lineHeight: typo.lineHeight ?? 1.4,
           maxWidth: "600px",
         }}
       >

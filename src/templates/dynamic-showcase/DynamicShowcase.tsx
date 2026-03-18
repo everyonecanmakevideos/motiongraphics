@@ -9,8 +9,13 @@ import {
   springIn,
   glowPulse,
   staggerCascade,
+  microFloat,
 } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { Asset } from "../../assets/Asset";
 import type { DynamicShowcaseProps } from "./schema";
 
@@ -71,6 +76,18 @@ function renderOrbitElement(
 export const DynamicShowcase: React.FC<DynamicShowcaseProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, height, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const totalFrames = secToFrame(props.duration);
 
   const isLeftFocus = props.layout === "left-focus";
@@ -89,6 +106,15 @@ export const DynamicShowcase: React.FC<DynamicShowcaseProps> = (props) => {
   const descEnd = Math.round(totalFrames * 0.48);
   const exitStart = Math.round(totalFrames * 0.82);
   const exitEnd = totalFrames;
+
+  // ── MicroFloat & exit blur ─────────────────────────────────────────────
+  const entranceEnd = Math.round(totalFrames * 0.30 * motion.durationMultiplier);
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // ── Glow background ────────────────────────────────────────────────────
   const glowBgOpacity = fadeIn(frame, { startFrame: 0, endFrame: glowFadeEnd }).opacity;
@@ -196,10 +222,12 @@ export const DynamicShowcase: React.FC<DynamicShowcaseProps> = (props) => {
           position: "absolute",
           left: isLeftFocus ? focalCenterX - iconSize + "px" : "50%",
           top: focalCenterY + iconSize * 0.8 + "px",
-          transform: isLeftFocus ? "none" : "translateX(-50%)",
+          transform: isLeftFocus ? `translateY(${floatY}px)` : `translateX(-50%) translateY(${floatY}px)`,
           textAlign: isLeftFocus ? "left" : "center",
           maxWidth: isLeftFocus ? "50%" : "70%",
           opacity: exit.opacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         <div
@@ -211,10 +239,10 @@ export const DynamicShowcase: React.FC<DynamicShowcaseProps> = (props) => {
           <span
             style={{
               fontSize: titleFontSize + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
-              lineHeight: 1.2,
+              lineHeight: typo.lineHeight ?? 1.2,
             }}
           >
             {props.title}
@@ -231,10 +259,10 @@ export const DynamicShowcase: React.FC<DynamicShowcaseProps> = (props) => {
             <span
               style={{
                 fontSize: descFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "normal",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.titleColor + "BB",
-                lineHeight: 1.5,
+                lineHeight: typo.lineHeight ?? 1.5,
               }}
             >
               {props.description}

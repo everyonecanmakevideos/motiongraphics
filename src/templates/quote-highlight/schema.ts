@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const QuoteHighlightSchema = z.object({
   quote: z.string().min(1).max(300),
@@ -13,6 +13,10 @@ export const QuoteHighlightSchema = z.object({
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "blur-reveal", "typewriter", "none"]).default("fade-in"),
   duration: z.number().min(3).max(15).default(6),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type QuoteHighlightProps = z.infer<typeof QuoteHighlightSchema>;

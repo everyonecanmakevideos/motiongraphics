@@ -345,3 +345,10 @@ export function staggerCascade(
   const startFrame = Math.round(normalizedOrder * maxDelay);
   return { startFrame, endFrame: startFrame + itemDuration };
 }
+
+// ── Micro Motion ────────────────────────────────────────────────────────
+
+/** Deterministic subtle floating motion based on frame number. */
+export function microFloat(frame: number, amplitude: number = 2): { y: number } {
+  return { y: Math.sin(frame * 0.1) * amplitude };
+}

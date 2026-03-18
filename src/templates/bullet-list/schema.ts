@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const BulletListSchema = z.object({
   title: z.string().max(80).optional(),
@@ -12,6 +12,10 @@ export const BulletListSchema = z.object({
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "none"]).default("slide-up"),
   duration: z.number().min(3).max(15).default(6),
   spacing: z.enum(["tight", "normal", "relaxed"]).default("normal"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type BulletListProps = z.infer<typeof BulletListSchema>;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const SectionTitleSchema = z.object({
   title: z.string().min(1).max(80),
@@ -13,6 +13,10 @@ export const SectionTitleSchema = z.object({
   entranceAnimation: z.enum(["fade-in", "slide-up", "scale-pop", "blur-reveal", "none"]).default("fade-in"),
   duration: z.number().min(2).max(10).default(4),
   fontSize: z.enum(["medium", "large", "xlarge"]).default("large"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type SectionTitleProps = z.infer<typeof SectionTitleSchema>;

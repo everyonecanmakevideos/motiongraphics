@@ -1,0 +1,38 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 1000000,
+    "prefix": "",
+    "suffix": "",
+    "label": "Users",
+    "valueColor": "#D4AF37",
+    "labelColor": "#F8FAFC",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A0A",
+      "to": "#1A1508",
+      "direction": "to-bottom-right"
+    },
+    "duration": 5,
+    "entranceAnimation": "count-up",
+    "valueSize": "large",
+    "stylePreset": "minimal-luxury",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "medium",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    }
+  }
+}

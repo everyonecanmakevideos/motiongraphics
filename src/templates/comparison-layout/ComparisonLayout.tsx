@@ -1,8 +1,12 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, scalePop } from "../../primitives/animations";
+import { secToFrame, fadeIn, scalePop, microFloat } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { ComparisonLayoutProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -10,17 +14,36 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
   const frame = useCurrentFrame();
   const { isPortrait, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
-  const sidesEnd = Math.round(totalFrames * 0.3);
+  const sidesEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
   const vsStart = Math.round(totalFrames * 0.15);
-  const vsEnd = Math.round(totalFrames * 0.3);
+  const vsEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
   const itemsStart = Math.round(totalFrames * 0.2);
-  const itemsEnd = Math.round(totalFrames * 0.55);
+  const itemsEnd = Math.round(totalFrames * 0.55 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  const isMainPhase = frame >= itemsEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   // Left side entrance
   let leftOpacity = 1;
@@ -67,13 +90,15 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: isPortrait ? "column" : "row",
           alignItems: isPortrait ? "center" : "flex-start",
           gap: Math.round((isPortrait ? 30 : 60) * scale) + "px",
           opacity: exitOpacity,
           width: "85%",
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Left side */}
@@ -87,9 +112,10 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.leftColor,
+              letterSpacing: typo.letterSpacing ?? undefined,
               marginBottom: "24px",
               textAlign: "center",
             }}
@@ -106,7 +132,7 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
                 key={i}
                 style={{
                   fontSize: "24px",
-                  fontFamily: "Arial, sans-serif",
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                   color: props.textColor,
                   padding: "10px 16px",
                   marginBottom: "8px",
@@ -147,8 +173,8 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(40 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.vsColor,
               padding: "12px 20px",
               border: "3px solid " + props.vsColor,
@@ -183,9 +209,10 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.rightColor,
+              letterSpacing: typo.letterSpacing ?? undefined,
               marginBottom: "24px",
               textAlign: "center",
             }}
@@ -202,7 +229,7 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
                 key={i}
                 style={{
                   fontSize: "24px",
-                  fontFamily: "Arial, sans-serif",
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                   color: props.textColor,
                   padding: "10px 16px",
                   marginBottom: "8px",

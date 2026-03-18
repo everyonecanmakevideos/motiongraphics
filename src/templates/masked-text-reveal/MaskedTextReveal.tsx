@@ -8,9 +8,14 @@ import {
   slideUp,
   clipReveal,
   clipExit,
+  microFloat,
 } from "../../primitives/animations";
 import type { ClipDirection } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { MaskedTextRevealProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -33,11 +38,23 @@ const FONT_SIZE_MAP: Record<string, number> = {
 export const MaskedTextReveal: React.FC<MaskedTextRevealProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const totalFrames = secToFrame(props.duration);
 
   // ── Phase timing ───────────────────────────────────────────────────────
   const revealStart = Math.round(totalFrames * 0.05);
-  const revealEnd = Math.round(totalFrames * 0.35);
+  const revealEnd = Math.round(totalFrames * 0.35 * motion.durationMultiplier);
   const subStart = Math.round(totalFrames * 0.35);
   const subEnd = Math.round(totalFrames * 0.47);
   const tagStart = Math.round(totalFrames * 0.45);
@@ -78,6 +95,15 @@ export const MaskedTextReveal: React.FC<MaskedTextRevealProps> = (props) => {
     exitStyle = { opacity: exit.opacity };
   }
 
+  // ── MicroFloat & exit blur ─────────────────────────────────────────────
+  const entranceEnd = revealEnd;
+  const isMainPhase = frame >= entranceEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
   // ── Font sizing ────────────────────────────────────────────────────────
   const baseFontSize = Math.round((FONT_SIZE_MAP[props.fontSize] || 80) * scale);
   const subFontSize = Math.round(baseFontSize * 0.35);
@@ -96,6 +122,9 @@ export const MaskedTextReveal: React.FC<MaskedTextRevealProps> = (props) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          transform: `translateY(${floatY}px)`,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
           ...exitStyle,
         }}
       >
@@ -111,11 +140,11 @@ export const MaskedTextReveal: React.FC<MaskedTextRevealProps> = (props) => {
           <span
             style={{
               fontSize: baseFontSize + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.headlineColor,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
+              lineHeight: typo.lineHeight ?? 1.1,
+              letterSpacing: typo.letterSpacing ?? "-0.02em",
             }}
           >
             {props.headline}
@@ -155,10 +184,10 @@ export const MaskedTextReveal: React.FC<MaskedTextRevealProps> = (props) => {
             <span
               style={{
                 fontSize: subFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "normal",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.subheadlineColor,
-                lineHeight: 1.4,
+                lineHeight: typo.lineHeight ?? 1.4,
               }}
             >
               {props.subheadline}
@@ -179,10 +208,10 @@ export const MaskedTextReveal: React.FC<MaskedTextRevealProps> = (props) => {
             <span
               style={{
                 fontSize: tagFontSize + "px",
-                fontWeight: "normal",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontWeight: typo.fontWeight ?? "normal",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.accentColor,
-                letterSpacing: "0.15em",
+                letterSpacing: typo.letterSpacing ?? "0.15em",
                 textTransform: "uppercase",
               }}
             >

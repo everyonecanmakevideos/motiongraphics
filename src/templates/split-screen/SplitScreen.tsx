@@ -1,9 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, scalePop } from "../../primitives/animations";
+import { secToFrame, fadeIn, scalePop, microFloat } from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { SplitScreenProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -11,14 +15,33 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
   const frame = useCurrentFrame();
   const { isPortrait, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const totalFrames = secToFrame(props.duration);
 
-  const entrEnd = Math.round(totalFrames * 0.25);
+  const entrEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
   const dividerStart = Math.round(totalFrames * 0.15);
-  const dividerEnd = Math.round(totalFrames * 0.3);
+  const dividerEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  const isMainPhase = frame >= dividerEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   // Panel animations
   const getPanelAnimation = (side: "left" | "right") => {
@@ -97,11 +120,12 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
       <div
         style={{
           fontSize: Math.round(40 * scale) + "px",
-          fontWeight: "bold",
-          fontFamily: "Arial, Helvetica, sans-serif",
+          fontWeight: typo.fontWeight ?? "bold",
+          fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
           color: props.titleColor,
           textAlign: "center",
-          lineHeight: 1.2,
+          lineHeight: typo.lineHeight ?? 1.2,
+          letterSpacing: typo.letterSpacing ?? undefined,
           marginBottom: "16px",
         }}
       >
@@ -113,10 +137,11 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
         <div
           style={{
             fontSize: Math.round(22 * scale) + "px",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
             color: props.bodyColor,
             textAlign: "center",
-            lineHeight: 1.5,
+            lineHeight: typo.lineHeight ?? 1.5,
+            letterSpacing: typo.letterSpacing ?? undefined,
             maxWidth: Math.round(400 * scale) + "px",
           }}
         >
@@ -137,6 +162,9 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
           display: "flex",
           flexDirection: isPortrait ? "column" : "row",
           opacity: exitOpacity,
+          transform: `translateY(${floatY}px)`,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Left panel */}

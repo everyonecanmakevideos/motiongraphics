@@ -1,7 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, blurReveal, underlineDraw, highlightReveal } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, scalePop, blurReveal, underlineDraw, highlightReveal, microFloat } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { SectionTitleProps } from "./schema";
 
@@ -12,14 +16,33 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
   const { width, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
-  const entrEnd = Math.round(totalFrames * 0.25);
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
+  const entrEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
   const subtitleStart = Math.round(totalFrames * 0.12);
   const subtitleEnd = Math.round(totalFrames * 0.35);
   const accentStart = Math.round(totalFrames * 0.08);
   const accentEnd = Math.round(totalFrames * 0.3);
   const exitStart = Math.round(totalFrames * 0.82);
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= entrEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // Title entrance animation
   let titleOpacity = 1;
@@ -73,7 +96,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: isLeft ? "flex-start" : "center",
@@ -81,6 +104,8 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           maxWidth: "80%",
           opacity: exitOpacity,
           paddingLeft: isLeft ? Math.round(120 * scale) + "px" : undefined,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Accent: line-top */}
@@ -128,10 +153,11 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           <div
             style={{
               fontSize: `${baseFontSize}px`,
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
-              lineHeight: 1.1,
+              lineHeight: typo.lineHeight ?? 1.1,
+              letterSpacing: typo.letterSpacing ?? undefined,
               opacity: titleOpacity,
               transform: `translateY(${titleY}px) scale(${titleScale})`,
               filter: titleBlur > 0 ? `blur(${titleBlur}px)` : undefined,
@@ -159,9 +185,9 @@ export const SectionTitle: React.FC<SectionTitleProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(28 * scale) + "px",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.subtitleColor,
-              lineHeight: 1.4,
+              lineHeight: typo.lineHeight ?? 1.4,
               marginTop: "20px",
               opacity: subtitleOpacity,
               transform: `translateY(${subtitleY}px)`,

@@ -1,8 +1,12 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, scalePop, countUp } from "../../primitives/animations";
+import { secToFrame, fadeIn, scalePop, countUp, microFloat } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { DataCalloutProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -16,18 +20,37 @@ const TREND_ARROWS: Record<string, string> = {
 export const DataCallout: React.FC<DataCalloutProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const totalFrames = secToFrame(props.duration);
 
-  const valueEnd = Math.round(totalFrames * 0.35);
+  const valueEnd = Math.round(totalFrames * 0.35 * motion.durationMultiplier);
   const labelStart = Math.round(totalFrames * 0.1);
-  const labelEnd = Math.round(totalFrames * 0.3);
+  const labelEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
   const trendStart = Math.round(totalFrames * 0.3);
-  const trendEnd = Math.round(totalFrames * 0.45);
+  const trendEnd = Math.round(totalFrames * 0.45 * motion.durationMultiplier);
   const contextStart = Math.round(totalFrames * 0.2);
-  const contextEnd = Math.round(totalFrames * 0.4);
+  const contextEnd = Math.round(totalFrames * 0.4 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  const isMainPhase = frame >= valueEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   // Value size multiplier
   const valueSizeMultiplier = props.valueSize === "medium" ? 0.7 : props.valueSize === "xlarge" ? 1.4 : 1;
@@ -86,12 +109,14 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Value row with trend */}
@@ -99,10 +124,11 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(130 * scale * valueSizeMultiplier) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.valueColor,
-              lineHeight: 1,
+              lineHeight: typo.lineHeight ?? 1,
+              letterSpacing: typo.letterSpacing ?? undefined,
               opacity: valueOpacity,
               transform: `scale(${valueScale})`,
             }}
@@ -130,8 +156,8 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
                 <span
                   style={{
                     fontSize: Math.round(22 * scale) + "px",
-                    fontFamily: "Arial, Helvetica, sans-serif",
-                    fontWeight: "bold",
+                    fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
+                    fontWeight: typo.fontWeight ?? "bold",
                     color: trendColor,
                   }}
                 >
@@ -146,7 +172,7 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
         <div
           style={{
             fontSize: Math.round(36 * scale) + "px",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
             color: props.labelColor,
             marginTop: "16px",
             opacity: labelOpacity,
@@ -161,11 +187,12 @@ export const DataCallout: React.FC<DataCalloutProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(22 * scale) + "px",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.contextColor,
               marginTop: "16px",
               maxWidth: Math.round(width * 0.55) + "px",
-              lineHeight: 1.4,
+              lineHeight: typo.lineHeight ?? 1.4,
+              letterSpacing: typo.letterSpacing ?? undefined,
               opacity: contextOpacity,
               transform: `translateY(${contextY}px)`,
             }}

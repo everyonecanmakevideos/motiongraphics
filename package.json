@@ -10,6 +10,7 @@
     "@aws-sdk/s3-request-presigner": "^3.758.0",
     "@neondatabase/serverless": "^0.10.4",
     "@remotion/cli": "4.0.431",
+    "@remotion/google-fonts": "^4.0.431",
     "@remotion/tailwind-v4": "4.0.431",
     "@tailwindcss/postcss": "^4.2.1",
     "csv-writer": "^1.6.0",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const MaskedTextRevealSchema = z.object({
   headline: z.string().min(1).max(60),
@@ -15,6 +15,10 @@ export const MaskedTextRevealSchema = z.object({
   background: BackgroundSchema.default({ type: "solid", color: "#0A0A0A" }),
   fontSize: z.enum(["medium", "large", "xlarge"]).default("large"),
   duration: z.number().min(3).max(15).default(6),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type MaskedTextRevealProps = z.infer<typeof MaskedTextRevealSchema>;

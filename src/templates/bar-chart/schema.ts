@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 const BarItemSchema = z.object({
   label: z.string().min(1).max(30),
@@ -22,6 +22,10 @@ export const BarChartSchema = z.object({
   barRadius: z.number().min(0).max(16).default(6),
   gridLines: z.boolean().default(false),
   gridColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#333333"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type BarChartProps = z.infer<typeof BarChartSchema>;

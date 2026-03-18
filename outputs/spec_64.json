@@ -1,0 +1,55 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Startup Journey: Idea to IPO",
+    "milestones": [
+      {
+        "label": "Idea"
+      },
+      {
+        "label": "Prototype"
+      },
+      {
+        "label": "Launch"
+      },
+      {
+        "label": "Growth"
+      },
+      {
+        "label": "IPO"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "to-bottom"
+    },
+    "lineColor": "#FF6B35",
+    "dotColor": "#FF6B35",
+    "titleColor": "#F8FAFC",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "markerStyle": "dot",
+    "entranceAnimation": "progressive",
+    "duration": 7,
+    "stylePreset": "bold-startup",
+    "typography": {
+      "fontFamily": "space-grotesk",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "medium",
+      "stagger": true,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "none",
+      "blur": "none"
+    }
+  }
+}

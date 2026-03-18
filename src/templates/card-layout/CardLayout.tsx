@@ -1,9 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, staggerDelay, fadeIn, slideUp, scalePop } from "../../primitives/animations";
+import { secToFrame, staggerDelay, fadeIn, slideUp, scalePop, microFloat } from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import type { CardLayoutProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -11,18 +15,37 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const CardLayout: React.FC<CardLayoutProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, isPortrait, scale } = useResponsiveConfig();
+
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects);
+
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
-  const titleEnd = Math.round(totalFrames * 0.12);
+  const titleEnd = Math.round(totalFrames * 0.12 * motion.durationMultiplier);
   const cardsStart = Math.round(totalFrames * 0.1);
-  const cardsEnd = Math.round(totalFrames * 0.6);
+  const cardsEnd = Math.round(totalFrames * 0.6 * motion.durationMultiplier);
   const exitStart = Math.round(totalFrames * 0.85);
+  const exitEnd = totalFrames;
 
   const titleOpacity = props.title
     ? interpolate(frame, [0, titleEnd], [0, 1], CLAMP)
     : 0;
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
+
+  const isMainPhase = frame >= cardsEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 
   const entranceFrames = cardsEnd - cardsStart;
   const cardCount = props.cards.length;
@@ -42,11 +65,13 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Title */}
@@ -54,9 +79,10 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: "bold",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              fontWeight: typo.fontWeight ?? "bold",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               color: props.titleColor,
+              letterSpacing: typo.letterSpacing ?? undefined,
               marginBottom: "40px",
               opacity: titleOpacity,
             }}
@@ -133,10 +159,11 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
                 <div
                   style={{
                     fontSize: "28px",
-                    fontWeight: "bold",
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    fontWeight: typo.fontWeight ?? "bold",
+                    fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                     color: props.headingColor,
-                    lineHeight: 1.2,
+                    lineHeight: typo.lineHeight ?? 1.2,
+                    letterSpacing: typo.letterSpacing ?? undefined,
                   }}
                 >
                   {card.heading}
@@ -147,9 +174,10 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
                   <div
                     style={{
                       fontSize: "18px",
-                      fontFamily: "Arial, sans-serif",
+                      fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                       color: props.bodyColor,
-                      lineHeight: 1.4,
+                      lineHeight: typo.lineHeight ?? 1.4,
+                      letterSpacing: typo.letterSpacing ?? undefined,
                     }}
                   >
                     {card.body}

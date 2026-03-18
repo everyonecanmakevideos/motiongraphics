@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 export const CinematicTransitionSchema = z.object({
   sectionLabel: z.string().max(40).optional(),
@@ -14,6 +14,10 @@ export const CinematicTransitionSchema = z.object({
   speed: z.enum(["slow", "normal", "fast"]).default("normal"),
   labelAnimation: z.enum(["scale-pop", "fade-in", "spring"]).default("scale-pop"),
   duration: z.number().min(2).max(8).default(3),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type CinematicTransitionProps = z.infer<typeof CinematicTransitionSchema>;

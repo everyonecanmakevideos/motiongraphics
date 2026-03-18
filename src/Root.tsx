@@ -2,6 +2,9 @@ import { Composition } from "remotion";
 import { GeneratedMotion } from "./GeneratedMotion";
 import { TemplateRouter } from "./TemplateRouter";
 import { SceneSequencer } from "./SceneSequencer";
+import { ensureFontsLoaded } from "./primitives/fonts";
+
+ensureFontsLoaded();
 
 // Read duration from environment variable, fallback to 120 frames (4s)
 const durationInFrames = parseInt(

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 const SplitSideSchema = z.object({
   title: z.string().min(1).max(60),
@@ -21,6 +21,10 @@ export const SplitScreenSchema = z.object({
   balance: z.enum(["equal", "left-heavy", "right-heavy"]).default("equal"),
   entranceAnimation: z.enum(["fade-in", "slide-in", "scale-pop", "none"]).default("slide-in"),
   duration: z.number().min(3).max(15).default(6),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type SplitScreenProps = z.infer<typeof SplitScreenSchema>;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema } from "../types";
 
 const CardSchema = z.object({
   heading: z.string().min(1).max(40),
@@ -23,6 +23,10 @@ export const CardLayoutSchema = z.object({
   cardBorderRadius: z.number().min(0).max(32).default(12),
   cardBorderColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   cardPadding: z.enum(["compact", "normal", "spacious"]).default("normal"),
+  stylePreset: StylePresetSchema.optional(),
+  typography: TypographySchema.optional(),
+  motionStyle: MotionStyleSchema.optional(),
+  effects: EffectsSchema.optional(),
 });
 
 export type CardLayoutProps = z.infer<typeof CardLayoutSchema>;

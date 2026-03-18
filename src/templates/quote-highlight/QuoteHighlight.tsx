@@ -1,7 +1,11 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, blurReveal, typewriter } from "../../primitives/animations";
+import { secToFrame, fadeIn, slideUp, scalePop, blurReveal, typewriter, microFloat } from "../../primitives/animations";
+import { resolveStylePreset } from "../../primitives/useStylePreset";
+import { resolveTypography } from "../../primitives/useTypography";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { resolveEffects } from "../../primitives/useEffects";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import type { QuoteHighlightProps } from "./schema";
 
@@ -12,13 +16,32 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
   const { width, scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
+  // ── Resolve creative enhancement fields ────────────────────────────────
+  const resolved = resolveStylePreset(
+    props.stylePreset,
+    props.typography,
+    props.motionStyle,
+    props.effects,
+  );
+  const typo = resolveTypography(resolved.typography);
+  const motion = resolveMotionStyle(resolved.motionStyle);
+  const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
+
   const markEnd = Math.round(totalFrames * 0.12);
-  const quoteEnd = Math.round(totalFrames * 0.3);
+  const quoteEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
   const attrStart = Math.round(totalFrames * 0.25);
   const attrEnd = Math.round(totalFrames * 0.4);
   const exitStart = Math.round(totalFrames * 0.85);
 
-  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CLAMP);
+  const exitEnd = totalFrames;
+  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
+
+  const isMainPhase = frame >= quoteEnd && frame < exitStart;
+  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
+
+  const exitBlur = fx.blurTransition
+    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    : 0;
 
   // Quote mark animation
   const markOpacity = fadeIn(frame, { startFrame: 0, endFrame: markEnd }).opacity;
@@ -58,10 +81,10 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
     attrY = interpolate(frame, [attrStart, attrEnd], [15, 0], CLAMP);
   }
 
-  const quoteFontFamily =
-    props.quoteStyle === "sans"
+  const quoteFontFamily = typo.fontFamily ??
+    (props.quoteStyle === "sans"
       ? "Arial, Helvetica, sans-serif"
-      : "Georgia, 'Times New Roman', serif";
+      : "Georgia, 'Times New Roman', serif");
   const quoteFontStyle = props.quoteStyle === "italic" ? "italic" : undefined;
 
   const quoteFontSize = Math.round((props.quote.length > 200 ? 32 : props.quote.length > 100 ? 40 : 48) * scale);
@@ -79,7 +102,7 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -87,6 +110,8 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
           maxWidth: Math.round(width * 0.85) + "px",
           width: "80%",
           opacity: exitOpacity,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}
       >
         {/* Decorative quote marks or bar */}
@@ -127,7 +152,8 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
             fontSize: `${quoteFontSize}px`,
             fontFamily: quoteFontFamily,
             color: props.quoteColor,
-            lineHeight: 1.5,
+            lineHeight: typo.lineHeight ?? 1.5,
+            letterSpacing: typo.letterSpacing ?? undefined,
             fontStyle: quoteFontStyle,
             opacity: quoteOpacity,
             transform: `translateY(${quoteY}px) scale(${quoteScale})`,
@@ -174,7 +200,7 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
             <div
               style={{
                 fontSize: Math.round(24 * scale) + "px",
-                fontFamily: "Arial, Helvetica, sans-serif",
+                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                 color: props.attributionColor,
               }}
             >
@@ -184,7 +210,7 @@ export const QuoteHighlight: React.FC<QuoteHighlightProps> = (props) => {
               <div
                 style={{
                   fontSize: Math.round(18 * scale) + "px",
-                  fontFamily: "Arial, Helvetica, sans-serif",
+                  fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: props.attributionColor,
                   opacity: 0.7,
                   marginTop: "6px",
