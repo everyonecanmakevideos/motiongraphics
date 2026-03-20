@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "RETRO STYLE",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "stripe",
+      "baseColor": "#001F3F",
+      "stripeColor": "#B0B0B0",
+      "angle": 45,
+      "density": "sparse"
+    },
+    "entranceAnimation": "none",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

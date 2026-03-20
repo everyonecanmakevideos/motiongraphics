@@ -1,0 +1,22 @@
+{
+  "templateId": "problem-solution",
+  "params": {
+    "problemLabel": "Problem",
+    "solutionLabel": "Solution",
+    "problem": "Manual deployments take hours and are error-prone, causing downtime and frustration.",
+    "solution": "Our automated CI/CD pipeline deploys in minutes with zero-downtime rollbacks.",
+    "problemIconId": "fire",
+    "solutionIconId": "checkmark",
+    "problemColor": "#FF6B6B",
+    "solutionColor": "#51CF66",
+    "textColor": "#FFFFFF",
+    "labelColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-up",
+    "transitionStyle": "fade-switch",
+    "duration": 7
+  }
+}

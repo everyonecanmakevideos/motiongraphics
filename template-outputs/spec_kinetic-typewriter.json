@@ -1,0 +1,22 @@
+{
+  "templateId": "kinetic-typography",
+  "params": {
+    "lines": [
+      "Hello World",
+      "console.log()",
+      "npm start"
+    ],
+    "defaultColor": "#00FF88",
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "fontSize": 72,
+    "fontWeight": "bold",
+    "alignment": "center",
+    "lineSpacing": 1.3,
+    "staggerStyle": "line-by-line",
+    "entranceAnimation": "typewriter",
+    "duration": 9
+  }
+}

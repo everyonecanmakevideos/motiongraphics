@@ -1,0 +1,16 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "Less is More",
+    "headlineColor": "#FFFFFF",
+    "accentColor": "#FFFFFF",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "duration": 4,
+    "lightSweep": true
+  }
+}

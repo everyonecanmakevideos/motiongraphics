@@ -1,0 +1,155 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 120,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "cinematic-hero",
+      "params": {
+        "headline": "Introducing Aura",
+        "headlineColor": "#F8FAFC",
+        "accentColor": "#A855F7",
+        "mood": "bold",
+        "revealDirection": "left",
+        "background": {
+          "type": "gradient",
+          "from": "#0F0520",
+          "to": "#1A0A3A",
+          "direction": "radial"
+        },
+        "duration": 4,
+        "lightSweep": true,
+        "stylePreset": "cinematic-noir",
+        "motionStyle": {
+          "easing": "smooth",
+          "speed": "slow",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "transition"
+        }
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 105,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "kinetic-typography",
+      "params": {
+        "lines": [
+          "Intelligent",
+          "Adaptive",
+          "Beautiful"
+        ],
+        "defaultColor": "#F8FAFC",
+        "background": {
+          "type": "gradient",
+          "from": "#111111",
+          "to": "#1A1A1A",
+          "direction": "to-bottom"
+        },
+        "fontSize": 72,
+        "fontWeight": "bold",
+        "alignment": "center",
+        "lineSpacing": 1.3,
+        "staggerStyle": "line-by-line",
+        "entranceAnimation": "fade-in",
+        "duration": 5,
+        "stylePreset": "neon-tech",
+        "motionStyle": {
+          "easing": "snappy",
+          "speed": "medium",
+          "stagger": true,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "none",
+          "glow": "neon",
+          "blur": "subtle"
+        },
+        "secondaryMotion": {
+          "type": "float",
+          "intensity": "medium"
+        },
+        "decorativeTheme": "minimal-dots"
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 240,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "stat-counter",
+      "params": {
+        "value": 50000,
+        "prefix": "",
+        "suffix": "",
+        "label": "Beta Users",
+        "valueColor": "#F8FAFC",
+        "labelColor": "#C9A96E",
+        "background": {
+          "type": "gradient",
+          "from": "#0F0520",
+          "to": "#1A0A3A",
+          "direction": "radial"
+        },
+        "duration": 5,
+        "entranceAnimation": "count-up",
+        "valueSize": "xlarge",
+        "accentColor": "#D4AF37",
+        "stylePreset": "modern-clean",
+        "motionStyle": {
+          "easing": "smooth",
+          "speed": "medium",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "subtle"
+        },
+        "decorativeTheme": "none"
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 375,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "quote-highlight",
+      "params": {
+        "quote": "This changes everything.",
+        "attribution": "TechCrunch",
+        "quoteColor": "#F8FAFC",
+        "attributionColor": "#C9A96E",
+        "accentColor": "#D4AF37",
+        "quoteStyle": "italic",
+        "quoteMarkStyle": "large",
+        "background": {
+          "type": "grain",
+          "baseColor": "#0F0A05",
+          "grainOpacity": 0.08
+        },
+        "entranceAnimation": "fade-in",
+        "duration": 6,
+        "stylePreset": "cinematic-noir",
+        "effects": {
+          "shadow": "strong",
+          "glow": "none",
+          "blur": "transition"
+        },
+        "secondaryMotion": {
+          "type": "drift",
+          "intensity": "medium"
+        },
+        "decorativeTheme": "light-streaks"
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "Monthly Revenue",
+    "bars": [
+      {
+        "label": "Jan",
+        "value": 50,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Feb",
+        "value": 75,
+        "color": "#81C784"
+      },
+      {
+        "label": "Mar",
+        "value": 90,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Apr",
+        "value": 110,
+        "color": "#E57373"
+      },
+      {
+        "label": "May",
+        "value": 85,
+        "color": "#64B5F6"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "valueColor": "#FFFFFF",
+    "duration": 8,
+    "entranceAnimation": "fade-in"
+  }
+}

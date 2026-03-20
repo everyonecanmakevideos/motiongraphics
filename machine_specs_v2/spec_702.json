@@ -1,0 +1,170 @@
+{
+  "scene": "centered_three_element_typewriter_layout",
+  "duration": 7,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#1A1A2E",
+    "to": "#0F0F23",
+    "direction": "radial",
+    "glow": "#FFFFFF"
+  },
+  "objects": [
+    {
+      "id": "text_before",
+      "shape": "text",
+      "text": "Before",
+      "fontSize": 36,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "pos": [
+        -565,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "box_anchor",
+      "shape": "rectangle",
+      "size": [
+        600,
+        140
+      ],
+      "cornerRadius": 12,
+      "fill": false,
+      "pos": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "highlight_fill",
+      "shape": "rectangle",
+      "size": [
+        600,
+        140
+      ],
+      "color": "#2196F3",
+      "cornerRadius": 12,
+      "parent": "box_anchor",
+      "offset": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "scaleX": 0,
+      "zIndex": 1
+    },
+    {
+      "id": "hello_text",
+      "shape": "text",
+      "text": "HELLO WORLD",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "parent": "box_anchor",
+      "offset": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "zIndex": 2
+    },
+    {
+      "id": "text_after",
+      "shape": "text",
+      "text": "After",
+      "fontSize": 36,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#4CAF50",
+      "pos": [
+        565,
+        0
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "text_before",
+      "time": [
+        0,
+        0.8
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "hello_text",
+      "time": [
+        0,
+        0.8
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "text_after",
+      "time": [
+        0,
+        0.8
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "highlight_fill",
+      "time": [
+        0.8,
+        3.15
+      ],
+      "easing": "ease-out",
+      "scaleX": [
+        0,
+        1
+      ],
+      "anchor": "left-center"
+    },
+    {
+      "target": "highlight_fill",
+      "time": [
+        0.8,
+        3.15
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "hello_text",
+      "time": [
+        3.15,
+        5.5
+      ],
+      "easing": "linear",
+      "chars": [
+        0,
+        11
+      ]
+    }
+  ]
+}

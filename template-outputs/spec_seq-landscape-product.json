@@ -1,0 +1,103 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 90,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "Product Roadmap 2024",
+        "headlineColor": "#FFFFFF",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "entranceAnimation": "fade-in",
+        "subheadlineAnimation": "fade-in",
+        "duration": 3,
+        "style": "centered",
+        "decoration": "none"
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 75,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "timeline-scene",
+      "params": {
+        "title": "2024 Timeline",
+        "milestones": [
+          {
+            "label": "Q1 Research"
+          },
+          {
+            "label": "Q2 Design"
+          },
+          {
+            "label": "Q3 Build"
+          },
+          {
+            "label": "Q4 Launch"
+          }
+        ],
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "lineColor": "#4FC3F7",
+        "dotColor": "#FFFFFF",
+        "titleColor": "#FFFFFF",
+        "textColor": "#FFFFFF",
+        "descriptionColor": "#B0BEC5",
+        "entranceAnimation": "progressive",
+        "duration": 6
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 240,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "pie-chart",
+      "params": {
+        "title": "Budget Allocation",
+        "segments": [
+          {
+            "label": "Design",
+            "value": 25,
+            "color": "#4FC3F7"
+          },
+          {
+            "label": "Engineering",
+            "value": 50,
+            "color": "#81C784"
+          },
+          {
+            "label": "Marketing",
+            "value": 15,
+            "color": "#FFB74D"
+          },
+          {
+            "label": "Operations",
+            "value": 10,
+            "color": "#E57373"
+          }
+        ],
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "donut": false,
+        "showLabels": true,
+        "showPercentages": true,
+        "titleColor": "#FFFFFF",
+        "labelColor": "#B0BEC5",
+        "duration": 6,
+        "entranceAnimation": "spin"
+      }
+    }
+  ]
+}

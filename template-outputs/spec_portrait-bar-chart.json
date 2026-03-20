@@ -1,0 +1,55 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "This Week's Activity",
+    "bars": [
+      {
+        "label": "Mon",
+        "value": 45,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Tue",
+        "value": 30,
+        "color": "#81C784"
+      },
+      {
+        "label": "Wed",
+        "value": 60,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Thu",
+        "value": 0,
+        "color": "#E57373"
+      },
+      {
+        "label": "Fri",
+        "value": 50,
+        "color": "#64B5F6"
+      },
+      {
+        "label": "Sat",
+        "value": 90,
+        "color": "#FFD54F"
+      },
+      {
+        "label": "Sun",
+        "value": 40,
+        "color": "#4DB6AC"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "valueColor": "#FFFFFF",
+    "duration": 7,
+    "entranceAnimation": "grow"
+  }
+}

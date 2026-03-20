@@ -1,0 +1,10 @@
+{
+  "id": "masked-text-reveal",
+  "name": "Masked Text Reveal",
+  "description": "Text revealed through animated geometric masks like wipe, circle expand, diagonal slice, or split. Creates a cinematic unveil effect where the text is stationary and a shape reveals it. Best for dramatic text reveals, titles, and cinematic intros.",
+  "tags": ["text", "reveal", "cinematic", "dramatic", "unveil", "mask", "title", "intro", "creative"],
+  "compatibleAnimations": ["clip-reveal", "fade-in", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

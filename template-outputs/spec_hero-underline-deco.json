@@ -1,0 +1,17 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Important Update",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#00008B"
+    },
+    "entranceAnimation": "none",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "underline"
+  }
+}

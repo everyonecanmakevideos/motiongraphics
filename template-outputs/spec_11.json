@@ -1,0 +1,40 @@
+{
+  "templateId": "bar-chart",
+  "params": {
+    "title": "Quarterly Sales",
+    "bars": [
+      {
+        "label": "Q1",
+        "value": 120,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Q2",
+        "value": 200,
+        "color": "#81C784"
+      },
+      {
+        "label": "Q3",
+        "value": 150,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Q4",
+        "value": 300,
+        "color": "#E57373"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "showValues": true,
+    "orientation": "vertical",
+    "barWidth": 60,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "valueColor": "#FFFFFF",
+    "duration": 6,
+    "entranceAnimation": "grow"
+  }
+}

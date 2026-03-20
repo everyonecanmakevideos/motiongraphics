@@ -1,0 +1,46 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Next-Gen Dashboard",
+    "subheadline": "Redesigned for clarity",
+    "headlineColor": "#F8FAFC",
+    "subheadlineColor": "#FFF8E1",
+    "accentColor": "#4FC3F7",
+    "background": {
+      "type": "grain",
+      "baseColor": "#0F172A",
+      "grainOpacity": 0.06
+    },
+    "entranceAnimation": "blur-reveal",
+    "subheadlineAnimation": "blur-reveal",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "glass-morphism",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "medium",
+      "letterSpacing": "normal",
+      "lineHeight": "normal"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "medium",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "subtle"
+    },
+    "pacingProfile": "elegant",
+    "secondaryMotion": {
+      "type": "float",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

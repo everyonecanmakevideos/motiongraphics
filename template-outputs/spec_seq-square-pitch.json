@@ -1,0 +1,79 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 120,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "Why Choose Us?",
+        "headlineColor": "#FFFFFF",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "entranceAnimation": "fade-in",
+        "subheadlineAnimation": "fade-in",
+        "duration": 4,
+        "style": "centered",
+        "decoration": "none"
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 105,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "comparison-layout",
+      "params": {
+        "leftTitle": "Us",
+        "rightTitle": "Competitors",
+        "leftItems": [
+          "Innovative solutions",
+          "24/7 support",
+          "User-friendly"
+        ],
+        "rightItems": [
+          "Traditional methods",
+          "Limited support",
+          "Complex interface"
+        ],
+        "vsText": "VS",
+        "leftColor": "#4FC3F7",
+        "rightColor": "#FF8A65",
+        "textColor": "#FFFFFF",
+        "vsColor": "#FFD700",
+        "background": {
+          "type": "solid",
+          "color": "#0F0F0F"
+        },
+        "entranceAnimation": "slide-in",
+        "duration": 6
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 270,
+      "transition": "fade-through-black",
+      "transitionDurationFrames": 15,
+      "templateId": "quote-highlight",
+      "params": {
+        "quote": "Best tool we have ever used",
+        "attribution": "Jamie Lee",
+        "attributionTitle": "CTO",
+        "quoteColor": "#FFFFFF",
+        "attributionColor": "#B0BEC5",
+        "accentColor": "#4FC3F7",
+        "quoteMarkStyle": "large",
+        "background": {
+          "type": "solid",
+          "color": "#111111"
+        },
+        "entranceAnimation": "fade-in",
+        "duration": 5
+      }
+    }
+  ]
+}

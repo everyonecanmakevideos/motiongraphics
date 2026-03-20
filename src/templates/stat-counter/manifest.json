@@ -1,0 +1,10 @@
+{
+  "id": "stat-counter",
+  "name": "Stat Counter",
+  "description": "Big animated number that counts up from zero with optional label. Ideal for metrics, KPIs, milestones, achievements, and statistics.",
+  "tags": ["stat", "counter", "number", "metric", "KPI", "achievement", "milestone", "dataviz"],
+  "compatibleAnimations": ["count-up", "fade-in", "scale-pop", "none"],
+  "minDuration": 2,
+  "maxDuration": 15,
+  "defaultDuration": 5
+}

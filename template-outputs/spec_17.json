@@ -1,0 +1,17 @@
+{
+  "templateId": "quote-highlight",
+  "params": {
+    "quote": "Stay hungry stay foolish",
+    "attribution": "",
+    "quoteColor": "#FFFFFF",
+    "attributionColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "quoteMarkStyle": "large",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

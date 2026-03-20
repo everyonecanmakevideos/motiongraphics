@@ -1,0 +1,30 @@
+{
+  "templateId": "comparison-layout",
+  "params": {
+    "leftTitle": "Before",
+    "rightTitle": "After",
+    "leftItems": [
+      "Manual process",
+      "Slow response",
+      "5 hour turnaround"
+    ],
+    "rightItems": [
+      "Automated",
+      "Instant response",
+      "5 minute turnaround"
+    ],
+    "vsText": "VS",
+    "leftColor": "#4FC3F7",
+    "rightColor": "#FF8A65",
+    "textColor": "#FFFFFF",
+    "vsColor": "#FFD700",
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "to-right"
+    },
+    "entranceAnimation": "slide-in",
+    "duration": 7
+  }
+}

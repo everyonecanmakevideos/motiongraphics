@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Breaking News",
+    "subheadline": "More details inside",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#CCCCCC",
+    "background": {
+      "type": "gradient",
+      "from": "#8B0000",
+      "to": "#000000",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "slide-up",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "left-aligned",
+    "decoration": "none"
+  }
+}

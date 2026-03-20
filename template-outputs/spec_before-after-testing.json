@@ -1,0 +1,29 @@
+{
+  "templateId": "before-after",
+  "params": {
+    "beforeLabel": "Before",
+    "afterLabel": "After",
+    "beforeTitle": "Manual Testing",
+    "afterTitle": "Automated Testing",
+    "beforeItems": [
+      "3-day test cycles",
+      "Human error prone",
+      "Limited coverage"
+    ],
+    "afterItems": [
+      "Instant feedback",
+      "Consistent results",
+      "95% coverage"
+    ],
+    "beforeColor": "#FFA500",
+    "afterColor": "#0000FF",
+    "textColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "revealStyle": "wipe",
+    "entranceAnimation": "fade-in",
+    "duration": 7
+  }
+}

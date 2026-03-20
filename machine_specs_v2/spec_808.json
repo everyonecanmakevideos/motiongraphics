@@ -1,0 +1,150 @@
+{
+  "scene": "start_pop_with_highlight_and_underline",
+  "duration": 7,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#1A1A2E",
+  "objects": [
+    {
+      "id": "start_text",
+      "shape": "text",
+      "text": "START",
+      "fontSize": 72,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "scale": 0,
+      "zIndex": 3
+    },
+    {
+      "id": "highlight_rect",
+      "shape": "rectangle",
+      "size": [
+        520,
+        120
+      ],
+      "color": "#2196F3",
+      "cornerRadius": 18,
+      "parent": "start_text",
+      "offset": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "zIndex": 1
+    },
+    {
+      "id": "underline_1",
+      "shape": "rectangle",
+      "size": [
+        360,
+        4
+      ],
+      "color": "#4CAF50",
+      "cornerRadius": 2,
+      "parent": "start_text",
+      "offset": [
+        0,
+        58
+      ],
+      "anchor": "left-center",
+      "opacity": 0,
+      "zIndex": 2
+    }
+  ],
+  "timeline": [
+    {
+      "target": "start_text",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "highlight_rect",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "underline_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "start_text",
+      "time": [
+        0.5,
+        1.75
+      ],
+      "easing": "ease-out",
+      "scale": [
+        0,
+        1.15
+      ]
+    },
+    {
+      "target": "start_text",
+      "time": [
+        1.75,
+        3
+      ],
+      "easing": "ease-in",
+      "scale": [
+        1.15,
+        1
+      ]
+    },
+    {
+      "target": "highlight_rect",
+      "time": [
+        3,
+        4.25
+      ],
+      "easing": "ease-out",
+      "scaleX": [
+        0,
+        1
+      ],
+      "anchor": "left-center"
+    },
+    {
+      "target": "underline_1",
+      "time": [
+        4.25,
+        5.5
+      ],
+      "easing": "ease-out",
+      "width": [
+        0,
+        360
+      ]
+    }
+  ]
+}

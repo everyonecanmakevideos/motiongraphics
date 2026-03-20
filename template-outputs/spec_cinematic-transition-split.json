@@ -1,0 +1,23 @@
+{
+  "templateId": "cinematic-transition",
+  "params": {
+    "sectionLabel": "Part B",
+    "labelColor": "#FFFFFF",
+    "wipeColor": "#FF0000",
+    "transitionStyle": "wipe-horizontal",
+    "trailEffect": true,
+    "background": {
+      "type": "gradient",
+      "from": "#111111",
+      "to": "#333333",
+      "direction": "to-bottom"
+    },
+    "backgroundAfter": {
+      "type": "solid",
+      "color": "#0A0A0A"
+    },
+    "speed": "normal",
+    "labelAnimation": "spring",
+    "duration": 4
+  }
+}

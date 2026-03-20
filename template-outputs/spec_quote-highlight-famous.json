@@ -1,0 +1,18 @@
+{
+  "templateId": "quote-highlight",
+  "params": {
+    "quote": "Innovation distinguishes between a leader and a follower.",
+    "attribution": "Steve Jobs",
+    "attributionTitle": "Apple Co-founder",
+    "quoteColor": "#FFFFFF",
+    "attributionColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "quoteMarkStyle": "large",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

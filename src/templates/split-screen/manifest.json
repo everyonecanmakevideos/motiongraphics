@@ -1,0 +1,10 @@
+{
+  "id": "split-screen",
+  "name": "Split Screen",
+  "description": "Two-panel side-by-side layout with independent content. Ideal for comparisons, contrasts, and dual concepts.",
+  "tags": ["layout", "split", "two-panel", "side-by-side", "dual", "comparison"],
+  "compatibleAnimations": ["fade-in", "slide-in", "scale-pop", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

@@ -1,0 +1,19 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "The Art of Motion",
+    "kicker": "A VISUAL JOURNEY",
+    "headlineColor": "#FFFFFF",
+    "accentColor": "#FFD700",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A1A",
+      "to": "#0D0D0D",
+      "direction": "to-bottom"
+    },
+    "duration": 6,
+    "lightSweep": true
+  }
+}

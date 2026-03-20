@@ -1,0 +1,34 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Our Journey",
+    "milestones": [
+      {
+        "label": "2019 Founded"
+      },
+      {
+        "label": "2020 First Product"
+      },
+      {
+        "label": "2021 Series A"
+      },
+      {
+        "label": "2022 Global Launch"
+      },
+      {
+        "label": "2023 IPO"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "lineColor": "#4FC3F7",
+    "dotColor": "#FFFFFF",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

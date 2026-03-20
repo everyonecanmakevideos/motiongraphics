@@ -1,0 +1,35 @@
+{
+  "templateId": "card-layout",
+  "params": {
+    "title": "Pricing Tiers",
+    "cards": [
+      {
+        "heading": "Starter",
+        "body": "$9/mo\n- Basic Features\n- Email Support",
+        "iconId": "dollar"
+      },
+      {
+        "heading": "Pro",
+        "body": "$29/mo\n- Advanced Features\n- Priority Support",
+        "iconId": "dollar"
+      },
+      {
+        "heading": "Enterprise",
+        "body": "$99/mo\n- All Features\n- Dedicated Support",
+        "iconId": "dollar"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#0F0F0F"
+    },
+    "columns": 3,
+    "cardBackground": "#1E1E2E",
+    "titleColor": "#FFFFFF",
+    "headingColor": "#FFFFFF",
+    "bodyColor": "#B0BEC5",
+    "iconColor": "#4FC3F7",
+    "entranceAnimation": "scale-pop",
+    "duration": 7
+  }
+}

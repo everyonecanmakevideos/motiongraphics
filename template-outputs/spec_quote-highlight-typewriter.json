@@ -1,0 +1,18 @@
+{
+  "templateId": "quote-highlight",
+  "params": {
+    "quote": "This product changed the way our team works. We saved 40 hours per week.",
+    "attribution": "Sarah Chen",
+    "attributionTitle": "VP of Engineering at TechCorp",
+    "quoteColor": "#FFFFFF",
+    "attributionColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "quoteMarkStyle": "large",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "typewriter",
+    "duration": 6
+  }
+}

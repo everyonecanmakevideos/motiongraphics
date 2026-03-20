@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Innovation",
+    "subheadline": "Shaping the future of design",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#0D0D0D",
+      "to": "#1A1A1A",
+      "direction": "to-right"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "left-aligned",
+    "decoration": "none"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Find Your Center",
+    "subheadline": "A 10-minute guided journey",
+    "headlineColor": "#F0FFF4",
+    "subheadlineColor": "#86EFAC",
+    "background": {
+      "type": "gradient",
+      "from": "#0A1A1A",
+      "to": "#0A2A20",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "fade-in",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "warm-organic",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "medium",
+      "letterSpacing": "wide",
+      "lineHeight": "relaxed"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    },
+    "pacingProfile": "elegant",
+    "secondaryMotion": {
+      "type": "breathe",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "none"
+  }
+}

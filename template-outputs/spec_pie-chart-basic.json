@@ -1,0 +1,39 @@
+{
+  "templateId": "pie-chart",
+  "params": {
+    "title": "Market Share",
+    "segments": [
+      {
+        "label": "Apple",
+        "value": 35,
+        "color": "#0000FF"
+      },
+      {
+        "label": "Samsung",
+        "value": 25,
+        "color": "#008000"
+      },
+      {
+        "label": "Xiaomi",
+        "value": 15,
+        "color": "#FFA500"
+      },
+      {
+        "label": "Others",
+        "value": 25,
+        "color": "#808080"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "donut": false,
+    "showLabels": true,
+    "showPercentages": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "duration": 6,
+    "entranceAnimation": "spin"
+  }
+}

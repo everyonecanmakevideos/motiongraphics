@@ -1,0 +1,23 @@
+{
+  "templateId": "bullet-list",
+  "params": {
+    "title": "Meeting Agenda",
+    "items": [
+      "Review Q3 metrics",
+      "Discuss hiring plan",
+      "Product roadmap update",
+      "Budget allocation",
+      "Open floor Q&A"
+    ],
+    "bulletStyle": "checkmark",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "bulletColor": "#51CF66",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-up",
+    "duration": 6
+  }
+}

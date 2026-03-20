@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "Code Review",
+    "subheadline": "Best practices for 2025",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#004400",
+      "to": "#000000",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "typewriter",
+    "subheadlineAnimation": "fade-in",
+    "duration": 8,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

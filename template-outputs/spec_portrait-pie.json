@@ -1,0 +1,44 @@
+{
+  "templateId": "pie-chart",
+  "params": {
+    "title": "Daily Breakdown",
+    "segments": [
+      {
+        "label": "Work",
+        "value": 40,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Sleep",
+        "value": 33,
+        "color": "#81C784"
+      },
+      {
+        "label": "Exercise",
+        "value": 7,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Leisure",
+        "value": 12,
+        "color": "#E57373"
+      },
+      {
+        "label": "Commute",
+        "value": 8,
+        "color": "#B0BEC5"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "donut": true,
+    "showLabels": true,
+    "showPercentages": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "duration": 6,
+    "entranceAnimation": "spin"
+  }
+}

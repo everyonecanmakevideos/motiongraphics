@@ -1,0 +1,43 @@
+[
+{ "id": 606, "simplePrompt": "Text 'Duration Check' appears and a small progress bar slowly fills from left to right until the video ends." },
+{
+  "id": 608,
+  "simplePrompt": "A smooth gradient background fills the screen with a soft radial brightness glow in the center. In the middle of the screen, large text '10 years ago' appears with a typewriter effect, revealing each letter one by one."
+},{
+  "id": 611,
+  "simplePrompt": "Large text 'Hello World' appears in the center with a typewriter effect. The background is a dark cinematic charcoal gradient from #0F0F0F to #1C1C1C filling the screen. A very subtle soft radial glow sits behind the center area to gently highlight the text without appearing bright or white, with a light film grain texture to avoid a flat digital look."
+},{
+  "id": 703,
+  "simplePrompt": "Large centered text 'Dream Big Build Fast' appears word by word with a smooth slide-up kinetic typography animation. The background is a dark gradient and behind the center text there is a very faint soft radial glow that is only slightly lighter than the background color, not bright white and not intense."
+},{
+  "id": 702,
+  "simplePrompt": "Create a centered layout with three elements in a horizontal row. On the left is small text 'Before'. In the center is a rectangle highlight containing the text 'HELLO WORLD' that appears with a typewriter effect. On the right is small text 'After'. The background is a dark cinematic gradient with a very soft faint radial glow behind the center area that gently highlights the text without appearing bright."
+},{
+  "id": 701,
+  "simplePrompt": "In the center of the screen, a rounded rectangle appears as a highlight banner. Inside the rectangle, the text 'HELLO WORLD' appears with a typewriter effect. The background is a dark gradient with a very faint soft radial glow behind the center that is barely noticeable and only slightly brighter than the background."
+},{
+  "id": 801,
+  "simplePrompt": "Large centered text 'BIG IDEA' pops into the screen with a quick overshoot scale and then settles to its final size on a dark gradient background."
+},{
+  "id": 802,
+  "simplePrompt": "The text 'FOCUS' appears in the center starting very blurred and slightly transparent, then smoothly sharpens and fades into full clarity on a dark background."
+},{
+  "id": 803,
+  "simplePrompt": "The words 'Build Something Amazing' appear in the center with a smooth slide-up motion from below while fading in on a cinematic dark gradient background."
+},{
+  "id": 804,
+  "simplePrompt": "Centered text 'IMPORTANT NOTE' appears and a thin line draws smoothly from left to right underneath the text like an underline highlight."
+},{
+  "id": 805,
+  "simplePrompt": "The text 'KEY MESSAGE' is centered on the screen and a colored rectangle highlight grows horizontally behind the text from left to right."
+},{
+  "id": 806,
+  "simplePrompt": "Three words 'Dream Build Launch' appear in the center one after another with a small delay between each word on a dark gradient background."
+},{
+  "id": 807,
+  "simplePrompt": "A rounded rectangle appears in the center of the screen and inside it the text 'SYSTEM READY' appears with a simple fade-in animation."
+},{
+  "id": 808,
+  "simplePrompt": "The word 'START' appears in the center with a small pop scale animation while a highlight rectangle expands behind it and a thin underline draws beneath the text."
+}
+    ]

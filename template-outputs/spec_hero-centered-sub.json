@@ -1,0 +1,18 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "LAUNCH DAY",
+    "subheadline": "Version 2.0 is here",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#0A1628"
+    },
+    "entranceAnimation": "blur-reveal",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

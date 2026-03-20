@@ -1,0 +1,155 @@
+{
+  "scene": "dream_build_launch_staggered_reveal",
+  "duration": 6,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#1A1A2E",
+    "to": "#0F0F23",
+    "direction": "radial",
+    "glow": "#FFFFFF"
+  },
+  "objects": [
+    {
+      "id": "dream_text",
+      "shape": "text",
+      "text": "Dream",
+      "fontSize": 64,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        -150
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "build_text",
+      "shape": "text",
+      "text": "Build",
+      "fontSize": 64,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#2196F3",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "launch_text",
+      "shape": "text",
+      "text": "Launch",
+      "fontSize": 64,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#4CAF50",
+      "textAlign": "center",
+      "pos": [
+        0,
+        150
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "dream_text",
+      "time": [
+        0.8,
+        2.2
+      ],
+      "easing": "ease-out",
+      "pos": [
+        [
+          0,
+          -110
+        ],
+        [
+          0,
+          -150
+        ]
+      ]
+    },
+    {
+      "target": "dream_text",
+      "time": [
+        0.8,
+        2.2
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "build_text",
+      "time": [
+        2.2,
+        3.6
+      ],
+      "easing": "ease-out",
+      "pos": [
+        [
+          0,
+          40
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "target": "build_text",
+      "time": [
+        2.2,
+        3.6
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "launch_text",
+      "time": [
+        3.6,
+        5
+      ],
+      "easing": "ease-out",
+      "pos": [
+        [
+          0,
+          190
+        ],
+        [
+          0,
+          150
+        ]
+      ]
+    },
+    {
+      "target": "launch_text",
+      "time": [
+        3.6,
+        5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    }
+  ]
+}

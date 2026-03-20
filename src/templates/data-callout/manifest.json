@@ -1,0 +1,10 @@
+{
+  "id": "data-callout",
+  "name": "Data Callout",
+  "description": "Large featured number with context text and optional trend indicator. Ideal for KPIs, metrics, and data highlights.",
+  "tags": ["data", "number", "stat", "metric", "KPI", "callout", "trend", "counter"],
+  "compatibleAnimations": ["count-up", "fade-in", "scale-pop", "none"],
+  "minDuration": 2,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

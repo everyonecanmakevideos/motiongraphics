@@ -1,0 +1,17 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 99.9,
+    "prefix": "",
+    "suffix": "",
+    "label": "Uptime",
+    "valueColor": "#00FF00",
+    "labelColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#000000"
+    },
+    "duration": 5,
+    "entranceAnimation": "scale-pop"
+  }
+}

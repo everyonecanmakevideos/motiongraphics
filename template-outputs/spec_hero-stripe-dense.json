@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "PATTERN",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "background": {
+      "type": "stripe",
+      "baseColor": "#0A1628",
+      "stripeColor": "#1A2A4E",
+      "angle": 45,
+      "density": "dense"
+    },
+    "entranceAnimation": "none",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none"
+  }
+}

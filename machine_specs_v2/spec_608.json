@@ -1,0 +1,59 @@
+{
+  "scene": "ten_years_ago_typewriter",
+  "duration": 5,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#7B1FA2",
+    "to": "#2196F3",
+    "direction": "radial",
+    "glow": "#FFFFFF"
+  },
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "10 years ago",
+      "fontSize": 96,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "title_1",
+      "time": [
+        0,
+        0.8
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0.8,
+        3.5
+      ],
+      "easing": "linear",
+      "chars": [
+        0,
+        12
+      ]
+    }
+  ]
+}

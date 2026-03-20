@@ -1,0 +1,48 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "FLASH SALE",
+    "subheadline": "Ends in 2 hours — Up to 70% off everything",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#FBBF24",
+    "accentColor": "#EF4444",
+    "background": {
+      "type": "stripe",
+      "baseColor": "#1A0A0A",
+      "stripeColor": "#FF6347",
+      "angle": 45,
+      "density": "normal"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "fade-in",
+    "duration": 5,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "bold-startup",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "tight",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "neon",
+      "blur": "none"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "rotate",
+      "intensity": "medium"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

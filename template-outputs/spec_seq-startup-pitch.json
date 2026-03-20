@@ -1,0 +1,109 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 90,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "The Problem with Email",
+        "headlineColor": "#F8FAFC",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "gradient",
+          "from": "#0D1B2A",
+          "to": "#1B2838",
+          "direction": "to-bottom"
+        },
+        "entranceAnimation": "blur-reveal",
+        "subheadlineAnimation": "fade-in",
+        "duration": 3,
+        "style": "centered",
+        "decoration": "none",
+        "fontSize": "large",
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 75,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "bullet-list",
+      "params": {
+        "title": "Pain Points",
+        "items": [
+          "Too many threads",
+          "Lost attachments",
+          "No context",
+          "Slow search",
+          "Zero AI"
+        ],
+        "bulletStyle": "checkmark",
+        "titleColor": "#F8FAFC",
+        "textColor": "#E2E8F0",
+        "bulletColor": "#FF6B35",
+        "background": {
+          "type": "gradient",
+          "from": "#0A1A20",
+          "to": "#0A2A30",
+          "direction": "to-bottom"
+        },
+        "entranceAnimation": "scale-pop",
+        "duration": 6,
+        "spacing": "normal"
+      }
+    },
+    {
+      "durationFrames": 90,
+      "startFrame": 240,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "Meet Flowbox — Email Reimagined",
+        "headlineColor": "#F8FAFC",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "gradient",
+          "from": "#0D1B2A",
+          "to": "#1B2838",
+          "direction": "to-bottom"
+        },
+        "entranceAnimation": "blur-reveal",
+        "subheadlineAnimation": "fade-in",
+        "duration": 3,
+        "style": "centered",
+        "decoration": "none",
+        "fontSize": "large",
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "durationFrames": 120,
+      "startFrame": 315,
+      "transition": "cut",
+      "transitionDurationFrames": 0,
+      "templateId": "stat-counter",
+      "params": {
+        "value": 3,
+        "prefix": "",
+        "suffix": "",
+        "label": "Productivity Boost",
+        "valueColor": "#F8FAFC",
+        "labelColor": "#94A3B8",
+        "background": {
+          "type": "gradient",
+          "from": "#0A0A20",
+          "to": "#1A1A2E",
+          "direction": "radial"
+        },
+        "duration": 4,
+        "entranceAnimation": "count-up",
+        "valueSize": "large",
+        "accentColor": "#FF6B35"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "GRAND OPENING",
+    "subheadline": "Join us for something special",
+    "headlineColor": "#FFD700",
+    "subheadlineColor": "#FFFFFF",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A2E",
+      "to": "#16213E",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "scale-pop",
+    "subheadlineAnimation": "fade-in",
+    "duration": 8,
+    "style": "left-aligned",
+    "decoration": "underline"
+  }
+}

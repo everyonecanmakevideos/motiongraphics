@@ -1,0 +1,10 @@
+{
+  "id": "icon-callout",
+  "name": "Icon Callout",
+  "description": "Icon with headline and optional description. Ideal for feature highlights, callouts, announcements, and explainer slides.",
+  "tags": ["icon", "callout", "feature", "highlight", "announcement", "explainer", "asset"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

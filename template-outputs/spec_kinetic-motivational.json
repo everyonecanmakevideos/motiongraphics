@@ -1,0 +1,49 @@
+{
+  "templateId": "kinetic-typography",
+  "params": {
+    "lines": [
+      "DREAM BIG",
+      "WORK HARD",
+      "STAY FOCUSED",
+      "NEVER QUIT"
+    ],
+    "defaultColor": "#FFFFFF",
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1A2838",
+      "direction": "radial"
+    },
+    "fontSize": 72,
+    "fontWeight": "bold",
+    "alignment": "center",
+    "lineSpacing": 1.3,
+    "staggerStyle": "word-by-word",
+    "entranceAnimation": "scale-pop",
+    "duration": 8,
+    "stylePreset": "bold-startup",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "black",
+      "letterSpacing": "tight",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": true,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "none",
+      "blur": "subtle"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "float",
+      "intensity": "medium"
+    },
+    "decorativeTheme": "geometric"
+  }
+}

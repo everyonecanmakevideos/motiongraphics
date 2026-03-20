@@ -1,0 +1,29 @@
+{
+  "templateId": "process-steps",
+  "params": {
+    "title": "User Signup Process",
+    "steps": [
+      {
+        "label": "Enter Email"
+      },
+      {
+        "label": "Verify OTP"
+      },
+      {
+        "label": "Start Using App"
+      }
+    ],
+    "connectorStyle": "arrow",
+    "stepColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "numberColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 6
+  }
+}

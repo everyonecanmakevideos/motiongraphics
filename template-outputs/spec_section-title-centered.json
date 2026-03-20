@@ -1,0 +1,20 @@
+{
+  "templateId": "section-title",
+  "params": {
+    "title": "Our Mission",
+    "subtitle": "Making technology accessible to everyone",
+    "titleColor": "#FFFFFF",
+    "subtitleColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "accentStyle": "line-bottom",
+    "alignment": "center",
+    "background": {
+      "type": "gradient",
+      "from": "#111111",
+      "to": "#333333",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 4
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "templateId": "icon-callout",
+  "params": {
+    "iconId": "brain",
+    "headline": "AI Powered",
+    "description": "Smart automation for your workflow",
+    "iconColor": "#FFFFFF",
+    "headlineColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "iconSize": 120,
+    "background": {
+      "type": "solid",
+      "color": "#0A1628"
+    },
+    "layout": "icon-left",
+    "entranceAnimation": "fade-in",
+    "duration": 6
+  }
+}

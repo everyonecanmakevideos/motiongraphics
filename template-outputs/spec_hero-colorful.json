@@ -1,0 +1,20 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "CREATIVE STUDIO",
+    "headlineColor": "#00E5FF",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#FF4081",
+    "background": {
+      "type": "gradient",
+      "from": "#2D1B69",
+      "to": "#0D1B2A",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "none",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "highlight-box"
+  }
+}

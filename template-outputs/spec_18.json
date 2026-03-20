@@ -1,0 +1,28 @@
+{
+  "templateId": "comparison-layout",
+  "params": {
+    "leftTitle": "React",
+    "rightTitle": "Angular",
+    "leftItems": [
+      "Large ecosystem",
+      "JSX syntax",
+      "Facebook backed"
+    ],
+    "rightItems": [
+      "Comprehensive framework",
+      "Two-way data binding",
+      "Google backed"
+    ],
+    "vsText": "VS",
+    "leftColor": "#4FC3F7",
+    "rightColor": "#FF8A65",
+    "textColor": "#FFFFFF",
+    "vsColor": "#FFD700",
+    "background": {
+      "type": "solid",
+      "color": "#0F0F0F"
+    },
+    "entranceAnimation": "slide-in",
+    "duration": 7
+  }
+}

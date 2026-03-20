@@ -1,0 +1,10 @@
+{
+  "id": "quote-highlight",
+  "name": "Quote Highlight",
+  "description": "Styled quote with attribution and decorative quotation marks. Ideal for testimonials, famous quotes, and key statements.",
+  "tags": ["quote", "testimonial", "citation", "statement", "blockquote", "attribution"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "blur-reveal", "typewriter", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

@@ -1,0 +1,21 @@
+{
+  "templateId": "parallax-showcase",
+  "params": {
+    "title": "Depth of Innovation",
+    "description": "Our platform creates experiences that feel alive",
+    "subtitle": "Building the future, layer by layer",
+    "titleColor": "#FFFFFF",
+    "accentColor": "#FFFFFF",
+    "parallaxDirection": "left",
+    "depthIntensity": "medium",
+    "foregroundStyle": "geometric",
+    "background": {
+      "type": "gradient",
+      "from": "#2C003E",
+      "to": "#1A0026",
+      "direction": "radial"
+    },
+    "entranceAnimation": "clip-reveal",
+    "duration": 8
+  }
+}

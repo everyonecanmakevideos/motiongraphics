@@ -1,0 +1,23 @@
+{
+  "templateId": "data-callout",
+  "params": {
+    "value": 99.97,
+    "prefix": "",
+    "suffix": "",
+    "label": "Uptime SLA",
+    "context": "Industry-leading reliability across all regions",
+    "trend": "up",
+    "trendValue": "+0.02%",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "contextColor": "#888888",
+    "trendUpColor": "#51CF66",
+    "trendDownColor": "#FF6B6B",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "scale-pop",
+    "duration": 5
+  }
+}

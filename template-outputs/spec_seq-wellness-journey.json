@@ -1,0 +1,171 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 120,
+      "startFrame": 0,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "Your Journey Begins Here",
+        "headlineColor": "#F8FAFC",
+        "subheadlineColor": "#B0BEC5",
+        "background": {
+          "type": "gradient",
+          "from": "#0A1A1A",
+          "to": "#0A2A20",
+          "direction": "to-bottom"
+        },
+        "entranceAnimation": "blur-reveal",
+        "subheadlineAnimation": "fade-in",
+        "duration": 4,
+        "style": "centered",
+        "decoration": "none",
+        "fontSize": "large",
+        "fontWeight": "bold",
+        "stylePreset": "warm-organic",
+        "typography": {
+          "fontFamily": "inter",
+          "weight": "bold",
+          "letterSpacing": "normal",
+          "lineHeight": "normal"
+        },
+        "motionStyle": {
+          "easing": "smooth",
+          "speed": "slow",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "subtle"
+        },
+        "secondaryMotion": {
+          "type": "breathe",
+          "intensity": "subtle"
+        }
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 105,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "process-steps",
+      "params": {
+        "title": "Your Wellness Plan",
+        "steps": [
+          {
+            "label": "Assess your goals"
+          },
+          {
+            "label": "Build your plan"
+          },
+          {
+            "label": "Track progress"
+          }
+        ],
+        "connectorStyle": "arrow",
+        "stepColor": "#10B981",
+        "titleColor": "#F8FAFC",
+        "textColor": "#F8FAFC",
+        "descriptionColor": "#B0BEC5",
+        "numberColor": "#F8FAFC",
+        "background": {
+          "type": "gradient",
+          "from": "#1A2A2A",
+          "to": "#1A3A4A",
+          "direction": "to-right"
+        },
+        "markerStyle": "circle",
+        "entranceAnimation": "fade-in",
+        "duration": 6,
+        "stylePreset": "warm-organic",
+        "motionStyle": {
+          "easing": "smooth",
+          "speed": "medium",
+          "stagger": true,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        }
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 270,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "stat-counter",
+      "params": {
+        "value": 92,
+        "prefix": "",
+        "suffix": "",
+        "label": "Satisfaction Rate",
+        "valueColor": "#10B981",
+        "labelColor": "#F8FAFC",
+        "background": {
+          "type": "gradient",
+          "from": "#0A1A1A",
+          "to": "#0A2A20",
+          "direction": "to-bottom-right"
+        },
+        "duration": 5,
+        "entranceAnimation": "count-up",
+        "valueSize": "large",
+        "accentColor": "#D4AF37",
+        "stylePreset": "warm-organic",
+        "motionStyle": {
+          "easing": "snappy",
+          "speed": "fast",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "subtle"
+        }
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 405,
+      "transition": "crossfade",
+      "transitionDurationFrames": 15,
+      "templateId": "quote-highlight",
+      "params": {
+        "quote": "I finally found balance",
+        "attribution": "Sarah M.",
+        "quoteColor": "#F8FAFC",
+        "attributionColor": "#C9A96E",
+        "accentColor": "#D4AF37",
+        "quoteStyle": "italic",
+        "quoteMarkStyle": "large",
+        "background": {
+          "type": "grain",
+          "baseColor": "#0F0A05",
+          "grainOpacity": 0.08
+        },
+        "entranceAnimation": "fade-in",
+        "duration": 6,
+        "stylePreset": "warm-organic",
+        "motionStyle": {
+          "easing": "smooth",
+          "speed": "slow",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "templateId": "card-layout",
+  "params": {
+    "title": "Our Services",
+    "cards": [
+      {
+        "heading": "Web Development",
+        "body": "Custom websites and applications",
+        "iconId": "monitor"
+      },
+      {
+        "heading": "Mobile Apps",
+        "body": "iOS and Android solutions",
+        "iconId": "smartphone"
+      },
+      {
+        "heading": "Cloud Infrastructure",
+        "body": "Scalable cloud solutions",
+        "iconId": "cloud"
+      },
+      {
+        "heading": "AI Integration",
+        "body": "Smart AI solutions",
+        "iconId": "brain"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0F0F0F",
+      "to": "#1C1C1C",
+      "direction": "to-bottom"
+    },
+    "columns": 2,
+    "cardBackground": "#1E1E2E",
+    "titleColor": "#FFFFFF",
+    "headingColor": "#FFFFFF",
+    "bodyColor": "#B0BEC5",
+    "iconColor": "#4FC3F7",
+    "entranceAnimation": "slide-up",
+    "duration": 7
+  }
+}

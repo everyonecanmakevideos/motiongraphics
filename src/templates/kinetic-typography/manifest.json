@@ -1,0 +1,10 @@
+{
+  "id": "kinetic-typography",
+  "name": "Kinetic Typography",
+  "description": "Multi-line text with staggered entrance animations. Ideal for quotes, lyrics, poetry, multi-line messages, and word-by-word reveals.",
+  "tags": ["text", "typography", "kinetic", "quote", "lyrics", "multi-line", "words", "stagger", "reveal"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "blur-reveal", "typewriter", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

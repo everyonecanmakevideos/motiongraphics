@@ -1,0 +1,34 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Company History",
+    "milestones": [
+      {
+        "label": "2020 Founded"
+      },
+      {
+        "label": "2021 First Product"
+      },
+      {
+        "label": "2022 Series A"
+      },
+      {
+        "label": "2023 100K Users"
+      },
+      {
+        "label": "2024 Global Launch"
+      }
+    ],
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "lineColor": "#4FC3F7",
+    "dotColor": "#FFFFFF",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "entranceAnimation": "fade-in",
+    "duration": 10
+  }
+}

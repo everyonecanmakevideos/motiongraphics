@@ -1,0 +1,47 @@
+{
+  "templateId": "hero-text",
+  "params": {
+    "headline": "MIDNIGHT ECHOES",
+    "subheadline": "The new album — streaming everywhere now",
+    "headlineColor": "#F8FAFC",
+    "subheadlineColor": "#A855F7",
+    "accentColor": "#A855F7",
+    "background": {
+      "type": "gradient",
+      "from": "#050510",
+      "to": "#0A0A20",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "blur-reveal",
+    "subheadlineAnimation": "fade-in",
+    "duration": 6,
+    "style": "centered",
+    "decoration": "none",
+    "fontSize": "large",
+    "fontWeight": "bold",
+    "stylePreset": "cinematic-noir",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "dramatic",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "neon",
+      "blur": "transition"
+    },
+    "pacingProfile": "suspense",
+    "secondaryMotion": {
+      "type": "drift",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "light-streaks"
+  }
+}

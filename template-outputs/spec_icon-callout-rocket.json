@@ -1,0 +1,21 @@
+{
+  "templateId": "icon-callout",
+  "params": {
+    "iconId": "rocket",
+    "headline": "Launch Your Startup",
+    "description": "From idea to product in 30 days",
+    "iconColor": "#FF6B35",
+    "headlineColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "iconSize": 120,
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "to-bottom"
+    },
+    "layout": "icon-top",
+    "entranceAnimation": "scale-pop",
+    "duration": 6
+  }
+}

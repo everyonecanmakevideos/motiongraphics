@@ -1,0 +1,76 @@
+{
+  "scene": "focus_sharpness_reveal",
+  "duration": 5,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#0F0F23",
+  "objects": [
+    {
+      "id": "focus_text",
+      "shape": "text",
+      "text": "FOCUS",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "focus_text",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        0.25
+      ]
+    },
+    {
+      "target": "focus_text",
+      "time": [
+        0,
+        0.5
+      ],
+      "blur": [
+        20,
+        20
+      ]
+    },
+    {
+      "target": "focus_text",
+      "time": [
+        0.5,
+        3.5
+      ],
+      "easing": "ease-out",
+      "blur": [
+        20,
+        0
+      ]
+    },
+    {
+      "target": "focus_text",
+      "time": [
+        0.5,
+        3.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0.25,
+        1
+      ]
+    }
+  ]
+}

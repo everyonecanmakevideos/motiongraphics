@@ -1,0 +1,23 @@
+{
+  "templateId": "bullet-list",
+  "params": {
+    "title": "Morning Routine",
+    "items": [
+      "Wake up early",
+      "Exercise daily",
+      "Read 30 minutes",
+      "Meditate",
+      "Plan your day"
+    ],
+    "bulletStyle": "checkmark",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "bulletColor": "#51CF66",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "slide-up",
+    "duration": 6
+  }
+}

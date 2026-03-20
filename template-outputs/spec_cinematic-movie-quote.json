@@ -1,0 +1,38 @@
+{
+  "templateId": "quote-highlight",
+  "params": {
+    "quote": "In a world where nothing is certain, courage becomes everything.",
+    "attribution": "Director James Chen",
+    "quoteColor": "#F8FAFC",
+    "attributionColor": "#A855F7",
+    "accentColor": "#A855F7",
+    "quoteStyle": "serif",
+    "quoteMarkStyle": "large",
+    "background": {
+      "type": "gradient",
+      "from": "#050510",
+      "to": "#0A0A20",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "blur-reveal",
+    "duration": 6,
+    "stylePreset": "cinematic-noir",
+    "motionStyle": {
+      "easing": "dramatic",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "none",
+      "blur": "transition"
+    },
+    "pacingProfile": "suspense",
+    "secondaryMotion": {
+      "type": "drift",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "light-streaks"
+  }
+}

@@ -1,0 +1,174 @@
+[
+  {
+    "id": 1,
+    "prompt": "Circle Fade In",
+    "error_type": "ReferenceError",
+    "layer": "code_generation",
+    "root_cause": "LLM used <motion.div> without importing motion from framer-motion.",
+    "system_prompt_fix": "Always import required libraries before using components. If motion.div is used, import { motion } from 'framer-motion'."
+  },
+  {
+    "id": 2,
+    "prompt": "Three Circles Chasing Each Other",
+    "error_type": "JSX Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "Invalid JSX structure with stray '>' and unexpected const declarations inside JSX.",
+    "system_prompt_fix": "Ensure JSX syntax correctness: variables must be declared outside JSX and no invalid characters inside JSX tags."
+  },
+  {
+    "id": 3,
+    "prompt": "Circle Glowing Pulse",
+    "error_type": "Interpolation Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange and outputRange arrays had different lengths in interpolate().",
+    "system_prompt_fix": "Ensure inputRange and outputRange arrays in interpolate() always have identical lengths."
+  },
+  {
+    "id": 4,
+    "prompt": "Circle Slide Up",
+    "error_type": "Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "Invalid '$' character caused JS syntax failure.",
+    "system_prompt_fix": "Do not output template variables or '$' characters unless inside valid JavaScript template strings."
+  },
+  {
+    "id": 5,
+    "prompt": "Circle Drop Gravity",
+    "error_type": "Interpolation Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange and outputRange mismatch in interpolate().",
+    "system_prompt_fix": "Always validate interpolate() arrays so both ranges contain equal number of values."
+  },
+  {
+    "id": 6,
+    "prompt": "Triangle Color Cycle",
+    "error_type": "Interpolation Error",
+    "layer": "remotion_runtime",
+    "root_cause": "Mismatch between inputRange and outputRange values.",
+    "system_prompt_fix": "When animating color transitions, ensure inputRange and outputRange arrays are equal length."
+  },
+  {
+    "id": 7,
+    "prompt": "Triangle Opacity Wave",
+    "error_type": "Positioning + Runtime Error",
+    "layer": "system_prompt",
+    "root_cause": "Center alignment rule missing and interpolate() contained non-numeric values.",
+    "system_prompt_fix": "All centered shapes must use explicit center alignment logic and interpolate ranges must contain only numeric frame values."
+  },
+  {
+    "id": 8,
+    "prompt": "Line Draw On Vertical",
+    "error_type": "Constant Reassignment Error",
+    "layer": "code_generation",
+    "root_cause": "Code attempted to reassign a variable declared with const.",
+    "system_prompt_fix": "Never reassign const variables; use let when values need modification."
+  },
+  {
+    "id": 9,
+    "prompt": "Circle Breathing Loop",
+    "error_type": "JSX Prop Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "${durationInFrames} was written as plain text instead of JSX expression.",
+    "system_prompt_fix": "All dynamic values inside JSX props must be wrapped with {}."
+  },
+  {
+    "id": 10,
+    "prompt": "Circle Opacity Fade Pulse",
+    "error_type": "Conditional Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "LLM produced invalid if/else block syntax.",
+    "system_prompt_fix": "Ensure conditional blocks follow correct JavaScript syntax and are placed outside JSX where required."
+  },
+  {
+    "id": 11,
+    "prompt": "Circle Glow Intensity Wave",
+    "error_type": "Interpolation Range Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange contained duplicate values [30,30], violating increasing rule.",
+    "system_prompt_fix": "All inputRange values must be strictly increasing numbers."
+  },
+  {
+    "id": 12,
+    "prompt": "Square Grid Appear Sequential",
+    "error_type": "Loop Violation",
+    "layer": "validation",
+    "root_cause": "LLM used loop/map instead of explicit JSX elements for grid generation.",
+    "system_prompt_fix": "Do not use loops or array mapping; explicitly declare each element in JSX."
+  },
+  {
+    "id": 13,
+    "prompt": "Triangles Point Inward",
+    "error_type": "Undefined Variable",
+    "layer": "code_generation",
+    "root_cause": "scale variable referenced without declaration.",
+    "system_prompt_fix": "Every variable used in transforms must be explicitly declared before usage."
+  },
+  {
+    "id": 14,
+    "prompt": "Opacity Fade Pattern",
+    "error_type": "Loop Violation",
+    "layer": "validation",
+    "root_cause": "AI used programmatic looping to generate grid elements.",
+    "system_prompt_fix": "Grid elements must be explicitly written without loops or programmatic generation."
+  },
+  {
+    "id": 15,
+    "prompt": "Line Star Formation",
+    "error_type": "Loop Violation",
+    "layer": "validation",
+    "root_cause": "AI attempted to generate starburst lines using loop logic.",
+    "system_prompt_fix": "All shapes must be declared explicitly in JSX without loops."
+  },
+  {
+    "id": 16,
+    "prompt": "Circles Radial Expand",
+    "error_type": "JSX Braces Syntax Error",
+    "layer": "code_generation",
+    "root_cause": "Mismatched braces caused build failure.",
+    "system_prompt_fix": "Ensure balanced braces and parentheses in JSX and TypeScript code."
+  },
+  {
+    "id": 17,
+    "prompt": "Lines Grid Fade In",
+    "error_type": "Interpolation Order Error",
+    "layer": "remotion_runtime",
+    "root_cause": "inputRange defined backwards [135,90].",
+    "system_prompt_fix": "All interpolate inputRange values must increase chronologically (e.g., [90,135])."
+  },
+  {
+    "id": 18,
+    "prompt": "Shapes Horizontal Align Pulse. Gradient background (#E3F2FD to #BBDEFB). Circle (120px), square (120px), triangle (120px base), all magenta (#E91E63). Animation (8s): 0-2s: Circle slides in from left, square from right, triangle drops from top, all stop at center overlapping. 2-4s: Shapes slowly rotate in place. Circle moves 40px up, square 40px down, triangle shifts between them. 4-6s: All move toward exact center, overlap increases, opacity lowers where overlapping (blend mode). 6-8s: Align horizontally (150px apart), pulse scale 100% -> 105% -> 100%, fade out. [cite_start]Total duration: 8s. [cite: 379, 380, 381, 382, 383, 384]",
+    "prompt_id": 102,
+    "error_type": "TypeScript Error",
+    "layer": "code_generation",
+    "root_cause": "src/GeneratedMotion.tsx(178,15): error TS2339: Property 'mixBlendMode' does not exist on type '{ position: string; left: string; top: string; width: string; height: string; borderRadius: string; backgroundColor: string; transform: string; opacity: number; }'.\nsrc/GeneratedMotion.tsx(201,15): error TS2339: Property 'mixBlendMode' does not exist on type '{ position: string; left: string; top: string; width: string; height: string; backgroundColor: string; transform: string; opacity: number; }'.\nsr",
+    "timestamp": "2026-03-10T13:04:06.372Z"
+  },
+  {
+    "id": 19,
+    "prompt": "Circles Merge Split. Light background. Two circles: red (#F44336, 120px) and blue (#2196F3, 120px). Start separated 200px apart horizontally. Animation (8s): 0-2s: Both appear. 2-4s: Move toward each other, overlap at center. 4-5s: While overlapping, blend colors (overlapping area becomes purple). 5-6s: Merge into single purple circle (140px). 6-8s: Splits back into red and blue, separate to original positions. [cite_start]Total duration: 8s. [cite: 444, 445, 446, 447, 448]",
+    "prompt_id": 115,
+    "error_type": "TypeScript Error",
+    "layer": "code_generation",
+    "root_cause": "src/GeneratedMotion.tsx(25,7): error TS6133: 'totalFrames' is declared but its value is never read.",
+    "timestamp": "2026-03-10T13:50:05.747Z"
+  },
+  {
+    "id": 20,
+    "prompt": "Text Badge Animation. Light background. A rounded rectangle badge (300px x 120px, blue #1E88E5, corner radius 24px) placed at the center. Inside the badge a white text label 'HELLO' (bold sans-serif, 60px) is centered horizontally and vertically. Animation (8s): 0-1s: The rounded rectangle fades in at center. 1-2s: The text fades in slightly after the rectangle. 2-4s: The entire badge (rectangle and text together) scales up from 100% -> 115%. 4-5.5s: The badge rotates slightly (-8° -> 8°) like a gentle wobble while the text remains centered inside the box. 5.5-7s: The badge returns to normal rotation and scales back to original size. 7-8s: Both text and rectangle fade out together. Total duration: 8s.",
+    "prompt_id": 162,
+    "error_type": "TypeScript Error",
+    "layer": "code_generation",
+    "root_cause": "src/GeneratedMotion.tsx(126,10): error TS2322: Type '{ position: string; left: string; top: string; width: string; height: string; transform: string; pointerEvents: string; }' is not assignable to type 'Properties<string | number, string & {}>'.\nsrc/GeneratedMotion.tsx(127,12): error TS2322: Type '{ position: string; left: string; top: string; width: string; height: string; backgroundColor: string; borderRadius: string; transform: string; opacity: number; boxSizing: string; }' is not assignable ",
+    "timestamp": "2026-03-12T09:27:05.965Z"
+  },
+  {
+    "id": 21,
+    "prompt": "Radial Gradient Typewriter Title. Smooth radial gradient background from deep purple #7B1FA2 at the edges to vivid blue #2196F3 toward the center with a soft central radial brightness glow color #FFFFFF. Canvas 1920x1080. A single large text object '10 years ago' (120px Arial Bold, color #FFFFFF) centered on canvas with optical tracking adjusted for legibility; a thin caret (4px x 120px, color #FFFFFF) sits at the text end during typing. Animation (6s): 0-0.6s: Background gradient and central radial glow fade in from opacity 0 to 1 with ease-out while the text and caret remain invisible. 0.6-4.8s: Typewriter reveal of '10 years ago' at center: reveal each character sequentially over the entire phase with an exact interval of 0.35s per character (12 characters total), each character animating from opacity 0 to 1 and translating upward 8px with ease-out; the caret moves to follow the next character position instantly with ease-in-out between character placements and blinks continuously during this phase with a 0.5s blink cycle (0.25s visible, 0.25s hidden) using linear easing. 4.8-6.0s: Hold final state with full text visible at center, caret continues a final blink for the hold duration, and background glow remains steady. Total duration: 6s.",
+    "prompt_id": 608,
+    "error_type": "TypeScript Error",
+    "layer": "code_generation",
+    "root_cause": "src/GeneratedMotion.tsx(16,27): error TS7006: Parameter 's' implicitly has an 'any' type.\nsrc/GeneratedMotion.tsx(16,30): error TS7006: Parameter 'e' implicitly has an 'any' type.",
+    "timestamp": "2026-03-16T11:16:46.686Z"
+  }
+]

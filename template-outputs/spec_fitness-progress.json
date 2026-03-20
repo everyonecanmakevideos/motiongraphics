@@ -1,0 +1,46 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 42,
+    "prefix": "",
+    "suffix": "lbs lost",
+    "label": "Transformation Complete",
+    "sublabel": "12-week challenge results",
+    "valueColor": "#8B5CF6",
+    "labelColor": "#F0FFF4",
+    "background": {
+      "type": "gradient",
+      "from": "#0A0A1A",
+      "to": "#1A0A2A",
+      "direction": "to-bottom-right"
+    },
+    "duration": 5,
+    "entranceAnimation": "scale-pop",
+    "valueSize": "large",
+    "accentColor": "#8B5CF6",
+    "stylePreset": "gradient-dream",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "float",
+      "intensity": "medium"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}

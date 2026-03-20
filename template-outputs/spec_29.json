@@ -1,0 +1,21 @@
+{
+  "templateId": "data-callout",
+  "params": {
+    "value": 85,
+    "prefix": "",
+    "suffix": "",
+    "label": "Customer Satisfaction",
+    "trend": "none",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "contextColor": "#888888",
+    "trendUpColor": "#51CF66",
+    "trendDownColor": "#FF6B6B",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "count-up",
+    "duration": 5
+  }
+}

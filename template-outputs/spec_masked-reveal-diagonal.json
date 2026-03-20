@@ -1,0 +1,17 @@
+{
+  "templateId": "masked-text-reveal",
+  "params": {
+    "headline": "Game Changer",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#00FFFF",
+    "maskShape": "diagonal-slice",
+    "exitStyle": "reverse-mask",
+    "background": {
+      "type": "solid",
+      "color": "#0A0A1A"
+    },
+    "fontSize": "large",
+    "duration": 6
+  }
+}

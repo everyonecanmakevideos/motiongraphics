@@ -1,0 +1,33 @@
+{
+  "templateId": "timeline-scene",
+  "params": {
+    "title": "Process Steps",
+    "milestones": [
+      {
+        "label": "Sign Up",
+        "description": "Create your account"
+      },
+      {
+        "label": "Connect",
+        "description": "Link your tools"
+      },
+      {
+        "label": "Launch",
+        "description": "Go live in minutes"
+      }
+    ],
+    "background": {
+      "type": "gradient",
+      "from": "#0D1B2A",
+      "to": "#1B2838",
+      "direction": "to-right"
+    },
+    "lineColor": "#4FC3F7",
+    "dotColor": "#FFFFFF",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "entranceAnimation": "progressive",
+    "duration": 9
+  }
+}

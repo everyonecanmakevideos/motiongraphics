@@ -1,0 +1,10 @@
+{
+  "id": "parallax-showcase",
+  "name": "Parallax Showcase",
+  "description": "A multi-depth parallax scene with foreground, midground, and background layers moving at different speeds. Creates an immersive 3D-like depth effect. Best for storytelling, product showcases, immersive presentations, and visual depth effects.",
+  "tags": ["parallax", "depth", "3d", "immersive", "layers", "showcase", "presentation", "storytelling", "spatial"],
+  "compatibleAnimations": ["clip-reveal", "fade-in", "slide-up", "none"],
+  "minDuration": 5,
+  "maxDuration": 15,
+  "defaultDuration": 8
+}

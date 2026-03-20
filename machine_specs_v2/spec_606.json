@@ -1,0 +1,109 @@
+{
+  "scene": "duration_check_slow_progress_fill",
+  "duration": 12,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": "#F5F5F5",
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "Duration Check",
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        -432
+      ],
+      "opacity": 0
+    },
+    {
+      "id": "progress_track",
+      "shape": "rectangle",
+      "size": [
+        400,
+        24
+      ],
+      "color": "#E0E0E0",
+      "pos": [
+        0,
+        0
+      ],
+      "cornerRadius": 12,
+      "opacity": 0
+    },
+    {
+      "id": "progress_fill",
+      "shape": "rectangle",
+      "size": [
+        400,
+        24
+      ],
+      "color": "#2196F3",
+      "parent": "progress_track",
+      "offset": [
+        -200,
+        0
+      ],
+      "cornerRadius": 12,
+      "anchor": "left-center",
+      "opacity": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "title_1",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "progress_track",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "progress_fill",
+      "time": [
+        0,
+        1
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "progress_fill",
+      "time": [
+        1,
+        10
+      ],
+      "easing": "ease-out",
+      "scaleX": [
+        0,
+        1
+      ]
+    }
+  ]
+}

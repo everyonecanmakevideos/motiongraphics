@@ -1,0 +1,35 @@
+{
+  "templateId": "process-steps",
+  "params": {
+    "title": "Perfect Brownies",
+    "steps": [
+      {
+        "label": "Prep Ingredients"
+      },
+      {
+        "label": "Mix Batter"
+      },
+      {
+        "label": "Preheat Oven"
+      },
+      {
+        "label": "Bake 25 min"
+      },
+      {
+        "label": "Cool and Serve"
+      }
+    ],
+    "connectorStyle": "arrow",
+    "stepColor": "#4FC3F7",
+    "titleColor": "#FFFFFF",
+    "textColor": "#FFFFFF",
+    "descriptionColor": "#B0BEC5",
+    "numberColor": "#FFFFFF",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 7
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "scenes": [
+    {
+      "durationFrames": 120,
+      "startFrame": 0,
+      "transition": "fade-through-black",
+      "transitionDurationFrames": 15,
+      "templateId": "cinematic-hero",
+      "params": {
+        "headline": "From the creators of Nebula",
+        "headlineColor": "#F8FAFC",
+        "accentColor": "#4FC3F7",
+        "mood": "bold",
+        "revealDirection": "left",
+        "background": {
+          "type": "gradient",
+          "from": "#050510",
+          "to": "#0A0A20",
+          "direction": "to-bottom"
+        },
+        "duration": 4,
+        "lightSweep": true,
+        "stylePreset": "cinematic-noir",
+        "motionStyle": {
+          "easing": "dramatic",
+          "speed": "slow",
+          "stagger": false,
+          "microMotion": true
+        },
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        }
+      }
+    },
+    {
+      "durationFrames": 150,
+      "startFrame": 120,
+      "transition": "fade-through-black",
+      "transitionDurationFrames": 15,
+      "templateId": "quote-highlight",
+      "params": {
+        "quote": "A breathtaking journey through time",
+        "attribution": "Variety Magazine",
+        "quoteColor": "#F8FAFC",
+        "attributionColor": "#D4AF37",
+        "accentColor": "#D4AF37",
+        "quoteStyle": "italic",
+        "quoteMarkStyle": "large",
+        "background": {
+          "type": "grain",
+          "baseColor": "#1A0A05",
+          "grainOpacity": 0.08
+        },
+        "entranceAnimation": "fade-in",
+        "duration": 5,
+        "stylePreset": "cinematic-noir",
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        },
+        "secondaryMotion": {
+          "type": "drift",
+          "intensity": "subtle"
+        },
+        "decorativeTheme": "light-streaks"
+      }
+    },
+    {
+      "durationFrames": 120,
+      "startFrame": 270,
+      "transition": "fade-through-black",
+      "transitionDurationFrames": 15,
+      "templateId": "hero-text",
+      "params": {
+        "headline": "ECHOES OF TOMORROW",
+        "subheadline": "Coming December 2024",
+        "headlineColor": "#F8FAFC",
+        "subheadlineColor": "#FFE0E0",
+        "background": {
+          "type": "gradient",
+          "from": "#0A0A1A",
+          "to": "#1A1A2E",
+          "direction": "to-bottom"
+        },
+        "entranceAnimation": "fade-in",
+        "subheadlineAnimation": "fade-in",
+        "duration": 4,
+        "style": "centered",
+        "decoration": "none",
+        "fontSize": "large",
+        "fontWeight": "bold",
+        "stylePreset": "cinematic-noir",
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        },
+        "secondaryMotion": {
+          "type": "drift",
+          "intensity": "subtle"
+        }
+      }
+    },
+    {
+      "durationFrames": 180,
+      "startFrame": 390,
+      "transition": "fade-through-black",
+      "transitionDurationFrames": 15,
+      "templateId": "kinetic-typography",
+      "params": {
+        "lines": [
+          "Mystery",
+          "Adventure",
+          "Discovery"
+        ],
+        "defaultColor": "#F8FAFC",
+        "background": {
+          "type": "grain",
+          "baseColor": "#1A1A1A",
+          "grainOpacity": 0.08
+        },
+        "fontSize": 72,
+        "fontWeight": "bold",
+        "alignment": "center",
+        "lineSpacing": 1.3,
+        "staggerStyle": "line-by-line",
+        "entranceAnimation": "fade-in",
+        "duration": 6,
+        "stylePreset": "cinematic-noir",
+        "effects": {
+          "shadow": "soft",
+          "glow": "none",
+          "blur": "none"
+        },
+        "secondaryMotion": {
+          "type": "drift",
+          "intensity": "subtle"
+        }
+      }
+    }
+  ]
+}

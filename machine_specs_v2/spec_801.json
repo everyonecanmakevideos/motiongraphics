@@ -1,0 +1,72 @@
+{
+  "scene": "big_idea_pop_overshoot",
+  "duration": 3.5,
+  "fps": 30,
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "bg": {
+    "type": "gradient",
+    "from": "#0F0F23",
+    "to": "#1A1A2E",
+    "direction": "radial",
+    "glow": "#FFFFFF"
+  },
+  "objects": [
+    {
+      "id": "title_1",
+      "shape": "text",
+      "text": "BIG IDEA",
+      "fontSize": 96,
+      "fontWeight": "bold",
+      "fontFamily": "Arial",
+      "color": "#E53935",
+      "textAlign": "center",
+      "pos": [
+        0,
+        0
+      ],
+      "opacity": 0,
+      "scale": 0
+    }
+  ],
+  "timeline": [
+    {
+      "target": "title_1",
+      "time": [
+        0,
+        0.5
+      ],
+      "easing": "ease-out",
+      "opacity": [
+        0,
+        1
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        0.5,
+        1.5
+      ],
+      "easing": "ease-out",
+      "scale": [
+        0,
+        1.15
+      ]
+    },
+    {
+      "target": "title_1",
+      "time": [
+        1.5,
+        2.5
+      ],
+      "easing": "ease-in",
+      "scale": [
+        1.15,
+        1
+      ]
+    }
+  ]
+}

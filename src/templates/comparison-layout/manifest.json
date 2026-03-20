@@ -1,0 +1,10 @@
+{
+  "id": "comparison-layout",
+  "name": "Comparison Layout",
+  "description": "Side-by-side comparison with VS divider. Ideal for versus matchups, pros/cons, before/after, and feature comparisons.",
+  "tags": ["comparison", "versus", "vs", "side-by-side", "pros-cons", "before-after", "matchup"],
+  "compatibleAnimations": ["fade-in", "slide-in", "scale-pop", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

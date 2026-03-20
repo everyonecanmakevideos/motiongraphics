@@ -1,0 +1,49 @@
+{
+  "templateId": "kinetic-typography",
+  "params": {
+    "lines": [
+      "EXPLORE",
+      "DISCOVER",
+      "WANDER",
+      "LIVE"
+    ],
+    "defaultColor": "#FFF8E1",
+    "background": {
+      "type": "gradient",
+      "from": "#1A0A05",
+      "to": "#2A1510",
+      "direction": "to-bottom-right"
+    },
+    "fontSize": 72,
+    "fontWeight": "bold",
+    "alignment": "center",
+    "lineSpacing": 1.3,
+    "staggerStyle": "word-by-word",
+    "entranceAnimation": "scale-pop",
+    "duration": 8,
+    "stylePreset": "warm-organic",
+    "typography": {
+      "fontFamily": "clash-display",
+      "weight": "black",
+      "letterSpacing": "normal",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "elastic",
+      "speed": "medium",
+      "stagger": true,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "subtle",
+      "blur": "none"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "float",
+      "intensity": "medium"
+    },
+    "decorativeTheme": "light-streaks"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 9850,
+    "prefix": "$",
+    "suffix": "",
+    "label": "Revenue This Month",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "duration": 5,
+    "entranceAnimation": "count-up"
+  }
+}

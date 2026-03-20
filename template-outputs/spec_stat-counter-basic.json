@@ -1,0 +1,19 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 1250000,
+    "prefix": "",
+    "suffix": "",
+    "label": "Active Users",
+    "valueColor": "#FFFFFF",
+    "labelColor": "#B0BEC5",
+    "background": {
+      "type": "gradient",
+      "from": "#1A1A2E",
+      "to": "#0F3460",
+      "direction": "to-bottom"
+    },
+    "duration": 5,
+    "entranceAnimation": "count-up"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "stream-start",
+  "name": "Stream Start",
+  "description": "Streaming UI start screen: pulsing LIVE badge, scanlines/flicker, and a bold centered headline with accent glow.",
+  "tags": ["stream", "youtube", "livestream", "go live", "starting", "twitch", "broadcast", "ui"],
+  "compatibleAnimations": ["fade-in", "slide-up", "slide-left", "scale-pop", "blur-reveal", "none"],
+  "minDuration": 2,
+  "maxDuration": 15,
+  "defaultDuration": 5
+}
+

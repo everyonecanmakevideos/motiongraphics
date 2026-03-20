@@ -1,0 +1,17 @@
+{
+  "templateId": "masked-text-reveal",
+  "params": {
+    "headline": "Introducing Arc",
+    "headlineColor": "#FFFFFF",
+    "subheadlineColor": "#B0BEC5",
+    "accentColor": "#4FC3F7",
+    "maskShape": "circle-expand",
+    "exitStyle": "fade",
+    "background": {
+      "type": "solid",
+      "color": "#111111"
+    },
+    "fontSize": "xlarge",
+    "duration": 6
+  }
+}

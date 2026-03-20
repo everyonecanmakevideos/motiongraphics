@@ -1,0 +1,31 @@
+{
+  "templateId": "cinematic-hero",
+  "params": {
+    "headline": "Beyond the Stars",
+    "subheadline": "Humanity reaches for the infinite",
+    "headlineColor": "#F8FAFC",
+    "accentColor": "#7C3AED",
+    "mood": "bold",
+    "revealDirection": "left",
+    "background": {
+      "type": "gradient",
+      "from": "#020010",
+      "to": "#0A0030",
+      "direction": "radial"
+    },
+    "duration": 8,
+    "lightSweep": true,
+    "stylePreset": "cinematic-noir",
+    "motionStyle": {
+      "easing": "dramatic",
+      "speed": "slow",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "strong",
+      "glow": "subtle",
+      "blur": "transition"
+    }
+  }
+}

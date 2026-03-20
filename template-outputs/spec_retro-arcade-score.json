@@ -1,0 +1,46 @@
+{
+  "templateId": "stat-counter",
+  "params": {
+    "value": 999999,
+    "prefix": "",
+    "suffix": "",
+    "label": "NEW HIGH SCORE",
+    "valueColor": "#FFD700",
+    "labelColor": "#39FF14",
+    "background": {
+      "type": "stripe",
+      "baseColor": "#1A0030",
+      "stripeColor": "#1A1A2E",
+      "angle": 50,
+      "density": "sparse"
+    },
+    "duration": 5,
+    "entranceAnimation": "count-up",
+    "valueSize": "xlarge",
+    "accentColor": "#FF6EC7",
+    "stylePreset": "retro-arcade",
+    "typography": {
+      "fontFamily": "space-grotesk",
+      "weight": "bold",
+      "letterSpacing": "wide",
+      "lineHeight": "compact"
+    },
+    "motionStyle": {
+      "easing": "snappy",
+      "speed": "fast",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "none",
+      "glow": "neon",
+      "blur": "subtle"
+    },
+    "pacingProfile": "energetic",
+    "secondaryMotion": {
+      "type": "rotate",
+      "intensity": "subtle"
+    },
+    "decorativeTheme": "minimal-dots"
+  }
+}
