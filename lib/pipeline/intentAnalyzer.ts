@@ -26,7 +26,15 @@ TEMPLATE SELECTION RULES — follow these strictly:
 |---------------|------------|
 | Breaking news, Breaking News, breaking update, urgent headline, live bulletin, TV news ticker, LIVE badge | "news-alert" |
 | Single headline/title card, intro screen, bold statement | "hero-text" |
+| Glitch text, error screen, corrupted signal, scanline background, broken UI title | "hero-text" |
+| TV news alert, breaking news ticker, LIVE broadcast-style banner | "news-alert" |
+| YouTube/Twitch livestream starting screen, stream is live, go-live announcement UI | "stream-start" |
+| Loading screen, please wait, processing, buffering, app loader | "loading-screen" |
+| Line chart, line graph, trend over time, time-series, growth curve, trajectory | "line-chart" |
 | Bar chart, bar graph, comparing values, rankings | "bar-chart" |
+| Grouped bar chart, clustered bars, compare multiple series across categories | "grouped-bar-comparison" |
+| Stacked bar chart, stacked breakdown, composition by category, parts of a total across categories | "stacked-bar-breakdown" |
+| Updating bar chart, changing rankings over time, bars updating across steps, animated leaderboard over time | "updating-bar-chart" |
 | Pie chart, donut chart, proportions, percentages, market share | "pie-chart" |
 | Big number, statistic, counter, KPI, metric, achievement | "stat-counter" |
 | Multi-line text, quote, lyrics, poetry, word-by-word reveal | "kinetic-typography" |
@@ -76,7 +84,19 @@ STAT-COUNTER / DATA-CALLOUT ANIMATION RULES:
 | "static", "instant", "no animation" | "none" |
 | (default for stat-counter / data-callout when not specified) | "count-up" |
 
+CHART DISAMBIGUATION RULES:
+- If the prompt is about a single metric changing across time, days, weeks, months, or steps, prefer "line-chart".
+- If the prompt compares one value per category, prefer "bar-chart".
+- If the prompt compares MULTIPLE series for the same categories (for example Q1 vs Q2 across regions), prefer "grouped-bar-comparison".
+- If the prompt describes parts of a total stacked inside each category, prefer "stacked-bar-breakdown".
+- If the prompt describes values changing across steps or timestamps for the same bars, prefer "updating-bar-chart".
+- If the prompt asks for proportions or market share, prefer "pie-chart".
+
+LINE-CHART ANIMATION: "draw" (line draws across the chart), "fade-in", "slide-up", "none"
 BAR-CHART ANIMATION: "grow" (bars grow from zero), "fade-in", "slide-up", "none"
+GROUPED-BAR-COMPARISON ANIMATION: "grow", "fade-in", "slide-up", "none"
+STACKED-BAR-BREAKDOWN ANIMATION: "grow", "fade-in", "slide-up", "none"
+UPDATING-BAR-CHART ANIMATION: "grow", "fade-in", "slide-up", "none"
 PIE-CHART ANIMATION: "spin" (segments sweep in), "fade-in", "scale-pop", "none"
 STAT-COUNTER ANIMATION: "count-up" (number counts from 0), "fade-in", "scale-pop", "none"
 KINETIC-TYPOGRAPHY ANIMATION: same as hero-text (fade-in, slide-up, scale-pop, blur-reveal, typewriter, none)
@@ -144,14 +164,24 @@ CRITICAL RULES:
 1. Read the prompt carefully. Pick the template that best matches the user's intent. Fill ALL required parameters.
 2. "background" is REQUIRED for every template, scene, and region. If user doesn't specify, use { "type": "solid", "color": "#111111" }.
 3. "entranceAnimation" is REQUIRED. Template-specific defaults when user doesn't specify:
-   - stat-counter, data-callout: default "count-up"
-   - bar-chart: default "grow"
-   - pie-chart: default "spin"
-   - timeline-scene, process-steps: default "progressive"
-   - All other templates: default "fade-in"
-4. Array size constraints — ALWAYS respect these minimums:
-   - bar-chart "bars": minimum 2, maximum 10
-   - pie-chart "segments": minimum 2, maximum 8
+  - stat-counter, data-callout: default "count-up"
+  - line-chart: default "draw"
+  - bar-chart: default "grow"
+  - grouped-bar-comparison, stacked-bar-breakdown, updating-bar-chart: default "grow"
+  - pie-chart: default "spin"
+  - timeline-scene, process-steps: default "progressive"
+  - All other templates: default "fade-in"
+4. Array size constraints - ALWAYS respect these minimums:
+  - line-chart "categories": minimum 2, maximum 12
+  - line-chart "series": minimum 1, maximum 4, and every series.values array must match categories length
+  - bar-chart "bars": minimum 2, maximum 10
+  - grouped-bar-comparison "categories": minimum 1, maximum 8
+  - grouped-bar-comparison "series": minimum 2, maximum 4, and every series.values array must match categories length
+  - stacked-bar-breakdown "categories": minimum 1, maximum 8
+  - stacked-bar-breakdown "segments": minimum 2, maximum 5, and every segments.values array must match categories length
+  - updating-bar-chart "bars": minimum 2, maximum 10
+  - updating-bar-chart "stepLabels": minimum 2, maximum 8, and every bars.values array must match stepLabels length
+  - pie-chart "segments": minimum 2, maximum 8
    - timeline-scene "milestones": minimum 2, maximum 8
    - card-layout "cards": minimum 2, maximum 6
    - comparison-layout "leftItems"/"rightItems": minimum 1, maximum 6
@@ -177,6 +207,18 @@ FEW-SHOT EXAMPLES:
 
 Prompt: "Show a bar chart comparing sales: Q1=120, Q2=180, Q3=95, Q4=210 on a dark background"
 Response: { "templateId": "bar-chart", "params": { "title": "Quarterly Sales", "bars": [{"label":"Q1","value":120,"color":"#3B82F6"},{"label":"Q2","value":180,"color":"#10B981"},{"label":"Q3","value":95,"color":"#F59E0B"},{"label":"Q4","value":210,"color":"#EF4444"}], "titleColor": "#F8FAFC", "labelColor": "#94A3B8", "valueColor": "#F8FAFC", "background": { "type": "gradient", "from": "#0F172A", "to": "#1E293B", "direction": "to-bottom" }, "entranceAnimation": "grow", "duration": 6, "showValues": true }, "confidence": "high", "reasoning": "User wants a bar chart comparing quarterly values → bar-chart template with grow animation", "aspect_ratio": "16:9" }
+
+Prompt: "Create a smooth line graph showing daily active users over 7 days with values 1200, 1500, 1700, 1600, 2100, 2400, 2300"
+Response: { "templateId": "line-chart", "params": { "title": "Daily Active Users", "subtitle": "Week-over-week trend", "categories": ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"], "series": [{"label":"Active Users","color":"#38BDF8","values":[1200,1500,1700,1600,2100,2400,2300]}], "background": { "type": "gradient", "from": "#0B1220", "to": "#16243A", "direction": "to-bottom-right" }, "entranceAnimation": "draw", "duration": 6, "curveStyle": "smooth", "showPoints": true, "showLegend": true, "showAreaFill": false, "emphasisMode": "highest", "layoutPreset": "editorial", "titleColor": "#F8FAFC", "subtitleColor": "#94A3B8", "labelColor": "#B0BEC5", "valueColor": "#FFFFFF", "legendTextColor": "#CBD5E1" }, "confidence": "high", "reasoning": "A single metric trend over time is best represented by line-chart with a draw animation", "aspect_ratio": "16:9" }
+
+Prompt: "Compare Q1 and Q2 sales across North, South, East and West using grouped bars"
+Response: { "templateId": "grouped-bar-comparison", "params": { "title": "Regional Sales Comparison", "categories": ["North", "South", "East", "West"], "series": [{"label":"Q1","color":"#3B82F6","values":[120,100,90,140]},{"label":"Q2","color":"#10B981","values":[150,130,110,170]}], "background": { "type": "gradient", "from": "#0F172A", "to": "#1E293B", "direction": "to-bottom" }, "entranceAnimation": "grow", "duration": 6, "showValues": true, "showLegend": true, "groupReveal": "group-by-group", "labelReveal": "after-group", "valueAnimation": "count-up", "layoutPreset": "presentation", "titleColor": "#F8FAFC", "subtitleColor": "#94A3B8", "labelColor": "#B0BEC5", "valueColor": "#FFFFFF", "legendTextColor": "#CBD5E1" }, "confidence": "high", "reasoning": "Two series compared across the same categories should use grouped-bar-comparison", "aspect_ratio": "16:9" }
+
+Prompt: "Create a stacked bar chart showing expense breakdown by month with Salaries, Marketing and Operations"
+Response: { "templateId": "stacked-bar-breakdown", "params": { "title": "Expense Breakdown by Month", "categories": ["January", "February", "March"], "segments": [{"label":"Salaries","color":"#3B82F6","values":[40,42,43]},{"label":"Marketing","color":"#F59E0B","values":[15,18,16]},{"label":"Operations","color":"#10B981","values":[10,11,12]}], "background": { "type": "grain", "baseColor": "#0F172A", "grainOpacity": 0.06 }, "entranceAnimation": "grow", "duration": 6, "showTotals": true, "showLegend": true, "segmentReveal": "stack-by-stack", "labelReveal": "after-stack", "valueAnimation": "count-up", "layoutPreset": "presentation", "titleColor": "#F8FAFC", "subtitleColor": "#94A3B8", "labelColor": "#B0BEC5", "totalColor": "#FFFFFF", "legendTextColor": "#CBD5E1" }, "confidence": "high", "reasoning": "Parts of a total stacked within each month are best represented by stacked-bar-breakdown", "aspect_ratio": "16:9" }
+
+Prompt: "Show an updating bar chart of city populations over 3 snapshots so the bars change over time"
+Response: { "templateId": "updating-bar-chart", "params": { "title": "Largest Cities", "subtitle": "Population in millions", "bars": [{"label":"Tokyo","color":"#3B82F6","values":[35,36,37]},{"label":"Delhi","color":"#8B5CF6","values":[29,31,32]},{"label":"Shanghai","color":"#10B981","values":[27,28,29]}], "stepLabels": ["2024", "2025", "2026"], "background": { "type": "gradient", "from": "#111827", "to": "#1F2937", "direction": "to-bottom-right" }, "entranceAnimation": "grow", "duration": 7, "showValues": true, "updateBehavior": "smooth-flow", "labelReveal": "after-update", "valueAnimation": "count-up", "layoutPreset": "social", "showStepTracker": true, "titleColor": "#F8FAFC", "subtitleColor": "#94A3B8", "labelColor": "#B0BEC5", "valueColor": "#FFFFFF", "stepLabelColor": "#CBD5E1", "activeStepColor": "#FFFFFF", "stepTrackColor": "#475569" }, "confidence": "high", "reasoning": "Bars changing across multiple steps should use updating-bar-chart rather than a static bar chart", "aspect_ratio": "16:9" }
 
 Prompt: "Pie chart showing market share: Apple 35%, Samsung 25%, Others 40% with a spin animation"
 Response: { "templateId": "pie-chart", "params": { "title": "Market Share", "segments": [{"label":"Apple","value":35,"color":"#6366F1"},{"label":"Samsung","value":25,"color":"#22C55E"},{"label":"Others","value":40,"color":"#94A3B8"}], "titleColor": "#E2E8F0", "labelColor": "#CBD5E1", "background": { "type": "grain", "baseColor": "#0A0A1F", "grainOpacity": 0.08 }, "entranceAnimation": "spin", "duration": 6, "showLabels": true, "showPercentages": true, "donut": false }, "confidence": "high", "reasoning": "User wants pie chart with market share data → pie-chart with spin animation", "aspect_ratio": "16:9" }
