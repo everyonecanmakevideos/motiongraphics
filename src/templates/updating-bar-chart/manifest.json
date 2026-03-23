@@ -1,0 +1,10 @@
+{
+  "id": "updating-bar-chart",
+  "name": "Updating Bar Chart",
+  "description": "Premium single-series bar chart with values that change over time. Ideal for progressive monthly updates, live-feeling value changes, and time-step growth storytelling.",
+  "tags": ["chart", "bar", "updating", "dynamic", "timeline", "dataviz", "analytics", "infographic"],
+  "compatibleAnimations": ["grow", "fade-in", "slide-up", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

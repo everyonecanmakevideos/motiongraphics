@@ -1,0 +1,10 @@
+{
+  "id": "stacked-bar-breakdown",
+  "name": "Stacked Bar Breakdown",
+  "description": "Premium stacked bar chart for category totals broken into segment contributions. Ideal for revenue mix, demographic splits, and feature contribution views.",
+  "tags": ["chart", "bar", "stacked", "breakdown", "dataviz", "analytics", "infographic", "business"],
+  "compatibleAnimations": ["grow", "fade-in", "slide-up", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}
