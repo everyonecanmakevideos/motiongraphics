@@ -6,79 +6,41 @@ const canvasW = 1920;
 const canvasH = 1080;
 const halfW = canvasW / 2;
 const halfH = canvasH / 2;
-const posX = 0;
-const posY = 0;
-
-// Opacity timeline frames
-const op_f0 = 0;
-const op_f1 = 30;
-const op_f2 = 90;
-const op_f3 = 105;
-const op_f4 = 120;
-const op_f5 = 135;
-const op_f6 = 150;
-
-// Scale timeline frames
-const sc_f0 = 30;
-const sc_f1 = 60;
-const sc_f2 = 90;
-
-// Base opacity from 0s to 1s
-const baseOpacity = interpolate(frame, [op_f0, op_f1], [0, 1], {
-  extrapolateLeft: "clamp",
-  extrapolateRight: "clamp"
-});
-let opacity = baseOpacity;
-// Maintain opacity = 1 between 1s and 3s (frames 30-90)
-if (frame > op_f1 && frame < op_f2) {
-  opacity = 1;
+const titleStart = 0 * 30;
+const titleEnd = 1 * 30;
+const titleOpacity = interpolate(frame, [titleStart, titleEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const mainOpStart = 0 * 30;
+const mainOpEnd = 1 * 30;
+const mainOpacity = interpolate(frame, [mainOpStart, mainOpEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const labelStart = 0 * 30;
+const labelEnd = 1 * 30;
+const labelOpacity = interpolate(frame, [labelStart, labelEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const noteStart = 0 * 30;
+const noteEnd = 1 * 30;
+const noteOpacity = interpolate(frame, [noteStart, noteEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const s1Start = 1 * 30;
+const s1End = 4 * 30;
+const mainScaleA = interpolate(frame, [s1Start, s1End], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const s2Start = 4 * 30;
+const s2End = 4.5 * 30;
+const mainScaleB = interpolate(frame, [s2Start, s2End], [1, 1.1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const s3Start = 4.5 * 30;
+const s3End = 5 * 30;
+const mainScaleC = interpolate(frame, [s3Start, s3End], [1.1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+let mainScale = mainScaleA;
+if (frame >= s2Start && frame < s2End) {
+  mainScale = mainScaleB;
+} else if (frame >= s3Start) {
+  mainScale = mainScaleC;
 }
-// 3s - 3.5s : 1 -> 0.5
-if (frame >= op_f2 && frame <= op_f3) {
-  opacity = interpolate(frame, [op_f2, op_f3], [1, 0.5], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
-  });
-} else if (frame > op_f3 && frame <= op_f4) {
-  // 3.5s - 4s : 0.5 -> 1
-  opacity = interpolate(frame, [op_f3, op_f4], [0.5, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
-  });
-} else if (frame > op_f4 && frame <= op_f5) {
-  // 4s - 4.5s : 1 -> 0.5
-  opacity = interpolate(frame, [op_f4, op_f5], [1, 0.5], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
-  });
-} else if (frame > op_f5 && frame <= op_f6) {
-  // 4.5s - 5s : 0.5 -> 1
-  opacity = interpolate(frame, [op_f5, op_f6], [0.5, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
-  });
-}
-
-// Scale piecewise
-let scale = 1;
-if (frame >= sc_f0 && frame <= sc_f1) {
-  // 1s - 2s : 1 -> 1.2
-  scale = interpolate(frame, [sc_f0, sc_f1], [1, 1.2], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
-  });
-} else if (frame > sc_f1 && frame <= sc_f2) {
-  // 2s - 3s : 1.2 -> 1
-  scale = interpolate(frame, [sc_f1, sc_f2], [1.2, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
-  });
-} else if (frame < sc_f0) {
-  scale = 1;
-} else if (frame > sc_f2) {
-  scale = 1;
-}
-
+const titlePosX = 0;
+const titlePosY = -480;
+const mainPosX = 0;
+const mainPosY = 0;
+const labelPosX = 0;
+const labelPosY = 100;
+const notePosX = 0;
+const notePosY = 500;
 return (
   <AbsoluteFill style={{ backgroundColor: "#F5F5F5", overflow: "hidden" }}>
     <div
@@ -86,30 +48,95 @@ return (
         position: "absolute",
         left: "50%",
         top: "50%",
-        transform:
-          "translate(-50%, -50%) translateX(" +
-          posX +
-          "px) translateY(" +
-          posY +
-          "px) scale(" +
-          scale +
-          ")",
-        color: "#E53935",
+        transform: "translate(-50%, -50%) translateX(" + titlePosX + "px) translateY(" + titlePosY + "px)",
+        color: "#333333",
         fontSize: 48 + "px",
         fontWeight: "bold",
         fontFamily: "Arial",
         whiteSpace: "nowrap",
-        lineHeight: "1",
+        lineHeight: 1,
         letterSpacing: 0 + "px",
         textAlign: "center",
         textTransform: "none",
         userSelect: "none",
         pointerEvents: "none",
-        opacity: opacity,
+        opacity: titleOpacity,
         zIndex: 1
       }}
     >
-      Breaking News
+      Quarterly Performance
+    </div>
+
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%) translateX(" + mainPosX + "px) translateY(" + mainPosY + "px) scale(" + mainScale + ")",
+        color: "#4CAF50",
+        fontSize: 96 + "px",
+        fontWeight: "bold",
+        fontFamily: "Arial",
+        whiteSpace: "nowrap",
+        lineHeight: 1,
+        letterSpacing: 0 + "px",
+        textAlign: "center",
+        textTransform: "none",
+        userSelect: "none",
+        pointerEvents: "none",
+        opacity: mainOpacity,
+        zIndex: 1
+      }}
+    >
+      98.4%
+    </div>
+
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%) translateX(" + labelPosX + "px) translateY(" + labelPosY + "px)",
+        color: "#9E9E9E",
+        fontSize: 36 + "px",
+        fontWeight: "normal",
+        fontFamily: "Arial",
+        whiteSpace: "nowrap",
+        lineHeight: 1,
+        letterSpacing: 0 + "px",
+        textAlign: "center",
+        textTransform: "none",
+        userSelect: "none",
+        pointerEvents: "none",
+        opacity: labelOpacity,
+        zIndex: 1
+      }}
+    >
+      Customer Retention
+    </div>
+
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%) translateX(" + notePosX + "px) translateY(" + notePosY + "px)",
+        color: "#E0E0E0",
+        fontSize: 24 + "px",
+        fontWeight: "normal",
+        fontFamily: "Arial",
+        whiteSpace: "nowrap",
+        lineHeight: 1,
+        letterSpacing: 0 + "px",
+        textAlign: "center",
+        textTransform: "none",
+        userSelect: "none",
+        pointerEvents: "none",
+        opacity: noteOpacity,
+        zIndex: 1
+      }}
+    >
+      Up from 94.1% last quarter
     </div>
   </AbsoluteFill>
 );

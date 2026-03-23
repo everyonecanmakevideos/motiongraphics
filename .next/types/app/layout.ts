@@ -1,4 +1,4 @@
-// File: /Users/durgesh/Desktop/shape-motion-lab (with templet)/app/layout.tsx
+// File: C:\Users\LENOVO\Desktop\Motion\motiongraphics\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

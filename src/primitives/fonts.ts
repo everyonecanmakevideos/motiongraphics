@@ -1,14 +1,9 @@
-import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
-import { loadFont as loadSpaceGrotesk } from "@remotion/google-fonts/SpaceGrotesk";
-import { loadFont as loadPlusJakartaSans } from "@remotion/google-fonts/PlusJakartaSans";
-
-let loaded = false;
-
-/** Load all fonts used by the typography system. Safe to call multiple times. */
+/**
+ * Remotion renders should stay offline-safe. The typography system already
+ * declares fallback stacks, so we intentionally avoid remote Google Fonts
+ * requests during render startup.
+ */
 export function ensureFontsLoaded(): void {
-  if (loaded) return;
-  loadInter();
-  loadSpaceGrotesk();
-  loadPlusJakartaSans();
-  loaded = true;
+  // Intentionally left blank. Add local @font-face assets here if you want
+  // pixel-perfect branded fonts without relying on network access.
 }

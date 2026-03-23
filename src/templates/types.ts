@@ -30,11 +30,35 @@ export const GrainBgSchema = z.object({
   grainOpacity: z.number().min(0).max(1).default(0.08),
 });
 
+export const DotsBgSchema = z.object({
+  type: z.literal("dots"),
+  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  dotColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  density: z.enum(["sparse", "normal", "dense"]).default("normal"),
+});
+
+export const GridBgSchema = z.object({
+  type: z.literal("grid"),
+  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  lineColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  density: z.enum(["sparse", "normal", "dense"]).default("normal"),
+});
+
+export const RadialGlowBgSchema = z.object({
+  type: z.literal("radial-glow"),
+  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  glowColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  intensity: z.number().min(0).max(1).default(0.45),
+});
+
 export const BackgroundSchema = z.discriminatedUnion("type", [
   SolidBgSchema,
   GradientBgSchema,
   StripeBgSchema,
   GrainBgSchema,
+  DotsBgSchema,
+  GridBgSchema,
+  RadialGlowBgSchema,
 ]);
 
 export type BackgroundConfig = z.infer<typeof BackgroundSchema>;
