@@ -1,6 +1,6 @@
 # Audit Summary for Founder
 
-This is the simple, non-technical summary of the audit.
+This document summarizes the key issues and final meaning from the audit of the video generation platform. The goal is to provide a clear overview of the current state of the product, highlight the most critical problems, and offer guidance on where to focus efforts for improvement.
 
 ## Key Issues
 
