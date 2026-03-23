@@ -1,8 +1,8 @@
 {
   "id": "bar-chart",
   "name": "Bar Chart",
-  "description": "Animated bar chart with labeled bars that grow from zero. Ideal for comparing values, statistics, rankings, and data visualization.",
-  "tags": ["chart", "bar", "data", "statistics", "graph", "comparison", "ranking", "dataviz"],
+  "description": "Premium single-series bar chart for infographic-style data scenes with sequential growth, delayed value reveal, highlight states, and vertical or horizontal layouts.",
+  "tags": ["chart", "bar", "data", "statistics", "graph", "ranking", "dataviz", "infographic", "minimal", "presentation"],
   "compatibleAnimations": ["grow", "fade-in", "slide-up", "none"],
   "minDuration": 3,
   "maxDuration": 15,

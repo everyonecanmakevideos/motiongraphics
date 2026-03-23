@@ -1,38 +1,38 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
-import { Background } from "../../primitives/Background";
+import { interpolate, useCurrentFrame } from "remotion";
 import { secToFrame, microFloat } from "../../primitives/animations";
+import { resolveEffects } from "../../primitives/useEffects";
+import { resolveMotionStyle } from "../../primitives/useMotionStyle";
+import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
-import { resolveMotionStyle } from "../../primitives/useMotionStyle";
-import { resolveEffects } from "../../primitives/useEffects";
-import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
+import { ChartScaffold } from "../ChartScaffold";
+import { alpha, CHART_CLAMP, formatValue, getChartSurface, px } from "../chartShared";
 import type { PieChartProps } from "./schema";
 
-const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 const TAU = 2 * Math.PI;
 
-function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
+function polarToCartesian(cx: number, cy: number, radius: number, angle: number) {
   return {
-    x: cx + r * Math.cos(angle),
-    y: cy + r * Math.sin(angle),
+    x: cx + radius * Math.cos(angle),
+    y: cy + radius * Math.sin(angle),
   };
 }
 
 function describeArc(
   cx: number,
   cy: number,
-  r: number,
+  radius: number,
   startAngle: number,
-  endAngle: number
+  endAngle: number,
 ): string {
-  const start = polarToCartesian(cx, cy, r, endAngle);
-  const end = polarToCartesian(cx, cy, r, startAngle);
+  const start = polarToCartesian(cx, cy, radius, endAngle);
+  const end = polarToCartesian(cx, cy, radius, startAngle);
   const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
   return [
     "M", cx, cy,
     "L", start.x, start.y,
-    "A", r, r, 0, largeArc, 0, end.x, end.y,
+    "A", radius, radius, 0, largeArc, 0, end.x, end.y,
     "Z",
   ].join(" ");
 }
@@ -40,31 +40,64 @@ function describeArc(
 function describeDonutArc(
   cx: number,
   cy: number,
-  outerR: number,
-  innerR: number,
+  outerRadius: number,
+  innerRadius: number,
   startAngle: number,
-  endAngle: number
+  endAngle: number,
 ): string {
-  const outerStart = polarToCartesian(cx, cy, outerR, endAngle);
-  const outerEnd = polarToCartesian(cx, cy, outerR, startAngle);
-  const innerStart = polarToCartesian(cx, cy, innerR, startAngle);
-  const innerEnd = polarToCartesian(cx, cy, innerR, endAngle);
+  const outerStart = polarToCartesian(cx, cy, outerRadius, endAngle);
+  const outerEnd = polarToCartesian(cx, cy, outerRadius, startAngle);
+  const innerStart = polarToCartesian(cx, cy, innerRadius, startAngle);
+  const innerEnd = polarToCartesian(cx, cy, innerRadius, endAngle);
   const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
   return [
     "M", outerStart.x, outerStart.y,
-    "A", outerR, outerR, 0, largeArc, 0, outerEnd.x, outerEnd.y,
+    "A", outerRadius, outerRadius, 0, largeArc, 0, outerEnd.x, outerEnd.y,
     "L", innerStart.x, innerStart.y,
-    "A", innerR, innerR, 0, largeArc, 1, innerEnd.x, innerEnd.y,
+    "A", innerRadius, innerRadius, 0, largeArc, 1, innerEnd.x, innerEnd.y,
     "Z",
   ].join(" ");
 }
 
+function getLayoutConfig(preset: PieChartProps["layoutPreset"], isPortrait: boolean) {
+  switch (preset) {
+    case "editorial":
+      return {
+        titleAlign: "left" as const,
+        maxPanelWidth: isPortrait ? 0.9 : 0.82,
+        headerGap: 12,
+        sideLabels: !isPortrait,
+      };
+    case "social":
+      return {
+        titleAlign: "center" as const,
+        maxPanelWidth: isPortrait ? 0.94 : 0.82,
+        headerGap: 12,
+        sideLabels: false,
+      };
+    case "minimal":
+      return {
+        titleAlign: "left" as const,
+        maxPanelWidth: isPortrait ? 0.92 : 0.84,
+        headerGap: 10,
+        sideLabels: !isPortrait,
+      };
+    case "presentation":
+    default:
+      return {
+        titleAlign: "center" as const,
+        maxPanelWidth: isPortrait ? 0.92 : 0.86,
+        headerGap: 14,
+        sideLabels: !isPortrait,
+      };
+  }
+}
+
 export const PieChart: React.FC<PieChartProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, isPortrait, scale } = useResponsiveConfig();
+  const { width, height, scale, isPortrait, isSquare } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
-  // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
     props.stylePreset,
     props.typography,
@@ -73,159 +106,607 @@ export const PieChart: React.FC<PieChartProps> = (props) => {
   );
   const typo = resolveTypography(resolved.typography);
   const motion = resolveMotionStyle(resolved.motionStyle);
-  const fx = resolveEffects(resolved.effects);
+  const accentColor = props.segments[0]?.color ?? "#6366F1";
+  const fx = resolveEffects(resolved.effects, accentColor);
+  const { panelBackground, panelBorder, panelShadow } = getChartSurface(props.background);
+  const layout = getLayoutConfig(props.layoutPreset, isPortrait || isSquare);
 
-  // Dynamic pie size based on composition
-  const SIZE = Math.round(Math.min(width, 1080) * 0.37);
-  const CENTER = SIZE / 2;
-
-  // Phase timing
   const titleEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
+  const legendEnd = Math.round(totalFrames * 0.24 * motion.durationMultiplier);
   const chartStart = Math.round(totalFrames * 0.08);
   const chartEnd = Math.round(totalFrames * 0.55);
-  const labelsStart = Math.round(totalFrames * 0.4);
-  const labelsEnd = Math.round(totalFrames * 0.6);
-  const exitStart = Math.round(totalFrames * 0.85);
+  const labelsStart = Math.round(totalFrames * 0.36);
+  const labelsEnd = Math.round(totalFrames * 0.58);
+  const exitStart = Math.round(totalFrames * 0.88);
+  const exitOpacity = interpolate(frame, [exitStart, totalFrames], [1, 0], CHART_CLAMP);
 
-  const titleOpacity = props.title
-    ? interpolate(frame, [0, titleEnd], [0, 1], CLAMP)
-    : 0;
-  const exitEnd = totalFrames;
-  const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
-
-  const isMainPhase = frame >= chartEnd && frame < exitStart;
-  const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
-
+  const floatY =
+    motion.microMotionEnabled && frame > chartEnd && frame < exitStart
+      ? microFloat(frame, Math.max(1, scale * 2.5)).y
+      : 0;
   const exitBlur = fx.blurTransition
-    ? interpolate(frame, [exitStart, exitEnd], [0, 8], CLAMP)
+    ? interpolate(frame, [exitStart, totalFrames], [0, 8], CHART_CLAMP)
     : 0;
-  const labelOpacity = interpolate(frame, [labelsStart, labelsEnd], [0, 1], CLAMP);
+  const panelFilter = [
+    fx.glowFilter !== "none" ? fx.glowFilter : "",
+    exitBlur > 0 ? `blur(${exitBlur}px)` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  // Chart animation progress
+  const titleOpacity = props.title ? interpolate(frame, [0, titleEnd], [0, 1], CHART_CLAMP) : 0;
+  const subtitleOpacity = props.subtitle ? interpolate(frame, [0, titleEnd], [0, 1], CHART_CLAMP) : 0;
+  const legendOpacity = props.showLegend ? interpolate(frame, [titleEnd * 0.4, legendEnd], [0, 1], CHART_CLAMP) : 0;
+  const labelOpacity = interpolate(frame, [labelsStart, labelsEnd], [0, 1], CHART_CLAMP);
+
   let chartProgress = 1;
   let chartScale = 1;
   let chartOpacity = 1;
   if (props.entranceAnimation === "spin") {
-    chartProgress = interpolate(frame, [chartStart, chartEnd], [0, 1], CLAMP);
+    chartProgress = interpolate(frame, [chartStart, chartEnd], [0, 1], CHART_CLAMP);
   } else if (props.entranceAnimation === "fade-in") {
-    chartOpacity = interpolate(frame, [chartStart, chartEnd], [0, 1], CLAMP);
+    chartOpacity = interpolate(frame, [chartStart, chartEnd], [0, 1], CHART_CLAMP);
   } else if (props.entranceAnimation === "scale-pop") {
     const mid = Math.round((chartStart + chartEnd) / 2);
     chartScale = frame < mid
-      ? interpolate(frame, [chartStart, mid], [0, 1.1], CLAMP)
-      : interpolate(frame, [mid, chartEnd], [1.1, 1], CLAMP);
-    chartOpacity = interpolate(frame, [chartStart, mid], [0, 1], CLAMP);
+      ? interpolate(frame, [chartStart, mid], [0.86, 1.06], CHART_CLAMP)
+      : interpolate(frame, [mid, chartEnd], [1.06, 1], CHART_CLAMP);
+    chartOpacity = interpolate(frame, [chartStart, mid], [0, 1], CHART_CLAMP);
   }
 
-  // Calculate segment angles
-  const total = props.segments.reduce((sum, s) => sum + s.value, 0) || 1;
-  const startAngle = -Math.PI / 2; // Start from top
-  const outerR = SIZE / 2 - 10;
-  const innerR = props.donut ? outerR * 0.55 : 0;
+  const panelWidth = width * layout.maxPanelWidth;
+  const panelHeight = height * (isPortrait ? 0.72 : 0.7);
+  const panelPaddingX = px(scale, isPortrait ? 44 : 54);
+  const panelPaddingY = px(scale, isPortrait ? 40 : 46);
+  const headerHeight = props.title || props.subtitle ? px(scale, props.subtitle ? 112 : 82) : 0;
+  const showCallout = props.showCallout;
+  const calloutOnBottom = props.calloutAlign === "bottom" || isPortrait || isSquare || props.layoutPreset === "social";
+  const showInlineCallout = showCallout;
+  const legendHeight = props.showLegend && !showInlineCallout ? px(scale, 44) : 0;
+  const contentHeight = Math.max(
+    px(scale, 220),
+    panelHeight - panelPaddingY * 2 - headerHeight - legendHeight,
+  );
+  const contentGap = px(scale, layout.sideLabels ? 40 : 20);
+  const calloutWidth = Math.max(px(scale, 300), panelWidth * 0.3);
+  const hasNarrativeSidebar = showInlineCallout && !calloutOnBottom;
+  const bottomCalloutReserve = showInlineCallout && calloutOnBottom ? px(scale, props.layoutPreset === "social" ? 168 : 152) : 0;
+  const semiMetricReserve = props.arcMode === "semi" ? px(scale, props.layoutPreset === "social" ? 118 : 104) : 0;
+  const chartAreaHeight = Math.max(
+    px(scale, 220),
+    contentHeight - bottomCalloutReserve - semiMetricReserve - (bottomCalloutReserve > 0 ? contentGap : 0),
+  );
+  const chartWidthBudget = hasNarrativeSidebar
+    ? Math.max(px(scale, 260), panelWidth - calloutWidth - contentGap - panelPaddingX * 0.4)
+    : panelWidth;
+  const chartSize = Math.min(
+    px(scale, isPortrait ? 430 : 500),
+    layout.sideLabels && !showInlineCallout ? chartWidthBudget * 0.42 : chartWidthBudget * (isPortrait ? 0.72 : 0.48),
+    chartAreaHeight * (hasNarrativeSidebar ? 0.8 : 0.88),
+  );
+  const chartHeight = props.arcMode === "semi" ? chartSize * 0.64 : chartSize;
 
-  let currentAngle = startAngle;
-  const segmentData = props.segments.map((seg) => {
-    const sweep = (seg.value / total) * TAU * chartProgress;
+  const total = props.arcMode === "semi"
+    ? 100
+    : props.segments.reduce((sum, segment) => sum + segment.value, 0) || 1;
+  const centerX = chartSize / 2;
+  const centerY = props.arcMode === "semi" ? chartHeight - px(scale, 18) : chartSize / 2;
+  const outerRadius = props.arcMode === "semi"
+    ? Math.min(chartSize * 0.38, chartHeight - px(scale, 26))
+    : chartSize / 2 - px(scale, 12);
+  const innerRadius = props.donut ? outerRadius * 0.58 : 0;
+  const centerValue = props.centerValue ?? (props.showPercentages ? "100%" : String(total));
+  const centerLabel = props.centerLabel ?? (props.donut ? "Share" : undefined);
+  const normalizedHighlightLabel = props.highlightLabel?.trim().toLowerCase() ?? "";
+
+  const highlightedIndex = (() => {
+    if (props.highlightMode === "largest") {
+      return props.segments.reduce((best, segment, index, arr) =>
+        segment.value > arr[best].value ? index : best, 0);
+    }
+    if (props.highlightMode === "smallest") {
+      return props.segments.reduce((best, segment, index, arr) =>
+        segment.value < arr[best].value ? index : best, 0);
+    }
+    if (props.highlightMode === "specific" && normalizedHighlightLabel) {
+      return props.segments.findIndex((segment) => segment.label.trim().toLowerCase() === normalizedHighlightLabel);
+    }
+    return -1;
+  })();
+  const hasHighlight = highlightedIndex >= 0;
+  const explodeDistance = hasHighlight
+    ? interpolate(frame, [chartStart, chartEnd], [0, props.explodeOffset], CHART_CLAMP)
+    : 0;
+
+  const baseStartAngle = props.arcMode === "semi" ? Math.PI : -Math.PI / 2;
+  const chartSpan = props.arcMode === "semi" ? Math.PI : TAU;
+  let currentAngle = baseStartAngle;
+  const segmentData = props.segments.map((segment, index) => {
+    const fullSweep = (segment.value / total) * chartSpan;
+    const sweep = fullSweep * chartProgress;
     const start = currentAngle;
-    currentAngle += sweep;
+    const end = currentAngle + sweep;
+    currentAngle = end;
     const midAngle = start + sweep / 2;
-    return { ...seg, start, end: currentAngle, midAngle, pct: Math.round((seg.value / total) * 100) };
+    const pct = Math.round((segment.value / total) * 100);
+    const labelPoint = polarToCartesian(centerX, centerY, outerRadius + px(scale, 34), midAngle);
+    const isHighlighted = index === highlightedIndex;
+    const explodeVector = isHighlighted
+      ? polarToCartesian(0, 0, explodeDistance, midAngle)
+      : { x: 0, y: 0 };
+    return {
+      ...segment,
+      start,
+      end,
+      midAngle,
+      pct,
+      labelPoint,
+      isHighlighted,
+      explodeVector,
+    };
   });
 
-  return (
-    <AbsoluteFill style={{ overflow: "hidden" }}>
-      <Background config={props.background} />
+  const showSideLabels = props.showLabels && layout.sideLabels && props.arcMode !== "semi" && !showInlineCallout;
+  const showDonutOverlay = props.donut && props.arcMode !== "semi";
+  const legendItems = props.showLegend && !showInlineCallout
+    ? props.segments.map((segment) => ({ label: segment.label, color: segment.color }))
+    : [];
+  const featuredSegment =
+    segmentData.find((segment) => segment.isHighlighted) ??
+    [...segmentData].sort((a, b) => b.value - a.value)[0];
+  const featuredValue = props.showPercentages
+    ? `${featuredSegment?.pct ?? 0}%`
+    : formatValue(featuredSegment?.value ?? 0, "", "");
+  const calloutTitle = props.calloutTitle ?? featuredSegment?.label ?? "Key Insight";
+  const calloutValue = props.calloutValue ?? featuredValue;
+  const calloutBody = props.calloutBody ?? (
+    featuredSegment
+      ? `${featuredSegment.label} contributes ${featuredSegment.pct}% of the total.`
+      : undefined
+  );
+  const shouldRenderCallout = showInlineCallout && Boolean(featuredSegment);
+  const calloutEyebrow = featuredSegment ? "Featured Slice" : "Key Insight";
 
+  return (
+    <ChartScaffold
+      background={props.background}
+      scale={scale}
+      panelWidth={panelWidth}
+      panelHeight={panelHeight}
+      panelPaddingX={panelPaddingX}
+      panelPaddingY={panelPaddingY}
+      panelBackground={panelBackground}
+      panelBorder={panelBorder}
+      panelShadow={panelShadow}
+      fxBoxShadow={fx.boxShadow}
+      subtleBlur={fx.subtleBlur}
+      panelBackdropBlur={props.layoutPreset === "social" ? 4 : 8}
+      exitOpacity={exitOpacity}
+      panelFilter={panelFilter}
+      floatY={floatY}
+      title={props.title}
+      subtitle={props.subtitle}
+      titleColor={props.titleColor}
+      subtitleColor={props.subtitleColor}
+      titleOpacity={titleOpacity}
+      subtitleOpacity={subtitleOpacity}
+      titleAlign={layout.titleAlign}
+      headerHeight={headerHeight}
+      headerGap={px(scale, layout.headerGap)}
+      titleSize={px(scale, props.layoutPreset === "social" ? (isPortrait || isSquare ? 54 : 50) : 54)}
+      subtitleSize={px(scale, props.layoutPreset === "social" ? 24 : 22)}
+      titleMaxWidth="90%"
+      subtitleMaxWidth={layout.titleAlign === "center" ? "72%" : "78%"}
+      typography={typo}
+      legendItems={legendItems}
+      legendHeight={props.layoutPreset === "social" ? px(scale, 54) : legendHeight}
+      legendOpacity={legendOpacity}
+      legendTextColor={props.legendTextColor}
+      legendFontSize={px(scale, props.layoutPreset === "social" ? 20 : 18)}
+      legendSwatchSize={px(scale, props.layoutPreset === "social" ? 20 : 18)}
+    >
       <div
         style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          height: `${contentHeight}px`,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: hasNarrativeSidebar ? "row" : "column",
           alignItems: "center",
-          opacity: exitOpacity,
-          boxShadow: fx.boxShadow,
-          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
+          justifyContent: calloutOnBottom ? "flex-start" : "center",
+          gap: `${contentGap}px`,
         }}
       >
-        {/* Title */}
-        {props.title && (
+        <div
+          style={{
+            width: `${hasNarrativeSidebar ? chartWidthBudget : Math.min(chartWidthBudget, panelWidth * 0.92)}px`,
+            minHeight: `${chartAreaHeight}px`,
+            flexShrink: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: `${props.arcMode === "semi" ? px(scale, 10) : 0}px`,
+          }}
+        >
           <div
             style={{
-              fontSize: Math.round(48 * scale) + "px",
-              fontWeight: typo.fontWeight ?? "bold",
-              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
-              color: props.titleColor,
-              marginBottom: "30px",
-              opacity: titleOpacity,
+              position: "relative",
+              width: `${chartSize}px`,
+              height: `${chartHeight}px`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {props.title}
-          </div>
-        )}
-
-        <div style={{ display: "flex", flexDirection: isPortrait ? "column" : "row", alignItems: "center", gap: Math.round((isPortrait ? 30 : 60) * scale) + "px" }}>
-          {/* Pie/Donut SVG */}
-          <svg
-            width={SIZE}
-            height={SIZE}
-            viewBox={"0 0 " + SIZE + " " + SIZE}
-            style={{
-              opacity: chartOpacity,
-              transform: "scale(" + chartScale + ")",
-            }}
-          >
-            {segmentData.map((seg, i) => {
-              if (seg.end - seg.start < 0.001) return null;
+            <svg
+              width={chartSize}
+              height={chartHeight}
+              viewBox={`0 0 ${chartSize} ${chartHeight}`}
+              style={{
+                opacity: chartOpacity,
+                transform: `scale(${chartScale})`,
+              }}
+            >
+            {props.arcMode === "semi" && props.showTrack && (
+              <path
+                d={
+                  props.donut
+                    ? describeDonutArc(centerX, centerY, outerRadius, innerRadius, baseStartAngle, baseStartAngle + chartSpan)
+                    : describeArc(centerX, centerY, outerRadius, baseStartAngle, baseStartAngle + chartSpan)
+                }
+                fill={props.trackColor}
+                opacity={0.28}
+                stroke={props.strokeColor}
+                strokeWidth={props.strokeWidth}
+              />
+            )}
+            {segmentData.map((segment) => {
+              if (segment.end - segment.start < 0.001) return null;
               const d = props.donut
-                ? describeDonutArc(CENTER, CENTER, outerR, innerR, seg.start, seg.end)
-                : describeArc(CENTER, CENTER, outerR, seg.start, seg.end);
-              return <path key={i} d={d} fill={seg.color} stroke={props.strokeColor} strokeWidth={props.strokeWidth} />;
+                ? describeDonutArc(centerX, centerY, outerRadius, innerRadius, segment.start, segment.end)
+                : describeArc(centerX, centerY, outerRadius, segment.start, segment.end);
+              return (
+                <path
+                  key={segment.label}
+                  d={d}
+                  fill={segment.isHighlighted && props.highlightColor ? props.highlightColor : segment.color}
+                  stroke={props.strokeColor}
+                  strokeWidth={props.strokeWidth}
+                  opacity={hasHighlight && !segment.isHighlighted ? props.dimOpacity : 1}
+                  transform={`translate(${segment.explodeVector.x} ${segment.explodeVector.y})`}
+                />
+              );
             })}
+
+            {!showSideLabels && props.showPercentages && segmentData.map((segment) => (
+              <text
+                key={`${segment.label}-pct`}
+                x={segment.labelPoint.x}
+                y={segment.labelPoint.y}
+                textAnchor={segment.labelPoint.x >= centerX ? "start" : "end"}
+                dominantBaseline="middle"
+                fill={props.valueColor}
+                opacity={labelOpacity * (hasHighlight && !segment.isHighlighted ? props.dimOpacity : 1)}
+                fontFamily={typo.fontFamily ?? "Arial, sans-serif"}
+                fontSize={px(scale, props.layoutPreset === "social" ? 20 : 20)}
+                fontWeight={700}
+                transform={`translate(${segment.explodeVector.x} ${segment.explodeVector.y})`}
+              >
+                {segment.pct}%
+              </text>
+            ))}
           </svg>
 
-          {/* Legend / Labels */}
-          {props.showLabels && (
+          {showDonutOverlay && (
+            <div
+              style={{
+                position: "absolute",
+                left: `${centerX - innerRadius}px`,
+                top: `${centerY - innerRadius}px`,
+                width: `${innerRadius * 2}px`,
+                height: `${innerRadius * 2}px`,
+                borderRadius: "999px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                background: alpha(props.background.type === "solid" ? props.background.color : props.strokeColor, 0.2),
+                backdropFilter: "blur(6px)",
+                opacity: labelOpacity,
+                padding: `${px(scale, 14)}px`,
+              }}
+            >
+              {centerLabel && (
+                <div
+                  style={{
+                    color: props.labelColor,
+                    fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                    fontSize: `${px(scale, props.layoutPreset === "social" ? 20 : 18)}px`,
+                    fontWeight: 500,
+                    marginBottom: `${px(scale, 8)}px`,
+                  }}
+                >
+                  {centerLabel}
+                </div>
+              )}
+              <div
+                style={{
+                  color: props.valueColor,
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                  fontSize: `${px(scale, props.layoutPreset === "social" ? 38 : 34)}px`,
+                  fontWeight: 700,
+                }}
+              >
+                {centerValue}
+              </div>
+            </div>
+          )}
+          </div>
+
+          {props.arcMode === "semi" && (
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "14px",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: `${px(scale, 8)}px`,
+                minWidth: `${px(scale, 180)}px`,
                 opacity: labelOpacity,
+                marginTop: `${px(scale, 4)}px`,
               }}
             >
-              {props.segments.map((seg, i) => {
-                const pct = Math.round((seg.value / total) * 100);
-                return (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <div
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        borderRadius: "4px",
-                        backgroundColor: seg.color,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontSize: "22px",
-                        fontFamily: typo.fontFamily ?? "Arial, sans-serif",
-                        color: props.labelColor,
-                      }}
-                    >
-                      {seg.label}
-                      {props.showPercentages && " (" + pct + "%)"}
-                    </span>
-                  </div>
-                );
-              })}
+              {centerLabel && (
+                <div
+                  style={{
+                    color: props.labelColor,
+                    fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                    fontSize: `${px(scale, props.layoutPreset === "social" ? 20 : 18)}px`,
+                    fontWeight: 500,
+                  }}
+                >
+                  {centerLabel}
+                </div>
+              )}
+              <div
+                style={{
+                  color: props.valueColor,
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                  fontSize: `${px(scale, props.layoutPreset === "social" ? 42 : 38)}px`,
+                  fontWeight: 700,
+                }}
+              >
+                {centerValue}
+              </div>
             </div>
           )}
         </div>
+
+        {shouldRenderCallout && !calloutOnBottom && (
+          <div
+            style={{
+              width: `${calloutWidth}px`,
+              borderRadius: `${px(scale, 24)}px`,
+              background: panelBackground,
+              border: `1px solid ${panelBorder}`,
+              boxShadow: panelShadow,
+              padding: `${px(scale, 28)}px`,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: `${px(scale, 14)}px`,
+              opacity: labelOpacity,
+              flexShrink: 0,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: `${px(scale, 12)}px`,
+              }}
+            >
+              <div
+                style={{
+                  width: `${px(scale, 18)}px`,
+                  height: `${px(scale, 18)}px`,
+                  borderRadius: `${px(scale, 6)}px`,
+                  backgroundColor: featuredSegment?.isHighlighted && props.highlightColor
+                    ? props.highlightColor
+                    : featuredSegment?.color,
+                }}
+              />
+              <div
+                style={{
+                  color: props.labelColor,
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                  fontSize: `${px(scale, 14)}px`,
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {calloutEyebrow}
+              </div>
+            </div>
+            <div
+              style={{
+                color: props.labelColor,
+                fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                fontSize: `${px(scale, 28)}px`,
+                fontWeight: 700,
+                lineHeight: 1.1,
+              }}
+            >
+              {calloutTitle}
+            </div>
+            <div
+              style={{
+                color: props.valueColor,
+                fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                fontSize: `${px(scale, 50)}px`,
+                fontWeight: 700,
+                lineHeight: 1,
+              }}
+            >
+              {calloutValue}
+            </div>
+            {calloutBody && (
+              <div
+                style={{
+                  color: props.labelColor,
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                  fontSize: `${px(scale, 19)}px`,
+                  lineHeight: 1.45,
+                  fontWeight: 500,
+                }}
+              >
+                {calloutBody}
+              </div>
+            )}
+          </div>
+        )}
+
+        {shouldRenderCallout && calloutOnBottom && (
+          <div
+            style={{
+              width: `${Math.min(panelWidth * 0.82, px(scale, 560))}px`,
+              borderRadius: `${px(scale, 24)}px`,
+              background: panelBackground,
+              border: `1px solid ${panelBorder}`,
+              boxShadow: panelShadow,
+              padding: `${px(scale, 22)}px ${px(scale, 24)}px`,
+              display: "flex",
+              flexDirection: "column",
+              gap: `${px(scale, 12)}px`,
+              opacity: labelOpacity,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: `${px(scale, 12)}px`,
+              }}
+            >
+              <div
+                style={{
+                  width: `${px(scale, 18)}px`,
+                  height: `${px(scale, 18)}px`,
+                  borderRadius: `${px(scale, 6)}px`,
+                  backgroundColor: featuredSegment?.isHighlighted && props.highlightColor
+                    ? props.highlightColor
+                    : featuredSegment?.color,
+                }}
+              />
+              <div
+                style={{
+                  color: props.labelColor,
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                  fontSize: `${px(scale, 14)}px`,
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {calloutEyebrow}
+              </div>
+            </div>
+            <div
+              style={{
+                color: props.labelColor,
+                fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                fontSize: `${px(scale, props.layoutPreset === "social" ? 24 : 22)}px`,
+                fontWeight: 700,
+                lineHeight: 1.15,
+              }}
+            >
+              {calloutTitle}
+            </div>
+            <div
+              style={{
+                color: props.valueColor,
+                fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                fontSize: `${px(scale, props.layoutPreset === "social" ? 38 : 34)}px`,
+                fontWeight: 700,
+                lineHeight: 1,
+              }}
+            >
+              {calloutValue}
+            </div>
+            {calloutBody && (
+              <div
+                style={{
+                  color: props.labelColor,
+                  fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                  fontSize: `${px(scale, props.layoutPreset === "social" ? 18 : 17)}px`,
+                  lineHeight: 1.45,
+                  fontWeight: 500,
+                }}
+              >
+                {calloutBody}
+              </div>
+            )}
+          </div>
+        )}
+
+        {showSideLabels && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: `${px(scale, 18)}px`,
+              width: `${Math.max(px(scale, 220), panelWidth * 0.24)}px`,
+              opacity: labelOpacity,
+            }}
+          >
+            {segmentData.map((segment) => (
+              <div
+                key={`${segment.label}-legend`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: `${px(scale, 12)}px`,
+                  opacity: hasHighlight && !segment.isHighlighted ? props.dimOpacity : 1,
+                }}
+              >
+                <div
+                  style={{
+                    width: `${px(scale, 18)}px`,
+                    height: `${px(scale, 18)}px`,
+                    borderRadius: `${px(scale, 6)}px`,
+                    backgroundColor: segment.isHighlighted && props.highlightColor ? props.highlightColor : segment.color,
+                    flexShrink: 0,
+                  }}
+                />
+                <div style={{ display: "flex", flexDirection: "column", gap: `${px(scale, 4)}px` }}>
+                  <span
+                    style={{
+                      color: props.labelColor,
+                      fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                      fontSize: `${px(scale, props.layoutPreset === "social" ? 22 : 20)}px`,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {segment.label}
+                  </span>
+                  <span
+                    style={{
+                      color: props.valueColor,
+                      fontFamily: typo.fontFamily ?? "Arial, sans-serif",
+                      fontSize: `${px(scale, props.layoutPreset === "social" ? 20 : 18)}px`,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {props.showPercentages ? `${segment.pct}%` : formatValue(segment.value, "", "")}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </AbsoluteFill>
+    </ChartScaffold>
   );
 };

@@ -1,7 +1,7 @@
 {
   "id": "pie-chart",
   "name": "Pie Chart",
-  "description": "Animated pie or donut chart with colored segments. Ideal for showing proportions, percentages, market share, and distributions.",
+  "description": "Premium infographic pie or donut chart for market share, budget split, percentage breakdowns, and composition storytelling.",
   "tags": ["chart", "pie", "donut", "data", "proportions", "percentages", "distribution", "dataviz"],
   "compatibleAnimations": ["spin", "fade-in", "scale-pop", "none"],
   "minDuration": 3,
