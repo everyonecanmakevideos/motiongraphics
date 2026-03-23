@@ -19,6 +19,9 @@ import barChartManifest from "./bar-chart/manifest.json";
 import { PieChartSchema } from "./pie-chart/schema";
 import pieChartManifest from "./pie-chart/manifest.json";
 
+import { LineChartSchema } from "./line-chart/schema";
+import lineChartManifest from "./line-chart/manifest.json";
+
 import { StatCounterSchema } from "./stat-counter/schema";
 import statCounterManifest from "./stat-counter/manifest.json";
 
@@ -30,6 +33,15 @@ import iconCalloutManifest from "./icon-callout/manifest.json";
 
 import { ComparisonLayoutSchema } from "./comparison-layout/schema";
 import comparisonLayoutManifest from "./comparison-layout/manifest.json";
+
+import { GroupedBarComparisonSchema } from "./grouped-bar-comparison/schema";
+import groupedBarComparisonManifest from "./grouped-bar-comparison/manifest.json";
+
+import { StackedBarBreakdownSchema } from "./stacked-bar-breakdown/schema";
+import stackedBarBreakdownManifest from "./stacked-bar-breakdown/manifest.json";
+
+import { UpdatingBarChartSchema } from "./updating-bar-chart/schema";
+import updatingBarChartManifest from "./updating-bar-chart/manifest.json";
 
 import { TimelineSceneSchema } from "./timeline-scene/schema";
 import timelineSceneManifest from "./timeline-scene/manifest.json";
@@ -106,6 +118,7 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
   { id: "stream-start", schema: StreamStartSchema, manifest: streamStartManifest as TemplateManifest },
   { id: "bar-chart", schema: BarChartSchema, manifest: barChartManifest as TemplateManifest },
   { id: "pie-chart", schema: PieChartSchema, manifest: pieChartManifest as TemplateManifest },
+  { id: "line-chart", schema: LineChartSchema, manifest: lineChartManifest as TemplateManifest },
   { id: "stat-counter", schema: StatCounterSchema, manifest: statCounterManifest as TemplateManifest },
   {
     id: "kinetic-typography",
@@ -121,6 +134,21 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "comparison-layout",
     schema: ComparisonLayoutSchema,
     manifest: comparisonLayoutManifest as TemplateManifest,
+  },
+  {
+    id: "grouped-bar-comparison",
+    schema: GroupedBarComparisonSchema,
+    manifest: groupedBarComparisonManifest as TemplateManifest,
+  },
+  {
+    id: "stacked-bar-breakdown",
+    schema: StackedBarBreakdownSchema,
+    manifest: stackedBarBreakdownManifest as TemplateManifest,
+  },
+  {
+    id: "updating-bar-chart",
+    schema: UpdatingBarChartSchema,
+    manifest: updatingBarChartManifest as TemplateManifest,
   },
   {
     id: "timeline-scene",

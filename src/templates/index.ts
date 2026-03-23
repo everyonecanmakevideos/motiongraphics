@@ -1,13 +1,19 @@
 import type { TemplateEntry } from "./types";
 
 import { HeroText } from "./hero-text/HeroText";
-import { BarChart } from "./bar-chart/BarChart";
 import { NewsAlert } from "./news-alert/NewsAlert";
+import { LoadingScreen } from "./loading-screen/LoadingScreen";
+import { StreamStart } from "./stream-start/StreamStart";
+import { BarChart } from "./bar-chart/BarChart";
 import { PieChart } from "./pie-chart/PieChart";
+import { LineChart } from "./line-chart/LineChart";
 import { StatCounter } from "./stat-counter/StatCounter";
 import { KineticTypography } from "./kinetic-typography/KineticTypography";
 import { IconCallout } from "./icon-callout/IconCallout";
 import { ComparisonLayout } from "./comparison-layout/ComparisonLayout";
+import { GroupedBarComparison } from "./grouped-bar-comparison/GroupedBarComparison";
+import { StackedBarBreakdown } from "./stacked-bar-breakdown/StackedBarBreakdown";
+import { UpdatingBarChart } from "./updating-bar-chart/UpdatingBarChart";
 import { TimelineScene } from "./timeline-scene/TimelineScene";
 import { CardLayout } from "./card-layout/CardLayout";
 import { SectionTitle } from "./section-title/SectionTitle";
@@ -26,13 +32,11 @@ import { CinematicTransition } from "./cinematic-transition/CinematicTransition"
 import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
 import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
 
-import { LoadingScreen } from "./loading-screen/LoadingScreen";
-import { StreamStart } from "./stream-start/StreamStart";
-
 import { TEMPLATE_DESCRIPTORS, getTemplateIdsFromDescriptors } from "./templateDescriptors";
 
 // Keep values untyped here; TemplateEntry's `component` type is intentionally very broad,
 // and most template components have more specific props. We cast when building the registry.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CLIENT_COMPONENTS: Record<string, any> = {
   "hero-text": HeroText,
   "news-alert": NewsAlert,
@@ -40,10 +44,14 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "stream-start": StreamStart,
   "bar-chart": BarChart,
   "pie-chart": PieChart,
+  "line-chart": LineChart,
   "stat-counter": StatCounter,
   "kinetic-typography": KineticTypography,
   "icon-callout": IconCallout,
   "comparison-layout": ComparisonLayout,
+  "grouped-bar-comparison": GroupedBarComparison,
+  "stacked-bar-breakdown": StackedBarBreakdown,
+  "updating-bar-chart": UpdatingBarChart,
   "timeline-scene": TimelineScene,
   "card-layout": CardLayout,
   "section-title": SectionTitle,
@@ -70,7 +78,6 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> = Object.fromEntri
       if (process.env.NODE_ENV !== "production") {
         console.error(`[templates] Missing client component for template "${d.id}"`);
       }
-      // Still create an entry to avoid hard crashes; TemplateRouter will show an error card.
       return [
         d.id,
         {
@@ -115,10 +122,21 @@ export function getTemplateDescriptions(): string {
     .map((entry) => {
       const m = entry.manifest;
       return (
-        "- " + m.id + ": " + m.description +
-        " [tags: " + m.tags.join(", ") + "]" +
-        " [animations: " + m.compatibleAnimations.join(", ") + "]" +
-        " [duration: " + m.minDuration + "-" + m.maxDuration + "s]"
+        "- " +
+        m.id +
+        ": " +
+        m.description +
+        " [tags: " +
+        m.tags.join(", ") +
+        "]" +
+        " [animations: " +
+        m.compatibleAnimations.join(", ") +
+        "]" +
+        " [duration: " +
+        m.minDuration +
+        "-" +
+        m.maxDuration +
+        "s]"
       );
     })
     .join("\n");

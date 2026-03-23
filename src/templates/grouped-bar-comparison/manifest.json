@@ -1,0 +1,10 @@
+{
+  "id": "grouped-bar-comparison",
+  "name": "Grouped Bar Comparison",
+  "description": "Premium grouped bar chart for side-by-side comparisons across months or categories. Ideal for year-over-year views, product A vs B, free vs paid, and multi-series business comparisons.",
+  "tags": ["chart", "bar", "grouped", "comparison", "dataviz", "analytics", "infographic", "business"],
+  "compatibleAnimations": ["grow", "fade-in", "slide-up", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}

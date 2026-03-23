@@ -1,5 +1,5 @@
 /**
- * Server-safe template registry — schemas and manifests only, NO React components.
+ * Server-safe template registry - schemas and manifests only, NO React components.
  * Use this in lib/ code (API routes, pipeline) to avoid pulling Remotion into the Next.js server bundle.
  */
 import type { z } from "zod";
@@ -16,17 +16,17 @@ export const SERVER_TEMPLATE_REGISTRY: Record<string, ServerTemplateEntry> = Obj
   TEMPLATE_DESCRIPTORS.map((d) => [
     d.id,
     { id: d.id, schema: d.schema, manifest: d.manifest } satisfies ServerTemplateEntry,
-  ])
+  ]),
 ) as Record<string, ServerTemplateEntry>;
 
 if (process.env.NODE_ENV !== "production") {
   const descriptorIds = getTemplateIdsFromDescriptors().sort();
   const registryIds = Object.keys(SERVER_TEMPLATE_REGISTRY).sort();
   if (descriptorIds.join("|") !== registryIds.join("|")) {
-    console.error(
-      "[templates] Server registry drift detected. Missing/extra ids:",
-      { descriptorIds, registryIds },
-    );
+    console.error("[templates] Server registry drift detected. Missing/extra ids:", {
+      descriptorIds,
+      registryIds,
+    });
   }
 }
 
