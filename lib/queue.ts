@@ -23,7 +23,12 @@ import { STEP_LABELS, TEMPLATE_STEP_LABELS } from "./types";
 
 // ── State ──────────────────────────────────────────────────────────────────
 
-const jobQueue: string[] = [];
+interface QueueJob {
+  jobId: string;
+  previewOnly: boolean;
+}
+
+const jobQueue: QueueJob[] = [];
 let isProcessing = false;
 const subscribers = new Map<string, Set<ReadableStreamDefaultController<Uint8Array>>>();
 
@@ -63,17 +68,17 @@ function emit(jobId: string, event: SSEEvent): void {
 
 // ── Queue public API ───────────────────────────────────────────────────────
 
-export function enqueueJob(jobId: string): void {
-  jobQueue.push(jobId);
+export function enqueueJob(jobId: string, opts?: { previewOnly?: boolean }): void {
+  jobQueue.push({ jobId, previewOnly: Boolean(opts?.previewOnly) });
   processNext();
 }
 
 function processNext(): void {
   if (isProcessing || jobQueue.length === 0) return;
   isProcessing = true;
-  const jobId = jobQueue.shift()!;
-  runPipeline(jobId)
-    .catch((err) => console.error("[queue] Unhandled error for", jobId, err))
+  const queued = jobQueue.shift()!;
+  runPipeline(queued.jobId, queued.previewOnly)
+    .catch((err) => console.error("[queue] Unhandled error for", queued.jobId, err))
     .finally(() => {
       isProcessing = false;
       processNext();
@@ -97,7 +102,7 @@ async function failJob(jobId: string, step: number, error: string): Promise<void
   emit(jobId, { jobId, step, status: "failed", label: "Failed: " + error.slice(0, 200), error });
 }
 
-async function runPipeline(jobId: string): Promise<void> {
+async function runPipeline(jobId: string, previewOnly: boolean): Promise<void> {
   const job = await getJob(jobId);
   if (!job) return;
 
@@ -105,8 +110,18 @@ async function runPipeline(jobId: string): Promise<void> {
   emit(jobId, { jobId, step: 1, status: "queued", label: STEP_LABELS[1] });
 
   try {
+    // Preview mode: use template pipeline (so template params like `currentStep` exist),
+    // but skip MP4 rendering/upload.
+    if (previewOnly) {
+      const usedTemplate = await tryTemplatePipeline(jobId, job.prompt, true);
+      if (usedTemplate) return;
+      // If template routing declined, fall back to legacy preview (generated code, no MP4).
+      await runLegacyPipeline(jobId, job.prompt, true);
+      return;
+    }
+
     // ── Try template path first ───────────────────────────────────────────
-    const templateResult = await tryTemplatePipeline(jobId, job.prompt);
+    const templateResult = await tryTemplatePipeline(jobId, job.prompt, false);
     if (templateResult) return; // Template path succeeded
 
     // ── Fallback to legacy pipeline ───────────────────────────────────────
@@ -123,15 +138,17 @@ async function runPipeline(jobId: string): Promise<void> {
  * Returns true if the template path was used (success or failure).
  * Returns false if the system decided to fall back to legacy.
  */
-async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boolean> {
+async function tryTemplatePipeline(jobId: string, prompt: string, previewOnly: boolean): Promise<boolean> {
   try {
     // Step 2: Analyze intent
     await setStep(jobId, 2, "analyzing_intent");
     emit(jobId, { jobId, step: 2, status: "analyzing_intent", label: TEMPLATE_STEP_LABELS[2], pipelineMode: "template" });
     const rawIntent = await analyzeIntent(prompt);
+    await updateJob(jobId, { debug_intent_analyzer: rawIntent });
 
     // ── Creative enhancement ──────────────────────────────────────────
     const intent = await applyCreativeLayer(prompt, rawIntent);
+    await updateJob(jobId, { debug_intent_creative: intent });
 
     // ── Multi-scene path ────────────────────────────────────────────────
     if (isMultiSceneResult(intent)) {
@@ -157,6 +174,17 @@ async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boole
         label: "Rendering " + intent.scenes.length + " scenes...",
         pipelineMode: "template", templateId: firstTemplateId,
       });
+
+      if (previewOnly) {
+        await updateJob(jobId, { status: "done", step: 8 });
+        emit(jobId, {
+          jobId, step: 8, status: "done",
+          label: "Preview ready in Remotion Studio",
+          pipelineMode: "template",
+          templateId: firstTemplateId,
+        });
+        return true;
+      }
 
       const aspectRatio = intent.aspect_ratio;
       const result = await renderMultiScene(jobId, resolution.scenes!, resolution.totalDurationFrames!, aspectRatio);
@@ -206,6 +234,17 @@ async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boole
 
     const durationSec = (templateParams.duration as number) ?? 6;
     const aspectRatio = intent.aspect_ratio;
+    if (previewOnly) {
+      await updateJob(jobId, { status: "done", step: 8 });
+      emit(jobId, {
+        jobId, step: 8, status: "done",
+        label: "Preview ready in Remotion Studio",
+        pipelineMode: "template",
+        templateId,
+      });
+      return true;
+    }
+
     const result = await renderTemplate(jobId, templateId, templateParams, durationSec, aspectRatio);
 
     // Step 4: Done
@@ -234,7 +273,7 @@ async function tryTemplatePipeline(jobId: string, prompt: string): Promise<boole
 }
 
 /** The original legacy pipeline (expand → spec → code → render). */
-async function runLegacyPipeline(jobId: string, prompt: string): Promise<void> {
+async function runLegacyPipeline(jobId: string, prompt: string, previewOnly = false): Promise<void> {
   // Step 2: Expand simple prompt into detailed prompt
   await setStep(jobId, 2, "expanding");
   const expandResult = await expandPrompt(prompt);
@@ -285,6 +324,17 @@ async function runLegacyPipeline(jobId: string, prompt: string): Promise<void> {
     } else {
       console.log("[queue] TS fixed on retry for", jobId);
     }
+  }
+
+  if (previewOnly) {
+    await updateJob(jobId, { status: "done", step: 8 });
+    emit(jobId, {
+      jobId,
+      step: 8,
+      status: "done",
+      label: "Preview ready in Remotion Studio",
+    });
+    return;
   }
 
   // Step 7: Render (with code-fix retry on failure)

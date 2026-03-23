@@ -24,6 +24,7 @@ TEMPLATE SELECTION RULES — follow these strictly:
 
 | User wants... | templateId |
 |---------------|------------|
+| Breaking news, Breaking News, breaking update, urgent headline, live bulletin, TV news ticker, LIVE badge | "news-alert" |
 | Single headline/title card, intro screen, bold statement | "hero-text" |
 | Bar chart, bar graph, comparing values, rankings | "bar-chart" |
 | Pie chart, donut chart, proportions, percentages, market share | "pie-chart" |
@@ -31,7 +32,7 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Multi-line text, quote, lyrics, poetry, word-by-word reveal | "kinetic-typography" |
 | Icon with text, feature highlight, callout, explainer | "icon-callout" |
 | Side-by-side comparison, versus, pros/cons, A vs B | "comparison-layout" |
-| Timeline, roadmap, milestones, steps, process, history | "timeline-scene" |
+| Timeline, roadmap, milestones, history | "timeline-scene" |
 | Card grid, feature list, services, pricing, info cards | "card-layout" |
 | Section divider, chapter break, topic transition, section heading | "section-title" |
 | Bullet list, key points, agenda, items, checklist | "bullet-list" |
@@ -41,7 +42,7 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Two panels, left/right layout, dual content, split view | "split-screen" |
 | Problem and solution, challenge and answer, issue and fix | "problem-solution" |
 | Before and after, transformation, change, improvement | "before-after" |
-| Numbered steps, process flow, workflow, procedure, how-to | "process-steps" |
+| Numbered steps, onboarding steps, step 1/2/3 phrasing, process flow, workflow, procedure, how-to | "process-steps" |
 | Map, locations, geographic markers, global presence, offices | "map-highlight" |
 | Masked text reveal, cinematic unveil, text behind mask, wipe reveal, circle reveal | "masked-text-reveal" |
 | Cinematic title, movie-style intro, dramatic opening, epic hero title, film title card | "cinematic-hero" |
@@ -82,6 +83,9 @@ KINETIC-TYPOGRAPHY ANIMATION: same as hero-text (fade-in, slide-up, scale-pop, b
 ICON-CALLOUT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 COMPARISON-LAYOUT ANIMATION: "slide-in" (sides slide from edges), "fade-in", "scale-pop", "none"
 TIMELINE-SCENE ANIMATION: "progressive" (milestones appear along a growing line), "fade-in", "slide-up", "none"
+TIMELINE-SCENE MILESTONE ICONS (optional):
+- Each milestone object may optionally include: "iconId": one of the AVAILABLE ICON IDS listed above.
+- If "iconId" is omitted, the template can fall back to a dot/ring/diamond marker style.
 CARD-LAYOUT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 SECTION-TITLE ANIMATION: "fade-in", "slide-up", "scale-pop", "blur-reveal", "none"
 BULLET-LIST ANIMATION: "fade-in" (items stagger), "slide-up" (items stagger up), "scale-pop", "none"
@@ -93,6 +97,17 @@ PROBLEM-SOLUTION ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has
 BEFORE-AFTER ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "revealStyle": "wipe"|"fade"|"split"
 PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in", "slide-up", "none"
 MAP-HIGHLIGHT ANIMATION: "fade-in", "scale-pop", "progressive" (markers appear one by one), "none"
+
+CURRENT-STEP HIGHLIGHTING (process-steps only):
+- If the user says "highlight current step", "current step", or explicitly references a numbered step (e.g., "highlight step 2" / "step 1, step 2, step 3" and highlight one of them), set currentStep to the step number (1-based).
+- If the user does not specify which step should be highlighted, omit currentStep entirely.
+- Never use non-schema animation tokens for highlighting; keep entranceAnimation within the allowed PROCESS-STEPS animation values listed above.
+
+PROCESS-STEPS PARAMS (icons + subtitle, optional):
+- title is optional (but if the user provides a heading, include it).
+- subtitle is optional (use when user provides a tagline/secondary line under the heading).
+- each steps[] entry may optionally include iconId chosen from the AVAILABLE ICON IDS list above.
+- if iconId is omitted, the template will fall back to the step number marker.
 
 MASKED-TEXT-REVEAL MASK SHAPES:
 | User says... | maskShape |
@@ -125,6 +140,7 @@ ASPECT RATIO RULES:
 - If user mentions "4:3" or "classic" → use "4:3"
 
 CRITICAL RULES:
+0. If the user prompt contains any of these (case-insensitive): "breaking news", "Breaking News", "breaking update", "urgent headline", "live bulletin", "news ticker" => MUST use templateId "news-alert" (even if it looks like a generic headline).
 1. Read the prompt carefully. Pick the template that best matches the user's intent. Fill ALL required parameters.
 2. "background" is REQUIRED for every template, scene, and region. If user doesn't specify, use { "type": "solid", "color": "#111111" }.
 3. "entranceAnimation" is REQUIRED. Template-specific defaults when user doesn't specify:
@@ -214,7 +230,7 @@ Prompt: "Before: Manual testing with 3-day cycles. After: Automated testing with
 Response: { "templateId": "before-after", "params": { "beforeTitle": "Manual Testing", "afterTitle": "Automated Testing", "beforeItems": ["3-day test cycles", "Human error prone", "Limited coverage"], "afterItems": ["Instant feedback", "Consistent results", "Full coverage"], "revealStyle": "wipe", "beforeColor": "#EF4444", "afterColor": "#10B981", "textColor": "#E2E8F0", "background": { "type": "grain", "baseColor": "#111827", "grainOpacity": 0.05 }, "entranceAnimation": "fade-in", "duration": 7 }, "confidence": "high", "reasoning": "Before/after transformation → before-after with wipe reveal", "aspect_ratio": "16:9" }
 
 Prompt: "Show the onboarding process: Sign Up → Verify Email → Set Profile → Start Using"
-Response: { "templateId": "process-steps", "params": { "title": "Onboarding Process", "steps": [{"label":"Sign Up"},{"label":"Verify Email"},{"label":"Set Profile"},{"label":"Start Using"}], "connectorStyle": "arrow", "titleColor": "#F8FAFC", "stepColor": "#818CF8", "textColor": "#CBD5E1", "numberColor": "#F8FAFC", "background": { "type": "gradient", "from": "#10101A", "to": "#1A2040", "direction": "to-right" }, "entranceAnimation": "progressive", "duration": 7 }, "confidence": "high", "reasoning": "Sequential steps with flow → process-steps with progressive animation", "aspect_ratio": "16:9" }
+Response: { "templateId": "process-steps", "params": { "title": "Onboarding Process", "subtitle": "Get started in seconds", "steps": [{"label":"Sign Up","iconId":"user"},{"label":"Verify Email","iconId":"bell"},{"label":"Set Profile","iconId":"smartphone"},{"label":"Start Using","iconId":"arrow-right"}], "connectorStyle": "arrow", "titleColor": "#F8FAFC", "stepColor": "#818CF8", "textColor": "#CBD5E1", "numberColor": "#F8FAFC", "background": { "type": "gradient", "from": "#10101A", "to": "#1A2040", "direction": "to-right" }, "entranceAnimation": "progressive", "duration": 7 }, "confidence": "high", "reasoning": "Sequential steps with flow → process-steps with progressive animation (icons + subtitle)", "aspect_ratio": "16:9" }
 
 Prompt: "Show our global offices on a map: New York (25%, 30%), London (45%, 22%), Tokyo (80%, 35%), Sydney (85%, 70%)"
 Response: { "templateId": "map-highlight", "params": { "title": "Global Offices", "locations": [{"label":"New York","x":25,"y":30},{"label":"London","x":45,"y":22},{"label":"Tokyo","x":80,"y":35},{"label":"Sydney","x":85,"y":70}], "mapStyle": "world-dots", "markerPulse": true, "connectionLines": true, "markerColor": "#38BDF8", "titleColor": "#F8FAFC", "labelColor": "#CBD5E1", "mapColor": "#1E293B", "background": { "type": "gradient", "from": "#020010", "to": "#0A0030", "direction": "radial" }, "entranceAnimation": "progressive", "duration": 7 }, "confidence": "high", "reasoning": "Office locations on map → map-highlight with progressive markers", "aspect_ratio": "16:9" }
@@ -354,10 +370,106 @@ function validateMultiSceneParams(result: MultiSceneResult): string[] {
 }
 
 export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
+  // Heuristic fallback: when OpenAI is unavailable/broken, still route
+  // obvious "numbered onboarding steps" prompts to process-steps so the
+  // template (and current-step highlighting) works reliably.
+
+  function maybeInjectDeliveryProcessStepIconsEarly(p: string, result: IntentResult): void {
+    if (result.templateId !== "process-steps") return;
+    const l = p.toLowerCase();
+    const wantsDelivery =
+      l.includes("delivery") ||
+      l.includes("out for delivery") ||
+      l.includes("on the way") ||
+      l.includes("order") ||
+      l.includes("track") ||
+      l.includes("shipped") ||
+      l.includes("prepar") ||
+      l.includes("prepared") ||
+      l.includes("delivered");
+    if (!wantsDelivery) return;
+    const stepsAny = result.params?.steps;
+    if (!Array.isArray(stepsAny)) return;
+
+    const normalizedToIcon = (label: string): string | undefined => {
+      const ll = label.toLowerCase();
+      if (ll.includes("order placed") || ll.includes("placed") || ll.includes("order")) return "checkmark";
+      if (ll.includes("prepar") || ll.includes("being prepared")) return "gear";
+      if (ll.includes("out for delivery") || ll.includes("on the way") || ll.includes("deliver")) return "truck";
+      if (ll.includes("delivered") || ll.includes("complete") || ll.includes("received")) return "home";
+      return undefined;
+    };
+
+    result.params = {
+      ...result.params,
+      steps: stepsAny.map((s: any, i: number) => {
+        if (!s || typeof s !== "object") return s;
+        if (typeof s.iconId === "string" && s.iconId.trim()) return s;
+        const label = typeof s.label === "string" ? s.label : "";
+        const inferred = normalizedToIcon(label);
+        if (inferred) return { ...s, iconId: inferred };
+        const fallback = [undefined, "checkmark", "gear", "truck", "home"][i + 1];
+        return fallback ? { ...s, iconId: fallback } : s;
+      }),
+    };
+  }
+
+  const heuristic = heuristicProcessStepsIntent(prompt);
+  if (heuristic) {
+    maybeInjectDeliveryProcessStepIconsEarly(prompt, heuristic);
+    return heuristic;
+  }
+
+  // Heuristic fallback for simple text animations (so we don't need OpenAI
+  // just to pick hero-text and set headline).
+  const textHeuristic = heuristicHeroTextFromTextAnimation(prompt);
+  if (textHeuristic) return textHeuristic;
+
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   const MAX_RETRIES = 2;
   let lastError = "";
+
+  function maybeInjectDeliveryProcessStepIcons(p: string, result: IntentResult): void {
+    if (result.templateId !== "process-steps") return;
+    const l = p.toLowerCase();
+    const wantsDelivery =
+      l.includes("delivery") ||
+      l.includes("out for delivery") ||
+      l.includes("on the way") ||
+      l.includes("order") ||
+      l.includes("track") ||
+      l.includes("shipped") ||
+      l.includes("prepar") ||
+      l.includes("prepared") ||
+      l.includes("delivered");
+    if (!wantsDelivery) return;
+    const stepsAny = result.params?.steps;
+    if (!Array.isArray(stepsAny)) return;
+
+    const normalizedToIcon = (label: string): string | undefined => {
+      const ll = label.toLowerCase();
+      if (ll.includes("order placed") || ll.includes("placed") || ll.includes("order")) return "checkmark";
+      if (ll.includes("prepar") || ll.includes("being prepared")) return "gear";
+      if (ll.includes("out for delivery") || ll.includes("on the way") || ll.includes("deliver")) return "truck";
+      if (ll.includes("delivered") || ll.includes("complete") || ll.includes("received")) return "home";
+      return undefined;
+    };
+
+    result.params = {
+      ...result.params,
+      steps: stepsAny.map((s: any, i: number) => {
+        if (!s || typeof s !== "object") return s;
+        if (typeof s.iconId === "string" && s.iconId.trim()) return s;
+        const label = typeof s.label === "string" ? s.label : "";
+        const inferred = normalizedToIcon(label);
+        if (inferred) return { ...s, iconId: inferred };
+        // Fallback by progression index for delivery-style step sets.
+        const fallback = [undefined, "checkmark", "gear", "truck", "home"][i + 1];
+        return fallback ? { ...s, iconId: fallback } : s;
+      }),
+    };
+  }
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -425,6 +537,7 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
         }
       }
 
+      maybeInjectDeliveryProcessStepIcons(prompt, singleResult);
       return singleResult;
     } catch (err) {
       lastError = (err as Error).message;
@@ -440,5 +553,126 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
     params: {},
     confidence: "low",
     reasoning: "Intent analysis failed: " + lastError,
+  };
+}
+
+function heuristicProcessStepsIntent(prompt: string): IntentResult | null {
+  const normalized = prompt.toLowerCase();
+
+  const hasOnboardingHints =
+    normalized.includes("onboarding") ||
+    normalized.includes("on-boarding") ||
+    normalized.includes("on board") ||
+    normalized.includes("signup") ||
+    normalized.includes("sign up") ||
+    normalized.includes("step") ||
+    normalized.includes("steps");
+
+  if (!hasOnboardingHints) return null;
+
+  // Extract step numbers (e.g. "step 1", "step 2", ...)
+  const stepNums: number[] = [];
+  const seen = new Set<number>();
+  const stepRegex = /step\s*(\d{1,2})/gim;
+  let match: RegExpExecArray | null = null;
+  while ((match = stepRegex.exec(prompt)) !== null) {
+    const n = Number(match[1]);
+    if (!Number.isFinite(n)) continue;
+    if (n < 1 || n > 6) continue;
+    if (seen.has(n)) continue;
+    seen.add(n);
+    stepNums.push(n);
+  }
+
+  if (stepNums.length < 3) return null;
+
+  // Parse UI-added constraints if present.
+  const durationMatch = prompt.match(/Total duration:\s*(\d+)\s*s/i);
+  const durationRaw = durationMatch ? Number(durationMatch[1]) : undefined;
+  const durationSec = typeof durationRaw === "number" && Number.isFinite(durationRaw)
+    ? Math.min(15, Math.max(3, Math.round(durationRaw)))
+    : undefined;
+
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+
+  // If user explicitly says "highlight step X", set currentStep.
+  const explicitCurrentStep =
+    (() => {
+      const m =
+        prompt.match(/highlight\s*(?:current\s*)?step\s*(\d{1,2})/i) ||
+        prompt.match(/current\s*step\s*(\d{1,2})/i) ||
+        prompt.match(/highlight\s*step\s*(\d{1,2})/i);
+      if (!m) return null;
+      const n = Number(m[1]);
+      if (!Number.isFinite(n)) return null;
+      if (n < 1 || n > 6) return null;
+      return n;
+    })() ?? undefined;
+
+  return {
+    templateId: "process-steps",
+    confidence: "high",
+    reasoning: "Heuristic: detected numbered onboarding steps prompt",
+    aspect_ratio,
+    params: {
+      entranceAnimation: "progressive",
+      connectorStyle: "arrow",
+      duration: durationSec ?? 7,
+      steps: stepNums.map((n) => ({ label: "Step " + n })),
+      ...(typeof explicitCurrentStep === "number" ? { currentStep: explicitCurrentStep } : {}),
+    },
+  };
+}
+
+function heuristicHeroTextFromTextAnimation(prompt: string): IntentResult | null {
+  const normalized = prompt.toLowerCase();
+
+  const looksLikeTextAnimation =
+    normalized.includes("text animation") ||
+    normalized.includes("animate text") ||
+    normalized.includes("typewriter") ||
+    normalized.includes("letter by letter") ||
+    normalized.includes("character by character");
+
+  if (!looksLikeTextAnimation) return null;
+
+  // Try to extract the first quoted phrase.
+  // Handles both straight quotes "..." and curly quotes “...”.
+  const quoted =
+    prompt.match(/["“]([^"”]{1,120})["”]/)?.[1]?.trim() ||
+    prompt.match(/saying\s+["“]([^"”]{1,120})["”]/i)?.[1]?.trim();
+
+  const headline = quoted && quoted.length > 0 ? quoted : null;
+  if (!headline) return null;
+
+  const durationMatch = prompt.match(/Total duration:\s*(\d+)\s*s/i);
+  const durationRaw = durationMatch ? Number(durationMatch[1]) : undefined;
+  const durationSec = typeof durationRaw === "number" && Number.isFinite(durationRaw)
+    ? Math.min(15, Math.max(2, Math.round(durationRaw)))
+    : undefined;
+
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+
+  const entranceAnimation =
+    normalized.includes("typewriter") ||
+    normalized.includes("letter by letter") ||
+    normalized.includes("character by character")
+      ? "typewriter"
+      : "typewriter";
+
+  return {
+    templateId: "hero-text",
+    confidence: "high",
+    reasoning: "Heuristic: detected simple text animation prompt with quoted headline",
+    aspect_ratio,
+    params: {
+      headline,
+      entranceAnimation,
+      duration: durationSec ?? 6,
+      style: "centered",
+      decoration: "none",
+    },
   };
 }

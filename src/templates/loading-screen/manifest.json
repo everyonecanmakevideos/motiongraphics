@@ -1,0 +1,11 @@
+{
+  "id": "loading-screen",
+  "name": "Loading Screen",
+  "description": "Premium minimal UI loading state with functional progress feedback (dots/bar).",
+  "tags": ["loading", "please wait", "ui", "product", "minimal", "saaS"],
+  "compatibleAnimations": ["fade-in", "none"],
+  "minDuration": 2,
+  "maxDuration": 15,
+  "defaultDuration": 4
+}
+

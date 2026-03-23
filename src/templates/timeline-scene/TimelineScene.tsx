@@ -7,6 +7,7 @@ import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
 import { resolveMotionStyle } from "../../primitives/useMotionStyle";
 import { resolveEffects } from "../../primitives/useEffects";
+import { Asset } from "../../assets/Asset";
 import type { TimelineSceneProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
@@ -14,6 +15,33 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, isPortrait, scale } = useResponsiveConfig();
+
+  const fontWeightMap: Record<string, number> = {
+    regular: 400,
+    medium: 500,
+    bold: 700,
+    black: 900,
+  };
+
+  const titleWeight = props.titleFontWeight ? fontWeightMap[props.titleFontWeight] : undefined;
+
+  const subtitleWeight = props.subtitleFontWeight
+    ? fontWeightMap[props.subtitleFontWeight]
+    : undefined;
+
+  const labelWeight = props.labelFontWeight
+    ? fontWeightMap[props.labelFontWeight]
+    : undefined;
+
+  const descriptionWeight = props.descriptionFontWeight
+    ? fontWeightMap[props.descriptionFontWeight]
+    : undefined;
+
+  const nodeSize = Math.round(props.nodeSizePx * scale);
+  const timelineHeight = Math.round(200 * scale);
+  const lineThickness = Math.max(2, Math.round(3 * scale));
+  const lineY = Math.round(20 * scale);
+  const nodeTop = Math.round(lineY - nodeSize / 2);
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -25,6 +53,14 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
   const typo = resolveTypography(resolved.typography);
   const motion = resolveMotionStyle(resolved.motionStyle);
   const fx = resolveEffects(resolved.effects);
+
+  const baseTypoWeight = typeof typo.fontWeight === "number" ? typo.fontWeight : 700;
+  const titleWeightResolved = titleWeight ?? baseTypoWeight;
+  const labelWeightResolved =
+    labelWeight ?? (baseTypoWeight >= 900 ? 600 : baseTypoWeight >= 700 ? 500 : 400);
+  const subtitleWeightResolved = subtitleWeight ?? labelWeightResolved;
+  const descriptionWeightResolved =
+    descriptionWeight ?? (labelWeightResolved >= 500 ? 400 : labelWeightResolved);
 
   const totalFrames = secToFrame(props.duration);
   const count = props.milestones.length;
@@ -80,15 +116,31 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
           <div
             style={{
               fontSize: Math.round(48 * scale) + "px",
-              fontWeight: typo.fontWeight ?? "bold",
+              fontWeight: titleWeightResolved,
               fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
               letterSpacing: typo.letterSpacing ?? undefined,
               color: props.titleColor,
-              marginBottom: "60px",
+              marginBottom: Math.round(props.titleGapPx * scale) + "px",
               opacity: titleOpacity,
             }}
           >
             {props.title}
+          </div>
+        )}
+
+        {/* Subtitle */}
+        {props.subtitle && (
+          <div
+            style={{
+              fontSize: Math.round(props.subtitleFontSizePx * scale) + "px",
+              fontWeight: subtitleWeightResolved,
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
+              color: props.subtitleColor,
+              marginBottom: Math.round(props.subtitleGapPx * scale) + "px",
+              opacity: titleOpacity,
+            }}
+          >
+            {props.subtitle}
           </div>
         )}
 
@@ -97,17 +149,17 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
           style={{
             position: "relative",
             width: timelineWidth + "px",
-            height: "200px",
+            height: timelineHeight + "px",
           }}
         >
           {/* Horizontal line */}
           <div
             style={{
               position: "absolute",
-              top: "20px",
+              top: lineY + "px",
               left: "0",
               width: lineProgress + "%",
-              height: "3px",
+              height: lineThickness + "px",
               backgroundColor: props.lineColor,
               borderRadius: "2px",
             }}
@@ -161,38 +213,75 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
                   alignItems: "center",
                 }}
               >
-                {/* Marker */}
+                {/* Marker (icon-in-circle style when milestone.iconId is provided) */}
                 <div
                   style={{
-                    width: "16px",
-                    height: "16px",
-                    borderRadius: props.markerStyle === "diamond" ? "2px" : "50%",
-                    backgroundColor: props.markerStyle === "ring" ? "transparent" : props.dotColor,
-                    border: "3px solid " + (props.markerStyle === "ring" ? props.dotColor : props.lineColor),
-                    transform: props.markerStyle === "diamond" ? "rotate(45deg)" : undefined,
+                    width: nodeSize + "px",
+                    height: nodeSize + "px",
+                    borderRadius: "9999px",
                     position: "absolute",
-                    top: "12px",
-                    opacity: dotOpacity,
+                    top: nodeTop + "px",
                     zIndex: 2,
+                    backgroundColor:
+                      ms.iconId && dotOpacity > 0 ? props.dotColor : "transparent",
+                    border: `${Math.max(2, Math.round(2 * scale))}px solid ${
+                      ms.iconId
+                        ? dotOpacity > 0
+                          ? props.dotColor
+                          : props.dotColor + "40"
+                        : props.markerStyle === "ring"
+                          ? props.dotColor
+                          : props.lineColor
+                    }`,
+                    opacity: ms.iconId ? 1 : dotOpacity,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
-                />
+                >
+                  {ms.iconId ? (
+                    <div style={{ opacity: dotOpacity }}>
+                      <Asset
+                        id={ms.iconId}
+                        width={Math.max(14, Math.round((nodeSize * 0.48) as number))}
+                        height={Math.max(14, Math.round((nodeSize * 0.48) as number))}
+                        color={props.textColor}
+                      />
+                    </div>
+                  ) : (
+                    // Fallback to the original dot/ring/diamond marker when iconId is missing.
+                    <div
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: props.markerStyle === "diamond" ? "2px" : "50%",
+                        backgroundColor:
+                          props.markerStyle === "ring" ? "transparent" : props.dotColor,
+                        border:
+                          "3px solid " +
+                          (props.markerStyle === "ring" ? props.dotColor : props.lineColor),
+                        transform: props.markerStyle === "diamond" ? "rotate(45deg)" : undefined,
+                        opacity: dotOpacity,
+                      }}
+                    />
+                  )}
+                </div>
 
                 {/* Label + description */}
                 <div
                   style={{
                     position: "absolute",
-                    top: isEven ? "44px" : undefined,
-                    bottom: isEven ? undefined : "170px",
+                    top: nodeTop + nodeSize + Math.round(10 * scale) + "px",
                     textAlign: "center",
-                    width: "180px",
+                    width: Math.round(180 * scale) + "px",
                     opacity: textOpacity,
                     transform: "translateY(" + textY + "px)",
                   }}
                 >
                   <div
                     style={{
-                      fontSize: "20px",
-                      fontWeight: typo.fontWeight ?? "bold",
+                      fontSize: Math.round(props.labelFontSizePx * scale) + "px",
+                      fontWeight: labelWeightResolved,
                       fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                       color: props.textColor,
                       letterSpacing: typo.letterSpacing ?? undefined,
@@ -204,11 +293,12 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
                   {ms.description && (
                     <div
                       style={{
-                        fontSize: "15px",
+                        fontSize: Math.round(props.descriptionFontSizePx * scale) + "px",
                         fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                         color: props.descriptionColor,
                         lineHeight: typo.lineHeight ?? 1.3,
                         letterSpacing: typo.letterSpacing ?? undefined,
+                        fontWeight: descriptionWeightResolved,
                       }}
                     >
                       {ms.description}

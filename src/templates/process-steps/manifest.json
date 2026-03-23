@@ -2,7 +2,7 @@
   "id": "process-steps",
   "name": "Process Steps",
   "description": "Numbered process flow with 3-6 steps and connectors. Ideal for workflows, procedures, and step-by-step guides.",
-  "tags": ["process", "steps", "flow", "workflow", "procedure", "numbered", "guide"],
+  "tags": ["process", "steps", "flow", "workflow", "procedure", "numbered", "guide", "onboarding", "current-step"],
   "compatibleAnimations": ["progressive", "fade-in", "slide-up", "none"],
   "minDuration": 3,
   "maxDuration": 15,

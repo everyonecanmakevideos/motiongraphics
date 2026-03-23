@@ -1,0 +1,11 @@
+{
+  "id": "news-alert",
+  "name": "News Alert",
+  "description": "TV-style breaking news banner with LIVE badge and kinetic headline entrance.",
+  "tags": ["news", "ticker", "breaking", "live", "broadcast"],
+  "compatibleAnimations": ["fade-in", "slide-up", "slide-left", "slide-right", "scale-pop", "blur-reveal", "none"],
+  "minDuration": 2,
+  "maxDuration": 15,
+  "defaultDuration": 6
+}
+

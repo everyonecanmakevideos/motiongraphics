@@ -12,11 +12,26 @@ async function ensureDb() {
   }
 }
 
+function normalizeAspectRatio(input: unknown): string {
+  const allowed = new Set(["16:9", "9:16", "1:1", "4:5"]);
+  const value = typeof input === "string" ? input : "16:9";
+  return allowed.has(value) ? value : "16:9";
+}
+
+function normalizeDuration(input: unknown): number {
+  const n = typeof input === "number" ? input : Number(input);
+  if (!Number.isFinite(n)) return 6;
+  return Math.min(15, Math.max(2, Math.round(n)));
+}
+
 export async function POST(req: NextRequest) {
   try {
     await ensureDb();
     const body = await req.json();
     const prompt = (body.prompt ?? "").trim();
+    const aspectRatio = normalizeAspectRatio(body.aspectRatio);
+    const durationSec = normalizeDuration(body.durationSec);
+    const previewOnly = Boolean(body.previewOnly);
 
     if (!prompt) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
@@ -25,8 +40,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Prompt too long (max 3000 chars)" }, { status: 400 });
     }
 
-    const job = await createJob(prompt);
-    enqueueJob(job.id);
+    const decoratedPrompt =
+      prompt +
+      `\n\nConstraints:\n- Aspect ratio: ${aspectRatio}\n- Total duration: ${durationSec}s`;
+
+    const job = await createJob(decoratedPrompt);
+    enqueueJob(job.id, { previewOnly });
 
     return NextResponse.json({ id: job.id }, { status: 201 });
   } catch (err) {

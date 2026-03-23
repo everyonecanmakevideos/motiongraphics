@@ -36,6 +36,8 @@ export interface UpdateJobFields {
   spec_json?: object;
   template_id?: string;
   template_params?: object;
+  debug_intent_analyzer?: object;
+  debug_intent_creative?: object;
 }
 
 export async function updateJob(id: string, fields: UpdateJobFields): Promise<void> {
@@ -66,6 +68,10 @@ export async function updateJob(id: string, fields: UpdateJobFields): Promise<vo
       await sql`UPDATE jobs SET template_id = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "template_params") {
       await sql`UPDATE jobs SET template_params = ${JSON.stringify(value)}::jsonb, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "debug_intent_analyzer") {
+      await sql`UPDATE jobs SET debug_intent_analyzer = ${JSON.stringify(value)}::jsonb, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "debug_intent_creative") {
+      await sql`UPDATE jobs SET debug_intent_creative = ${JSON.stringify(value)}::jsonb, updated_at = now() WHERE id = ${id}`;
     }
   }
 }
@@ -102,4 +108,6 @@ export async function initDb(): Promise<void> {
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS detailed_prompt TEXT`;
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS template_id TEXT`;
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS template_params JSONB`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS debug_intent_analyzer JSONB`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS debug_intent_creative JSONB`;
 }
