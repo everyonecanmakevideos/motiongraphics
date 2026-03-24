@@ -5,7 +5,7 @@ import ProgressIndicator from "@/components/ProgressIndicator";
 import SpecViewer from "@/components/SpecViewer";
 import VideoPlayer from "@/components/VideoPlayer";
 import LiveUpdater from "./LiveUpdater";
-import type { Job, SSEEvent } from "@/lib/types";
+import type { Job, JobProvider, SSEEvent } from "@/lib/types";
 import Link from "next/link";
 import { getDisplayPrompt } from "@/lib/promptDisplay";
 
@@ -17,8 +17,8 @@ export default function JobDetail({ initialJob }: Props) {
   const [job, setJob] = useState<Job>(initialJob);
   const [trace, setTrace] = useState<Array<SSEEvent & { at: number }>>([]);
   const studioUrl = process.env.NEXT_PUBLIC_REMOTION_STUDIO_URL ?? "http://localhost:3002";
-  const [pipelineMode, setPipelineMode] = useState<"template" | "legacy" | undefined>(
-    initialJob.template_id ? "template" : undefined
+  const [pipelineMode, setPipelineMode] = useState<JobProvider | undefined>(
+    initialJob.provider ?? (initialJob.template_id ? "template" : undefined)
   );
   const lastTraceKeyRef = useRef<string>("");
 
@@ -39,9 +39,13 @@ export default function JobDetail({ initialJob }: Props) {
       step: event.step > 0 ? event.step : prev.step,
       status: event.status,
       error: event.error ?? prev.error,
+      provider: event.provider ?? prev.provider,
       detailed_prompt: event.detailedPrompt ?? prev.detailed_prompt,
       spec_json: event.specJson ?? prev.spec_json,
       video_r2_key: event.videoKey ?? prev.video_r2_key,
+      video_url: event.videoUrl ?? prev.video_url,
+      external_video_id: event.externalVideoId ?? prev.external_video_id,
+      external_project_url: event.externalProjectUrl ?? prev.external_project_url,
       template_id: event.templateId ?? prev.template_id,
       template_params: event.templateParams ?? prev.template_params,
     }));
@@ -72,9 +76,15 @@ export default function JobDetail({ initialJob }: Props) {
               "text-[11px] px-2.5 py-1 rounded-full font-medium border " +
               (pipelineMode === "template"
                 ? "border-indigo-400/20 bg-indigo-500/10 text-indigo-300"
-                : "border-amber-400/20 bg-amber-500/10 text-amber-300")
+                : pipelineMode === "hera"
+                  ? "border-cyan-400/20 bg-cyan-500/10 text-cyan-300"
+                  : "border-amber-400/20 bg-amber-500/10 text-amber-300")
             }>
-              {pipelineMode === "template" ? "Template Pipeline" : "Legacy Pipeline"}
+              {pipelineMode === "template"
+                ? "Template Pipeline"
+                : pipelineMode === "hera"
+                  ? "Hera Fallback"
+                  : "Legacy Pipeline"}
             </span>
           )}
           {job.template_id && (
@@ -141,7 +151,7 @@ export default function JobDetail({ initialJob }: Props) {
               </a>
             </div>
           ) : (
-            <VideoPlayer videoKey={job.video_r2_key} />
+            <VideoPlayer videoKey={job.video_r2_key} videoUrl={job.video_url} provider={job.provider ?? pipelineMode} />
           )}
 
           <SpecViewer spec={job.spec_json} />

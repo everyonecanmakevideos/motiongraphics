@@ -18,6 +18,7 @@ import { resolveTemplate } from "./templates/resolver";
 import { renderTemplate, renderMultiScene } from "./pipeline/templateRenderer";
 import { resolveMultiScene } from "./templates/multiSceneResolver";
 import { applyCreativeLayer } from "./templates/creativeEnhancer";
+import { createHeraVideoJob, hasHeraConfig, waitForHeraVideo } from "./hera";
 import type { JobStatus, SSEEvent } from "./types";
 import { STEP_LABELS, TEMPLATE_STEP_LABELS } from "./types";
 
@@ -123,6 +124,11 @@ async function runPipeline(jobId: string, previewOnly: boolean): Promise<void> {
     // ── Try template path first ───────────────────────────────────────────
     const templateResult = await tryTemplatePipeline(jobId, job.prompt, false);
     if (templateResult) return; // Template path succeeded
+    if (hasHeraConfig()) {
+      console.log("[queue] Template path declined for", jobId, "— using Hera fallback");
+      await runHeraFallback(jobId, job.prompt);
+      return;
+    }
 
     // ── Fallback to legacy pipeline ───────────────────────────────────────
     console.log("[queue] Template path declined for", jobId, "— using legacy pipeline");
@@ -163,6 +169,7 @@ async function tryTemplatePipeline(jobId: string, prompt: string, previewOnly: b
       // Store template info
       const firstTemplateId = resolution.scenes![0].templateId ?? resolution.scenes![0].layout ?? "multi-scene";
       await updateJob(jobId, {
+        provider: "template",
         template_id: "multi-scene:" + intent.scenes.length + "-scenes",
         template_params: { scenes: resolution.scenes },
       });
@@ -220,6 +227,7 @@ async function tryTemplatePipeline(jobId: string, prompt: string, previewOnly: b
 
     // Store template info in database
     await updateJob(jobId, {
+      provider: "template",
       template_id: templateId,
       template_params: templateParams,
     });
@@ -274,6 +282,7 @@ async function tryTemplatePipeline(jobId: string, prompt: string, previewOnly: b
 
 /** The original legacy pipeline (expand → spec → code → render). */
 async function runLegacyPipeline(jobId: string, prompt: string, previewOnly = false): Promise<void> {
+  await updateJob(jobId, { provider: "legacy" });
   // Step 2: Expand simple prompt into detailed prompt
   await setStep(jobId, 2, "expanding");
   const expandResult = await expandPrompt(prompt);
@@ -333,6 +342,8 @@ async function runLegacyPipeline(jobId: string, prompt: string, previewOnly = fa
       step: 8,
       status: "done",
       label: "Preview ready in Remotion Studio",
+      provider: "legacy",
+      pipelineMode: "legacy",
     });
     return;
   }
@@ -355,7 +366,15 @@ async function runLegacyPipeline(jobId: string, prompt: string, previewOnly = fa
       code_r2_key: result.codeKey,
       spec_r2_key: result.specKey,
     });
-    emit(jobId, { jobId, step: 8, status: "done", label: STEP_LABELS[8], videoKey: result.videoKey });
+    emit(jobId, {
+      jobId,
+      step: 8,
+      status: "done",
+      label: STEP_LABELS[8],
+      videoKey: result.videoKey,
+      provider: "legacy",
+      pipelineMode: "legacy",
+    });
   } catch (renderErr) {
     const renderMsg = renderErr instanceof Error ? renderErr.message : String(renderErr);
     console.warn("[queue] Render failed for", jobId, "— attempting code fix...");
@@ -384,6 +403,68 @@ async function runLegacyPipeline(jobId: string, prompt: string, previewOnly = fa
       code_r2_key: result.codeKey,
       spec_r2_key: result.specKey,
     });
-    emit(jobId, { jobId, step: 8, status: "done", label: STEP_LABELS[8], videoKey: result.videoKey });
+    emit(jobId, {
+      jobId,
+      step: 8,
+      status: "done",
+      label: STEP_LABELS[8],
+      videoKey: result.videoKey,
+      provider: "legacy",
+      pipelineMode: "legacy",
+    });
   }
+}
+
+async function runHeraFallback(jobId: string, prompt: string): Promise<void> {
+  await updateJob(jobId, { provider: "hera" });
+
+  await setStep(jobId, 2, "analyzing_intent");
+  emit(jobId, {
+    jobId,
+    step: 2,
+    status: "analyzing_intent",
+    label: "Switching to Hera fallback...",
+    provider: "hera",
+    pipelineMode: "hera",
+  });
+
+  const created = await createHeraVideoJob(prompt);
+  await updateJob(jobId, {
+    external_video_id: created.video_id,
+    external_project_url: created.project_url,
+  });
+
+  await setStep(jobId, 7, "rendering");
+  emit(jobId, {
+    jobId,
+    step: 7,
+    status: "rendering",
+    label: "Rendering with Hera...",
+    provider: "hera",
+    pipelineMode: "hera",
+    externalVideoId: created.video_id,
+    externalProjectUrl: created.project_url,
+  });
+
+  const result = await waitForHeraVideo(created.video_id);
+
+  await updateJob(jobId, {
+    status: "done",
+    step: 8,
+    video_url: result.videoUrl,
+    external_video_id: created.video_id,
+    external_project_url: result.projectUrl ?? created.project_url,
+  });
+
+  emit(jobId, {
+    jobId,
+    step: 8,
+    status: "done",
+    label: STEP_LABELS[8],
+    videoUrl: result.videoUrl,
+    provider: "hera",
+    pipelineMode: "hera",
+    externalVideoId: created.video_id,
+    externalProjectUrl: result.projectUrl ?? created.project_url,
+  });
 }

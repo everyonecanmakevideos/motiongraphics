@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { JobStatus } from "@/lib/types";
+import type { JobProvider, JobStatus } from "@/lib/types";
 
 interface Props {
   step: number;
   status: JobStatus;
   error?: string | null;
-  pipelineMode?: "template" | "legacy";
+  pipelineMode?: JobProvider;
 }
 
 const PHASE_1_MESSAGES = [
@@ -131,13 +131,22 @@ function PhaseSegment({
 
 export default function ProgressIndicator({ step, status, error, pipelineMode }: Props) {
   const isTemplate = pipelineMode === "template";
+  const isHera = pipelineMode === "hera";
   const [p1, p2] = getPhaseStates(step, status, isTemplate);
 
   const activePhase = p1 === "active" ? 1 : p2 === "active" ? 2 : 0;
 
-  const p1Label = isTemplate ? "Analyzing" : "Generating";
-  const p1Messages = isTemplate ? TEMPLATE_PHASE_1_MESSAGES : PHASE_1_MESSAGES;
-  const p2Messages = isTemplate ? TEMPLATE_PHASE_2_MESSAGES : PHASE_2_MESSAGES;
+  const p1Label = isTemplate ? "Analyzing" : isHera ? "Fallback" : "Generating";
+  const p1Messages = isTemplate
+    ? TEMPLATE_PHASE_1_MESSAGES
+    : isHera
+      ? ["Falling back to Hera...", "Packaging prompt for external render...", "Preparing provider job..."]
+      : PHASE_1_MESSAGES;
+  const p2Messages = isTemplate
+    ? TEMPLATE_PHASE_2_MESSAGES
+    : isHera
+      ? ["Rendering with Hera...", "Waiting for provider output...", "Finalizing external video..."]
+      : PHASE_2_MESSAGES;
 
   return (
     <div className="flex flex-col gap-3">

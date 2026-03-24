@@ -11,6 +11,8 @@ export type JobStatus =
   | "done"
   | "failed";
 
+export type JobProvider = "template" | "legacy" | "hera";
+
 export interface Job {
   id: string;
   prompt: string;
@@ -18,9 +20,13 @@ export interface Job {
   status: JobStatus;
   step: number;
   error: string | null;
+  provider?: JobProvider | null;
   spec_r2_key: string | null;
   code_r2_key: string | null;
   video_r2_key: string | null;
+  video_url?: string | null;
+  external_video_id?: string | null;
+  external_project_url?: string | null;
   spec_json: object | null;
   template_id: string | null;
   template_params: object | null;
@@ -42,10 +48,14 @@ export interface SSEEvent {
   error?: string;
   specJson?: object;
   videoKey?: string;
+  videoUrl?: string;
+  provider?: JobProvider;
+  externalVideoId?: string;
+  externalProjectUrl?: string;
   detailedPrompt?: string;
   templateParams?: object | null;
   templateId?: string;
-  pipelineMode?: "template" | "legacy";
+  pipelineMode?: JobProvider;
 }
 
 export const STEP_LABELS: Record<number, string> = {

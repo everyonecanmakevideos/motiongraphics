@@ -1,29 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import type { JobProvider } from "@/lib/types";
 import SkeletonLoader from "./SkeletonLoader";
 
 interface Props {
   videoKey: string | null;
+  videoUrl?: string | null;
+  provider?: JobProvider | null;
 }
 
-export default function VideoPlayer({ videoKey }: Props) {
+export default function VideoPlayer({ videoKey, videoUrl, provider }: Props) {
   const [ready, setReady] = useState(false);
 
-  if (!videoKey) {
+  if (!videoKey && !videoUrl) {
     return <SkeletonLoader variant="video" />;
   }
 
   // Use the assets proxy URL directly as src — the browser follows the 307
   // redirect to the Cloudflare R2 presigned URL natively, no pre-fetch needed.
-  const src = "/api/assets?key=" + encodeURIComponent(videoKey);
+  const src = videoUrl
+    ? videoUrl
+    : "/api/assets?key=" + encodeURIComponent(videoKey as string);
+  const sourceLabel = provider === "hera" ? "Hera fallback output" : "Final MP4 from the pipeline";
 
   return (
     <div className="glass-strong rounded-[28px] overflow-hidden animate-fade-in border border-white/8">
       <div className="px-5 py-3.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-neutral-500">Rendered Output</p>
-          <p className="text-sm text-neutral-300 mt-1">Final MP4 from the pipeline</p>
+          <p className="text-sm text-neutral-300 mt-1">{sourceLabel}</p>
         </div>
         <div className="text-[11px] px-2.5 py-1 rounded-full border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
           Ready

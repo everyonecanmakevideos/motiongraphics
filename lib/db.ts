@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Job, JobStatus } from "./types";
+import type { Job, JobProvider, JobStatus } from "./types";
 
 function getSql() {
   const url = process.env.NEON_DATABASE_URL;
@@ -29,10 +29,14 @@ export interface UpdateJobFields {
   status?: JobStatus;
   step?: number;
   error?: string;
+  provider?: JobProvider;
   detailed_prompt?: string;
   spec_r2_key?: string;
   code_r2_key?: string;
   video_r2_key?: string;
+  video_url?: string;
+  external_video_id?: string;
+  external_project_url?: string;
   spec_json?: object;
   template_id?: string;
   template_params?: object;
@@ -54,6 +58,8 @@ export async function updateJob(id: string, fields: UpdateJobFields): Promise<vo
       await sql`UPDATE jobs SET step = ${value as number}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "error") {
       await sql`UPDATE jobs SET error = ${value as string}, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "provider") {
+      await sql`UPDATE jobs SET provider = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "detailed_prompt") {
       await sql`UPDATE jobs SET detailed_prompt = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "spec_r2_key") {
@@ -62,6 +68,12 @@ export async function updateJob(id: string, fields: UpdateJobFields): Promise<vo
       await sql`UPDATE jobs SET code_r2_key = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "video_r2_key") {
       await sql`UPDATE jobs SET video_r2_key = ${value as string}, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "video_url") {
+      await sql`UPDATE jobs SET video_url = ${value as string}, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "external_video_id") {
+      await sql`UPDATE jobs SET external_video_id = ${value as string}, updated_at = now() WHERE id = ${id}`;
+    } else if (key === "external_project_url") {
+      await sql`UPDATE jobs SET external_project_url = ${value as string}, updated_at = now() WHERE id = ${id}`;
     } else if (key === "spec_json") {
       await sql`UPDATE jobs SET spec_json = ${JSON.stringify(value)}::jsonb, updated_at = now() WHERE id = ${id}`;
     } else if (key === "template_id") {
@@ -96,9 +108,13 @@ export async function initDb(): Promise<void> {
       status       TEXT NOT NULL DEFAULT 'queued',
       step         INTEGER NOT NULL DEFAULT 1,
       error        TEXT,
+      provider     TEXT,
       spec_r2_key  TEXT,
       code_r2_key  TEXT,
       video_r2_key TEXT,
+      video_url    TEXT,
+      external_video_id TEXT,
+      external_project_url TEXT,
       spec_json    JSONB,
       created_at   TIMESTAMPTZ DEFAULT now(),
       updated_at   TIMESTAMPTZ DEFAULT now()
@@ -106,8 +122,12 @@ export async function initDb(): Promise<void> {
   `;
   // Migration for existing tables
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS detailed_prompt TEXT`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS provider TEXT`;
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS template_id TEXT`;
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS template_params JSONB`;
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS debug_intent_analyzer JSONB`;
   await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS debug_intent_creative JSONB`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS video_url TEXT`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS external_video_id TEXT`;
+  await sql`ALTER TABLE jobs ADD COLUMN IF NOT EXISTS external_project_url TEXT`;
 }
