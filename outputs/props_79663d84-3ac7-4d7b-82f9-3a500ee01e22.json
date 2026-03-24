@@ -1,0 +1,78 @@
+{
+  "templateId": "pie-chart",
+  "params": {
+    "title": "Revenue Mix",
+    "segments": [
+      {
+        "label": "SaaS",
+        "value": 46,
+        "color": "#4FC3F7"
+      },
+      {
+        "label": "Services",
+        "value": 22,
+        "color": "#81C784"
+      },
+      {
+        "label": "Partnerships",
+        "value": 14,
+        "color": "#FFB74D"
+      },
+      {
+        "label": "Ads",
+        "value": 10,
+        "color": "#F87171"
+      },
+      {
+        "label": "Other",
+        "value": 8,
+        "color": "#A78BFA"
+      }
+    ],
+    "background": {
+      "type": "grain",
+      "baseColor": "#F1F5F9",
+      "grainOpacity": 0.05
+    },
+    "donut": false,
+    "arcMode": "full",
+    "showTrack": false,
+    "trackColor": "#334155",
+    "showLabels": true,
+    "showPercentages": true,
+    "showLegend": true,
+    "titleColor": "#0F172A",
+    "subtitleColor": "#475569",
+    "labelColor": "#475569",
+    "valueColor": "#0B0B0F",
+    "legendTextColor": "#CBD5E1",
+    "showCallout": false,
+    "calloutAlign": "right",
+    "highlightMode": "none",
+    "explodeOffset": 0,
+    "dimOpacity": 1,
+    "duration": 6,
+    "entranceAnimation": "fade-in",
+    "strokeWidth": 2,
+    "strokeColor": "#1F2937",
+    "layoutPreset": "presentation",
+    "stylePreset": "modern-clean",
+    "typography": {
+      "fontFamily": "inter",
+      "weight": "medium",
+      "letterSpacing": "normal",
+      "lineHeight": "normal"
+    },
+    "motionStyle": {
+      "easing": "smooth",
+      "speed": "medium",
+      "stagger": false,
+      "microMotion": true
+    },
+    "effects": {
+      "shadow": "soft",
+      "glow": "none",
+      "blur": "none"
+    }
+  }
+}

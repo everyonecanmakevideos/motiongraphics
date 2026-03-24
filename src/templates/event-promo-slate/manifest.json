@@ -1,0 +1,10 @@
+{
+  "id": "event-promo-slate",
+  "name": "Event Promo Slate",
+  "description": "Promotional event slate with headline, date and location metadata, badge, CTA, and bold poster-style composition.",
+  "tags": ["event", "promo", "conference", "webinar", "launch", "festival", "registration", "tickets"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

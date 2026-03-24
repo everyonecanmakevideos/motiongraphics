@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Job, JobStatus } from "@/lib/types";
+import { getDisplayPrompt } from "@/lib/promptDisplay";
 
 function StatusBadge({ status }: { status: JobStatus }) {
   // Simplified: map 8 internal statuses to 5 user-facing labels
@@ -85,7 +86,7 @@ export default function JobList({ jobs }: { jobs: Job[] }) {
                   href={"/jobs/" + job.id}
                   className="hover:text-white transition-colors line-clamp-1"
                 >
-                  {job.prompt}
+                  {getDisplayPrompt(job.prompt)}
                 </Link>
               </td>
               <td className="px-4 py-3.5">

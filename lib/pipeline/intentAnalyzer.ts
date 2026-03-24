@@ -39,9 +39,12 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Big number, statistic, counter, KPI, metric, achievement | "stat-counter" |
 | Multi-line text, quote, lyrics, poetry, word-by-word reveal | "kinetic-typography" |
 | Icon with text, feature highlight, callout, explainer | "icon-callout" |
+| Testimonial wall, customer reviews, wall of love, multiple testimonials, user feedback collage, review cards | "testimonial-wall" |
+| Event promo, event poster, webinar announcement, conference registration, summit invite, launch event, ticketed event, save the date | "event-promo-slate" |
+| Pricing table, pricing comparison, pricing tiers, subscription plans, packages, 3-tier cards, three plans, best value plan, recommended middle card | "pricing-comparison" |
 | Side-by-side comparison, versus, pros/cons, A vs B | "comparison-layout" |
 | Timeline, roadmap, milestones, history | "timeline-scene" |
-| Card grid, feature list, services, pricing, info cards | "card-layout" |
+| Card grid, feature list, services, info cards | "card-layout" |
 | Section divider, chapter break, topic transition, section heading | "section-title" |
 | Bullet list, key points, agenda, items, checklist | "bullet-list" |
 | Quote, testimonial, citation, famous saying, blockquote | "quote-highlight" |
@@ -107,6 +110,9 @@ TIMELINE-SCENE MILESTONE ICONS (optional):
 - Each milestone object may optionally include: "iconId": one of the AVAILABLE ICON IDS listed above.
 - If "iconId" is omitted, the template can fall back to a dot/ring/diamond marker style.
 CARD-LAYOUT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+PRICING-COMPARISON ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+EVENT-PROMO-SLATE ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+TESTIMONIAL-WALL ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 SECTION-TITLE ANIMATION: "fade-in", "slide-up", "scale-pop", "blur-reveal", "none"
 BULLET-LIST ANIMATION: "fade-in" (items stagger), "slide-up" (items stagger up), "scale-pop", "none"
 QUOTE-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "blur-reveal", "typewriter", "none"
@@ -181,9 +187,10 @@ CRITICAL RULES:
   - stacked-bar-breakdown "segments": minimum 2, maximum 5, and every segments.values array must match categories length
   - updating-bar-chart "bars": minimum 2, maximum 10
   - updating-bar-chart "stepLabels": minimum 2, maximum 8, and every bars.values array must match stepLabels length
-  - pie-chart "segments": minimum 2, maximum 8
+   - pie-chart "segments": minimum 2, maximum 8
    - timeline-scene "milestones": minimum 2, maximum 8
    - card-layout "cards": minimum 2, maximum 6
+   - pricing-comparison "plans": exactly 3, and every plan.features array must contain 3-8 items
    - comparison-layout "leftItems"/"rightItems": minimum 1, maximum 6
    - kinetic-typography "lines": minimum 1, maximum 8
    - bullet-list "items": minimum 2, maximum 8
@@ -243,6 +250,33 @@ Response: { "templateId": "timeline-scene", "params": { "title": "Project Roadma
 
 Prompt: "Show 3 feature cards: 'Fast' with lightning icon, 'Secure' with lock icon, 'Reliable' with checkmark icon"
 Response: { "templateId": "card-layout", "params": { "title": "Our Features", "cards": [{"heading":"Fast","body":"Lightning-fast performance","iconId":"lightning"},{"heading":"Secure","body":"Enterprise-grade security","iconId":"lock"},{"heading":"Reliable","body":"99.9% uptime guaranteed","iconId":"checkmark"}], "titleColor": "#F8FAFC", "headingColor": "#E2E8F0", "bodyColor": "#94A3B8", "iconColor": "#6366F1", "cardBackground": "#1E293B", "background": { "type": "grain", "baseColor": "#0F172A", "grainOpacity": 0.05 }, "entranceAnimation": "fade-in", "columns": 3, "duration": 7 }, "confidence": "high", "reasoning": "Feature cards with icons → card-layout template", "aspect_ratio": "16:9" }
+
+Prompt: "Build a 3-tier pricing comparison for an AI writing tool with Starter at $19/mo, Pro at $49/mo, and Business at $99/mo. Highlight Pro as the best value."
+Response: { "templateId": "pricing-comparison", "params": { "title": "AI Writing Tool Plans", "subtitle": "Choose the right tier for your team", "plans": [{"name":"Starter","price":"$19","priceSuffix":"/mo","description":"For solo creators getting started","badge":"Entry","iconId":"rocket","accentColor":"#64748B","ctaLabel":"Choose Starter","features":[{"label":"1 seat","included":true},{"label":"20 documents / month","included":true},{"label":"Basic exports","included":true},{"label":"AI rewrite tools","included":true},{"label":"Priority support","included":false}]},{"name":"Pro","price":"$49","priceSuffix":"/mo","description":"For fast-moving teams","badge":"Best Value","iconId":"star-icon","accentColor":"#60A5FA","ctaLabel":"Start now","features":[{"label":"5 seats","included":true},{"label":"Unlimited exports","included":true},{"label":"Brand voice presets","included":true,"emphasis":true},{"label":"Advanced integrations","included":true},{"label":"Priority support","included":true}]},{"name":"Business","price":"$99","priceSuffix":"/mo","description":"For larger organizations","badge":"Scale","iconId":"briefcase","accentColor":"#A78BFA","ctaLabel":"Talk to sales","features":[{"label":"Unlimited seats","included":true},{"label":"SSO + admin controls","included":true},{"label":"Usage analytics","included":true},{"label":"Custom workflows","included":true},{"label":"Dedicated onboarding","included":true}]}], "highlightedPlan": 1, "highlightLabel": "Best Value", "comparisonNote": "Clear plan differences with a recommended middle tier.", "background": { "type": "gradient", "from": "#070B1A", "to": "#101C3A", "direction": "radial" }, "titleColor": "#F8FAFC", "subtitleColor": "#A7B0C0", "planNameColor": "#F8FAFC", "priceColor": "#FFFFFF", "mutedTextColor": "#9FB0C6", "featureTextColor": "#EEF2FF", "cardBackground": "#101523", "mutedCardBackground": "#0B0F1A", "cardBorderColor": "#25304A", "iconColor": "#FFFFFF", "includedColor": "#4ADE80", "excludedColor": "#6B7280", "buttonTextColor": "#0B1020", "entranceAnimation": "slide-up", "duration": 7 }, "confidence": "high", "reasoning": "Three pricing plans with an explicitly recommended middle tier should use pricing-comparison.", "aspect_ratio": "16:9" }
+
+Prompt: "Pricing table: Basic - $12/mo, Pro - $29/mo, Scale - $79/mo. Highlight Pro. Show feature comparison and clean modern style."
+Response: { "templateId": "pricing-comparison", "params": { "title": "Pricing Plans", "subtitle": "Transparent tiers for every stage", "plans": [{"name":"Basic","price":"$12","priceSuffix":"/mo","description":"For individuals testing the product","badge":"Starter","accentColor":"#64748B","ctaLabel":"Choose Basic","features":[{"label":"1 user","included":true},{"label":"Core features","included":true},{"label":"Email support","included":true},{"label":"Advanced analytics","included":false}]},{"name":"Pro","price":"$29","priceSuffix":"/mo","description":"Recommended for growing teams","badge":"Best Value","accentColor":"#60A5FA","ctaLabel":"Start now","features":[{"label":"5 users","included":true},{"label":"Core features","included":true},{"label":"Advanced analytics","included":true,"emphasis":true},{"label":"Priority support","included":true}]},{"name":"Scale","price":"$79","priceSuffix":"/mo","description":"For larger teams with more control","badge":"Scale","accentColor":"#8B5CF6","ctaLabel":"Talk to sales","features":[{"label":"Unlimited users","included":true},{"label":"Advanced analytics","included":true},{"label":"Team permissions","included":true},{"label":"Priority support","included":true}]}], "highlightedPlan": 1, "highlightLabel": "Best Value", "comparisonNote": "Modern 3-card pricing layout with clear feature differences.", "background": { "type": "gradient", "from": "#081021", "to": "#0F2347", "direction": "to-bottom-right" }, "titleColor": "#F8FAFC", "subtitleColor": "#A7B0C0", "planNameColor": "#F8FAFC", "priceColor": "#FFFFFF", "mutedTextColor": "#A7B0C0", "featureTextColor": "#EEF2FF", "cardBackground": "#0E1425", "mutedCardBackground": "#0A0F1A", "cardBorderColor": "#2A3348", "iconColor": "#FFFFFF", "includedColor": "#4ADE80", "excludedColor": "#7C8599", "buttonTextColor": "#0B1020", "entranceAnimation": "slide-up", "duration": 7 }, "confidence": "high", "reasoning": "Explicit pricing table with three named plans and a highlighted Pro plan should use pricing-comparison.", "aspect_ratio": "16:9" }
+
+Prompt: "Make one of those startup pricing cards layouts with 3 plans, where the middle one feels obviously recommended. Include things like seats, exports, integrations, support, and analytics."
+Response: { "templateId": "pricing-comparison", "params": { "title": "Simple Pricing", "subtitle": "A clear three-tier layout with a recommended center plan", "plans": [{"name":"Basic","price":"$19","priceSuffix":"/month","description":"For solo users","badge":"Starter","accentColor":"#64748B","ctaLabel":"Choose plan","features":[{"label":"1 seat","included":true},{"label":"Limited exports","included":true},{"label":"Core integrations","included":false},{"label":"Email support","included":true},{"label":"Analytics dashboard","included":false}]},{"name":"Pro","price":"$49","priceSuffix":"/month","description":"For growing teams","badge":"Best Value","accentColor":"#60A5FA","ctaLabel":"Start now","features":[{"label":"10 seats","included":true},{"label":"Unlimited exports","included":true},{"label":"Advanced integrations","included":true},{"label":"Priority support","included":true},{"label":"Analytics dashboard","included":true,"emphasis":true}]},{"name":"Enterprise","price":"Custom","description":"For complex organizations","badge":"Enterprise","accentColor":"#A78BFA","ctaLabel":"Contact sales","features":[{"label":"Unlimited seats","included":true},{"label":"Custom exports","included":true},{"label":"Advanced integrations","included":true},{"label":"Dedicated support","included":true},{"label":"Advanced analytics","included":true}]}], "highlightedPlan": 1, "highlightLabel": "Best Value", "comparisonNote": "The center card should feel clearly recommended at a glance.", "background": { "type": "gradient", "from": "#060915", "to": "#101D3B", "direction": "radial" }, "titleColor": "#F8FAFC", "subtitleColor": "#A7B0C0", "planNameColor": "#F8FAFC", "priceColor": "#FFFFFF", "mutedTextColor": "#9FB0C6", "featureTextColor": "#EEF2FF", "cardBackground": "#0E1527", "mutedCardBackground": "#090E19", "cardBorderColor": "#28324A", "iconColor": "#FFFFFF", "includedColor": "#4ADE80", "excludedColor": "#7C8599", "buttonTextColor": "#0B1020", "entranceAnimation": "slide-up", "duration": 7 }, "confidence": "high", "reasoning": "Startup-style 3-plan pricing cards with a recommended middle tier should use pricing-comparison instead of generic card-layout.", "aspect_ratio": "16:9" }
+
+Prompt: "Create an event promo slate for AI Builder Summit. September 18, 2026 at 6:30 PM. Bengaluru Convention Center. CTA: Register Now."
+Response: { "templateId": "event-promo-slate", "params": { "eyebrow": "Live Event", "title": "AI Builder Summit", "subtitle": "One evening of product demos, founder talks, and practical AI workflows.", "dateText": "September 18, 2026", "timeText": "6:30 PM", "venueText": "Bengaluru Convention Center", "locationText": "Bengaluru", "ctaLabel": "Register Now", "supportLabel": "Limited seats available for builders, operators, and founders.", "badgeText": "Tickets Live", "visualStyle": "night-neon", "titleColor": "#F8FAFC", "subtitleColor": "#CBD5E1", "accentColor": "#60A5FA", "secondaryAccentColor": "#22D3EE", "cardBackground": "#0B1020", "mutedTextColor": "#94A3B8", "metadataTextColor": "#F8FAFC", "buttonTextColor": "#0B1020", "background": { "type": "gradient", "from": "#050816", "to": "#0E1A38", "direction": "radial" }, "entranceAnimation": "slide-up", "duration": 7 }, "confidence": "high", "reasoning": "An event registration promo with date, venue, and CTA should use event-promo-slate.", "aspect_ratio": "16:9" }
+
+Prompt: "Design a clean conference registration slide for Data Leaders Forum with the date Oct 12, 2026, 9:00 AM, and venue Grand Hall, Mumbai. Keep it executive and polished."
+Response: { "templateId": "event-promo-slate", "params": { "eyebrow": "Conference", "title": "Data Leaders Forum", "subtitle": "An executive morning focused on analytics leadership, infrastructure, and operating strategy.", "dateText": "Oct 12, 2026", "timeText": "9:00 AM", "venueText": "Grand Hall", "locationText": "Mumbai", "ctaLabel": "Reserve Seat", "supportLabel": "Invitation-style registration for senior operators and analytics teams.", "badgeText": "Seats Limited", "visualStyle": "conference-clean", "titleColor": "#0F172A", "subtitleColor": "#475569", "accentColor": "#2563EB", "secondaryAccentColor": "#0F172A", "cardBackground": "#FFFFFF", "mutedTextColor": "#64748B", "metadataTextColor": "#0F172A", "buttonTextColor": "#FFFFFF", "background": { "type": "gradient", "from": "#F7F4EE", "to": "#ECE6DC", "direction": "to-bottom-right" }, "entranceAnimation": "fade-in", "duration": 7 }, "confidence": "high", "reasoning": "A conference invite with event metadata and polished registration CTA should use event-promo-slate with a clean presentation style.", "aspect_ratio": "16:9" }
+
+Prompt: "Create a premium creative-studio event poster for Motion Night Live. Friday, 8 PM. Warehouse 9, Delhi. Highlight that tickets are on sale now."
+Response: { "templateId": "event-promo-slate", "params": { "eyebrow": "One Night Only", "title": "Motion Night Live", "subtitle": "Creative talks, visual sets, and a late-night showcase for designers, filmmakers, and animators.", "dateText": "Friday", "timeText": "8:00 PM", "venueText": "Warehouse 9", "locationText": "Delhi", "ctaLabel": "Buy Tickets", "supportLabel": "A premium studio-style event poster with bold contrast and urgency.", "badgeText": "On Sale", "visualStyle": "festival-burst", "titleColor": "#FFF7ED", "subtitleColor": "#F5D0FE", "accentColor": "#F97316", "secondaryAccentColor": "#FACC15", "cardBackground": "#1A1029", "mutedTextColor": "#D8B4FE", "metadataTextColor": "#FFF7ED", "buttonTextColor": "#120A1E", "background": { "type": "gradient", "from": "#15081C", "to": "#30104A", "direction": "radial" }, "entranceAnimation": "scale-pop", "duration": 7 }, "confidence": "high", "reasoning": "A ticketed event poster with venue, time, and strong CTA should use event-promo-slate with a creative promo treatment.", "aspect_ratio": "16:9" }
+
+Prompt: "Create a testimonial wall showing customer love for FlowPilot with quotes from Priya, Marcus, Elena, and Jason. Make it feel like polished SaaS social proof."
+Response: { "templateId": "testimonial-wall", "params": { "title": "Loved by Product Teams", "subtitle": "A wall of customer feedback from operators, founders, and growth leads.", "testimonials": [{"quote":"FlowPilot helped us cut reporting time in half within the first week.","name":"Priya Shah","role":"Head of Operations","company":"FlowPilot","rating":5,"accentColor":"#60A5FA"},{"quote":"The team picked it up immediately and our handoffs got dramatically smoother.","name":"Marcus Reed","role":"Growth Lead","company":"Northstar","rating":5,"accentColor":"#34D399"},{"quote":"It feels like the rare tool that reduces chaos instead of adding another dashboard.","name":"Elena Park","role":"Product Manager","company":"Juniper","rating":5,"accentColor":"#A78BFA"},{"quote":"We finally have one place where launches, tasks, and updates stay aligned.","name":"Jason Miller","role":"Founder","company":"Relay Labs","rating":5,"accentColor":"#F59E0B"}], "featuredIndex": 0, "visualStyle": "saas-grid", "accentColor": "#60A5FA", "secondaryAccentColor": "#F59E0B", "titleColor": "#F8FAFC", "subtitleColor": "#A7B0C0", "quoteColor": "#F8FAFC", "metaTextColor": "#CBD5E1", "mutedTextColor": "#94A3B8", "cardBackground": "#101523", "mutedCardBackground": "#0B0F1A", "cardBorderColor": "#25304A", "background": { "type": "gradient", "from": "#050816", "to": "#0E1A38", "direction": "radial" }, "entranceAnimation": "slide-up", "duration": 7 }, "confidence": "high", "reasoning": "Multiple customer quotes arranged as social proof should use testimonial-wall.", "aspect_ratio": "16:9" }
+
+Prompt: "Design a clean editorial testimonial wall for a consulting firm with four client quotes and reviewer names. Keep it minimal and elegant."
+Response: { "templateId": "testimonial-wall", "params": { "title": "What Clients Say", "subtitle": "Selected feedback from leadership teams and transformation partners.", "testimonials": [{"quote":"Their team brought clarity to a complex transformation program and moved quickly.","name":"Amrita Rao","role":"Chief Strategy Officer","company":"Meridian","rating":5,"accentColor":"#2563EB"},{"quote":"The work was thoughtful, sharp, and unusually actionable for a leadership workshop.","name":"Daniel Ross","role":"Managing Director","company":"NorthPeak","rating":5,"accentColor":"#0F172A"},{"quote":"We left with a far more aligned operating model and a practical next-quarter roadmap.","name":"Neha Kapoor","role":"VP Operations","company":"Crestline","rating":5,"accentColor":"#64748B"},{"quote":"They helped turn broad ambition into a plan our teams could actually execute.","name":"James Cole","role":"CEO","company":"Axiom","rating":5,"accentColor":"#94A3B8"}], "featuredIndex": 1, "visualStyle": "editorial-light", "accentColor": "#2563EB", "secondaryAccentColor": "#0F172A", "titleColor": "#0F172A", "subtitleColor": "#475569", "quoteColor": "#0F172A", "metaTextColor": "#1E293B", "mutedTextColor": "#64748B", "cardBackground": "#FFFFFF", "mutedCardBackground": "#F8FAFC", "cardBorderColor": "#CBD5E1", "background": { "type": "gradient", "from": "#F7F4EE", "to": "#ECE6DC", "direction": "to-bottom-right" }, "entranceAnimation": "fade-in", "duration": 7 }, "confidence": "high", "reasoning": "A minimal wall of client quotes should use testimonial-wall with an editorial treatment.", "aspect_ratio": "16:9" }
+
+Prompt: "Make a warm branded testimonial wall for a creative agency with glowing client quotes from founders and CMOs."
+Response: { "templateId": "testimonial-wall", "params": { "title": "Trusted by Bold Brands", "subtitle": "Founder and CMO feedback from recent campaigns, launches, and rebrands.", "testimonials": [{"quote":"They gave our launch a level of emotional clarity we were struggling to reach internally.","name":"Maya Fernandez","role":"Founder","company":"Luna Studio","rating":5,"accentColor":"#F59E0B"},{"quote":"The campaign system felt premium, cinematic, and unmistakably on-brand.","name":"Leo Carter","role":"CMO","company":"Canvas & Co.","rating":5,"accentColor":"#FB7185"},{"quote":"Every touchpoint felt considered, from motion to messaging to rollout assets.","name":"Rina Patel","role":"Brand Director","company":"Northlight","rating":5,"accentColor":"#F97316"},{"quote":"We got the kind of creative confidence that normally takes months to build.","name":"Oliver Grant","role":"Founder","company":"Wildframe","rating":5,"accentColor":"#A78BFA"}], "featuredIndex": 0, "visualStyle": "warm-brand", "accentColor": "#A855F7", "secondaryAccentColor": "#F59E0B", "titleColor": "#FFF7ED", "subtitleColor": "#F5D0FE", "quoteColor": "#FFF7ED", "metaTextColor": "#FDE68A", "mutedTextColor": "#D8B4FE", "cardBackground": "#2A1022", "mutedCardBackground": "#180B18", "cardBorderColor": "#5B2140", "background": { "type": "gradient", "from": "#18071D", "to": "#3A122A", "direction": "radial" }, "entranceAnimation": "scale-pop", "duration": 7 }, "confidence": "high", "reasoning": "A branded wall of glowing founder and marketing quotes should use testimonial-wall with a warm visual treatment.", "aspect_ratio": "16:9" }
 
 Prompt: "Text 'Hello World' appears letter by letter"
 Response: { "templateId": "hero-text", "params": { "headline": "Hello World", "headlineColor": "#E2E8F0", "background": { "type": "gradient", "from": "#0A0A1A", "to": "#1A1A2E", "direction": "to-bottom" }, "entranceAnimation": "typewriter", "duration": 6, "style": "centered", "decoration": "none" }, "confidence": "high", "reasoning": "Single headline with letter-by-letter → hero-text with typewriter", "aspect_ratio": "16:9" }
@@ -466,6 +500,11 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   // just to pick hero-text and set headline).
   const textHeuristic = heuristicHeroTextFromTextAnimation(prompt);
   if (textHeuristic) return textHeuristic;
+
+  // Heuristic fallback for obvious 3-tier pricing prompts so they stay on
+  // the template path even when the model drifts toward older card layouts.
+  const pricingHeuristic = heuristicPricingComparisonIntent(prompt);
+  if (pricingHeuristic) return pricingHeuristic;
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -715,6 +754,304 @@ function heuristicHeroTextFromTextAnimation(prompt: string): IntentResult | null
       duration: durationSec ?? 6,
       style: "centered",
       decoration: "none",
+    },
+  };
+}
+
+function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
+  const normalized = prompt.toLowerCase();
+
+  const hasPricingIntent =
+    normalized.includes("pricing") ||
+    normalized.includes("pricing table") ||
+    normalized.includes("pricing comparison") ||
+    normalized.includes("3-tier") ||
+    normalized.includes("three-tier") ||
+    normalized.includes("plan") ||
+    normalized.includes("plans") ||
+    normalized.includes("tier") ||
+    normalized.includes("tiers") ||
+    normalized.includes("package") ||
+    normalized.includes("packages") ||
+    normalized.includes("best value") ||
+    normalized.includes("recommended") ||
+    normalized.includes("smartest choice");
+
+  if (!hasPricingIntent) return null;
+
+  const priceTokens = Array.from(prompt.matchAll(/\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?/g));
+  const wantsThreePlans =
+    /(?:three|3)\s+(?:plans|tiers|packages|cards)/i.test(prompt) ||
+    normalized.includes("middle one") ||
+    normalized.includes("middle card") ||
+    normalized.includes("highlight pro") ||
+    normalized.includes("highlight growth") ||
+    normalized.includes("highlight brand");
+
+  if (!wantsThreePlans && priceTokens.length < 3) return null;
+
+  const toTitleCase = (value: string) =>
+    value
+      .trim()
+      .replace(/\s+/g, " ")
+      .split(" ")
+      .map((word) => {
+        if (word.toUpperCase() === word && word.length <= 5) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(" ");
+
+  const splitPriceToken = (value: string): { price: string; priceSuffix?: string } => {
+    const compact = value.replace(/\s+/g, "");
+    const parts = compact.split("/");
+    return parts.length > 1
+      ? { price: parts[0], priceSuffix: `/${parts.slice(1).join("/")}` }
+      : { price: compact };
+  };
+
+  const extractNamedPlans = (): Array<{ name: string; price: string; priceSuffix?: string }> => {
+    const patterns = [
+      /([A-Za-z][A-Za-z0-9&+/-]*(?:\s+[A-Za-z][A-Za-z0-9&+/-]*){0,2})\s+at\s+(\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?)/gi,
+      /([A-Za-z][A-Za-z0-9&+/-]*(?:\s+[A-Za-z][A-Za-z0-9&+/-]*){0,2})\s*[-:]\s*(\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?)/gi,
+    ];
+    const results: Array<{ name: string; price: string; priceSuffix?: string }> = [];
+    const seen = new Set<string>();
+
+    for (const pattern of patterns) {
+      let match: RegExpExecArray | null = null;
+      while ((match = pattern.exec(prompt)) !== null) {
+        const name = toTitleCase(match[1]);
+        if (!name || seen.has(name.toLowerCase())) continue;
+        seen.add(name.toLowerCase());
+        const priceParts = splitPriceToken(match[2]);
+        results.push({ name, ...priceParts });
+      }
+    }
+
+    return results.slice(0, 3);
+  };
+
+  const extractListedNames = (): string[] => {
+    const listMatch = prompt.match(/(?:three|3)\s+(?:plans|tiers|packages)\s*:\s*([^.!?\n]+)/i);
+    if (!listMatch) return [];
+    return listMatch[1]
+      .split(/,|and/gi)
+      .map((part) => toTitleCase(part.replace(/[^A-Za-z0-9&+/\-\s]/g, "").trim()))
+      .filter(Boolean)
+      .slice(0, 3);
+  };
+
+  const inferredHighlightName =
+    prompt.match(/highlight\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
+    prompt.match(/emphas(?:i|y)ze\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
+    prompt.match(/recommended\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
+    prompt.match(/best value(?:\s+is|\s*[:=-])?\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
+    undefined;
+
+  const visualStyle = (() => {
+    if (
+      normalized.includes("investor") ||
+      normalized.includes("boardroom") ||
+      normalized.includes("executive") ||
+      normalized.includes("b2b") ||
+      normalized.includes("polished pricing slide")
+    ) {
+      return "investor-clean" as const;
+    }
+    if (
+      normalized.includes("agency") ||
+      normalized.includes("studio") ||
+      normalized.includes("creative") ||
+      normalized.includes("brand package") ||
+      normalized.includes("premium package")
+    ) {
+      return "creative-studio" as const;
+    }
+    return "saas-dark" as const;
+  })();
+
+  const namedPlans = extractNamedPlans();
+  const listedNames = extractListedNames();
+  const defaultPlans = [
+    { name: "Basic", price: "$19", priceSuffix: "/month" },
+    { name: "Pro", price: "$49", priceSuffix: "/month" },
+    { name: "Enterprise", price: "Custom" },
+  ];
+
+  const plans =
+    namedPlans.length >= 3
+      ? namedPlans
+      : listedNames.length >= 3
+        ? listedNames.map((name, index) => ({
+            ...(defaultPlans[index] ?? defaultPlans[Math.min(index, defaultPlans.length - 1)]),
+            name,
+          }))
+        : priceTokens.length >= 3
+          ? priceTokens.slice(0, 3).map((token, index) => ({
+              name: defaultPlans[index].name,
+              ...splitPriceToken(token[0]),
+            }))
+          : defaultPlans;
+
+  if (plans.length < 3) return null;
+
+  const highlightIndex = (() => {
+    const hint = inferredHighlightName ? toTitleCase(inferredHighlightName).toLowerCase() : "";
+    const hintedIndex = hint ? plans.findIndex((plan) => plan.name.toLowerCase() === hint) : -1;
+    if (hintedIndex >= 0) return hintedIndex;
+    return 1;
+  })();
+
+  const featurePool = [
+    normalized.includes("seat") ? "Team seats" : "Users",
+    normalized.includes("export") ? "Exports" : "Core features",
+    normalized.includes("integration") ? "Integrations" : "Automation tools",
+    normalized.includes("support") ? "Support" : "Priority support",
+    normalized.includes("analytics") ? "Analytics" : "Analytics dashboard",
+  ];
+
+  const uniqueFeatures = Array.from(new Set(featurePool)).slice(0, 5);
+  while (uniqueFeatures.length < 5) {
+    uniqueFeatures.push(`Feature ${uniqueFeatures.length + 1}`);
+  }
+
+  const buildPlanFeatures = (planIndex: number) =>
+    uniqueFeatures.map((label, featureIndex) => ({
+      label,
+      included: planIndex === 2 ? true : planIndex === 1 ? true : featureIndex < 3,
+      ...(planIndex === highlightIndex && featureIndex === Math.min(3, uniqueFeatures.length - 1)
+        ? { emphasis: true }
+        : {}),
+    }));
+
+  const subject =
+    prompt.match(/\bfor\s+an?\s+([^,.]+)/i)?.[1]?.trim() ||
+    prompt.match(/\bfor\s+([^,.]+)/i)?.[1]?.trim() ||
+    "";
+
+  const title =
+    normalized.includes("agency") || normalized.includes("studio")
+      ? "Service Packages"
+      : visualStyle === "investor-clean"
+        ? "Investment Tiers"
+        : "Pricing Plans";
+  const subtitle =
+    subject
+      ? `Designed for ${subject}`
+      : visualStyle === "creative-studio"
+        ? "Three signature packages with a standout center offer"
+        : visualStyle === "investor-clean"
+          ? "A structured pricing slide with a recommended growth tier"
+          : "Three plans with a clear recommended tier";
+
+  const accentColors =
+    visualStyle === "creative-studio"
+      ? ["#7C3AED", "#F97316", "#FACC15"]
+      : visualStyle === "investor-clean"
+        ? ["#94A3B8", "#2563EB", "#0F172A"]
+        : ["#64748B", "#60A5FA", "#A78BFA"];
+  const badges = ["Starter", "Best Value", "Scale"];
+  const ctas = ["Choose plan", "Start now", "Talk to sales"];
+
+  const palette =
+    visualStyle === "investor-clean"
+      ? {
+          background: { type: "gradient" as const, from: "#F7F4EE", to: "#EAE5DC", direction: "to-bottom-right" as const },
+          titleColor: "#0F172A",
+          subtitleColor: "#475569",
+          planNameColor: "#0F172A",
+          priceColor: "#020617",
+          mutedTextColor: "#64748B",
+          featureTextColor: "#1E293B",
+          cardBackground: "#FFFFFF",
+          mutedCardBackground: "#F8FAFC",
+          cardBorderColor: "#CBD5E1",
+          iconColor: "#0F172A",
+          includedColor: "#2563EB",
+          excludedColor: "#94A3B8",
+          buttonTextColor: "#FFFFFF",
+        }
+      : visualStyle === "creative-studio"
+        ? {
+            background: { type: "gradient" as const, from: "#15081C", to: "#30104A", direction: "radial" as const },
+            titleColor: "#FFF7ED",
+            subtitleColor: "#F5D0FE",
+            planNameColor: "#FFF7ED",
+            priceColor: "#FFFFFF",
+            mutedTextColor: "#D8B4FE",
+            featureTextColor: "#FEF3C7",
+            cardBackground: "#1A1029",
+            mutedCardBackground: "#120A1E",
+            cardBorderColor: "#5B21B6",
+            iconColor: "#FFF7ED",
+            includedColor: "#F97316",
+            excludedColor: "#A78BFA",
+            buttonTextColor: "#120A1E",
+          }
+        : {
+            background: { type: "gradient" as const, from: "#070B1A", to: "#101C3A", direction: "radial" as const },
+            titleColor: "#F8FAFC",
+            subtitleColor: "#A7B0C0",
+            planNameColor: "#F8FAFC",
+            priceColor: "#FFFFFF",
+            mutedTextColor: "#9FB0C6",
+            featureTextColor: "#EEF2FF",
+            cardBackground: "#101523",
+            mutedCardBackground: "#0B0F1A",
+            cardBorderColor: "#25304A",
+            iconColor: "#FFFFFF",
+            includedColor: "#4ADE80",
+            excludedColor: "#6B7280",
+            buttonTextColor: "#0B1020",
+          };
+
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+
+  return {
+    templateId: "pricing-comparison",
+    confidence: "high",
+    reasoning: "Heuristic: detected an obvious three-plan pricing prompt with a recommended tier",
+    aspect_ratio,
+    params: {
+      title,
+      subtitle,
+      visualStyle,
+      plans: plans.slice(0, 3).map((plan, index) => ({
+        name: plan.name,
+        price: plan.price,
+        ...(plan.priceSuffix ? { priceSuffix: plan.priceSuffix } : {}),
+        description:
+          index === 0 ? "For individuals or small teams" : index === 1 ? "Recommended for growing teams" : "For larger organizations",
+        badge: index === highlightIndex ? "Best Value" : badges[index] ?? "Plan",
+        accentColor: accentColors[index] ?? accentColors[1],
+        ctaLabel: ctas[index] ?? "Choose plan",
+        features: buildPlanFeatures(index),
+      })),
+      highlightedPlan: highlightIndex,
+      highlightLabel: "Best Value",
+      comparisonNote:
+        visualStyle === "creative-studio"
+          ? "Package lineup with a strong featured middle offer."
+          : visualStyle === "investor-clean"
+            ? "Structured plan comparison for a presentation-ready pricing slide."
+            : "Three-tier pricing comparison with a recommended middle plan.",
+      background: palette.background,
+      titleColor: palette.titleColor,
+      subtitleColor: palette.subtitleColor,
+      planNameColor: palette.planNameColor,
+      priceColor: palette.priceColor,
+      mutedTextColor: palette.mutedTextColor,
+      featureTextColor: palette.featureTextColor,
+      cardBackground: palette.cardBackground,
+      mutedCardBackground: palette.mutedCardBackground,
+      cardBorderColor: palette.cardBorderColor,
+      iconColor: palette.iconColor,
+      includedColor: palette.includedColor,
+      excludedColor: palette.excludedColor,
+      buttonTextColor: palette.buttonTextColor,
+      entranceAnimation: "slide-up",
+      duration: 7,
     },
   };
 }

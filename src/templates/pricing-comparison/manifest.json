@@ -1,0 +1,10 @@
+{
+  "id": "pricing-comparison",
+  "name": "Pricing Comparison",
+  "description": "Three-tier pricing layout with a highlighted best-value card, feature comparison rows, price hierarchy, and CTA emphasis.",
+  "tags": ["pricing", "plans", "tiers", "comparison", "saas", "cards", "best-value", "packages"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

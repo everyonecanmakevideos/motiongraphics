@@ -1,0 +1,10 @@
+{
+  "id": "testimonial-wall",
+  "name": "Testimonial Wall",
+  "description": "Social-proof wall with one featured testimonial, supporting quote cards, reviewer identity, and ratings.",
+  "tags": ["testimonial", "reviews", "social-proof", "quotes", "customer-stories", "wall", "feedback"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

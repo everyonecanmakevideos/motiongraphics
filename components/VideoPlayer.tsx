@@ -19,16 +19,31 @@ export default function VideoPlayer({ videoKey }: Props) {
   const src = "/api/assets?key=" + encodeURIComponent(videoKey);
 
   return (
-    <div className="glass-strong rounded-2xl overflow-hidden animate-fade-in">
-      <video
-        src={src}
-        controls
-        autoPlay
-        loop
-        onCanPlay={() => setReady(true)}
-        className={"w-full transition-opacity duration-500 " + (ready ? "opacity-100" : "opacity-80")}
-      />
-      <div className="px-4 py-2.5 flex items-center justify-end gap-4 border-t border-white/5">
+    <div className="glass-strong rounded-[28px] overflow-hidden animate-fade-in border border-white/8">
+      <div className="px-5 py-3.5 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-neutral-500">Rendered Output</p>
+          <p className="text-sm text-neutral-300 mt-1">Final MP4 from the pipeline</p>
+        </div>
+        <div className="text-[11px] px-2.5 py-1 rounded-full border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
+          Ready
+        </div>
+      </div>
+
+      <div className="p-4 sm:p-5 bg-gradient-to-b from-white/[0.02] to-transparent">
+        <div className="rounded-2xl overflow-hidden border border-white/6 bg-black shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+          <video
+            src={src}
+            controls
+            autoPlay
+            loop
+            onCanPlay={() => setReady(true)}
+            className={"w-full transition-opacity duration-500 " + (ready ? "opacity-100" : "opacity-80")}
+          />
+        </div>
+      </div>
+
+      <div className="px-5 py-3 flex items-center justify-end gap-4 border-t border-white/5">
         <a
           href={src}
           target="_blank"

@@ -21,6 +21,9 @@ import { BulletList } from "./bullet-list/BulletList";
 import { QuoteHighlight } from "./quote-highlight/QuoteHighlight";
 import { DataCallout } from "./data-callout/DataCallout";
 import { FeatureHighlight } from "./feature-highlight/FeatureHighlight";
+import { PricingComparison } from "./pricing-comparison/PricingComparison";
+import { EventPromoSlate } from "./event-promo-slate/EventPromoSlate";
+import { TestimonialWall } from "./testimonial-wall/TestimonialWall";
 import { SplitScreen } from "./split-screen/SplitScreen";
 import { ProblemSolution } from "./problem-solution/ProblemSolution";
 import { BeforeAfter } from "./before-after/BeforeAfter";
@@ -59,6 +62,9 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "quote-highlight": QuoteHighlight,
   "data-callout": DataCallout,
   "feature-highlight": FeatureHighlight,
+  "pricing-comparison": PricingComparison,
+  "event-promo-slate": EventPromoSlate,
+  "testimonial-wall": TestimonialWall,
   "split-screen": SplitScreen,
   "problem-solution": ProblemSolution,
   "before-after": BeforeAfter,

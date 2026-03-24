@@ -64,6 +64,15 @@ import dataCalloutManifest from "./data-callout/manifest.json";
 import { FeatureHighlightSchema } from "./feature-highlight/schema";
 import featureHighlightManifest from "./feature-highlight/manifest.json";
 
+import { PricingComparisonSchema } from "./pricing-comparison/schema";
+import pricingComparisonManifest from "./pricing-comparison/manifest.json";
+
+import { EventPromoSlateSchema } from "./event-promo-slate/schema";
+import eventPromoSlateManifest from "./event-promo-slate/manifest.json";
+
+import { TestimonialWallSchema } from "./testimonial-wall/schema";
+import testimonialWallManifest from "./testimonial-wall/manifest.json";
+
 import { SplitScreenSchema } from "./split-screen/schema";
 import splitScreenManifest from "./split-screen/manifest.json";
 
@@ -172,6 +181,21 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "feature-highlight",
     schema: FeatureHighlightSchema,
     manifest: featureHighlightManifest as TemplateManifest,
+  },
+  {
+    id: "pricing-comparison",
+    schema: PricingComparisonSchema,
+    manifest: pricingComparisonManifest as TemplateManifest,
+  },
+  {
+    id: "event-promo-slate",
+    schema: EventPromoSlateSchema,
+    manifest: eventPromoSlateManifest as TemplateManifest,
+  },
+  {
+    id: "testimonial-wall",
+    schema: TestimonialWallSchema,
+    manifest: testimonialWallManifest as TemplateManifest,
   },
   { id: "split-screen", schema: SplitScreenSchema, manifest: splitScreenManifest as TemplateManifest },
   {
