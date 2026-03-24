@@ -1,8 +1,34 @@
 node_modules
 dist
+.next
+.turbo
+.vercel
+.swc
+.cache
+.npm
+.pnpm-store
+.yarn
+.pnp.*
+.eslintcache
+coverage
+
+# Build / tooling logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 .DS_Store
 .env
+.env.*
 credentials.json
 token.json
 # Ignore the output video from Git but not videos you import into src/.
 out
+
+# App-generated artifacts
+outputs
