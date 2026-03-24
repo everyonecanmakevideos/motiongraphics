@@ -1,7 +1,15 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, staggerDelay, fadeIn, slideUp, scalePop, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  staggerDelay,
+  fadeIn,
+  slideUp,
+  scalePop,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
@@ -14,7 +22,7 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 
 export const CardLayout: React.FC<CardLayoutProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, isPortrait, scale } = useResponsiveConfig();
+  const { width, height, isPortrait, scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -31,8 +39,14 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
 
   // Phase timing
   const titleEnd = Math.round(totalFrames * 0.12 * motion.durationMultiplier);
-  const cardsStart = Math.round(totalFrames * 0.1);
-  const cardsEnd = Math.round(totalFrames * 0.6 * motion.durationMultiplier);
+  const cardsWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.08,
+    minSec: 1.6,
+    maxSec: 4.0,
+    maxEndPct: 0.75,
+  });
+  const cardsStart = cardsWindow.startFrame;
+  const cardsEnd = cardsWindow.endFrame;
   const exitStart = Math.round(totalFrames * 0.85);
   const exitEnd = totalFrames;
 
@@ -50,11 +64,23 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
   const entranceFrames = cardsEnd - cardsStart;
   const cardCount = props.cards.length;
 
-  // Card dimensions — adapt columns for portrait
-  const gap = Math.round(24 * scale);
-  const cols = isPortrait ? Math.min(props.columns, 1) : Math.min(props.columns, cardCount);
-  const containerWidth = Math.round(width * 0.85);
+  // Card dimensions — adapt columns and width by aspect ratio.
+  // Portrait should prefer 2 columns for 3+ cards to avoid top/bottom clipping.
+  const gap = Math.round((isPortrait ? 16 : 24) * scale);
+  const cols = isPortrait
+    ? Math.min(cardCount >= 3 ? 2 : 1, props.columns, cardCount)
+    : Math.min(props.columns, cardCount);
+  const containerWidth = Math.round(width * (isPortrait ? 0.94 : 0.85));
   const cardWidth = Math.round((containerWidth - gap * (cols - 1)) / cols);
+  const rowCount = Math.ceil(cardCount / cols);
+  const cardPaddingY = props.cardPadding === "compact" ? 20 : props.cardPadding === "spacious" ? 44 : 32;
+  // Approximate card height for fit checks (icon + heading + body + paddings).
+  const estimatedCardHeight = Math.round((isPortrait ? 170 : 185) * scale + cardPaddingY * 0.6);
+  const titleSpace = props.title ? Math.round(80 * scale) : 0;
+  const estimatedGridHeight = rowCount * estimatedCardHeight + (rowCount - 1) * gap + titleSpace;
+  const fitScale = estimatedGridHeight > Math.round(height * 0.9)
+    ? Math.max(0.78, Math.round(((height * 0.9) / estimatedGridHeight) * 1000) / 1000)
+    : 1;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -65,7 +91,7 @@ export const CardLayout: React.FC<CardLayoutProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          transform: `translate(-50%, -50%) translateY(${floatY}px) scale(${fitScale})`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",

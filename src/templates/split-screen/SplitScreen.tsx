@@ -1,7 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, scalePop, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  fadeIn,
+  scalePop,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
@@ -29,9 +35,15 @@ export const SplitScreen: React.FC<SplitScreenProps> = (props) => {
 
   const totalFrames = secToFrame(props.duration);
 
-  const entrEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
-  const dividerStart = Math.round(totalFrames * 0.15);
-  const dividerEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
+  const entranceWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.0,
+    minSec: 1.2,
+    maxSec: 3.2,
+    maxEndPct: 0.64,
+  });
+  const entrEnd = entranceWindow.endFrame;
+  const dividerStart = Math.round(entrEnd * 0.45);
+  const dividerEnd = Math.round(entrEnd * 0.95);
   const exitStart = Math.round(totalFrames * 0.85);
   const exitEnd = totalFrames;
 

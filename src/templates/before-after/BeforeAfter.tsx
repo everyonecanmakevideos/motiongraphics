@@ -1,7 +1,14 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  fadeIn,
+  slideUp,
+  scalePop,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
@@ -27,7 +34,13 @@ export const BeforeAfter: React.FC<BeforeAfterProps> = (props) => {
   const fx = resolveEffects(resolved.effects, props.accentColor ?? undefined);
 
   const totalFrames = secToFrame(props.duration);
-  const entranceEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
+  const entranceWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.0,
+    minSec: 1.2,
+    maxSec: 3.6,
+    maxEndPct: 0.72,
+  });
+  const entranceEnd = entranceWindow.endFrame;
   const exitStart = Math.round(totalFrames * 0.85);
   const exitEnd = totalFrames;
   const exitOpacity = interpolate(frame, [exitStart, exitEnd], [1, 0], CLAMP);
@@ -131,9 +144,15 @@ function renderOverlay(
   floatY: number,
   exitBlur: number,
 ) {
-  const entrEnd = Math.round(totalFrames * 0.2);
-  const revealStart = Math.round(totalFrames * 0.4);
-  const revealEnd = Math.round(totalFrames * 0.65);
+  const entrWindow = adaptiveEntranceWindow(props.duration, totalFrames, 1, {
+    startPct: 0.0,
+    minSec: 1.0,
+    maxSec: 2.8,
+    maxEndPct: 0.5,
+  });
+  const entrEnd = entrWindow.endFrame;
+  const revealStart = Math.round(totalFrames * 0.38);
+  const revealEnd = Math.max(revealStart + Math.round(totalFrames * 0.18), Math.round(totalFrames * 0.62));
   const isWipe = props.revealStyle === "wipe";
 
   // Before entrance
@@ -273,12 +292,20 @@ function renderSplit(
   floatY: number,
   exitBlur: number,
 ) {
-  const entrEnd = Math.round(totalFrames * 0.25);
+  const entrWindow = adaptiveEntranceWindow(props.duration, totalFrames, 1, {
+    startPct: 0.0,
+    minSec: 1.2,
+    maxSec: 3.0,
+    maxEndPct: 0.55,
+  });
+  const entrEnd = entrWindow.endFrame;
 
   const leftOpacity = interpolate(frame, [0, entrEnd], [0, 1], CLAMP);
-  const rightOpacity = interpolate(frame, [Math.round(totalFrames * 0.1), Math.round(totalFrames * 0.3)], [0, 1], CLAMP);
+  const rightStart = Math.round(entrEnd * 0.35);
+  const rightEnd = Math.round(entrEnd * 1.1);
+  const rightOpacity = interpolate(frame, [rightStart, rightEnd], [0, 1], CLAMP);
   const leftX = interpolate(frame, [0, entrEnd], [-60, 0], CLAMP);
-  const rightX = interpolate(frame, [Math.round(totalFrames * 0.1), Math.round(totalFrames * 0.3)], [60, 0], CLAMP);
+  const rightX = interpolate(frame, [rightStart, rightEnd], [60, 0], CLAMP);
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>

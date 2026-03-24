@@ -1122,6 +1122,26 @@ function detectOffwhite(promptLower: string): boolean {
   );
 }
 
+function detectExplicitDarkBackground(promptLower: string): boolean {
+  return (
+    promptLower.includes("dark") ||
+    promptLower.includes("black") ||
+    promptLower.includes("charcoal") ||
+    promptLower.includes("midnight") ||
+    promptLower.includes("pitch black") ||
+    promptLower.includes("night")
+  );
+}
+
+function detectGlowNeonIntent(promptLower: string): boolean {
+  return (
+    promptLower.includes("glow") ||
+    promptLower.includes("neon") ||
+    promptLower.includes("light behind") ||
+    promptLower.includes("behind the text")
+  );
+}
+
 function applyPromptColorOverrides(
   originalPrompt: string,
   params: Record<string, unknown>,
@@ -1129,7 +1149,16 @@ function applyPromptColorOverrides(
   const p = originalPrompt.toLowerCase();
   const warmBrown = detectWarmBrownAccent(p);
   const offwhite = detectOffwhite(p);
+  const explicitDarkBg = detectExplicitDarkBackground(p);
+  const wantsGlow = detectGlowNeonIntent(p);
   const wantsGradient = p.includes("gradient");
+  const wantsBoxDecoration =
+    p.includes("highlight box") ||
+    p.includes("highlight-box") ||
+    p.includes("boxed text") ||
+    p.includes("text box") ||
+    p.includes("rectangle behind") ||
+    p.includes("panel behind");
 
   // If the user explicitly asks for brown icons, we treat that as:
   // - icon / step number color -> brown (numberColor / activeNumberColor)
@@ -1147,16 +1176,42 @@ function applyPromptColorOverrides(
     params.activeStepColor = warmOffwhite;
   }
 
-  // Offwhite with gradient: set a warm gradient background so templates
-  // that default to generic light palettes still respect the user’s vibe.
-  if (offwhite || wantsGradient) {
-    const from = offwhite ? "#FFF7ED" : "#F4F6FB";
-    const to = offwhite ? "#F1E5D0" : "#EEF2FF";
-    if (wantsGradient) {
-      params = { ...params, background: { type: "gradient", from, to, direction: "to-bottom" } };
-    } else if (offwhite) {
-      params = { ...params, background: { type: "solid", color: from } };
-    }
+  // Explicit dark/black background intent should override vibe defaults.
+  if (explicitDarkBg) {
+    const darkFrom = "#050510";
+    const darkTo = "#0A0A20";
+    params = {
+      ...params,
+      background: wantsGradient
+        ? { type: "gradient", from: darkFrom, to: darkTo, direction: "to-bottom" }
+        : { type: "solid", color: "#0A0A0A" },
+    };
+  } else if (offwhite) {
+    // Explicit light/offwhite intent.
+    const from = "#FFF7ED";
+    const to = "#F1E5D0";
+    params = {
+      ...params,
+      background: wantsGradient
+        ? { type: "gradient", from, to, direction: "to-bottom" }
+        : { type: "solid", color: from },
+    };
+  }
+
+  // If user asks for glow/neon, reinforce glow fields so renderer can show it.
+  if (wantsGlow) {
+    params = {
+      ...params,
+      effects: { shadow: "strong", glow: "neon", blur: "subtle" },
+      activeGlowColor: typeof params.activeGlowColor === "string" ? params.activeGlowColor : "#4FC3F7",
+      activeGlowStrength: typeof params.activeGlowStrength === "number" ? params.activeGlowStrength : 22,
+    };
+  }
+
+  // Avoid accidental rectangle overlays behind headline text unless user
+  // explicitly asked for a boxed/highlighted text treatment.
+  if (!wantsBoxDecoration && typeof params.decoration === "string" && params.decoration === "highlight-box") {
+    params = { ...params, decoration: "none" };
   }
 
   return params;
@@ -1776,6 +1831,7 @@ function selectVibeMode(prompt: string, vibeId: VibeId, templateId?: string): Vi
 
   const moody = /(^|\W)(noir|moody|low light|gloom|night|dramatic)(\W|$)/.test(p);
   if (moody || vibeId === "cinematic_noir" || vibeId === "cyberpunk") mode = "dark";
+  if (detectExplicitDarkBackground(p)) mode = "dark";
 
   // Documentary/retro defaults to muted light unless explicitly “noir-ish”.
   if (vibeId === "documentary" || vibeId === "retro_arcade" || vibeId === "vintage_sepia") {
@@ -1799,10 +1855,15 @@ function snapParamsToVibePalette(
   const p = originalPrompt.toLowerCase();
   const warmBrown = detectWarmBrownAccent(p);
   const offwhite = detectOffwhite(p);
+  const explicitDarkBg = detectExplicitDarkBackground(p);
   const wantsGradient = p.includes("gradient");
 
   const pinnedKeys = new Set<string>();
-  if (offwhite || wantsGradient) pinnedKeys.add("background");
+  // Pin background only when user expressed explicit light/dark background intent.
+  if (offwhite || explicitDarkBg) {
+    pinnedKeys.add("background");
+    pinnedKeys.add("backgroundAfter");
+  }
   if (warmBrown) {
     pinnedKeys.add("stepColor");
     pinnedKeys.add("numberColor");

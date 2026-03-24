@@ -10,6 +10,7 @@ import {
   glowPulse,
   staggerCascade,
   microFloat,
+  adaptiveEntranceWindow,
 } from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
@@ -93,22 +94,29 @@ export const DynamicShowcase: React.FC<DynamicShowcaseProps> = (props) => {
   const isLeftFocus = props.layout === "left-focus";
 
   // ── Phase timing ───────────────────────────────────────────────────────
-  const glowFadeEnd = Math.round(totalFrames * 0.15);
-  const iconStart = Math.round(totalFrames * 0.05);
-  const iconEnd = Math.round(totalFrames * 0.25);
-  const orbitEntrStart = Math.round(totalFrames * 0.10);
-  const orbitEntrEnd = Math.round(totalFrames * 0.30);
-  const glowPulseStart = Math.round(totalFrames * 0.30);
+  const entranceWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.04,
+    minSec: 1.6,
+    maxSec: 4.0,
+    maxEndPct: 0.7,
+  });
+  const entranceSpan = Math.max(1, entranceWindow.endFrame - entranceWindow.startFrame);
+  const glowFadeEnd = Math.round(entranceWindow.startFrame + entranceSpan * 0.35);
+  const iconStart = Math.round(entranceWindow.startFrame + entranceSpan * 0.05);
+  const iconEnd = Math.round(entranceWindow.startFrame + entranceSpan * 0.52);
+  const orbitEntrStart = Math.round(entranceWindow.startFrame + entranceSpan * 0.18);
+  const orbitEntrEnd = Math.round(entranceWindow.startFrame + entranceSpan * 0.9);
+  const glowPulseStart = Math.round(entranceWindow.endFrame);
   const glowPulseEnd = Math.round(totalFrames * 0.80);
-  const titleStart = Math.round(totalFrames * 0.30);
-  const titleEnd = Math.round(totalFrames * 0.42);
-  const descStart = Math.round(totalFrames * 0.38);
-  const descEnd = Math.round(totalFrames * 0.48);
+  const titleStart = Math.round(entranceWindow.startFrame + entranceSpan * 0.82);
+  const titleEnd = Math.round(entranceWindow.startFrame + entranceSpan * 0.98);
+  const descStart = Math.round(entranceWindow.startFrame + entranceSpan * 0.9);
+  const descEnd = Math.round(entranceWindow.endFrame + entranceSpan * 0.08);
   const exitStart = Math.round(totalFrames * 0.82);
   const exitEnd = totalFrames;
 
   // ── MicroFloat & exit blur ─────────────────────────────────────────────
-  const entranceEnd = Math.round(totalFrames * 0.30 * motion.durationMultiplier);
+  const entranceEnd = entranceWindow.endFrame;
   const isMainPhase = frame >= entranceEnd && frame < exitStart;
   const floatY = motion.microMotionEnabled && isMainPhase ? microFloat(frame).y : 0;
 

@@ -1,7 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, scalePop, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  fadeIn,
+  scalePop,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
@@ -13,7 +19,7 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 
 export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
   const frame = useCurrentFrame();
-  const { isPortrait, scale } = useResponsiveConfig();
+  const { isPortrait, height, scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -29,11 +35,23 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
   const totalFrames = secToFrame(props.duration);
 
   // Phase timing
-  const sidesEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
-  const vsStart = Math.round(totalFrames * 0.15);
-  const vsEnd = Math.round(totalFrames * 0.3 * motion.durationMultiplier);
-  const itemsStart = Math.round(totalFrames * 0.2);
-  const itemsEnd = Math.round(totalFrames * 0.55 * motion.durationMultiplier);
+  const sidesWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.0,
+    minSec: 1.2,
+    maxSec: 3.0,
+    maxEndPct: 0.62,
+  });
+  const sidesEnd = sidesWindow.endFrame;
+  const vsStart = Math.round(sidesWindow.startFrame + (sidesWindow.endFrame - sidesWindow.startFrame) * 0.35);
+  const vsEnd = Math.round(sidesWindow.startFrame + (sidesWindow.endFrame - sidesWindow.startFrame) * 0.85);
+  const itemsWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.16,
+    minSec: 1.6,
+    maxSec: 3.8,
+    maxEndPct: 0.72,
+  });
+  const itemsStart = itemsWindow.startFrame;
+  const itemsEnd = itemsWindow.endFrame;
   const exitStart = Math.round(totalFrames * 0.85);
   const exitEnd = totalFrames;
 
@@ -80,6 +98,16 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
   const vsScale = interpolate(frame, [vsStart, vsEnd], [0.5, 1], CLAMP);
 
   const maxItems = Math.max(props.leftItems.length, props.rightItems.length);
+  const estimatedRows = maxItems;
+  const estimatedItemHeight = Math.round((isPortrait ? 56 : 46) * scale);
+  const headingSpace = Math.round(84 * scale);
+  const columnContentHeight = headingSpace + estimatedRows * estimatedItemHeight;
+  const totalEstimatedHeight = isPortrait
+    ? columnContentHeight * 2 + Math.round(120 * scale)
+    : columnContentHeight + Math.round(40 * scale);
+  const fitScale = totalEstimatedHeight > Math.round(height * 0.9)
+    ? Math.max(0.78, Math.round(((height * 0.9) / totalEstimatedHeight) * 1000) / 1000)
+    : 1;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -90,13 +118,13 @@ export const ComparisonLayout: React.FC<ComparisonLayoutProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          transform: `translate(-50%, -50%) translateY(${floatY}px) scale(${fitScale})`,
           display: "flex",
           flexDirection: isPortrait ? "column" : "row",
           alignItems: isPortrait ? "center" : "flex-start",
           gap: Math.round((isPortrait ? 30 : 60) * scale) + "px",
           opacity: exitOpacity,
-          width: "85%",
+          width: isPortrait ? "92%" : "85%",
           boxShadow: fx.boxShadow,
           filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,
         }}

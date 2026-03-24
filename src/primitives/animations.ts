@@ -64,6 +64,35 @@ export function staggerDelay(
   };
 }
 
+/**
+ * Adaptive entrance window that stays readable across durations:
+ * - short videos are not blink-fast
+ * - long videos don't spend too much time only on entrance
+ */
+export function adaptiveEntranceWindow(
+  durationSec: number,
+  totalFrames: number,
+  speedMultiplier: number = 1,
+  opts?: {
+    startPct?: number;
+    minSec?: number;
+    maxSec?: number;
+    maxEndPct?: number;
+  }
+): FrameRange {
+  const startPct = opts?.startPct ?? 0.08;
+  const minSec = opts?.minSec ?? 1.6;
+  const maxSec = opts?.maxSec ?? 4.0;
+  const maxEndPct = opts?.maxEndPct ?? 0.75;
+
+  const startFrame = Math.round(totalFrames * startPct);
+  const rawSec = durationSec * 0.45;
+  const cappedSec = Math.max(minSec, Math.min(rawSec, maxSec));
+  const scaledSec = cappedSec * Math.max(0.85, Math.min(1.15, speedMultiplier));
+  const endFrame = Math.min(startFrame + secToFrame(scaledSec), Math.round(totalFrames * maxEndPct));
+  return { startFrame, endFrame };
+}
+
 // ── Entrance Animation Presets (with anticipation & follow-through) ─────
 
 /** Fade in: opacity 0 → 1, with optional subtle scale for physical feel. */

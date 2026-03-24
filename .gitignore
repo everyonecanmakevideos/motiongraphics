@@ -6,3 +6,10 @@ credentials.json
 token.json
 # Ignore the output video from Git but not videos you import into src/.
 out
+.next
+*.tsbuildinfo
+.vercel
+.turbo
+coverage
+tmp
+temp
