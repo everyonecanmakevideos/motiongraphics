@@ -6,7 +6,8 @@
  * upgrades them with better colors, backgrounds, animations,
  * and composition choices — without changing content or templateId.
  *
- * Uses gpt-4o-mini for fast, cheap aesthetic judgment.
+ * Single LLM call returns creative enhancements plus a styleArchetype; deterministic
+ * archetype mapping layers consistency on top (no separate judge call).
  * Falls back to original params on any failure.
  */
 
@@ -31,8 +32,13 @@ INPUT: You receive JSON with:
 - "schemaFields": which fields exist on this template's schema and their types/enums
 
 OUTPUT: Return ONLY a JSON object with:
+- "styleArchetype": REQUIRED. One of: "personal_story" | "product_progress" | "tech_terminal" | "news_alert" | "promo_ad" | "minimal_ui" | "neon_cyberpunk" | "default"
+  - Classify the user's prompt theme (vlog/story → personal_story; order/status/progress UI → product_progress; tech/dev/loading → tech_terminal; breaking news/broadcast → news_alert; sale/offer/CTA ad → promo_ad; clean boxes/minimal UI → minimal_ui; neon/cyber → neon_cyberpunk; else default).
+- "archetypeConfidence": optional number 0..1 (how sure you are of the archetype).
 - "enhancedParams": an object containing ONLY the aesthetic fields you want to improve. Omit any field you are NOT changing. Do NOT include content fields (text, data, iconId). We will merge your changes over the originals.
 - "changes": array of strings describing what you changed and why
+
+The server applies deterministic styling on top of your archetype choice for consistency — still fill enhancedParams with a strong creative proposal.
 
 DESIGN PRINCIPLES:
 
@@ -260,7 +266,7 @@ DESIGN PRINCIPLES:
 
 5. COMPOSITION CHOICES — use template-specific style/layout enums intelligently:
    - hero-text style: "centered" for impact, "split" for editorial, "left-aligned" for corporate
-  - hero-text decoration: "accent-line" for premium, "highlight-box" for emphasis, "underline" for editorial, "pill-outline" for bold CTA/slogans
+   - hero-text decoration: "accent-line" for premium, "highlight-box" for emphasis, "underline" for editorial
    - cinematic-hero mood: "elegant" for luxury, "bold" for impact, "minimal" for tech
    - dynamic-showcase orbitStyle: "rings" = premium, "dots" = tech, "mixed" = playful
    - parallax-showcase depthIntensity: "strong" = dramatic, "subtle" = elegant, "medium" = default
@@ -378,6 +384,8 @@ CRITICAL CONSTRAINTS:
 
 EXAMPLE — Input: hero-text template with bland defaults (solid #111111 bg, #FFFFFF text, #4FC3F7 accent) for a "premium luxury watch brand reveal" prompt:
 {
+  "styleArchetype": "default",
+  "archetypeConfidence": 0.85,
   "enhancedParams": {
     "headlineColor": "#FFF8E1",
     "subheadlineColor": "#C9A96E",
@@ -401,6 +409,8 @@ EXAMPLE — Input: hero-text template with bland defaults (solid #111111 bg, #FF
 
 EXAMPLE 2 — Input: stat-counter with bland defaults for a "neon cyberpunk gaming stats" prompt:
 {
+  "styleArchetype": "neon_cyberpunk",
+  "archetypeConfidence": 0.95,
   "enhancedParams": {
     "valueColor": "#39FF14",
     "labelColor": "#00D4FF",
@@ -421,6 +431,8 @@ EXAMPLE 2 — Input: stat-counter with bland defaults for a "neon cyberpunk gami
 
 EXAMPLE 3 — Input: quote-highlight for a "dramatic movie trailer quote" prompt:
 {
+  "styleArchetype": "default",
+  "archetypeConfidence": 0.8,
   "enhancedParams": {
     "quoteColor": "#F8FAFC",
     "attributionColor": "#A855F7",
@@ -439,181 +451,17 @@ EXAMPLE 3 — Input: quote-highlight for a "dramatic movie trailer quote" prompt
   "changes": ["Noir gradient for cinematic depth", "Suspense pacing for long dramatic build", "Drift motion adds cinematic life", "Light streaks add epic visual depth", "Strong shadows for drama"]
 }`;
 
-// ── Normalized Style Tokens Prompt ─────────────────────────────────────────
-// We ask the LLM for normalized style tokens, then deterministically map them
-// into this project's constrained template aesthetic fields (Zod-validated).
-const STYLE_TOKENS_SYSTEM_PROMPT = `You are a senior motion-graphics brand style token generator.
-
-You receive JSON with:
-- originalPrompt: the user's raw prompt
-- templateId: the currently selected template (DO NOT CHANGE)
-- params: current template params (already include content fields)
-- schemaFields: which fields exist on this template schema
-
-TASK:
-Extract a normalized set of style tokens that describe:
-palette, contrast, typography, shape family, polish intensity, and motion style.
-
-IMPORTANT CREATIVE AUTOPILOT RULE:
-- The user will often be vague. You are allowed to choose a more polished background and subtle postFx EVEN IF the user did not explicitly request them.
-- Default to SUBTLE. Only escalate to "strong" postFx when the prompt clearly calls for it (e.g., glitch, heavy distortion, retro CRT, intense broadcast).
-- Prefer choices that read "intentional" and "premium" rather than random decoration.
-
-When the originalPrompt looks like a broadcast/news ticker alert (mentions “breaking news”, “news alert”, “TV news”, “ticker”, “LIVE”, or “broadcast”):
-- Bias background toward "stripe" or "grain" (dark studio feel).
-- Bias decorativeTheme toward "light-streaks" or "corner-accents".
-- Bias polishIntensity toward { shadow: "strong", glow: "subtle" }.
-- Bias motionStyle toward { speed: "fast", easing: "dramatic" }.
-- Bias postFx.scanlines toward "subtle" (broadcast feel).
-
-When the originalPrompt looks like a promo/offer ad (mentions “limited offer”, “flash sale”, “offer”, “discount”, “drop”, “sale”, “promo”, “reel”, “ad creative”, “D2C”):
-- Bias palette toward high contrast: near-black background, white text, one neon accent (pink/cyan/red).
-- Bias typography toward bold/black weight with tight spacing (for urgency).
-- Bias polishIntensity toward { glow: "subtle"|"neon", shadow: "strong" } (controlled flashiness).
-- Bias motionStyle toward { speed: "fast", easing: "snappy"|"elastic" } and pacingProfile "energetic".
-- If the user says "simple" or "minimal" in an ad/promo context, interpret it as "one bold idea" (large type + high contrast), not "reduce intensity".
-- If the user asks for "underline/box highlight", prefer a single strong accent motif (underline/line/pill) OR a confetti decorative theme — whichever better matches "scroll-stopping" while staying constrained.
-
-When the originalPrompt looks like a product/UI loading state (mentions “loading”, “please wait”, “buffering”, “processing”, “authentic UI”, “app screen”, “spinner”, “dots”):
-- Prefer extreme minimal confidence: near-black background, restrained text size, lots of breathing space.
-- Prefer functional feedback cues (dots/bar) over decorative particles.
-- Bias motionStyle toward smooth/snappy with microMotion true; pacingProfile toward "standard" or "elegant" (never chaotic).
-- Prefer background type "solid" or "grid" (very low opacity), and postFx.vignette = "subtle" at most.
-
-When the originalPrompt looks like a streaming UI go-live moment (mentions “youtube stream”, “livestream”, “stream starting”, “we are live now”, “twitch”, “go live”, “stream is live”):
-- Use a dark immersive background (solid or subtle grain).
-- Use a LIVE badge as a functional cue (pulsing/blinking).
-- Emphasize the word “LIVE” with accent color + glow.
-- Bias motionStyle toward { speed: "fast", easing: "snappy"|"dramatic" } with microMotion true; pacingProfile "energetic".
-- Bias postFx.scanlines toward "subtle" (stream overlay vibe).
-
-When the originalPrompt asks for glitch/broken/error UI (mentions “glitch”, “glitched”, “broken”, “corrupted”, “error”, “signal”, “distortion”, “scanlines”):
-- Prefer textEffect = "glitch" (when available) and enable scanlines overlay.
-- Use dark background with high contrast text and a neon accent (red/cyan) for glitch energy.
-- Bias effects.glow toward "subtle" or "neon" and motionStyle toward "snappy" (microMotion true).
-- Also set postFx.scanlines to "subtle" (or "strong" if user says heavy).
-- If templateId is "hero-text" and schemaFields include "textEffect" or "scanlines", set styleTokens.heroText.textEffect = "glitch" and styleTokens.heroText.scanlines = true.
-
-When the originalPrompt looks like a creator/lifestyle vlog intro (mentions “vlog”, “my vlog”, “daily vlog”, “creator”, “lifestyle”, “aesthetic”, “personal brand”, “fashion”, “beauty”):
-- Bias stylePreset toward "editorial" or "minimal-luxury".
-- Prefer a bright airy background: solid warm off-white or a very subtle warm gradient.
-- Typography should carry the vibe: choose "playfair-display" with fontStyle "italic" and weight "regular"|"medium".
-- Prefer polishIntensity glow "none" and shadow "none" (no tech glow).
-- PacingProfile "elegant" and motionStyle { easing: "smooth", speed: "slow"|"medium" }.
-- If schemaFields include "background": you MUST set styleTokens.background to a solid off-white by default:
-  { "type": "solid", "color": "#F7F3EA" }
-  Only use dark backgrounds if the user explicitly asks for dark/black/night.
-
-STYLE PRESET → DEFAULT BACKGROUND / POSTFX HEURISTICS (use when prompt is vague):
-- "modern-clean": background "gradient" or "solid"; postFx.vignette "off"|"subtle"; scanlines off.
-- "bold-startup": background "gradient" or "radial-glow"; postFx.vignette "subtle"; chromaticAberration off.
-- "neon-tech": background "radial-glow" or "grid"; postFx.chromaticAberration "subtle"; vignette "subtle".
-- "minimal-luxury": background "solid" or "gradient" with gentle vignette; postFx.vignette "subtle".
-- "cinematic-noir": background "grain" or dark "gradient"; postFx.vignette "strong" is allowed; chromaticAberration off.
-- "retro-arcade": background "grid" or "stripe"; postFx.scanlines "subtle"; chromaticAberration "subtle" (optional).
-- "editorial": background "solid" or "gradient"; postFx.vignette "subtle".
-- "brutalist": background "solid" or "grid"; postFx.vignette "off"|"subtle".
-- "glass-morphism": background "gradient" or "radial-glow"; postFx.vignette "subtle".
-- "gradient-dream": background "gradient" or "radial-glow"; postFx.vignette "subtle".
-- "tech-terminal": background "grid" (low opacity) or "solid"; postFx.vignette "subtle"; scanlines off.
-- "warm-organic": background "grain" or warm "gradient"; postFx.vignette "subtle".
-
-When the originalPrompt explicitly requests post effects:
-- "scanlines" → postFx.scanlines = "subtle" (or "strong" for heavy)
-- "vignette" → postFx.vignette = "subtle" (or "strong" for heavy)
-- "chromatic aberration", "RGB split", "color fringing" → postFx.chromaticAberration = "subtle"
-- "shake", "rumble", "impact" → postFx.shake = "subtle"
-
-OUTPUT:
-Return ONLY valid JSON with this exact shape:
-{
-  "styleTokens": {
-    "background": { "type": "solid"|"gradient"|"stripe"|"grain"|"dots"|"grid"|"radial-glow", ... },
-    "palette": {
-      "primaryText": "#RRGGBB",
-      "secondaryText": "#RRGGBB",
-      "accent": "#RRGGBB"
-    },
-    "typography": {
-      "fontFamily": "inter"|"clash-display"|"space-grotesk"|"playfair-display",
-      "weight": "regular"|"medium"|"bold"|"black",
-      "letterSpacing": "tight"|"normal"|"wide",
-      "lineHeight": "compact"|"normal"|"relaxed",
-      "fontStyle": "normal"|"italic"
-    },
-    "shape": {
-      "family": "none"|"sharp"|"rounded"|"pill",
-      "variant": "fill"|"outline"
-    },
-    "polishIntensity": {
-      "shadow": "none"|"soft"|"strong",
-      "glow": "none"|"subtle"|"neon",
-      "blur": "none"|"subtle"|"transition"
-    },
-    "postFx": {
-      "scanlines": "off"|"subtle"|"strong",
-      "vignette": "off"|"subtle"|"strong",
-      "chromaticAberration": "off"|"subtle"|"strong",
-      "shake": "off"|"subtle"|"strong"
-    },
-    "motionStyle": {
-      "easing": "smooth"|"snappy"|"elastic"|"dramatic"|"playful",
-      "speed": "slow"|"medium"|"fast",
-      "stagger": boolean,
-      "microMotion": boolean
-    },
-    "pacingProfile": "dramatic"|"energetic"|"elegant"|"standard"|"suspense",
-    "secondaryMotion": {
-      "type": "breathe"|"float"|"drift"|"rotate"|"none",
-      "intensity": "subtle"|"medium"|"strong"
-    },
-    "decorativeTheme": "geometric"|"minimal-dots"|"light-streaks"|"corner-accents"|"confetti"|"none",
-    "stylePreset": "modern-clean"|"bold-startup"|"neon-tech"|"minimal-luxury"|"cinematic-noir"|"retro-arcade"|"editorial"|"brutalist"|"glass-morphism"|"gradient-dream"|"tech-terminal"|"warm-organic",
-    "heroText": {
-      "fontSize": "medium"|"large"|"xlarge",
-      "fontWeight": "normal"|"bold"|"black",
-      "textEffect": "none"|"glitch",
-      "scanlines": boolean
-    }
-  },
-  "changes": ["string explanation"]
-}
-
-CONSTRAINTS:
-- Return ONLY valid JSON (no markdown fences, no extra text).
-- ALL hex colors MUST be exactly 7 chars: #RRGGBB
-- Do NOT output any content fields (headline/subheadline/quote/items/etc). Only style tokens.
-- postFx is OPTIONAL. If you include it, keep it subtle by default.
-
-AD / PROMO OUTCOME RULE:
-- In ad/promo contexts, optimize for the RESULT (scroll-stopping) over literal minimalism.
-- If the prompt includes "simple" or "minimal" alongside "offer/sale/promo/reel/ad", interpret as: one bold idea, high contrast, large type, purposeful motion.
-`;
-
-const STYLE_TOKENS_MULTI_SCENE_ADDENDUM = `
-MULTI-SCENE RULES (token mode):
-- Return ONLY valid JSON:
-{
-  "enhancedScenes": [
-    {
-      "styleTokens": { ...same schema as single-scene... },
-      "regions": [ { "styleTokens": { ... } } ],
-      "changes": ["string explanation"]
-    }
-  ]
-}
-- "enhancedScenes" must preserve input scene order and length.
-- For composite scenes: "regions" must preserve input region order and length.
-`;
-
 const MULTI_SCENE_ADDENDUM = `
 
 MULTI-SCENE RULES:
 - You receive an array of scenes. Enhance EACH scene's params.
+- Also return top-level "styleArchetype" (same enum as single-scene) and optional "archetypeConfidence" once for the whole prompt — classify the overall video theme.
 - Ensure visual CONSISTENCY across scenes: shared color palette, similar gradient directions, complementary accents.
 - The first scene sets the palette; subsequent scenes should harmonize with it.
 - Adjacent scenes should share at least one accent color for cohesion.
-- Return "enhancedScenes" array with one entry per scene (same order).
+- Return ONLY valid JSON in this shape:
+  { "styleArchetype": "...", "archetypeConfidence": 0.0-1.0, "enhancedScenes": [ ... ] }
+- "enhancedScenes" array with one entry per scene (same order).
 - Each entry: { "enhancedParams": {...}, "changes": [...] }
 - enhancedParams should contain ONLY the fields you want to change (partial diff).
 - For composite scenes: enhance BOTH the scene-level "background" AND each region's params (including region backgrounds).
@@ -623,318 +471,18 @@ MULTI-SCENE RULES:
 - For single-template scenes: you can include a top-level "background" field alongside "enhancedParams" to override the scene background.
 - Return ONLY valid JSON.`;
 
-// ── Style Judge ─────────────────────────────────────────────────────────────
-// A constrained LLM pass that decides a HIGH-LEVEL style archetype.
-// We then deterministically map that archetype into this project's
-// constrained typography/palette/background/effects fields.
-const STYLE_JUDGE_SYSTEM_PROMPT = `You are a motion-graphics style judge.
-
-Classify the user's prompt into a small set of style archetypes based on theme + tone.
-If the user is vague, choose the safest default.
-
-ARCUHETYPES (choose one):
-1) "personal_story" — vlog, personal story, creator intro, lifestyle, diary-like
-2) "product_progress" — order status, tracking, progress steps, step-by-step activation UI
-3) "tech_terminal" — tech, AI, cyber, developer, loading, buffering, system UI
-4) "news_alert" — breaking news, broadcast ticker, LIVE/news style
-5) "promo_ad" — sale, offer, promo, ad creative, CTA urgency
-6) "minimal_ui" — clean/simple/minimal UI, boxes/arrows, neutral functional layout
-7) "neon_cyberpunk" — neon glow, cyberpunk, strong CRT-like energy
-8) "default" — none of the above / general purpose
-
-OUTPUT REQUIREMENTS (CRITICAL):
-- Return ONLY valid JSON (no markdown, no extra text).
-- Return ONLY these fields:
-{
-  "archetype": "personal_story"|"product_progress"|"tech_terminal"|"news_alert"|"promo_ad"|"minimal_ui"|"neon_cyberpunk"|"default",
-  "confidence": number (0..1)
-}
-`;
-
-type StyleJudgeOutput = {
-  archetype:
-    | "personal_story"
-    | "product_progress"
-    | "tech_terminal"
-    | "news_alert"
-    | "promo_ad"
-    | "minimal_ui"
-    | "neon_cyberpunk"
-    | "default";
-  confidence: number;
-};
-
-function safeParseJson(raw: string): unknown {
-  const cleaned = raw.replace(/```json/g, "").replace(/```/g, "").trim();
-  return JSON.parse(cleaned);
-}
-
-function applyJudgeOverridesToStyleTokens(
-  styleTokens: Record<string, unknown>,
-  judge: StyleJudgeOutput,
-  originalPrompt: string,
-): Record<string, unknown> {
-  const p = originalPrompt.toLowerCase();
-  const asksDarkMode =
-    p.includes("dark mode") ||
-    p.includes("dark theme") ||
-    p.includes("in dark") ||
-    p.includes("night mode") ||
-    /\bdark\b/.test(p);
-
-  const dark = asksDarkMode;
-
-  const overrides: Record<string, unknown> = {};
-
-  switch (judge.archetype) {
-    case "personal_story": {
-      overrides.palette = dark
-        ? { primaryText: "#FFFFFF", secondaryText: "#B9C2D0", accent: "#F59E0B" }
-        : { primaryText: "#111827", secondaryText: "#4B5563", accent: "#C084FC" };
-
-      overrides.typography = {
-        fontFamily: "playfair-display",
-        weight: "medium",
-        letterSpacing: "normal",
-        lineHeight: "relaxed",
-        fontStyle: "italic",
-      };
-
-      overrides.background = dark
-        ? { type: "grain", baseColor: "#0B1020", grainOpacity: 0.07 }
-        : { type: "gradient", from: "#FFF7ED", to: "#FFEBD6", direction: "to-bottom-right" };
-
-      overrides.stylePreset = "editorial";
-      overrides.polishIntensity = { shadow: "none", glow: "none", blur: "none" };
-      overrides.postFx = {
-        scanlines: "off",
-        vignette: dark ? "subtle" : "subtle",
-        chromaticAberration: "off",
-        shake: "off",
-      };
-      break;
-    }
-    case "product_progress": {
-      overrides.palette = dark
-        ? { primaryText: "#FFFFFF", secondaryText: "#9CA3AF", accent: "#F97316" }
-        : { primaryText: "#111827", secondaryText: "#6B7280", accent: "#F97316" };
-
-      overrides.typography = {
-        fontFamily: "inter",
-        weight: "bold",
-        letterSpacing: "tight",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-
-      overrides.background = dark
-        ? { type: "gradient", from: "#0B1020", to: "#111827", direction: "to-bottom-right" }
-        : { type: "solid", color: "#F5F7FB" };
-
-      overrides.stylePreset = "modern-clean";
-      overrides.polishIntensity = { shadow: "soft", glow: "none", blur: "none" };
-      overrides.postFx = { scanlines: "off", vignette: "off", chromaticAberration: "off", shake: "off" };
-      break;
-    }
-    case "tech_terminal": {
-      overrides.palette = dark
-        ? { primaryText: "#E5E7EB", secondaryText: "#93C5FD", accent: "#38BDF8" }
-        : { primaryText: "#0F172A", secondaryText: "#334155", accent: "#2563EB" };
-      overrides.typography = {
-        fontFamily: "space-grotesk",
-        weight: "bold",
-        letterSpacing: "wide",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-      overrides.background = dark
-        ? { type: "gradient", from: "#050816", to: "#0B1B2A", direction: "radial" }
-        : { type: "grain", baseColor: "#F1F5F9", grainOpacity: 0.05 };
-      overrides.stylePreset = "tech-terminal";
-      overrides.polishIntensity = { shadow: "none", glow: "none", blur: "subtle" };
-      overrides.postFx = {
-        scanlines: "off",
-        vignette: "subtle",
-        chromaticAberration: dark ? "subtle" : "off",
-        shake: "off",
-      };
-      break;
-    }
-    case "news_alert": {
-      overrides.palette = dark
-        ? { primaryText: "#FFFFFF", secondaryText: "#CBD5E1", accent: "#EF4444" }
-        : { primaryText: "#111827", secondaryText: "#475569", accent: "#DC2626" };
-      overrides.typography = {
-        fontFamily: "inter",
-        weight: "bold",
-        letterSpacing: "normal",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-      overrides.background = dark
-        ? { type: "gradient", from: "#050510", to: "#0A0A20", direction: "to-bottom" }
-        : { type: "gradient", from: "#F8FAFC", to: "#EEF2FF", direction: "to-bottom" };
-      overrides.stylePreset = "editorial";
-      overrides.polishIntensity = { shadow: "strong", glow: "none", blur: "none" };
-      overrides.postFx = {
-        scanlines: dark ? "subtle" : "off",
-        vignette: dark ? "subtle" : "off",
-        chromaticAberration: "off",
-        shake: "off",
-      };
-      break;
-    }
-    case "promo_ad": {
-      overrides.palette = dark
-        ? { primaryText: "#FFFFFF", secondaryText: "#E5E7EB", accent: "#EC4899" }
-        : { primaryText: "#111827", secondaryText: "#374151", accent: "#DB2777" };
-      overrides.typography = {
-        fontFamily: "clash-display",
-        weight: "black",
-        letterSpacing: "tight",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-      overrides.background = dark
-        ? { type: "gradient", from: "#0F0520", to: "#1A0A3A", direction: "to-bottom-right" }
-        : { type: "solid", color: "#111827" };
-      overrides.stylePreset = "bold-startup";
-      overrides.polishIntensity = { shadow: "strong", glow: "subtle", blur: "none" };
-      overrides.postFx = {
-        scanlines: "off",
-        vignette: dark ? "subtle" : "off",
-        chromaticAberration: dark ? "subtle" : "off",
-        shake: "off",
-      };
-      break;
-    }
-    case "minimal_ui": {
-      overrides.palette = dark
-        ? { primaryText: "#FFFFFF", secondaryText: "#9CA3AF", accent: "#6366F1" }
-        : { primaryText: "#0F172A", secondaryText: "#64748B", accent: "#6366F1" };
-      overrides.typography = {
-        fontFamily: "inter",
-        weight: "medium",
-        letterSpacing: "normal",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-      overrides.background = dark ? { type: "solid", color: "#050816" } : { type: "solid", color: "#F4F6FB" };
-      overrides.stylePreset = "modern-clean";
-      overrides.polishIntensity = { shadow: "soft", glow: "none", blur: "none" };
-      overrides.postFx = { scanlines: "off", vignette: "off", chromaticAberration: "off", shake: "off" };
-      break;
-    }
-    case "neon_cyberpunk": {
-      overrides.palette = dark
-        ? { primaryText: "#F8FAFC", secondaryText: "#93C5FD", accent: "#00D4FF" }
-        : { primaryText: "#0F172A", secondaryText: "#334155", accent: "#00A3FF" };
-      overrides.typography = {
-        fontFamily: "space-grotesk",
-        weight: "bold",
-        letterSpacing: "wide",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-      overrides.background = dark
-        ? { type: "gradient", from: "#000A1A", to: "#001A3A", direction: "radial" }
-        : { type: "solid", color: "#0B1020" };
-      overrides.stylePreset = "neon-tech";
-      overrides.polishIntensity = { shadow: "none", glow: "neon", blur: "subtle" };
-      overrides.postFx = {
-        scanlines: dark ? "subtle" : "off",
-        vignette: dark ? "subtle" : "off",
-        chromaticAberration: dark ? "subtle" : "off",
-        shake: "off",
-      };
-      break;
-    }
-    default: {
-      overrides.palette = dark
-        ? { primaryText: "#FFFFFF", secondaryText: "#9CA3AF", accent: "#38BDF8" }
-        : { primaryText: "#0F172A", secondaryText: "#64748B", accent: "#6366F1" };
-      overrides.typography = {
-        fontFamily: "inter",
-        weight: "medium",
-        letterSpacing: "normal",
-        lineHeight: "compact",
-        fontStyle: "normal",
-      };
-      overrides.background = dark
-        ? { type: "gradient", from: "#0B1020", to: "#0F172A", direction: "to-bottom" }
-        : { type: "gradient", from: "#F4F6FB", to: "#EEF2FF", direction: "to-bottom" };
-      overrides.stylePreset = "modern-clean";
-      overrides.polishIntensity = { shadow: "soft", glow: "none", blur: "none" };
-      overrides.postFx = { scanlines: "off", vignette: "off", chromaticAberration: "off", shake: "off" };
-      break;
-    }
-  }
-
-  return {
-    ...styleTokens,
-    ...overrides,
-  };
-}
-
-async function runStyleJudge(
-  client: OpenAI,
-  originalPrompt: string,
-  templateId: string,
-): Promise<StyleJudgeOutput | undefined> {
-  const judgeResp = await client.responses.create({
-    model: "gpt-4o-mini",
-    temperature: 0,
-    input: [
-      { role: "system", content: STYLE_JUDGE_SYSTEM_PROMPT },
-      { role: "user", content: JSON.stringify({ originalPrompt, templateId }) },
-    ],
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const judgeRaw = (judgeResp.output[0] as any)?.content?.[0]?.text as string | undefined;
-  if (!judgeRaw) return undefined;
-
-  try {
-    const parsedJudge = safeParseJson(judgeRaw) as Partial<StyleJudgeOutput>;
-    if (
-      parsedJudge &&
-      typeof parsedJudge.archetype === "string" &&
-      typeof parsedJudge.confidence === "number"
-    ) {
-      // Constrain to allowed archetypes at runtime.
-      const allowed = new Set<StyleJudgeOutput["archetype"]>([
-        "personal_story",
-        "product_progress",
-        "tech_terminal",
-        "news_alert",
-        "promo_ad",
-        "minimal_ui",
-        "neon_cyberpunk",
-        "default",
-      ]);
-      if (allowed.has(parsedJudge.archetype as StyleJudgeOutput["archetype"])) {
-        return parsedJudge as StyleJudgeOutput;
-      }
-    }
-  } catch (err) {
-    // ignore
-  }
-
-  return undefined;
-}
-
 // ── Enhanceable Schema Fields per Template ───────────────────────────────────
 // Only aesthetic fields are listed. Content fields are deliberately excluded
 // so the LLM cannot accidentally modify text, data, or structure.
 
 const SHARED_CREATIVE_FIELDS: Record<string, string> = {
   stylePreset: "modern-clean|bold-startup|neon-tech|minimal-luxury|cinematic-noir|retro-arcade|editorial|brutalist|glass-morphism|gradient-dream|tech-terminal|warm-organic",
-  typography: "{ fontFamily: inter|clash-display|space-grotesk|playfair-display, weight: regular|medium|bold|black, letterSpacing: tight|normal|wide, lineHeight: compact|normal|relaxed, fontStyle: normal|italic }",
+  typography: "{ fontFamily: inter|clash-display|space-grotesk, weight: regular|medium|bold|black, letterSpacing: tight|normal|wide, lineHeight: compact|normal|relaxed }",
   motionStyle: "{ easing: smooth|snappy|elastic|dramatic|playful, speed: slow|medium|fast, stagger: boolean, microMotion: boolean }",
-  effects: "{ shadow: none|soft|strong, glow: none|subtle|neon, blur: none|subtle|transition, scanlines: off|subtle|strong, vignette: off|subtle|strong, chromaticAberration: off|subtle|strong, shake: off|subtle|strong }",
+  effects: "{ shadow: none|soft|strong, glow: none|subtle|neon, blur: none|subtle|transition }",
   pacingProfile: "dramatic|energetic|elegant|standard|suspense (controls entrance/main/exit phase timing ratios)",
   secondaryMotion: "{ type: breathe|float|drift|rotate|none, intensity: subtle|medium|strong } (continuous motion during main phase)",
-  decorativeTheme: "geometric|minimal-dots|light-streaks|corner-accents|confetti|none (adds depth with decorative background elements)",
+  decorativeTheme: "geometric|minimal-dots|light-streaks|corner-accents|none (adds depth with decorative background elements)",
 };
 
 const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
@@ -947,10 +495,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     entranceAnimation: "fade-in|slide-up|scale-pop|blur-reveal|typewriter|none",
     subheadlineAnimation: "fade-in|slide-up|scale-pop|blur-reveal|none",
     style: "centered|left-aligned|split",
-    decoration: "none|underline|highlight-box|accent-line|pill-outline|pill-fill",
-    emphasisMode: "none|second-word-accent",
-    textEffect: "none|glitch",
-    scanlines: "boolean",
+    decoration: "none|underline|highlight-box|accent-line",
     fontSize: "medium|large|xlarge",
     fontWeight: "normal|bold|black",
   },
@@ -1023,11 +568,22 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     lineColor: "hex color #RRGGBB",
     dotColor: "hex color #RRGGBB",
     titleColor: "hex color #RRGGBB",
+    subtitleColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
     descriptionColor: "hex color #RRGGBB",
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
-    entranceAnimation: "progressive|fade-in|slide-up|none",
     markerStyle: "dot|ring|diamond",
+    // Typography hierarchy + spacing
+    titleGapPx: "0-200 (number, pixels)",
+    subtitleGapPx: "0-80 (number, pixels)",
+    titleFontWeight: "regular|medium|bold|black",
+    subtitleFontWeight: "regular|medium|bold|black",
+    labelFontWeight: "regular|medium|bold|black",
+    descriptionFontWeight: "regular|medium|bold|black",
+    labelFontSizePx: "10-90 (number, pixels)",
+    descriptionFontSizePx: "8-80 (number, pixels)",
+    subtitleFontSizePx: "10-90 (number, pixels)",
+    nodeSizePx: "14-120 (number, pixels)",
   },
   "card-layout": {
     ...SHARED_CREATIVE_FIELDS,
@@ -1134,17 +690,25 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
   "process-steps": {
     ...SHARED_CREATIVE_FIELDS,
     stepColor: "hex color #RRGGBB",
-    connectorColor: "hex color #RRGGBB",
     titleColor: "hex color #RRGGBB",
+    subtitleColor: "hex color #RRGGBB",
     textColor: "hex color #RRGGBB",
     descriptionColor: "hex color #RRGGBB",
     numberColor: "hex color #RRGGBB",
-    cardBackground: "hex color #RRGGBB",
-    cardBorderColor: "hex color #RRGGBB",
     connectorStyle: "arrow|line|dashed",
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
-    entranceAnimation: "progressive|fade-in|slide-up|none",
     markerStyle: "circle|square|pill",
+    // Typography hierarchy + spacing
+    titleGapPx: "0-200 (number, pixels)",
+    subtitleGapPx: "0-80 (number, pixels)",
+    titleFontWeight: "regular|medium|bold|black",
+    subtitleFontWeight: "regular|medium|bold|black",
+    labelFontWeight: "regular|medium|bold|black",
+    descriptionFontWeight: "regular|medium|bold|black",
+    labelFontSizePx: "10-90 (number, pixels)",
+    descriptionFontSizePx: "8-80 (number, pixels)",
+    subtitleFontSizePx: "10-90 (number, pixels)",
+    nodeSizePx: "20-140 (number, pixels)",
   },
   "map-highlight": {
     ...SHARED_CREATIVE_FIELDS,
@@ -1209,30 +773,6 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
     entranceAnimation: "fade-in|slide-up|clip-reveal",
   },
-
-  "news-alert": {
-    ...SHARED_CREATIVE_FIELDS,
-    headlineColor: "hex color #RRGGBB",
-    accentColor: "hex color #RRGGBB",
-    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
-    entranceAnimation: "fade-in|slide-up|slide-left|slide-right|scale-pop|blur-reveal|none",
-  },
-
-  "loading-screen": {
-    ...SHARED_CREATIVE_FIELDS,
-    textColor: "hex color #RRGGBB",
-    subtextColor: "hex color #RRGGBB",
-    accentColor: "hex color #RRGGBB",
-    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
-  },
-
-  "stream-start": {
-    ...SHARED_CREATIVE_FIELDS,
-    headlineColor: "hex color #RRGGBB",
-    accentColor: "hex color #RRGGBB",
-    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
-    entranceAnimation: "fade-in|slide-up|slide-left|scale-pop|blur-reveal|none",
-  },
 };
 
 // ── Content Fields Protection ────────────────────────────────────────────────
@@ -1254,6 +794,111 @@ const CONTENT_FIELDS = new Set([
 // ── Param Sanitization ───────────────────────────────────────────────────────
 
 const HEX_RE = /^#[0-9A-Fa-f]{6}$/;
+
+const DARK_NEAR: string = "#0B0B0F";
+const LIGHT_NEAR: string = "#F8FAFC";
+
+// These keys are expected to drive actual readable text color in templates.
+// Accent colors/glows may legitimately be light even on light backgrounds.
+const TEXT_COLOR_KEYS = new Set<string>([
+  "headlineColor",
+  "subheadlineColor",
+  "titleColor",
+  "subtitleColor",
+  "textColor",
+  "labelColor",
+  "valueColor",
+  "quoteColor",
+  "attributionColor",
+  "descriptionColor",
+  "headingColor",
+  "bodyColor",
+  "bulletColor",
+  "badgeColor",
+  "problemColor",
+  "solutionColor",
+  "beforeColor",
+  "afterColor",
+  "leftColor",
+  "rightColor",
+  "vsColor",
+  "accentColor", // sometimes used as text in certain templates
+]);
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  if (!HEX_RE.test(hex)) return null;
+  const clean = hex.slice(1);
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+function relativeLuminance({ r, g, b }: { r: number; g: number; b: number }): number {
+  // WCAG: convert sRGB -> linear and apply relative luminance.
+  const srgb = [r, g, b].map((v) => v / 255);
+  const lin = srgb.map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+}
+
+function isLightHex(hex: string): boolean {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return false;
+  // Threshold tuned to catch "washed out / near-white" backgrounds and colors.
+  return relativeLuminance(rgb) > 0.62;
+}
+
+function pickBackgroundHex(bg: unknown): string | undefined {
+  if (!bg || typeof bg !== "object") return undefined;
+  const b = bg as { type?: string; color?: unknown; from?: unknown; to?: unknown; baseColor?: unknown };
+
+  if (b.type === "solid" && typeof b.color === "string") return b.color;
+  if (b.type === "gradient" && typeof b.from === "string" && typeof b.to === "string") {
+    // Sample by averaging the two ends (approx but deterministic).
+    const a = hexToRgb(b.from);
+    const c = hexToRgb(b.to);
+    if (!a || !c) return undefined;
+    const avg = (x: number, y: number) => Math.round((x + y) / 2);
+    const toHex = (n: number) => n.toString(16).padStart(2, "0");
+    return (
+      "#" +
+      toHex(avg(a.r, c.r)) +
+      toHex(avg(a.g, c.g)) +
+      toHex(avg(a.b, c.b))
+    );
+  }
+  if (b.type === "grain" && typeof b.baseColor === "string") return b.baseColor;
+  if (b.type === "stripe" && typeof b.baseColor === "string") return b.baseColor;
+  return undefined;
+}
+
+function enforceContrastOnParams(params: Record<string, unknown>): Record<string, unknown> {
+  const bgHex = pickBackgroundHex(params.background);
+  if (!bgHex) return params;
+
+  const bgIsLight = isLightHex(bgHex);
+  if (!bgIsLight) {
+    // Dark background: ensure text is not too dark.
+    const out = { ...params };
+    for (const key of TEXT_COLOR_KEYS) {
+      const val = out[key];
+      if (typeof val !== "string") continue;
+      if (!HEX_RE.test(val)) continue;
+      if (!isLightHex(val)) out[key] = LIGHT_NEAR;
+    }
+    return out;
+  }
+
+  // Light background: ensure text is not also light.
+  const out = { ...params };
+  for (const key of TEXT_COLOR_KEYS) {
+    const val = out[key];
+    if (typeof val !== "string") continue;
+    if (!HEX_RE.test(val)) continue;
+    if (isLightHex(val)) out[key] = DARK_NEAR;
+  }
+  return out;
+}
 
 /**
  * Validates and potentially fixes a hex color string.
@@ -1398,353 +1043,1051 @@ function stripFailedFields(
   return mergeAndSanitize(original, cleanedEnhanced, templateId);
 }
 
-function tokensToEnhancedParams(
-  templateId: string,
-  styleTokens: Record<string, unknown>,
-): Record<string, unknown> {
-  const enhanceable = ENHANCEABLE_FIELDS[templateId];
-  if (!enhanceable) return {};
+// ── Style archetype (merged former “judge” pass) ─────────────────────────────
+// Single LLM returns styleArchetype + enhancedParams; we deterministically
+// layer archetype defaults on top so outputs stay consistent. Step-7-style
+// domain rules can still run elsewhere in the pipeline.
 
-  const palette = styleTokens.palette as
-    | { primaryText?: string; secondaryText?: string; accent?: string }
-    | undefined;
-  const typography = styleTokens.typography as Record<string, unknown> | undefined;
-  const motionStyle = styleTokens.motionStyle as Record<string, unknown> | undefined;
-  const polishIntensity = styleTokens.polishIntensity as
-    | { shadow?: string; glow?: string; blur?: string }
-    | undefined;
-  const postFx = styleTokens.postFx as
-    | {
-        scanlines?: string;
-        vignette?: string;
-        chromaticAberration?: string;
-        shake?: string;
-      }
-    | undefined;
-  const shape = styleTokens.shape as
-    | { family?: string; variant?: string }
-    | undefined;
+const STYLE_ARCHETYPES = new Set([
+  "personal_story",
+  "product_progress",
+  "tech_terminal",
+  "news_alert",
+  "promo_ad",
+  "minimal_ui",
+  "neon_cyberpunk",
+  "default",
+]);
 
-  const enhanced: Record<string, unknown> = {};
+export type StyleArchetype =
+  | "personal_story"
+  | "product_progress"
+  | "tech_terminal"
+  | "news_alert"
+  | "promo_ad"
+  | "minimal_ui"
+  | "neon_cyberpunk"
+  | "default";
 
-  // Background + general styling knobs
-  if (styleTokens.background && enhanceable.background) enhanced.background = styleTokens.background;
-  if (typography && enhanceable.typography) enhanced.typography = typography;
-  if (motionStyle && enhanceable.motionStyle) enhanced.motionStyle = motionStyle;
-  if (typeof styleTokens.pacingProfile === "string" && enhanceable.pacingProfile) {
-    enhanced.pacingProfile = styleTokens.pacingProfile;
+function normalizeStyleArchetype(raw: unknown): StyleArchetype {
+  if (typeof raw === "string" && STYLE_ARCHETYPES.has(raw)) {
+    return raw as StyleArchetype;
   }
-  if (styleTokens.secondaryMotion && enhanceable.secondaryMotion) enhanced.secondaryMotion = styleTokens.secondaryMotion;
-  if (styleTokens.decorativeTheme && enhanceable.decorativeTheme) enhanced.decorativeTheme = styleTokens.decorativeTheme;
-  if (styleTokens.stylePreset && enhanceable.stylePreset) enhanced.stylePreset = styleTokens.stylePreset;
-
-  if ((polishIntensity || postFx) && enhanceable.effects) {
-    const base: Record<string, unknown> = {
-      shadow: polishIntensity?.shadow ?? "none",
-      glow: polishIntensity?.glow ?? "none",
-      blur: polishIntensity?.blur ?? "none",
-      scanlines: postFx?.scanlines ?? "off",
-      vignette: postFx?.vignette ?? "off",
-      chromaticAberration: postFx?.chromaticAberration ?? "off",
-      shake: postFx?.shake ?? "off",
-    };
-    enhanced.effects = base;
-  }
-
-  // CTA-like pill decorations (hero-text only for now)
-  if (shape?.family && enhanceable.decoration && templateId === "hero-text") {
-    if (shape.family === "pill") {
-      enhanced.decoration = shape.variant === "fill" ? "pill-fill" : "pill-outline";
-    } else if (shape.family === "rounded") {
-      enhanced.decoration = "highlight-box";
-    }
-  }
-
-  if (templateId === "hero-text" && styleTokens.heroText && enhanceable.fontSize) {
-    const heroText = styleTokens.heroText as Record<string, unknown>;
-    if (heroText.fontSize) enhanced.fontSize = heroText.fontSize;
-    if (heroText.fontWeight) enhanced.fontWeight = heroText.fontWeight;
-    if (heroText.textEffect && enhanceable.textEffect) enhanced.textEffect = heroText.textEffect;
-    if (typeof heroText.scanlines === "boolean" && enhanceable.scanlines) {
-      enhanced.scanlines = heroText.scanlines;
-    }
-  }
-
-  // Color mapping: best-effort heuristic based on field names.
-  if (palette) {
-    const primary = palette.primaryText;
-    const secondary = palette.secondaryText ?? palette.primaryText;
-    const accent = palette.accent ?? palette.primaryText;
-
-    const primaryFieldHints = [
-      "headline",
-      "title",
-      "value",
-      "quote",
-      "defaultcolor",
-      "attribution",
-      "problemcolor",
-      "solutioncolor",
-      "context",
-      "number",
-      "stat",
-    ];
-    const secondaryFieldHints = [
-      "subheadline",
-      "subtitle",
-      "label",
-      "description",
-      "context",
-      "textcolor",
-      "bodycolor",
-      "attributioncolor",
-      "sublabel",
-    ];
-    const accentFieldHints = ["accent", "trendupcolor", "trenddowncolor", "bulletcolor", "markercolor", "iconcolor"];
-
-    for (const key of Object.keys(enhanceable)) {
-      const k = key.toLowerCase();
-      if (!key.toLowerCase().includes("color") && !k.endsWith("color")) continue;
-
-      // Always prefer accent when key is accent-like.
-      if (accentFieldHints.some((h) => k.includes(h))) {
-        if (accent) enhanced[key] = accent;
-        continue;
-      }
-
-      if (secondaryFieldHints.some((h) => k.includes(h))) {
-        if (secondary) enhanced[key] = secondary;
-        continue;
-      }
-
-      if (primaryFieldHints.some((h) => k.includes(h))) {
-        if (primary) enhanced[key] = primary;
-        continue;
-      }
-    }
-  }
-
-  return enhanced;
+  return "default";
 }
 
-function applyDomainOverrides(
-  originalPrompt: string,
-  templateId: string,
-  originalParams: Record<string, unknown>,
-  enhancedParams: Record<string, unknown>,
-): Record<string, unknown> {
-  const p = originalPrompt.toLowerCase();
-
-  const isMinimalUi =
-    p.includes("minimal ui") ||
-    p.includes("clean ui") ||
-    p.includes("simple flow") ||
-    p.includes("startup style") ||
-    p.includes("steps and arrows") ||
-    p.includes("process flow");
-
-  const asksDarkMode =
+function promptPrefersDark(p: string): boolean {
+  return (
     p.includes("dark mode") ||
     p.includes("dark theme") ||
     p.includes("in dark") ||
     p.includes("night mode") ||
-    /\bdark\b/.test(p);
+    /\bdark\b/.test(p)
+  );
+}
 
-  const asksLightMode =
-    p.includes("light mode") ||
-    p.includes("light theme") ||
-    p.includes("off-white") ||
-    p.includes("white background");
+function forceArchetypeForPrompt(prompt: string, rawStyleArchetype: unknown): StyleArchetype {
+  const p = prompt.toLowerCase();
+  // Educational / onboarding / SaaS explainer content should prefer a clean
+  // UI-like look (light + calm palette) instead of tech-terminal defaults.
+  if (/(education|learn|course|tutorial|study|onboarding|explainer|saas|software)/.test(p)) {
+    return "minimal_ui";
+  }
+  return normalizeStyleArchetype(rawStyleArchetype);
+}
 
-  type RolePalette = {
-    bg: string;
-    surface: string;
-    textPrimary: string;
-    textSecondary: string;
-    accent: string;
-    border: string;
-  };
+function detectWarmBrownAccent(promptLower: string): boolean {
+  return (
+    promptLower.includes("brown") ||
+    promptLower.includes("cocoa") ||
+    promptLower.includes("chocolate") ||
+    promptLower.includes("caramel") ||
+    promptLower.includes("tan") ||
+    promptLower.includes("umber") ||
+    promptLower.includes("sepia") ||
+    promptLower.includes("rust") ||
+    promptLower.includes("earth")
+  );
+}
 
-  const darkRoles: RolePalette = {
-    bg: "#050816",
-    surface: "#0B1120",
-    textPrimary: "#FFFFFF",
-    textSecondary: "#9CA3AF",
-    accent: "#38BDF8",
-    border: "#233047",
-  };
-  const lightRoles: RolePalette = {
-    bg: "#F4F6FB",
-    surface: "#FFFFFF",
-    textPrimary: "#0F172A",
-    textSecondary: "#64748B",
-    accent: "#6366F1",
-    border: "#E2E8F0",
-  };
+function detectOffwhite(promptLower: string): boolean {
+  return (
+    promptLower.includes("offwhite") ||
+    promptLower.includes("off-white") ||
+    promptLower.includes("cream") ||
+    promptLower.includes("ivory") ||
+    promptLower.includes("beige") ||
+    promptLower.includes("ecru") ||
+    promptLower.includes("warm white")
+  );
+}
 
-  const colorMode: "dark" | "light" | "auto" =
-    asksDarkMode ? "dark" : asksLightMode ? "light" : "auto";
+function detectExplicitDarkBackground(promptLower: string): boolean {
+  return (
+    promptLower.includes("dark") ||
+    promptLower.includes("black") ||
+    promptLower.includes("charcoal") ||
+    promptLower.includes("midnight") ||
+    promptLower.includes("pitch black") ||
+    promptLower.includes("night")
+  );
+}
 
-  // For process flows we want light by default, unless user explicitly asks for dark.
-  const rolesForProcess = asksDarkMode ? darkRoles : lightRoles;
-  const roles = colorMode === "dark" ? darkRoles : lightRoles;
+function detectGlowNeonIntent(promptLower: string): boolean {
+  return (
+    promptLower.includes("glow") ||
+    promptLower.includes("neon") ||
+    promptLower.includes("light behind") ||
+    promptLower.includes("behind the text")
+  );
+}
 
-  const isCreatorVlog =
-    /\bvlog\b/.test(p) ||
-    p.includes("my vlog") ||
-    p.includes("daily vlog") ||
-    p.includes("creator") ||
-    p.includes("lifestyle") ||
-    p.includes("personal brand") ||
-    p.includes("aesthetic") ||
-    p.includes("fashion") ||
-    p.includes("beauty");
+function applyPromptColorOverrides(
+  originalPrompt: string,
+  params: Record<string, unknown>,
+): Record<string, unknown> {
+  const p = originalPrompt.toLowerCase();
+  const warmBrown = detectWarmBrownAccent(p);
+  const offwhite = detectOffwhite(p);
+  const explicitDarkBg = detectExplicitDarkBackground(p);
+  const wantsGlow = detectGlowNeonIntent(p);
+  const wantsGradient = p.includes("gradient");
+  const wantsBoxDecoration =
+    p.includes("highlight box") ||
+    p.includes("highlight-box") ||
+    p.includes("boxed text") ||
+    p.includes("text box") ||
+    p.includes("rectangle behind") ||
+    p.includes("panel behind");
 
-  const isOrderTrackingDomain =
-    p.includes("food delivery") ||
-    p.includes("delivery app") ||
-    p.includes("track your order") ||
-    p.includes("order status") ||
-    p.includes("order tracking") ||
-    (p.includes("order") && p.includes("delivered"));
+  // If the user explicitly asks for brown icons, we treat that as:
+  // - icon / step number color -> brown (numberColor / activeNumberColor)
+  // - active marker fill -> warm offwhite so brown icons remain visible
+  // This matches `ProcessSteps` marker logic:
+  // - fill uses `activeStepColor ?? stepColor`
+  // - icon/number uses `activeNumberColor ?? numberColor`
+  if (warmBrown) {
+    const brown = "#8B5E3C";
+    const warmOffwhite = "#FDF7ED";
+    params = { ...params };
+    params.stepColor = brown;
+    params.numberColor = brown;
+    params.activeNumberColor = brown;
+    params.activeStepColor = warmOffwhite;
+  }
 
-  const isProgressTrackerPattern =
-    isOrderTrackingDomain ||
-    p.includes("progress tracker") ||
-    p.includes("status timeline") ||
-    p.includes("step by step activation") ||
-    p.includes("step-by-step activation");
-
-  if (templateId === "hero-text" && isCreatorVlog && !asksDarkMode) {
-    // Deterministic “creator/editorial” default even if tokens miss it.
-    const next = { ...enhancedParams };
-
-    const currentBg = (enhancedParams.background ?? originalParams.background) as
-      | { type?: string; color?: string }
-      | undefined;
-    const isAlreadyLightSolid = currentBg?.type === "solid" && typeof currentBg.color === "string" && currentBg.color.toUpperCase() === "#F7F3EA";
-
-    if (!isAlreadyLightSolid) {
-      next.background = { type: "solid", color: "#F7F3EA" };
-    }
-
-    // Keep “confident minimalism”: avoid glow and heavy postFx.
-    const fx = (next.effects as Record<string, unknown> | undefined) ?? {};
-    next.effects = {
-      shadow: (fx.shadow as string) ?? "none",
-      glow: "none",
-      blur: (fx.blur as string) ?? "none",
-      scanlines: "off",
-      vignette: "off",
-      chromaticAberration: "off",
-      shake: "off",
+  // Explicit dark/black background intent should override vibe defaults.
+  if (explicitDarkBg) {
+    const darkFrom = "#050510";
+    const darkTo = "#0A0A20";
+    params = {
+      ...params,
+      background: wantsGradient
+        ? { type: "gradient", from: darkFrom, to: darkTo, direction: "to-bottom" }
+        : { type: "solid", color: "#0A0A0A" },
     };
+  } else if (offwhite) {
+    // Explicit light/offwhite intent.
+    const from = "#FFF7ED";
+    const to = "#F1E5D0";
+    params = {
+      ...params,
+      background: wantsGradient
+        ? { type: "gradient", from, to, direction: "to-bottom" }
+        : { type: "solid", color: from },
+    };
+  }
 
-    // Ensure readable colors on light background.
-    next.headlineColor = "#111111";
-    next.subheadlineColor = "#333333";
+  // If user asks for glow/neon, reinforce glow fields so renderer can show it.
+  if (wantsGlow) {
+    params = {
+      ...params,
+      effects: { shadow: "strong", glow: "neon", blur: "subtle" },
+      activeGlowColor: typeof params.activeGlowColor === "string" ? params.activeGlowColor : "#4FC3F7",
+      activeGlowStrength: typeof params.activeGlowStrength === "number" ? params.activeGlowStrength : 22,
+    };
+  }
 
-    // Prefer editorial typography if not already set.
-    if (!("typography" in next)) {
-      next.typography = {
-        fontFamily: "playfair-display",
-        weight: "medium",
-        letterSpacing: "normal",
-        lineHeight: "relaxed",
-        fontStyle: "italic",
+  // Avoid accidental rectangle overlays behind headline text unless user
+  // explicitly asked for a boxed/highlighted text treatment.
+  if (!wantsBoxDecoration && typeof params.decoration === "string" && params.decoration === "highlight-box") {
+    params = { ...params, decoration: "none" };
+  }
+
+  return params;
+}
+
+type VibeMode = "light" | "dark";
+
+type VibePalette = {
+  background: Record<string, unknown>;
+  textPrimary: string; // hex
+  textSecondary: string; // hex
+  accentPrimary: string; // hex (icons/steps outlines)
+  accentOnAccent: string; // hex (filled marker fill)
+  accentSoft: string; // hex (glow accents)
+};
+
+type VibeId =
+  | "documentary"
+  | "corporate"
+  | "education"
+  | "minimal"
+  | "premium_luxury"
+  | "wellness"
+  | "tech_terminal"
+  | "futuristic"
+  | "cyberpunk"
+  | "news_broadcast"
+  | "punchy_funky"
+  | "playful"
+  | "retro_arcade"
+  | "vintage_sepia"
+  | "sports"
+  | "eco_nature"
+  | "festive"
+  | "romantic"
+  | "urban_grit"
+  | "abstract_art"
+  | "travel"
+  | "gaming_arcade"
+  | "cinematic_noir"
+  | "street_poster";
+
+const VIBE_PALETTES: Record<VibeId, { light: VibePalette; dark: VibePalette }> = {
+  documentary: {
+    light: {
+      background: { type: "gradient", from: "#FFF7ED", to: "#F1E5D0", direction: "to-bottom" },
+      textPrimary: "#3A2F2A",
+      textSecondary: "#6B6258",
+      accentPrimary: "#7A5C3A",
+      accentOnAccent: "#FDF7ED",
+      accentSoft: "#B08968",
+    },
+    dark: {
+      background: { type: "gradient", from: "#111827", to: "#2A1D17", direction: "to-bottom-right" },
+      textPrimary: "#F4EEE4",
+      textSecondary: "#B9B0A2",
+      accentPrimary: "#A67C52",
+      accentOnAccent: "#111827",
+      accentSoft: "#D2B48C",
+    },
+  },
+  corporate: {
+    light: {
+      background: { type: "gradient", from: "#F8FAFC", to: "#EEF2FF", direction: "to-bottom" },
+      textPrimary: "#0F172A",
+      textSecondary: "#475569",
+      accentPrimary: "#2563EB",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#93C5FD",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0B1020", to: "#111827", direction: "to-bottom-right" },
+      textPrimary: "#F1F5F9",
+      textSecondary: "#A6B0C2",
+      accentPrimary: "#60A5FA",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#93C5FD",
+    },
+  },
+  education: {
+    light: {
+      background: { type: "gradient", from: "#F4F6FB", to: "#EEF2FF", direction: "to-bottom" },
+      textPrimary: "#111827",
+      textSecondary: "#6B7280",
+      accentPrimary: "#4F46E5",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#A5B4FC",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0B1020", to: "#111827", direction: "to-bottom-right" },
+      textPrimary: "#F9FAFB",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#818CF8",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#A5B4FC",
+    },
+  },
+  minimal: {
+    light: {
+      background: { type: "gradient", from: "#F8FAFC", to: "#EEF2FF", direction: "to-bottom" },
+      textPrimary: "#0F172A",
+      textSecondary: "#6B7280",
+      accentPrimary: "#0284C7",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#7DD3FC",
+    },
+    dark: {
+      background: { type: "solid", color: "#050816" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#38BDF8",
+      accentOnAccent: "#050816",
+      accentSoft: "#7DD3FC",
+    },
+  },
+  premium_luxury: {
+    light: {
+      background: { type: "gradient", from: "#FFF7ED", to: "#FFE8D1", direction: "to-bottom-right" },
+      textPrimary: "#2B1B12",
+      textSecondary: "#7B5E45",
+      accentPrimary: "#C9A96E",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#E7D19F",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0A0A0A", to: "#1A1508", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#C9A96E",
+      accentPrimary: "#D4AF37",
+      accentOnAccent: "#0A0A0A",
+      accentSoft: "#E7D19F",
+    },
+  },
+  wellness: {
+    light: {
+      background: { type: "gradient", from: "#ECFDF5", to: "#E0F2FE", direction: "to-bottom" },
+      textPrimary: "#064E3B",
+      textSecondary: "#0F766E",
+      accentPrimary: "#10B981",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#6EE7B7",
+    },
+    dark: {
+      background: { type: "gradient", from: "#042F2E", to: "#052E16", direction: "to-bottom-right" },
+      textPrimary: "#ECFDF5",
+      textSecondary: "#6EE7B7",
+      accentPrimary: "#34D399",
+      accentOnAccent: "#052E16",
+      accentSoft: "#6EE7B7",
+    },
+  },
+  tech_terminal: {
+    light: {
+      background: { type: "grain", baseColor: "#F1F5F9", grainOpacity: 0.05 },
+      textPrimary: "#0F172A",
+      textSecondary: "#475569",
+      accentPrimary: "#4FC3F7",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#38BDF8",
+    },
+    dark: {
+      background: { type: "gradient", from: "#050816", to: "#0B1B2A", direction: "radial" },
+      textPrimary: "#E5E7EB",
+      textSecondary: "#93A4B5",
+      accentPrimary: "#00FF88",
+      accentOnAccent: "#050816",
+      accentSoft: "#2DD4BF",
+    },
+  },
+  futuristic: {
+    light: {
+      background: { type: "gradient", from: "#EEF2FF", to: "#FCE7F3", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#6B7280",
+      accentPrimary: "#7C3AED",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#A78BFA",
+    },
+    dark: {
+      background: { type: "gradient", from: "#020010", to: "#0A0030", direction: "radial" },
+      textPrimary: "#E5E7EB",
+      textSecondary: "#C7D2FE",
+      accentPrimary: "#7C3AED",
+      accentOnAccent: "#020010",
+      accentSoft: "#A78BFA",
+    },
+  },
+  cyberpunk: {
+    light: {
+      background: { type: "gradient", from: "#FDF4FF", to: "#ECFEFF", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#6B7280",
+      accentPrimary: "#FF00FF",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#F472B6",
+    },
+    dark: {
+      background: { type: "gradient", from: "#000A1A", to: "#001A3A", direction: "radial" },
+      textPrimary: "#E0F2FE",
+      textSecondary: "#A5B4FC",
+      accentPrimary: "#00D4FF",
+      accentOnAccent: "#001A3A",
+      accentSoft: "#22D3EE",
+    },
+  },
+  news_broadcast: {
+    light: {
+      background: { type: "gradient", from: "#F8FAFC", to: "#EEF2FF", direction: "to-bottom" },
+      textPrimary: "#0F172A",
+      textSecondary: "#64748B",
+      accentPrimary: "#EF4444",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#FDA4AF",
+    },
+    dark: {
+      background: { type: "gradient", from: "#050510", to: "#0A0A20", direction: "to-bottom" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#A1A1AA",
+      accentPrimary: "#FF4D4D",
+      accentOnAccent: "#0A0A20",
+      accentSoft: "#FF7A7A",
+    },
+  },
+  punchy_funky: {
+    light: {
+      background: { type: "gradient", from: "#FFF1F2", to: "#EEF2FF", direction: "to-bottom-right" },
+      textPrimary: "#111827",
+      textSecondary: "#4B5563",
+      accentPrimary: "#FF3E8A",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#FFC1DD",
+    },
+    dark: {
+      background: { type: "gradient", from: "#1A0020", to: "#2A0040", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#C7D2FE",
+      accentPrimary: "#FF3E8A",
+      accentOnAccent: "#1A0020",
+      accentSoft: "#FF7CC1",
+    },
+  },
+  playful: {
+    light: {
+      background: { type: "gradient", from: "#F0FDFF", to: "#FFF7ED", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#6B7280",
+      accentPrimary: "#06B6D4",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#67E8F9",
+    },
+    dark: {
+      background: { type: "gradient", from: "#06121A", to: "#0B1020", direction: "to-bottom-right" },
+      textPrimary: "#E0F2FE",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#22C55E",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#86EFAC",
+    },
+  },
+  retro_arcade: {
+    light: {
+      background: { type: "gradient", from: "#FEF3C7", to: "#DBEAFE", direction: "to-bottom-right" },
+      textPrimary: "#1F2937",
+      textSecondary: "#6B7280",
+      accentPrimary: "#EAB308",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#FDE68A",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0B1020", to: "#111827", direction: "to-bottom-right" },
+      textPrimary: "#F9FAFB",
+      textSecondary: "#CBD5E1",
+      accentPrimary: "#22C55E",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#86EFAC",
+    },
+  },
+  vintage_sepia: {
+    light: {
+      background: { type: "gradient", from: "#FDF1E3", to: "#F4E6D0", direction: "to-bottom-right" },
+      textPrimary: "#4A3A2A",
+      textSecondary: "#7A624B",
+      accentPrimary: "#8B5E3C",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#CFA27A",
+    },
+    dark: {
+      background: { type: "gradient", from: "#1F140B", to: "#3B2A1A", direction: "to-bottom-right" },
+      textPrimary: "#F5E6D1",
+      textSecondary: "#D1B89B",
+      accentPrimary: "#B45309",
+      accentOnAccent: "#1F140B",
+      accentSoft: "#D6A56A",
+    },
+  },
+  sports: {
+    light: {
+      background: { type: "gradient", from: "#EFF6FF", to: "#F0FDF4", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#475569",
+      accentPrimary: "#22C55E",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#86EFAC",
+    },
+    dark: {
+      background: { type: "gradient", from: "#071A0E", to: "#0B1020", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#22C55E",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#86EFAC",
+    },
+  },
+  eco_nature: {
+    light: {
+      background: { type: "gradient", from: "#ECFDF5", to: "#E0F2FE", direction: "to-bottom-right" },
+      textPrimary: "#064E3B",
+      textSecondary: "#0F766E",
+      accentPrimary: "#14B8A6",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#5EEAD4",
+    },
+    dark: {
+      background: { type: "gradient", from: "#042F2E", to: "#052E16", direction: "to-bottom-right" },
+      textPrimary: "#ECFDF5",
+      textSecondary: "#6EE7B7",
+      accentPrimary: "#2DD4BF",
+      accentOnAccent: "#052E16",
+      accentSoft: "#5EEAD4",
+    },
+  },
+  festive: {
+    light: {
+      background: { type: "gradient", from: "#FFF7ED", to: "#FFE4E6", direction: "to-bottom-right" },
+      textPrimary: "#111827",
+      textSecondary: "#6B7280",
+      accentPrimary: "#F97316",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#FDBA74",
+    },
+    dark: {
+      background: { type: "gradient", from: "#120019", to: "#1F2937", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#CBD5E1",
+      accentPrimary: "#F472B6",
+      accentOnAccent: "#1F2937",
+      accentSoft: "#FDA4AF",
+    },
+  },
+  romantic: {
+    light: {
+      background: { type: "gradient", from: "#FFF1F2", to: "#FFF7ED", direction: "to-bottom-right" },
+      textPrimary: "#3B1D2A",
+      textSecondary: "#7A4A5E",
+      accentPrimary: "#DB2777",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#F472B6",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0F102A", to: "#2A0B1A", direction: "to-bottom-right" },
+      textPrimary: "#FDF2F8",
+      textSecondary: "#FBCFE8",
+      accentPrimary: "#FB7185",
+      accentOnAccent: "#0F102A",
+      accentSoft: "#F472B6",
+    },
+  },
+  urban_grit: {
+    light: {
+      background: { type: "gradient", from: "#F8FAFC", to: "#F1F5F9", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#64748B",
+      accentPrimary: "#0EA5E9",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#7DD3FC",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0B1020", to: "#111827", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#38BDF8",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#7DD3FC",
+    },
+  },
+  abstract_art: {
+    light: {
+      background: { type: "gradient", from: "#EEF2FF", to: "#FFFAF0", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#6B7280",
+      accentPrimary: "#6366F1",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#A5B4FC",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0B1020", to: "#1F2937", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#CBD5E1",
+      accentPrimary: "#F472B6",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#FDA4AF",
+    },
+  },
+  travel: {
+    light: {
+      background: { type: "gradient", from: "#E0F2FE", to: "#FFFBEB", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#475569",
+      accentPrimary: "#0EA5E9",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#7DD3FC",
+    },
+    dark: {
+      background: { type: "gradient", from: "#061A2B", to: "#0B1020", direction: "to-bottom-right" },
+      textPrimary: "#E0F2FE",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#38BDF8",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#7DD3FC",
+    },
+  },
+  gaming_arcade: {
+    light: {
+      background: { type: "gradient", from: "#ECFDF5", to: "#FEF3C7", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#475569",
+      accentPrimary: "#06B6D4",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#67E8F9",
+    },
+    dark: {
+      background: { type: "gradient", from: "#06121A", to: "#0B1020", direction: "to-bottom-right" },
+      textPrimary: "#E0F2FE",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#22C55E",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#86EFAC",
+    },
+  },
+  cinematic_noir: {
+    light: {
+      background: { type: "gradient", from: "#F1F5F9", to: "#E5E7EB", direction: "to-bottom-right" },
+      textPrimary: "#111827",
+      textSecondary: "#374151",
+      accentPrimary: "#8B5E3C",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#B08968",
+    },
+    dark: {
+      background: { type: "gradient", from: "#050510", to: "#0A0A20", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#A1A1AA",
+      accentPrimary: "#C9A96E",
+      accentOnAccent: "#0A0A20",
+      accentSoft: "#FBBF24",
+    },
+  },
+  street_poster: {
+    light: {
+      background: { type: "gradient", from: "#FDF2F8", to: "#E0F2FE", direction: "to-bottom-right" },
+      textPrimary: "#0F172A",
+      textSecondary: "#64748B",
+      accentPrimary: "#3B82F6",
+      accentOnAccent: "#FFFFFF",
+      accentSoft: "#93C5FD",
+    },
+    dark: {
+      background: { type: "gradient", from: "#0B1020", to: "#1F2937", direction: "to-bottom-right" },
+      textPrimary: "#F8FAFC",
+      textSecondary: "#94A3B8",
+      accentPrimary: "#60A5FA",
+      accentOnAccent: "#0B1020",
+      accentSoft: "#93C5FD",
+    },
+  },
+};
+
+function detectVibeFromPrompt(prompt: string, templateId?: string): VibeId {
+  const p = prompt.toLowerCase();
+
+  const templatesBias: Partial<Record<VibeId, string[]>> = {
+    news_broadcast: ["news", "breaking", "broadcast", "headline"],
+    education: ["onboarding", "learn", "education", "tutorial", "course", "steps", "explain", "explainer"],
+    tech_terminal: ["tech", "ai", "digital", "code", "terminal", "software", "dev"],
+  };
+
+  // Hard overrides: if the prompt explicitly calls out a vibe, it should win
+  // even if the template/use-case keywords also match (e.g. “documentary”
+  // + “onboarding steps” should still use documentary muted colors).
+  if (p.includes("noir") || p.includes("moody") || p.includes("low light") || p.includes("gloom") || p.includes("dramatic")) {
+    return "cinematic_noir";
+  }
+  if (p.includes("documentary") || p.includes("filmic") || p.includes("film") || p.includes("editorial")) {
+    return "documentary";
+  }
+  if (p.includes("news") || p.includes("breaking") || p.includes("broadcast") || p.includes("headline") || p.includes("alert")) {
+    return "news_broadcast";
+  }
+  if (p.includes("vintage") || p.includes("sepia") || p.includes("old") || p.includes("paper") || p.includes("typewriter") || p.includes("aged")) {
+    return "vintage_sepia";
+  }
+  if (p.includes("retro") || p.includes("80s") || (p.includes("arcade") && !p.includes("gaming"))) {
+    return "retro_arcade";
+  }
+  if (p.includes("gaming") || (p.includes("arcade") && p.includes("levels"))) {
+    return "gaming_arcade";
+  }
+  if (p.includes("cyberpunk") || p.includes("neon") || p.includes("hacker") || p.includes("retrowave") || p.includes("synth")) {
+    return "cyberpunk";
+  }
+  if (p.includes("futuristic") || p.includes("future") || p.includes("sci-fi") || p.includes("space") || p.includes("galaxy") || p.includes("nebula") || p.includes("interstellar")) {
+    return "futuristic";
+  }
+  if (p.includes("corporate") || p.includes("b2b") || p.includes("enterprise") || p.includes("professional") || p.includes("business")) {
+    return "corporate";
+  }
+  if (p.includes("premium") || p.includes("luxury") || p.includes("opulent") || p.includes("vip") || p.includes("gold") || p.includes("champagne")) {
+    return "premium_luxury";
+  }
+  if (p.includes("wellness") || p.includes("medical") || p.includes("health") || p.includes("fitness") || p.includes("yoga") || p.includes("therapy")) {
+    return "wellness";
+  }
+  if (p.includes("eco") || p.includes("nature") || p.includes("organic") || p.includes("forest") || p.includes("garden") || p.includes("sustainable")) {
+    return "eco_nature";
+  }
+  if (p.includes("sports") || p.includes("tournament") || p.includes("match") || p.includes("energetic") || p.includes("goal")) {
+    return "sports";
+  }
+  if (p.includes("festive") || p.includes("celebration") || p.includes("party") || p.includes("holiday") || p.includes("event")) {
+    return "festive";
+  }
+  if (p.includes("romantic") || p.includes("love") || p.includes("wedding") || p.includes("valentine")) {
+    return "romantic";
+  }
+  if (p.includes("urban") || p.includes("street") || p.includes("gritty") || p.includes("city") || p.includes("alley")) {
+    return "urban_grit";
+  }
+  if (p.includes("abstract") || p.includes("artistic") || p.includes("gallery") || p.includes("modern art")) {
+    return "abstract_art";
+  }
+  if (p.includes("travel") || p.includes("journey") || p.includes("explore") || p.includes("adventure") || p.includes("trip")) {
+    return "travel";
+  }
+  if (p.includes("punchy") || p.includes("funky") || p.includes("colorful") || p.includes("vibrant") || p.includes("pop")) {
+    return "punchy_funky";
+  }
+  if (p.includes("playful") || p.includes("kid") || p.includes("children") || p.includes("cartoon") || p.includes("friendly") || p.includes("funny")) {
+    return "playful";
+  }
+  if (p.includes("tech") || p.includes("ai") || p.includes("digital") || p.includes("code") || p.includes("terminal") || p.includes("software") || p.includes("dev")) {
+    return "tech_terminal";
+  }
+  if (p.includes("minimal") || p.includes("clean") || p.includes("simple") || p.includes("sleek") || p.includes("modern") || p.includes("whitespace")) {
+    return "minimal";
+  }
+  if (p.includes("poster") || p.includes("campaign") || p.includes("advert") || p.includes("street")) {
+    return "street_poster";
+  }
+
+  const vibeKeywordMap: Array<{ id: VibeId; keywords: string[] }> = [
+    { id: "documentary", keywords: ["documentary", "film", "filmic", "editorial", "cinematic", "story"] },
+    { id: "corporate", keywords: ["corporate", "b2b", "enterprise", "professional", "business"] },
+    { id: "education", keywords: ["education", "learn", "tutorial", "course", "onboarding", "steps", "explainer"] },
+    { id: "minimal", keywords: ["minimal", "clean", "simple", "sleek", "modern", "whitespace"] },
+    { id: "premium_luxury", keywords: ["premium", "luxury", "opulent", "vip", "gold", "champagne"] },
+    { id: "wellness", keywords: ["wellness", "medical", "health", "fitness", "yoga", "therapy"] },
+    { id: "tech_terminal", keywords: ["tech", "ai", "digital", "code", "terminal", "software", "dev"] },
+    { id: "futuristic", keywords: ["futuristic", "future", "sci-fi", "space", "galaxy", "nebula", "interstellar"] },
+    { id: "cyberpunk", keywords: ["cyberpunk", "neon", "hacker", "glow", "synth", "retrowave"] },
+    { id: "news_broadcast", keywords: ["news", "breaking", "broadcast", "headline", "alert"] },
+    { id: "punchy_funky", keywords: ["punchy", "funky", "fun", "colorful", "vibrant", "pop"] },
+    { id: "playful", keywords: ["playful", "kid", "children", "cartoon", "friendly", "funny"] },
+    { id: "retro_arcade", keywords: ["retro", "80s", "arcade"] },
+    { id: "gaming_arcade", keywords: ["gaming", "arcade", "levels", "game"] },
+    { id: "vintage_sepia", keywords: ["vintage", "sepia", "old", "paper", "typewriter", "aged"] },
+    { id: "sports", keywords: ["sports", "tournament", "match", "energetic", "goal"] },
+    { id: "eco_nature", keywords: ["eco", "nature", "organic", "forest", "garden", "sustainable"] },
+    { id: "festive", keywords: ["festive", "celebration", "party", "holiday", "event"] },
+    { id: "romantic", keywords: ["romantic", "love", "wedding", "valentine"] },
+    { id: "urban_grit", keywords: ["urban", "street", "gritty", "city", "alley"] },
+    { id: "abstract_art", keywords: ["abstract", "artistic", "gallery", "modern art"] },
+    { id: "travel", keywords: ["travel", "journey", "explore", "adventure", "trip"] },
+    { id: "cinematic_noir", keywords: ["noir", "moody", "low light", "gloom", "night", "dramatic"] },
+    { id: "street_poster", keywords: ["poster", "street", "campaign", "advert", "bold typography"] },
+  ];
+
+  let best: { id: VibeId; score: number } | null = null;
+  for (const { id, keywords } of vibeKeywordMap) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (p.includes(kw)) score += 3;
+    }
+    if (templatesBias[id] && templateId && templatesBias[id].some((kw) => p.includes(kw))) {
+      score += 2;
+    }
+    if (!best || score > best.score) best = { id, score };
+  }
+
+  if (!best || best.score === 0) {
+    // Template/use-case fallback (keeps “vibe palettes” usable even if prompt is vague).
+    if (templateId === "news-alert") return "news_broadcast";
+    if (templateId === "process-steps" || templateId === "timeline-scene") return "education";
+    if (templateId?.includes("stream") || templateId?.includes("loading")) return "tech_terminal";
+    return "minimal";
+  }
+
+  return best.id;
+}
+
+function selectVibeMode(prompt: string, vibeId: VibeId, templateId?: string): VibeMode {
+  const p = prompt.toLowerCase();
+
+  const templateLightBias = new Set<string>(["process-steps", "timeline-scene", "education", "map-highlight"]);
+  const templateDarkBias = new Set<string>(["news-alert", "loading-screen"]);
+
+  let mode: VibeMode = templateLightBias.has(templateId ?? "") ? "light" : templateDarkBias.has(templateId ?? "") ? "dark" : "light";
+
+  const moody = /(^|\W)(noir|moody|low light|gloom|night|dramatic)(\W|$)/.test(p);
+  if (moody || vibeId === "cinematic_noir" || vibeId === "cyberpunk") mode = "dark";
+  if (detectExplicitDarkBackground(p)) mode = "dark";
+
+  // Documentary/retro defaults to muted light unless explicitly “noir-ish”.
+  if (vibeId === "documentary" || vibeId === "retro_arcade" || vibeId === "vintage_sepia") {
+    if (!moody) mode = "light";
+  }
+
+  // Offwhite/paper implies light.
+  if (detectOffwhite(p)) mode = "light";
+
+  // News + futuristic typically dark.
+  if (vibeId === "news_broadcast" || vibeId === "futuristic") mode = "dark";
+
+  return mode;
+}
+
+function snapParamsToVibePalette(
+  originalPrompt: string,
+  templateId: string | undefined,
+  params: Record<string, unknown>,
+): Record<string, unknown> {
+  const p = originalPrompt.toLowerCase();
+  const warmBrown = detectWarmBrownAccent(p);
+  const offwhite = detectOffwhite(p);
+  const explicitDarkBg = detectExplicitDarkBackground(p);
+  const wantsGradient = p.includes("gradient");
+
+  const pinnedKeys = new Set<string>();
+  // Pin background only when user expressed explicit light/dark background intent.
+  if (offwhite || explicitDarkBg) {
+    pinnedKeys.add("background");
+    pinnedKeys.add("backgroundAfter");
+  }
+  if (warmBrown) {
+    pinnedKeys.add("stepColor");
+    pinnedKeys.add("numberColor");
+    pinnedKeys.add("activeNumberColor");
+    pinnedKeys.add("activeStepColor");
+    pinnedKeys.add("accentColor");
+  }
+
+  const vibeId = detectVibeFromPrompt(originalPrompt, templateId);
+  const mode = selectVibeMode(originalPrompt, vibeId, templateId);
+  const palette = VIBE_PALETTES[vibeId][mode];
+
+  const out: Record<string, unknown> = { ...params };
+
+  if (!pinnedKeys.has("background")) {
+    out.background = palette.background;
+  }
+  if (!pinnedKeys.has("backgroundAfter")) {
+    out.backgroundAfter = palette.background;
+  }
+
+  const primaryTextKeys = new Set<string>([
+    "titleColor",
+    "headlineColor",
+    "headingColor",
+    "kickerColor",
+    "sectionLabelColor",
+    "problemLabelColor",
+    "solutionLabelColor",
+  ]);
+  const secondaryTextKeys = new Set<string>([
+    "subtitleColor",
+    "subheadlineColor",
+    "textColor",
+    "descriptionColor",
+    "bodyColor",
+    "labelColor",
+    "bulletColor",
+    "quoteColor",
+    "attributionColor",
+    "subTitleColor",
+  ]);
+
+  for (const key of Object.keys(out)) {
+    if (pinnedKeys.has(key)) continue;
+    const val = out[key];
+    if (typeof val !== "string" || !HEX_RE.test(val)) continue;
+
+    const k = key.toLowerCase();
+    const keyLower = key;
+
+    let snapped: string | null = null;
+
+    if (keyLower === "activeStepColor") snapped = palette.accentOnAccent;
+    else if (keyLower === "activeNumberColor" || keyLower === "activeIconColor") snapped = palette.accentPrimary;
+    else if (keyLower === "activeGlowColor") snapped = palette.accentSoft;
+    else if (primaryTextKeys.has(keyLower)) snapped = palette.textPrimary;
+    else if (secondaryTextKeys.has(keyLower) || k.includes("subtitle") || k.includes("description") || k.includes("subheadline") || k === "textcolor" || k.includes("body") || k.includes("label") || k.includes("bullet") || k.includes("quote") || k.includes("attribution")) snapped = palette.textSecondary;
+    else if (k.includes("stepcolor") || k.includes("numbercolor") || k.includes("badgecolor") || k.includes("accentcolor") || k.includes("markercolor") || k.includes("iconcolor") || k.includes("problemcolor") || k.includes("solutioncolor") || k.includes("beforecolor") || k.includes("aftercolor") || k === "vscolor") {
+      snapped = palette.accentPrimary;
+    } else if (k.includes("activetextcolor") || (k.startsWith("activet") && k.includes("color"))) snapped = palette.textPrimary;
+    else if (k.includes("activedescriptioncolor")) snapped = palette.textSecondary;
+    else if (k.includes("accent") && k.includes("color")) snapped = palette.accentPrimary;
+
+    if (snapped) out[key] = snapped;
+  }
+
+  return out;
+}
+
+/**
+ * Deterministic bundle per archetype (template-agnostic aesthetic fields).
+ * Shallow-merged over LLM enhancedParams so archetype wins for keys we set.
+ */
+function getArchetypeBundle(archetype: StyleArchetype, originalPrompt: string): Record<string, unknown> {
+  const p = originalPrompt.toLowerCase();
+  const dark = promptPrefersDark(p);
+
+  const baseEffects = {
+    shadow: "soft" as const,
+    glow: "none" as const,
+    blur: "none" as const,
+  };
+
+  switch (archetype) {
+    case "personal_story":
+      return {
+        stylePreset: "editorial",
+        typography: {
+          fontFamily: "inter",
+          weight: "medium",
+          letterSpacing: "normal",
+          lineHeight: "relaxed",
+        },
+        background: dark
+          ? { type: "grain", baseColor: "#0B1020", grainOpacity: 0.07 }
+          : { type: "gradient", from: "#FFF7ED", to: "#FFEBD6", direction: "to-bottom-right" },
+        motionStyle: { easing: "smooth", speed: "slow", stagger: false, microMotion: true },
+        effects: baseEffects,
+        pacingProfile: "elegant",
       };
-    }
-    if (!("pacingProfile" in next)) next.pacingProfile = "elegant";
-    if (!("motionStyle" in next)) {
-      next.motionStyle = { easing: "smooth", speed: "slow", stagger: false, microMotion: true };
-    }
-    if (!("stylePreset" in next)) next.stylePreset = "editorial";
-
-    return next;
-  }
-
-  // Deterministic mapping for generic minimal process flows.
-  if (templateId === "process-steps" && isMinimalUi && !isProgressTrackerPattern) {
-    const next = { ...enhancedParams };
-    next.background = {
-      type: "dots",
-      baseColor: rolesForProcess.bg,
-      dotColor: "#E5E7EB",
-      size: 4,
-      gap: 32,
-      opacity: asksDarkMode ? 0.09 : 0.14,
-    };
-    next.cardBackground = rolesForProcess.surface;
-    next.cardBorderColor = rolesForProcess.border;
-    next.stepColor = rolesForProcess.accent;
-    // Arrows are structural, keep them more neutral.
-    next.connectorColor = asksDarkMode ? "#64748B" : "#CBD5E1";
-    next.titleColor = rolesForProcess.textPrimary;
-    next.textColor = rolesForProcess.textPrimary;
-    next.descriptionColor = rolesForProcess.textSecondary;
-    next.numberColor = "#FFFFFF";
-    next.connectorStyle = "arrow";
-
-    // Keep startup-clean look restrained, not flashy.
-    const fx = (next.effects as Record<string, unknown> | undefined) ?? {};
-    next.effects = {
-      shadow: (fx.shadow as string) ?? "soft",
-      glow: "none",
-      blur: (fx.blur as string) ?? "none",
-      scanlines: "off",
-      vignette: "off",
-      chromaticAberration: "off",
-      shake: "off",
-    };
-    if (!("stylePreset" in next)) next.stylePreset = "modern-clean";
-    return next;
-  }
-
-  // Progress tracker / status timeline (e.g. Track Your Order)
-  if (templateId === "process-steps" && isProgressTrackerPattern) {
-    const next = { ...enhancedParams };
-    // Use tracker layout instead of cards.
-    (next as Record<string, unknown>).layoutMode = "tracker";
-
-    // Light, neutral base with warm accent for food/delivery-style tracking.
-    next.background = {
-      type: "solid",
-      color: "#F5F7FB",
-    };
-    next.stepColor = isOrderTrackingDomain ? "#F97316" : "#6366F1";
-    next.connectorColor = "#E5E7EB";
-    next.titleColor = "#111827";
-    next.textColor = "#111827";
-    next.descriptionColor = "#9CA3AF";
-    next.numberColor = "#FFFFFF";
-
-    // Typography: tracker needs strong hierarchy (product UI style).
-    if (!("typography" in next)) {
-      (next as Record<string, unknown>).typography = {
-        fontFamily: "inter",
-        weight: "bold",
-        letterSpacing: "tight",
-        lineHeight: "compact",
-        fontStyle: "normal",
+    case "product_progress":
+      return {
+        stylePreset: "modern-clean",
+        typography: {
+          fontFamily: "inter",
+          weight: "bold",
+          letterSpacing: "tight",
+          lineHeight: "compact",
+        },
+        background: dark
+          ? { type: "gradient", from: "#0B1020", to: "#111827", direction: "to-bottom-right" }
+          : { type: "solid", color: "#F5F7FB" },
+        motionStyle: { easing: "snappy", speed: "medium", stagger: false, microMotion: false },
+        effects: baseEffects,
       };
-    }
-
-    const fx = (next.effects as Record<string, unknown> | undefined) ?? {};
-    next.effects = {
-      shadow: (fx.shadow as string) ?? "soft",
-      glow: "none",
-      blur: (fx.blur as string) ?? "none",
-      scanlines: "off",
-      vignette: "off",
-      chromaticAberration: "off",
-      shake: "off",
-    };
-
-    if (!("stylePreset" in next)) next.stylePreset = "modern-clean";
-    return next;
+    case "tech_terminal":
+      return {
+        stylePreset: "tech-terminal",
+        typography: {
+          fontFamily: "space-grotesk",
+          weight: "bold",
+          letterSpacing: "wide",
+          lineHeight: "compact",
+        },
+        background: dark
+          ? { type: "gradient", from: "#050816", to: "#0B1B2A", direction: "radial" }
+          : { type: "grain", baseColor: "#F1F5F9", grainOpacity: 0.05 },
+        motionStyle: { easing: "snappy", speed: "medium", stagger: false, microMotion: true },
+        effects: { shadow: "none", glow: "none", blur: "subtle" },
+      };
+    case "news_alert":
+      return {
+        stylePreset: "editorial",
+        typography: {
+          fontFamily: "inter",
+          weight: "bold",
+          letterSpacing: "normal",
+          lineHeight: "compact",
+        },
+        // Breaking-news / broadcast visuals should stay dark by default.
+        // This avoids the "all white" preview when the user doesn't explicitly say "dark mode".
+        background: { type: "gradient", from: "#050510", to: "#0A0A20", direction: "to-bottom" },
+        motionStyle: { easing: "snappy", speed: "fast", stagger: false, microMotion: false },
+        effects: { shadow: "strong", glow: "none", blur: "none" },
+      };
+    case "promo_ad":
+      return {
+        stylePreset: "bold-startup",
+        typography: {
+          fontFamily: "clash-display",
+          weight: "black",
+          letterSpacing: "tight",
+          lineHeight: "compact",
+        },
+        background: dark
+          ? { type: "gradient", from: "#0F0520", to: "#1A0A3A", direction: "to-bottom-right" }
+          : { type: "solid", color: "#111827" },
+        motionStyle: { easing: "snappy", speed: "fast", stagger: false, microMotion: true },
+        effects: { shadow: "strong", glow: "subtle", blur: "none" },
+        pacingProfile: "energetic",
+      };
+    case "minimal_ui":
+      return {
+        stylePreset: "modern-clean",
+        typography: {
+          fontFamily: "clash-display",
+          weight: "medium",
+          letterSpacing: "normal",
+          lineHeight: "compact",
+        },
+        background: dark ? { type: "solid", color: "#050816" } : { type: "solid", color: "#F4F6FB" },
+        motionStyle: { easing: "smooth", speed: "medium", stagger: true, microMotion: false },
+        effects: baseEffects,
+      };
+    case "neon_cyberpunk":
+      return {
+        stylePreset: "neon-tech",
+        typography: {
+          fontFamily: "space-grotesk",
+          weight: "bold",
+          letterSpacing: "wide",
+          lineHeight: "compact",
+        },
+        background: dark
+          ? { type: "gradient", from: "#000A1A", to: "#001A3A", direction: "radial" }
+          : { type: "solid", color: "#0B1020" },
+        motionStyle: { easing: "snappy", speed: "fast", stagger: false, microMotion: true },
+        effects: { shadow: "none", glow: "neon", blur: "subtle" },
+      };
+    default:
+      return {
+        stylePreset: "modern-clean",
+        typography: {
+          fontFamily: "inter",
+          weight: "medium",
+          letterSpacing: "normal",
+          lineHeight: "compact",
+        },
+        background: dark
+          ? { type: "gradient", from: "#0B1020", to: "#0F172A", direction: "to-bottom" }
+          : { type: "gradient", from: "#F4F6FB", to: "#EEF2FF", direction: "to-bottom" },
+        motionStyle: { easing: "smooth", speed: "medium", stagger: false, microMotion: false },
+        effects: baseEffects,
+      };
   }
+}
 
-  return enhancedParams;
+/** Archetype layer wins over LLM for overlapping keys (single shallow merge). */
+export function applyArchetypeToEnhancedParams(
+  styleArchetype: unknown,
+  enhancedParams: Record<string, unknown>,
+  originalPrompt: string,
+): Record<string, unknown> {
+  const arch = normalizeStyleArchetype(styleArchetype);
+  const bundle = getArchetypeBundle(arch, originalPrompt);
+  // Fill missing keys from the archetype bundle, but never overwrite any
+  // keys the LLM already proposed (this is important for user-provided
+  // color vibes like "offwhite gradient" or "brown icons").
+  const merged: Record<string, unknown> = { ...enhancedParams };
+  for (const [key, value] of Object.entries(bundle)) {
+    if (merged[key] === undefined) merged[key] = value;
+  }
+  return merged;
 }
 
 // ── Single-Scene Enhancement ─────────────────────────────────────────────────
@@ -1783,7 +2126,7 @@ export async function enhanceCreatively(
       model: "gpt-4o",
       temperature: 0.7,
       input: [
-        { role: "system", content: STYLE_TOKENS_SYSTEM_PROMPT },
+        { role: "system", content: CREATIVE_SYSTEM_PROMPT },
         { role: "user", content: userMessage },
       ],
     });
@@ -1793,44 +2136,35 @@ export async function enhanceCreatively(
     const cleaned = raw.replace(/```json/g, "").replace(/```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    if (!parsed.styleTokens || typeof parsed.styleTokens !== "object") {
+    if (!parsed.enhancedParams || typeof parsed.enhancedParams !== "object") {
       console.warn("[creativeEnhancer] Invalid response structure, using original");
       return intent;
     }
 
-    // LLM judge: choose a high-level style archetype based on prompt.
-    // Then deterministically override font/palette/background tone.
-    let judge: StyleJudgeOutput | undefined;
-    try {
-      judge = await runStyleJudge(client, originalPrompt, intent.templateId);
-    } catch (judgeErr) {
-      console.warn("[creativeEnhancer] Style judge failed, continuing:", (judgeErr as Error).message);
-    }
-
-    const judgedTokens = judge
-      ? applyJudgeOverridesToStyleTokens(
-          parsed.styleTokens as Record<string, unknown>,
-          judge,
-          originalPrompt,
-        )
-      : (parsed.styleTokens as Record<string, unknown>);
-
-    const enhancedParams = applyDomainOverrides(
+    // Merge style archetype (same response as creative pass — no second LLM call)
+    const forcedArchetype = forceArchetypeForPrompt(
       originalPrompt,
-      intent.templateId,
-      intent.params as Record<string, unknown>,
-      tokensToEnhancedParams(intent.templateId, judgedTokens),
+      parsed.styleArchetype,
+    );
+    const enhancedAfterArchetype = applyArchetypeToEnhancedParams(
+      forcedArchetype,
+      parsed.enhancedParams as Record<string, unknown>,
+      originalPrompt,
     );
 
     // Merge enhanced over original (content-protected, sanitized)
     const mergedParams = mergeAndSanitize(
       intent.params as Record<string, unknown>,
-      enhancedParams,
+      enhancedAfterArchetype,
       intent.templateId,
     );
 
+    const mergedWithPromptColors = applyPromptColorOverrides(originalPrompt, mergedParams as Record<string, unknown>);
+    const mergedWithVibePalette = snapParamsToVibePalette(originalPrompt, intent.templateId, mergedWithPromptColors);
+    const mergedParamsWithContrast = enforceContrastOnParams(mergedWithVibePalette);
+
     // Validate merged params against the template's Zod schema
-    let validation = entry.schema.safeParse(mergedParams);
+    let validation = entry.schema.safeParse(mergedParamsWithContrast);
 
     // If validation fails, strip the bad fields and retry with partial enhancements
     if (!validation.success) {
@@ -1841,12 +2175,14 @@ export async function enhanceCreatively(
 
       const retryParams = stripFailedFields(
         intent.params as Record<string, unknown>,
-        enhancedParams,
+        enhancedAfterArchetype,
         validation.error.issues as any[],
         intent.templateId,
       );
 
-      validation = entry.schema.safeParse(retryParams);
+      const retryWithVibePalette = snapParamsToVibePalette(originalPrompt, intent.templateId, retryParams);
+      const retryParamsWithContrast = enforceContrastOnParams(retryWithVibePalette);
+      validation = entry.schema.safeParse(retryParamsWithContrast);
       if (!validation.success) {
         const retryErrors = validation.error.issues
           .map((i) => i.path.join(".") + ": " + i.message)
@@ -1863,9 +2199,18 @@ export async function enhanceCreatively(
       (parsed.changes || []).join(", "),
     );
 
+    // Post-validate contrast again after Zod defaults have been applied.
+    // This prevents cases where the LLM omitted a color field and Zod
+    // defaulted it to (e.g.) white on a light background.
+    const validatedData = validation.data as Record<string, unknown>;
+    const snappedAfterDefaults = snapParamsToVibePalette(originalPrompt, intent.templateId, validatedData);
+    const withFinalContrast = enforceContrastOnParams(snappedAfterDefaults);
+    const finalValidation = entry.schema.safeParse(withFinalContrast);
+    const finalParams = finalValidation.success ? (finalValidation.data as Record<string, unknown>) : validatedData;
+
     return {
       ...intent,
-      params: validation.data as Record<string, unknown>,
+      params: finalParams,
     };
   } catch (err) {
     console.warn(
@@ -1922,7 +2267,7 @@ export async function enhanceMultiSceneCreatively(
       model: "gpt-4o-mini",
       temperature: 0.6,
       input: [
-        { role: "system", content: STYLE_TOKENS_SYSTEM_PROMPT + STYLE_TOKENS_MULTI_SCENE_ADDENDUM },
+        { role: "system", content: CREATIVE_SYSTEM_PROMPT + MULTI_SCENE_ADDENDUM },
         { role: "user", content: userMessage },
       ],
     });
@@ -1937,16 +2282,8 @@ export async function enhanceMultiSceneCreatively(
       return result;
     }
 
-    let judge: StyleJudgeOutput | undefined;
-    try {
-      judge = await runStyleJudge(
-        client,
-        originalPrompt,
-        result.scenes[0]?.templateId ?? "multi-scene",
-      );
-    } catch (judgeErr) {
-      console.warn("[creativeEnhancer] Style judge failed (multi-scene), continuing:", (judgeErr as Error).message);
-    }
+    const multiArchetype = (parsed as { styleArchetype?: unknown }).styleArchetype;
+    const forcedMultiArchetype = forceArchetypeForPrompt(originalPrompt, multiArchetype);
 
     // Apply enhancements to each scene, validating individually
     const enhancedScenes: SceneDefinition[] = result.scenes.map((scene, i) => {
@@ -1957,90 +2294,138 @@ export async function enhanceMultiSceneCreatively(
         // Enhance each region
         const enhancedRegions = scene.regions?.map((region, r) => {
           const regionEnhancement = enhancement.regions?.[r];
-          if (!regionEnhancement?.styleTokens) return region;
+          if (!regionEnhancement?.enhancedParams) return region;
 
           const regionEntry = SERVER_TEMPLATE_REGISTRY[region.templateId];
           if (!regionEntry) return region;
 
-          const regionStyleTokens = judge
-            ? applyJudgeOverridesToStyleTokens(
-                regionEnhancement.styleTokens as Record<string, unknown>,
-                judge,
-                originalPrompt,
-              )
-            : (regionEnhancement.styleTokens as Record<string, unknown>);
-
-          const regionEnhancedParams = tokensToEnhancedParams(
-            region.templateId,
-            regionStyleTokens,
+          const regionParamsAfterArchetype = applyArchetypeToEnhancedParams(
+            forcedMultiArchetype,
+            regionEnhancement.enhancedParams as Record<string, unknown>,
+            originalPrompt,
           );
+
           const mergedParams = mergeAndSanitize(
             (region.params || {}) as Record<string, unknown>,
-            regionEnhancedParams,
+            regionParamsAfterArchetype,
             region.templateId,
           );
 
-          let validation = regionEntry.schema.safeParse(mergedParams);
+          const mergedWithPromptColors = applyPromptColorOverrides(
+            originalPrompt,
+            mergedParams as Record<string, unknown>,
+          );
+          const mergedWithVibePalette = snapParamsToVibePalette(
+            originalPrompt,
+            region.templateId,
+            mergedWithPromptColors,
+          );
+          const mergedParamsWithContrast = enforceContrastOnParams(mergedWithVibePalette);
+          let validation = regionEntry.schema.safeParse(mergedParamsWithContrast);
           if (!validation.success) {
             const retryParams = stripFailedFields(
               (region.params || {}) as Record<string, unknown>,
-              regionEnhancedParams,
+              regionParamsAfterArchetype,
               validation.error.issues as any[],
               region.templateId,
             );
-            validation = regionEntry.schema.safeParse(retryParams);
+            const retryWithPromptColors = applyPromptColorOverrides(originalPrompt, retryParams as Record<string, unknown>);
+            const retryWithVibePalette = snapParamsToVibePalette(
+              originalPrompt,
+              region.templateId,
+              retryWithPromptColors,
+            );
+            const retryParamsWithContrast = enforceContrastOnParams(retryWithVibePalette);
+            validation = regionEntry.schema.safeParse(retryParamsWithContrast);
             if (!validation.success) {
               console.warn(`[creativeEnhancer] Scene ${i} region ${r} validation failed, keeping original`);
               return region;
             }
           }
 
-          return { ...region, params: validation.data as Record<string, unknown> };
+          const validatedData = validation.data as Record<string, unknown>;
+          const validatedWithPromptColors = applyPromptColorOverrides(originalPrompt, validatedData);
+          const validatedWithVibePalette = snapParamsToVibePalette(
+            originalPrompt,
+            region.templateId,
+            validatedWithPromptColors,
+          );
+          const withFinalContrast = enforceContrastOnParams(validatedWithVibePalette);
+          const finalValidation = regionEntry.schema.safeParse(withFinalContrast);
+          const finalParams = finalValidation.success
+            ? (finalValidation.data as Record<string, unknown>)
+            : validatedData;
+
+          return { ...region, params: finalParams };
         });
 
-        const enhancedBg = enhancement.styleTokens?.background ?? scene.background;
+        const enhancedBg = enhancement.background ?? scene.background;
         return { ...scene, regions: enhancedRegions, background: enhancedBg };
       }
 
-      if (scene.templateId && enhancement.styleTokens) {
+      if (scene.templateId && enhancement.enhancedParams) {
         const sceneEntry = SERVER_TEMPLATE_REGISTRY[scene.templateId];
         if (!sceneEntry) return scene;
 
-        const sceneStyleTokens = judge
-          ? applyJudgeOverridesToStyleTokens(
-              enhancement.styleTokens as Record<string, unknown>,
-              judge,
-              originalPrompt,
-            )
-          : (enhancement.styleTokens as Record<string, unknown>);
-
-        const sceneEnhancedParams = tokensToEnhancedParams(
-          scene.templateId,
-          sceneStyleTokens,
+        const sceneParamsAfterArchetype = applyArchetypeToEnhancedParams(
+          forcedMultiArchetype,
+          enhancement.enhancedParams as Record<string, unknown>,
+          originalPrompt,
         );
+
         const mergedParams = mergeAndSanitize(
           (scene.params || {}) as Record<string, unknown>,
-          sceneEnhancedParams,
+          sceneParamsAfterArchetype,
           scene.templateId,
         );
 
-        let validation = sceneEntry.schema.safeParse(mergedParams);
+        const mergedWithPromptColors = applyPromptColorOverrides(
+          originalPrompt,
+          mergedParams as Record<string, unknown>,
+        );
+        const mergedWithVibePalette = snapParamsToVibePalette(
+          originalPrompt,
+          scene.templateId,
+          mergedWithPromptColors,
+        );
+        const mergedParamsWithContrast = enforceContrastOnParams(mergedWithVibePalette);
+        let validation = sceneEntry.schema.safeParse(mergedParamsWithContrast);
         if (!validation.success) {
           const retryParams = stripFailedFields(
             (scene.params || {}) as Record<string, unknown>,
-            sceneEnhancedParams,
+            sceneParamsAfterArchetype,
             validation.error.issues as any[],
             scene.templateId,
           );
-          validation = sceneEntry.schema.safeParse(retryParams);
+          const retryWithPromptColors = applyPromptColorOverrides(originalPrompt, retryParams as Record<string, unknown>);
+          const retryWithVibePalette = snapParamsToVibePalette(
+            originalPrompt,
+            scene.templateId,
+            retryWithPromptColors,
+          );
+          const retryParamsWithContrast = enforceContrastOnParams(retryWithVibePalette);
+          validation = sceneEntry.schema.safeParse(retryParamsWithContrast);
           if (!validation.success) {
             console.warn(`[creativeEnhancer] Scene ${i} (${scene.templateId}) validation failed, keeping original`);
             return scene;
           }
         }
 
-        const enhancedBg = enhancement.styleTokens?.background ?? scene.background;
-        return { ...scene, params: validation.data as Record<string, unknown>, background: enhancedBg };
+        const validatedData = validation.data as Record<string, unknown>;
+        const validatedWithPromptColors = applyPromptColorOverrides(originalPrompt, validatedData);
+        const validatedWithVibePalette = snapParamsToVibePalette(
+          originalPrompt,
+          scene.templateId,
+          validatedWithPromptColors,
+        );
+        const withFinalContrast = enforceContrastOnParams(validatedWithVibePalette);
+        const finalValidation = sceneEntry.schema.safeParse(withFinalContrast);
+        const finalParams = finalValidation.success
+          ? (finalValidation.data as Record<string, unknown>)
+          : validatedData;
+
+        const enhancedBg = enhancement.background ?? scene.background;
+        return { ...scene, params: finalParams, background: enhancedBg };
       }
 
       return scene;
@@ -2075,10 +2460,78 @@ export async function applyCreativeLayer(
   intent: AnalyzerResult,
 ): Promise<AnalyzerResult> {
   try {
-    if (isMultiSceneResult(intent)) {
-      return await enhanceMultiSceneCreatively(originalPrompt, intent);
+    const enhanced = isMultiSceneResult(intent)
+      ? await enhanceMultiSceneCreatively(originalPrompt, intent)
+      : await enhanceCreatively(originalPrompt, intent as IntentResult);
+
+    // Hard requirement for breaking-news visuals: never allow light/white backgrounds.
+    // If the enhancer fails or chooses a mismatched archetype, we still enforce a dark TV-style bg.
+    if (!isMultiSceneResult(enhanced)) {
+      if (enhanced.templateId === "news-alert") {
+        const nextParams = {
+          ...(enhanced.params as Record<string, unknown>),
+          background: {
+            type: "gradient" as const,
+            from: "#050510",
+            to: "#0A0A20",
+            direction: "to-bottom" as const,
+          },
+        };
+        enhanced.params = enforceContrastOnParams(nextParams);
+      }
+      return enhanced;
     }
-    return await enhanceCreatively(originalPrompt, intent as IntentResult);
+
+    const patchedScenes = enhanced.scenes.map((scene) => {
+      if (!scene.templateId && isCompositeScene(scene)) {
+        return {
+          ...scene,
+          background: {
+            ...(scene.background as Record<string, unknown>),
+            type: "gradient" as const,
+            from: "#050510",
+            to: "#0A0A20",
+            direction: "to-bottom" as const,
+          },
+          regions: scene.regions?.map((r) => {
+            if (r.templateId !== "news-alert") return r;
+            const nextParams = enforceContrastOnParams({
+              ...(r.params as Record<string, unknown>),
+              background: {
+                type: "gradient" as const,
+                from: "#050510",
+                to: "#0A0A20",
+                direction: "to-bottom" as const,
+              },
+            });
+
+            return {
+              ...r,
+              params: nextParams,
+            };
+          }),
+        };
+      }
+
+      if (scene.templateId === "news-alert") {
+        return {
+          ...scene,
+          params: enforceContrastOnParams({
+            ...(scene.params as Record<string, unknown>),
+            background: {
+              type: "gradient" as const,
+              from: "#050510",
+              to: "#0A0A20",
+              direction: "to-bottom" as const,
+            },
+          }),
+        };
+      }
+
+      return scene;
+    });
+
+    return { ...enhanced, scenes: patchedScenes };
   } catch (err) {
     console.warn(
       "[creativeEnhancer] Unexpected error, passing through original:",

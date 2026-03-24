@@ -1,26 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import type { PreviewModel } from "@/components/RemotionTemplatePreview";
-
-const RemotionTemplatePreview = dynamic(() => import("@/components/RemotionTemplatePreview"), {
-  ssr: false,
-});
+import type { Job, JobStatus } from "@/lib/types";
+import { STEP_LABELS, TEMPLATE_STEP_LABELS } from "@/lib/types";
+import InlineRemotionPreview from "./InlineRemotionPreview";
 
 export default function PromptForm() {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
-  const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16" | "1:1" | "4:3" | "3:4">("16:9");
+  const [aspectRatio, setAspectRatio] = useState("16:9");
   const [durationSec, setDurationSec] = useState(6);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState("");
-  const [previewModel, setPreviewModel] = useState<PreviewModel | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  const [previewJobId, setPreviewJobId] = useState<string | null>(null);
+  const [previewJob, setPreviewJob] = useState<Job | null>(null);
+  const [trace, setTrace] = useState<Array<{ step: number; status: JobStatus; label: string; at: number }>>([]);
+  const lastTraceKeyRef = useRef<string>("");
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const previewDurationSec = useMemo(() => {
+    return typeof durationSec === "number" && Number.isFinite(durationSec) ? durationSec : 6;
+  }, [durationSec]);
+
+  async function submitJob(e: React.FormEvent, previewOnly: boolean) {
     e.preventDefault();
     if (!prompt.trim()) return;
     setLoading(true);
@@ -30,14 +34,27 @@ export default function PromptForm() {
       const res = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspect_ratio: aspectRatio, duration_sec: durationSec }),
+        body: JSON.stringify({
+          prompt,
+          aspectRatio,
+          durationSec,
+          previewOnly,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Failed to submit");
         return;
       }
-      router.push("/jobs/" + data.id);
+
+      if (previewOnly) {
+        setPreviewJobId(data.id);
+        setPreviewJob(null);
+        setTrace([]);
+        lastTraceKeyRef.current = "";
+      } else {
+        router.push("/jobs/" + data.id);
+      }
     } catch {
       setError("Network error — please try again");
     } finally {
@@ -45,57 +62,47 @@ export default function PromptForm() {
     }
   }
 
-  async function handlePreview() {
-    if (!prompt.trim()) return;
-    setPreviewLoading(true);
-    setPreviewError("");
+  useEffect(() => {
+    if (!previewJobId) return;
 
-    try {
-      const res = await fetch("/api/preview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspect_ratio: aspectRatio, duration_sec: durationSec }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setPreviewError(data.error ?? "Preview failed");
-        return;
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+
+    pollTimerRef.current = setInterval(async () => {
+      try {
+        const res = await fetch("/api/jobs/" + previewJobId);
+        if (!res.ok) return;
+        const job: Job = await res.json();
+        setPreviewJob(job);
+
+        const inferredMode: "template" | "legacy" = job.template_id ? "template" : "legacy";
+        const label =
+          inferredMode === "template"
+            ? TEMPLATE_STEP_LABELS[job.step] ?? STEP_LABELS[job.step] ?? ""
+            : STEP_LABELS[job.step] ?? "";
+        const traceKey = [inferredMode, job.step, job.status].join("|");
+        if (traceKey !== lastTraceKeyRef.current) {
+          lastTraceKeyRef.current = traceKey;
+          setTrace((prev) => {
+            const next = [...prev, { step: job.step, status: job.status, label, at: Date.now() }];
+            return next.slice(-25);
+          });
+        }
+
+        if (job.status === "done" || job.status === "failed") {
+          if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+        }
+      } catch {
+        // ignore transient errors
       }
+    }, 2000);
 
-      if (data.mode === "single") {
-        setPreviewModel({
-          mode: "single",
-          aspectRatio: data.aspectRatio,
-          durationSec: data.durationSec,
-          templateId: data.templateId,
-          templateParams: data.templateParams,
-        });
-        return;
-      }
-
-      if (data.mode === "multi") {
-        setPreviewModel({
-          mode: "multi",
-          aspectRatio: data.aspectRatio,
-          scenes: data.scenes,
-          totalDurationFrames: data.totalDurationFrames,
-        });
-        return;
-      }
-
-      setPreviewError(data.error ?? "Preview not supported for this prompt yet (legacy pipeline).");
-      setPreviewModel(null);
-    } catch (err) {
-      setPreviewError((err as Error).message || "Preview failed");
-      setPreviewModel(null);
-    } finally {
-      setPreviewLoading(false);
-    }
-  }
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
+  }, [previewJobId]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={(e) => submitJob(e, false)} className="flex flex-col gap-4">
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
@@ -105,56 +112,50 @@ export default function PromptForm() {
         disabled={loading}
         className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-neutral-100 placeholder-neutral-600 resize-none focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 font-mono transition-all duration-200"
       />
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <label className="flex flex-col gap-1">
-          <span className="text-xs text-neutral-500">Aspect ratio</span>
+        <label className="text-xs text-neutral-400 flex flex-col gap-1.5">
+          Aspect Ratio
           <select
             value={aspectRatio}
-            onChange={(e) => setAspectRatio(e.target.value as typeof aspectRatio)}
+            onChange={(e) => setAspectRatio(e.target.value)}
             disabled={loading}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 transition-all duration-200"
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
           >
             <option value="16:9">16:9 (Landscape)</option>
             <option value="9:16">9:16 (Portrait)</option>
             <option value="1:1">1:1 (Square)</option>
-            <option value="4:3">4:3</option>
-            <option value="3:4">3:4</option>
+            <option value="4:5">4:5 (Social)</option>
           </select>
         </label>
-
-        <label className="flex flex-col gap-1">
-          <span className="text-xs text-neutral-500">Duration (seconds)</span>
-          <input
-            type="number"
-            min={2}
-            max={30}
-            step={1}
+        <label className="text-xs text-neutral-400 flex flex-col gap-1.5">
+          Length
+          <select
             value={durationSec}
-            onChange={(e) => setDurationSec(Math.max(2, Math.min(30, Number(e.target.value) || 0)))}
+            onChange={(e) => setDurationSec(Number(e.target.value))}
             disabled={loading}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 transition-all duration-200 font-mono"
-          />
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+          >
+            <option value={4}>4s</option>
+            <option value={5}>5s</option>
+            <option value={6}>6s</option>
+            <option value={8}>8s</option>
+            <option value={10}>10s</option>
+            <option value={12}>12s</option>
+            <option value={15}>15s</option>
+          </select>
         </label>
       </div>
-
       <div className="flex items-center justify-between">
         <span className="text-xs text-neutral-600">{prompt.length} / 3000</span>
         <div className="flex items-center gap-3">
           {error && <span className="text-xs text-red-400">{error}</span>}
           <button
             type="button"
-            onClick={handlePreview}
-            disabled={previewLoading || loading || !prompt.trim()}
-            className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 disabled:bg-white/5 disabled:text-neutral-500 disabled:border-white/10 text-white text-sm font-medium rounded-xl transition-all duration-200 flex items-center gap-2"
+            onClick={(e) => submitJob(e, true)}
+            disabled={loading || !prompt.trim()}
+            className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/15 disabled:bg-white/5 disabled:border-white/10 disabled:text-neutral-500 text-neutral-200 text-sm font-medium rounded-xl transition-all duration-200"
           >
-            {previewLoading && (
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-            )}
-            Preview
+            {loading ? "Working..." : "Preview (Instant)"}
           </button>
           <button
             type="submit"
@@ -171,17 +172,144 @@ export default function PromptForm() {
           </button>
         </div>
       </div>
-      </form>
 
-      {previewError && (
-        <div className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl p-3">
-          {previewError}
+      {previewJobId && (
+        <div className="mt-1">
+          {previewJob?.status === "done" && previewJob?.template_id && previewJob?.template_params ? (
+            <InlineRemotionPreview
+              templateId={previewJob.template_id}
+              params={previewJob.template_params ?? {}}
+              aspectRatio={aspectRatio}
+              durationSec={previewDurationSec}
+            />
+          ) : (
+            <div className="glass rounded-2xl p-4 text-center">
+              {previewJob?.status === "failed" ? (
+                <>
+                  <p className="text-sm text-red-400">Preview failed.</p>
+                  {previewJob?.error && (
+                    <p className="text-xs text-neutral-500 mt-2">{previewJob.error}</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-neutral-400">Generating preview…</p>
+                </>
+              )}
+            </div>
+          )}
+
+          <div className="mt-3">
+            <details open>
+              <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+                Debug (template, creativeEnhancer, step trace)
+              </summary>
+
+              <div className="mt-3 text-xs text-neutral-400 whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+                <div className="mb-2">
+                  <span className="text-neutral-500">Job:</span>{" "}
+                  <span className="text-neutral-300">{previewJobId}</span>
+                </div>
+
+                {previewJob ? (
+                  <>
+                    <div className="mb-2">
+                      <span className="text-neutral-500">pipeline:</span>{" "}
+                      <span className="text-neutral-300">
+                        {previewJob.template_id ? "template" : "legacy"}
+                      </span>
+                    </div>
+
+                    <div className="mb-2">
+                      <span className="text-neutral-500">template_id:</span>{" "}
+                      <span className="text-neutral-300">{previewJob.template_id ?? "(none)"}</span>
+                    </div>
+
+                    <div className="mb-2">
+                      <span className="text-neutral-500">current step/status:</span>{" "}
+                      <span className="text-neutral-300">
+                        {previewJob.step}/{previewJob.status}
+                      </span>
+                    </div>
+
+                    <div className="mb-2">
+                      <span className="text-neutral-500">Step trace:</span>
+                      {trace.length === 0 ? (
+                        <div className="mt-1">Waiting for pipeline steps…</div>
+                      ) : (
+                        <div className="mt-1">
+                          {trace
+                            .slice()
+                            .reverse()
+                            .map((t, idx) => (
+                              <div key={t.at + ":" + idx} className="leading-5">
+                                • step {t.step}: {t.status} {t.label ? `(${t.label})` : ""}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3">
+                      <details open={false}>
+                        <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+                          Template params (final output saved)
+                        </summary>
+                        <pre className="mt-3 whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+                          {previewJob.template_params
+                            ? JSON.stringify(previewJob.template_params, null, 2)
+                            : "(no template_params yet)"}
+                        </pre>
+                      </details>
+                    </div>
+
+                    <div className="mt-3">
+                      <details open={false}>
+                        <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+                          Intent analyzer vs creativeEnhancer
+                        </summary>
+                        <div className="mt-3 space-y-3">
+                          <div>
+                            <div className="text-neutral-500 mb-1">debug_intent_analyzer (raw)</div>
+                            <pre className="whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+                              {previewJob.debug_intent_analyzer
+                                ? JSON.stringify(previewJob.debug_intent_analyzer, null, 2)
+                                : "(not available)"}
+                            </pre>
+                          </div>
+                          <div>
+                            <div className="text-neutral-500 mb-1">debug_intent_creative (after creativeEnhancer)</div>
+                            <pre className="whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+                              {previewJob.debug_intent_creative
+                                ? JSON.stringify(previewJob.debug_intent_creative, null, 2)
+                                : "(not available)"}
+                            </pre>
+                          </div>
+                        </div>
+                      </details>
+                    </div>
+
+                    {previewJob.detailed_prompt ? (
+                      <div className="mt-3">
+                        <details open={false}>
+                          <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+                            detailed_prompt (legacy expand result)
+                          </summary>
+                          <pre className="mt-3 whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+                            {previewJob.detailed_prompt}
+                          </pre>
+                        </details>
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <div>Waiting for job payload…</div>
+                )}
+              </div>
+            </details>
+          </div>
         </div>
       )}
-
-      {previewModel && !previewError && (
-        <RemotionTemplatePreview model={previewModel} />
-      )}
-    </div>
+    </form>
   );
 }

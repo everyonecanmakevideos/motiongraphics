@@ -12,22 +12,24 @@ import {
 
 export const StreamStartSchema = z.object({
   // Content
-  headline: z.string().min(1).max(80),
-  showLiveBadge: z.boolean().default(true),
+  headline: z.string().min(1).max(80).default("LIVE"),
   badgeText: z.string().min(1).max(10).default("LIVE"),
+  showLiveBadge: z.boolean().default(true),
 
-  // Styling
+  // Core colors
   headlineColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
-  accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#EF4444"),
-  background: BackgroundSchema.default({ type: "solid", color: "#000000" }),
+  badgeColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#22D3EE"),
+  background: BackgroundSchema.default({
+    type: "gradient",
+    from: "#050510",
+    to: "#0A0A20",
+    direction: "to-bottom",
+  }),
 
-  // Stream UI feel knobs
-  scanlines: z.boolean().default(true),
-  flicker: z.boolean().default(true),
-  glowOnLiveWord: z.boolean().default(true),
-
-  // Motion
-  entranceAnimation: z.enum(["fade-in", "slide-up", "slide-left", "scale-pop", "blur-reveal", "none"]).default("slide-left"),
+  // Motion + timing
+  entranceAnimation: z
+    .enum(["fade-in", "slide-up", "slide-left", "scale-pop", "blur-reveal", "none"])
+    .default("slide-up"),
   duration: z.number().min(2).max(15).default(5),
 
   // Creative knobs (token-driven)

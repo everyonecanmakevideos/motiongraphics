@@ -19,7 +19,7 @@ const REGISTRY_PATH = path.join(PROJECT_ROOT, "src", "assets", "registry.ts");
 const LICENSES_PATH = path.join(PROJECT_ROOT, "src", "assets", "LICENSES.md");
 
 const MAX_PATHS_WARN = 15;
-const DOWNLOAD_DELAY_MS = 500; // be polite to SVGRepo
+const DOWNLOAD_DELAY_MS = Number(process.env.SVG_DOWNLOAD_DELAY_MS || 500); // be polite to SVGRepo by default
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -1,7 +1,15 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, staggerDelay, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  fadeIn,
+  slideUp,
+  scalePop,
+  staggerDelay,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
@@ -21,7 +29,7 @@ const BULLET_MARKERS: Record<string, (index: number) => string> = {
 
 export const BulletList: React.FC<BulletListProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, scale } = useResponsiveConfig();
+  const { width, height, isPortrait, scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -37,8 +45,14 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
   const totalFrames = secToFrame(props.duration);
 
   const titleEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
-  const itemsStart = Math.round(totalFrames * 0.1);
-  const itemsDuration = Math.round(totalFrames * 0.5 * motion.durationMultiplier);
+  const itemsWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.1,
+    minSec: 1.5,
+    maxSec: 3.6,
+    maxEndPct: 0.72,
+  });
+  const itemsStart = itemsWindow.startFrame;
+  const itemsDuration = Math.max(1, itemsWindow.endFrame - itemsWindow.startFrame);
   const exitStart = Math.round(totalFrames * 0.85);
   const exitEnd = totalFrames;
 
@@ -60,6 +74,14 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
   }
 
   const getMarker = BULLET_MARKERS[props.bulletStyle] ?? BULLET_MARKERS.dot;
+  const itemRows = props.items.length;
+  const spacingPx = props.spacing === "tight" ? 6 : props.spacing === "relaxed" ? 20 : 12;
+  const estItemHeight = Math.round(48 * scale + spacingPx * 2);
+  const titleSpace = props.title ? Math.round(90 * scale) : 0;
+  const estimatedHeight = titleSpace + itemRows * estItemHeight;
+  const fitScale = estimatedHeight > Math.round(height * 0.9)
+    ? Math.max(0.8, Math.round(((height * 0.9) / estimatedHeight) * 1000) / 1000)
+    : 1;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -70,11 +92,11 @@ export const BulletList: React.FC<BulletListProps> = (props) => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) translateY(${floatY}px)`,
+          transform: `translate(-50%, -50%) translateY(${floatY}px) scale(${fitScale})`,
           display: "flex",
           flexDirection: "column",
-          maxWidth: Math.round(width * 0.85) + "px",
-          width: "80%",
+          maxWidth: Math.round(width * (isPortrait ? 0.92 : 0.85)) + "px",
+          width: isPortrait ? "90%" : "80%",
           opacity: exitOpacity,
           boxShadow: fx.boxShadow,
           filter: exitBlur > 0 ? `blur(${exitBlur}px)` : undefined,

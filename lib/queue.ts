@@ -23,7 +23,12 @@ import { STEP_LABELS, TEMPLATE_STEP_LABELS } from "./types";
 
 // ── State ──────────────────────────────────────────────────────────────────
 
-const jobQueue: string[] = [];
+interface QueueJob {
+  jobId: string;
+  previewOnly: boolean;
+}
+
+const jobQueue: QueueJob[] = [];
 let isProcessing = false;
 const subscribers = new Map<string, Set<ReadableStreamDefaultController<Uint8Array>>>();
 
@@ -63,17 +68,17 @@ function emit(jobId: string, event: SSEEvent): void {
 
 // ── Queue public API ───────────────────────────────────────────────────────
 
-export function enqueueJob(jobId: string): void {
-  jobQueue.push(jobId);
+export function enqueueJob(jobId: string, opts?: { previewOnly?: boolean }): void {
+  jobQueue.push({ jobId, previewOnly: Boolean(opts?.previewOnly) });
   processNext();
 }
 
 function processNext(): void {
   if (isProcessing || jobQueue.length === 0) return;
   isProcessing = true;
-  const jobId = jobQueue.shift()!;
-  runPipeline(jobId)
-    .catch((err) => console.error("[queue] Unhandled error for", jobId, err))
+  const queued = jobQueue.shift()!;
+  runPipeline(queued.jobId, queued.previewOnly)
+    .catch((err) => console.error("[queue] Unhandled error for", queued.jobId, err))
     .finally(() => {
       isProcessing = false;
       processNext();
@@ -97,7 +102,7 @@ async function failJob(jobId: string, step: number, error: string): Promise<void
   emit(jobId, { jobId, step, status: "failed", label: "Failed: " + error.slice(0, 200), error });
 }
 
-async function runPipeline(jobId: string): Promise<void> {
+async function runPipeline(jobId: string, previewOnly: boolean): Promise<void> {
   const job = await getJob(jobId);
   if (!job) return;
 
@@ -105,13 +110,23 @@ async function runPipeline(jobId: string): Promise<void> {
   emit(jobId, { jobId, step: 1, status: "queued", label: STEP_LABELS[1] });
 
   try {
+    // Preview mode: use template pipeline (so template params like `currentStep` exist),
+    // but skip MP4 rendering/upload.
+    if (previewOnly) {
+      const usedTemplate = await tryTemplatePipeline(jobId, job.prompt, true);
+      if (usedTemplate) return;
+      // If template routing declined, fall back to legacy preview (generated code, no MP4).
+      await runLegacyPipeline(jobId, job.prompt, true);
+      return;
+    }
+
     // ── Try template path first ───────────────────────────────────────────
-    const templateResult = await tryTemplatePipeline(jobId, job.prompt, job.aspect_ratio ?? undefined, job.duration_sec ?? undefined);
+    const templateResult = await tryTemplatePipeline(jobId, job.prompt, false);
     if (templateResult) return; // Template path succeeded
 
     // ── Fallback to legacy pipeline ───────────────────────────────────────
     console.log("[queue] Template path declined for", jobId, "— using legacy pipeline");
-    await runLegacyPipeline(jobId, job.prompt, job.aspect_ratio ?? undefined, job.duration_sec ?? undefined);
+    await runLegacyPipeline(jobId, job.prompt);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await failJob(jobId, 7, msg);
@@ -123,58 +138,25 @@ async function runPipeline(jobId: string): Promise<void> {
  * Returns true if the template path was used (success or failure).
  * Returns false if the system decided to fall back to legacy.
  */
-async function tryTemplatePipeline(
-  jobId: string,
-  prompt: string,
-  userAspectRatio?: string,
-  userDurationSec?: number
-): Promise<boolean> {
+async function tryTemplatePipeline(jobId: string, prompt: string, previewOnly: boolean): Promise<boolean> {
   try {
     // Step 2: Analyze intent
     await setStep(jobId, 2, "analyzing_intent");
     emit(jobId, { jobId, step: 2, status: "analyzing_intent", label: TEMPLATE_STEP_LABELS[2], pipelineMode: "template" });
     const rawIntent = await analyzeIntent(prompt);
+    await updateJob(jobId, { debug_intent_analyzer: rawIntent });
 
     // ── Creative enhancement ──────────────────────────────────────────
     const intent = await applyCreativeLayer(prompt, rawIntent);
+    await updateJob(jobId, { debug_intent_creative: intent });
 
     // ── Multi-scene path ────────────────────────────────────────────────
     if (isMultiSceneResult(intent)) {
       console.log("[queue] Multi-scene intent for", jobId, ":", intent.scenes.length, "scenes, confidence:", intent.confidence);
 
-      const aspectRatio = userAspectRatio ?? intent.aspect_ratio;
-      const durationSec =
-        typeof userDurationSec === "number" && Number.isFinite(userDurationSec) ? userDurationSec : undefined;
-
-      // If user requested a total duration, proportionally scale intent-scene durations
-      // (and region.params.duration) before the resolver computes final frame timings.
-      if (durationSec && intent.scenes && intent.scenes.length > 0) {
-        const sum = intent.scenes.reduce((acc, s) => acc + (typeof s.duration === "number" ? s.duration : 0), 0);
-        if (sum > 0) {
-          const scale = durationSec / sum;
-          for (const scene of intent.scenes) {
-            const nextDur = Math.max(2, Math.round((scene.duration ?? 0) * scale));
-            scene.duration = nextDur;
-
-            if (scene.params && typeof (scene.params as Record<string, unknown>).duration === "number") {
-              (scene.params as Record<string, unknown>).duration = nextDur;
-            }
-
-            if (scene.regions?.length) {
-              for (const region of scene.regions) {
-                if (region.params && typeof (region.params as Record<string, unknown>).duration === "number") {
-                  (region.params as Record<string, unknown>).duration = nextDur;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Re-resolve after scaling so startFrame/durationFrames match the new durations.
       const resolution = resolveMultiScene(intent);
       if (resolution.mode === "legacy") {
-        console.log("[queue] Multi-scene resolution declined after scaling:", resolution.error);
+        console.log("[queue] Multi-scene resolution declined:", resolution.error);
         return false;
       }
 
@@ -193,6 +175,18 @@ async function tryTemplatePipeline(
         pipelineMode: "template", templateId: firstTemplateId,
       });
 
+      if (previewOnly) {
+        await updateJob(jobId, { status: "done", step: 8 });
+        emit(jobId, {
+          jobId, step: 8, status: "done",
+          label: "Preview ready in Remotion Studio",
+          pipelineMode: "template",
+          templateId: firstTemplateId,
+        });
+        return true;
+      }
+
+      const aspectRatio = intent.aspect_ratio;
       const result = await renderMultiScene(jobId, resolution.scenes!, resolution.totalDurationFrames!, aspectRatio);
 
       // Done
@@ -224,13 +218,6 @@ async function tryTemplatePipeline(
     const templateId = resolution.templateId!;
     const templateParams = resolution.params! as Record<string, unknown>;
 
-    const durationSec =
-      typeof userDurationSec === "number" && Number.isFinite(userDurationSec)
-        ? userDurationSec
-        : (templateParams.duration as number) ?? 6;
-    templateParams.duration = durationSec;
-    const aspectRatio = userAspectRatio ?? intent.aspect_ratio;
-
     // Store template info in database
     await updateJob(jobId, {
       template_id: templateId,
@@ -244,6 +231,19 @@ async function tryTemplatePipeline(
       label: TEMPLATE_STEP_LABELS[3],
       pipelineMode: "template", templateId,
     });
+
+    const durationSec = (templateParams.duration as number) ?? 6;
+    const aspectRatio = intent.aspect_ratio;
+    if (previewOnly) {
+      await updateJob(jobId, { status: "done", step: 8 });
+      emit(jobId, {
+        jobId, step: 8, status: "done",
+        label: "Preview ready in Remotion Studio",
+        pipelineMode: "template",
+        templateId,
+      });
+      return true;
+    }
 
     const result = await renderTemplate(jobId, templateId, templateParams, durationSec, aspectRatio);
 
@@ -273,18 +273,10 @@ async function tryTemplatePipeline(
 }
 
 /** The original legacy pipeline (expand → spec → code → render). */
-async function runLegacyPipeline(
-  jobId: string,
-  prompt: string,
-  userAspectRatio?: string,
-  userDurationSec?: number
-): Promise<void> {
+async function runLegacyPipeline(jobId: string, prompt: string, previewOnly = false): Promise<void> {
   // Step 2: Expand simple prompt into detailed prompt
   await setStep(jobId, 2, "expanding");
-  const expandResult = await expandPrompt(prompt, {
-    aspectRatio: userAspectRatio,
-    durationSec: userDurationSec,
-  });
+  const expandResult = await expandPrompt(prompt);
   if (!expandResult.result) {
     await failJob(jobId, 2, "Prompt expansion failed: " + expandResult.errors.join("; "));
     return;
@@ -294,26 +286,16 @@ async function runLegacyPipeline(
 
   // Step 3: Generate spec from detailed prompt
   await setStep(jobId, 3, "spec_generating");
-  const specResult = await generateSpec(detailedPrompt, {
-    aspectRatio: userAspectRatio,
-    durationSec: userDurationSec,
-  });
+  const specResult = await generateSpec(detailedPrompt);
   if (!specResult.spec) {
     await failJob(jobId, 3, "Spec generation failed: " + specResult.errors.join("; "));
     return;
   }
-  const specData = specResult.spec as Record<string, unknown>;
-  if (typeof userAspectRatio === "string" && userAspectRatio) {
-    specData.aspect_ratio = userAspectRatio;
-  }
-  if (typeof userDurationSec === "number" && Number.isFinite(userDurationSec) && userDurationSec > 0) {
-    specData.duration = userDurationSec;
-  }
-  const specText = JSON.stringify(specData, null, 2);
+  const specText = JSON.stringify(specResult.spec, null, 2);
 
   // Step 4: Spec ready
-  await updateJob(jobId, { spec_json: specData });
-  await setStep(jobId, 4, "spec_ready", { specJson: specData });
+  await updateJob(jobId, { spec_json: specResult.spec });
+  await setStep(jobId, 4, "spec_ready", { specJson: specResult.spec });
 
   // Step 5: Generate animation code
   await setStep(jobId, 5, "code_generating");
@@ -344,13 +326,24 @@ async function runLegacyPipeline(
     }
   }
 
+  if (previewOnly) {
+    await updateJob(jobId, { status: "done", step: 8 });
+    emit(jobId, {
+      jobId,
+      step: 8,
+      status: "done",
+      label: "Preview ready in Remotion Studio",
+    });
+    return;
+  }
+
   // Step 7: Render (with code-fix retry on failure)
   await setStep(jobId, 7, "rendering");
   try {
     const result = await renderAndUpload(
       jobId,
       fullComponent,
-      specData,
+      specResult.spec as Record<string, unknown>,
       specText
     );
 
@@ -379,7 +372,7 @@ async function runLegacyPipeline(
     const result = await renderAndUpload(
       jobId,
       fullComponent,
-      specData,
+      specResult.spec as Record<string, unknown>,
       specText
     );
 

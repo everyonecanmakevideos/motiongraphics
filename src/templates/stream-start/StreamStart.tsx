@@ -1,22 +1,13 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import type { StreamStartProps } from "./schema";
 import { Background } from "../../primitives/Background";
-import {
-  phaseFrames,
-  fadeIn,
-  slideUp,
-  slideLeft,
-  scalePop,
-  blurReveal,
-  choreograph,
-} from "../../primitives/animations";
+import { phaseFrames, fadeIn, slideUp, slideLeft, slideRight, scalePop, blurReveal } from "../../primitives/animations";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
 import { resolveEffects } from "../../primitives/useEffects";
-import { resolveSecondaryMotion } from "../../primitives/useSecondaryMotion";
 import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
-import type { StreamStartProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
@@ -26,6 +17,9 @@ function applyEntrance(
   range: { startFrame: number; endFrame: number },
 ): { opacity: number; x: number; y: number; scale: number; blur: number } {
   if (preset === "none") return { opacity: 1, x: 0, y: 0, scale: 1, blur: 0 };
+  const dur = range.endFrame - range.startFrame;
+  if (dur <= 0) return { opacity: 1, x: 0, y: 0, scale: 1, blur: 0 };
+
   if (preset === "fade-in") {
     const f = fadeIn(frame, range);
     return { opacity: f.opacity, x: 0, y: 0, scale: f.scale, blur: 0 };
@@ -36,6 +30,10 @@ function applyEntrance(
   }
   if (preset === "slide-left") {
     const s = slideLeft(frame, range, 70);
+    return { opacity: s.opacity, x: s.x, y: 0, scale: 1, blur: 0 };
+  }
+  if (preset === "slide-right") {
+    const s = slideRight(frame, range, 70);
     return { opacity: s.opacity, x: s.x, y: 0, scale: 1, blur: 0 };
   }
   if (preset === "scale-pop") {
@@ -51,7 +49,7 @@ function applyEntrance(
 
 export const StreamStart: React.FC<StreamStartProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, scale } = useResponsiveConfig();
+  const { scale } = useResponsiveConfig();
 
   const resolved = resolveStylePreset(
     props.stylePreset,
@@ -60,163 +58,96 @@ export const StreamStart: React.FC<StreamStartProps> = (props) => {
     props.effects,
   );
   const typo = resolveTypography(resolved.typography);
-  const fx = resolveEffects(resolved.effects, props.accentColor);
+  // Use badgeColor as a reasonable accent for glow/shadow.
+  const fx = resolveEffects(resolved.effects, props.badgeColor);
 
   const phases = phaseFrames(props.duration, props.pacingProfile);
-
   const entranceDur = phases.entrance.endFrame;
-  const seq = choreograph(0, [
-    { id: "badge", startOffset: 0, duration: Math.round(entranceDur * 0.55) },
-    { id: "headline", startOffset: Math.round(entranceDur * 0.12), duration: Math.round(entranceDur * 0.9) },
-  ]);
 
-  const badgeRange = seq.get("badge")!;
-  const headlineRange = seq.get("headline")!;
-  const badgeE = applyEntrance(frame, props.entranceAnimation, badgeRange);
-  const headlineE = applyEntrance(frame, props.entranceAnimation, headlineRange);
+  const bannerRange = { startFrame: 0, endFrame: entranceDur };
+  const entrance = applyEntrance(frame, props.entranceAnimation, bannerRange);
 
-  const exitOpacity = interpolate(frame, [phases.exit.startFrame, phases.exit.endFrame], [1, 0], CLAMP);
-  const secondaryM = resolveSecondaryMotion(frame, phases.main, props.secondaryMotion);
+  const blink = frame % 12 < 6 ? 1 : 0.35;
 
-  const words = props.headline.split(/\s+/).filter(Boolean);
-  const liveIdx = words.findIndex((w) => w.toLowerCase() === "live");
-
-  const fontSize =
-    Math.round(
-      (props.headline.length > 24 ? 110 : props.headline.length > 16 ? 130 : 150) * scale
-    );
-
-  // Badge pulse reads “functional” like streaming UIs.
-  const pulse = 1 + (frame % 30) / 30 * 0.06;
-  const badgeOpacity = (frame % 20 < 10 ? 1 : 0.65) * exitOpacity * badgeE.opacity;
-
-  // Scanlines/flicker: subtle, not noisy.
-  const flicker =
-    props.flicker
-      ? 0.92 + (frame % 17 < 1 ? 0.08 : 0) + (frame % 53 < 1 ? 0.12 : 0)
-      : 1;
-
-  const scanOpacity =
-    props.scanlines
-      ? interpolate(frame, [0, phases.entrance.endFrame], [0, 0.22], CLAMP) * exitOpacity
-      : 0;
-
-  const accent = props.accentColor;
-  const liveGlow =
-    props.glowOnLiveWord
-      ? `drop-shadow(0 0 ${Math.round(20 * scale)}px ${accent}88) drop-shadow(0 0 ${Math.round(50 * scale)}px ${accent}44)`
-      : "none";
+  const headlineOpacity = entrance.opacity;
+  const headlineEStyle: React.CSSProperties = {
+    opacity: headlineOpacity,
+    transform: `translateX(${entrance.x}px) translateY(${entrance.y}px) scale(${entrance.scale})`,
+    filter: entrance.blur > 0 ? `blur(${entrance.blur}px)` : undefined,
+  };
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
-      <div style={{ opacity: flicker }}>
-        <Background config={props.background} frame={frame} />
-      </div>
-
+      <Background config={props.background} frame={frame} />
       <DecorativeLayer
         theme={props.decorativeTheme ?? "none"}
-        accentColor={accent}
+        accentColor={props.badgeColor}
         frame={frame}
         totalFrames={phases.total}
       />
 
-      {/* Scanlines overlay */}
-      {props.scanlines && (
-        <AbsoluteFill
-          style={{
-            pointerEvents: "none",
-            opacity: scanOpacity,
-            background:
-              "repeating-linear-gradient(180deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 2px, transparent 6px)",
-            mixBlendMode: "overlay",
-          }}
-        />
-      )}
-
-      <AbsoluteFill
+      <div
         style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: `translate(-50%, -50%)`,
+          width: "92%",
+          textAlign: "center",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          opacity: exitOpacity,
-          transform: `translateY(${secondaryM.y}px) translateX(${secondaryM.x}px) scale(${secondaryM.scale}) rotate(${secondaryM.rotation}deg)`,
-          filter: fx.glowFilter !== "none" ? fx.glowFilter : undefined,
+          gap: Math.round(20 * scale),
+          ...headlineEStyle,
         }}
       >
-        <div style={{ textAlign: "center", maxWidth: "92%" }}>
-          {props.showLiveBadge && (
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: Math.round(10 * scale),
-                padding: `${Math.round(10 * scale)}px ${Math.round(18 * scale)}px`,
-                borderRadius: 9999,
-                backgroundColor: "#0B0B0F",
-                border: `2px solid ${accent}`,
-                color: "#FFFFFF",
-                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
-                fontWeight: 900,
-                letterSpacing: typo.letterSpacing ?? "0.02em",
-                fontSize: Math.round(20 * scale),
-                opacity: badgeOpacity,
-                transform: `translateX(${badgeE.x}px) translateY(${badgeE.y}px) scale(${badgeE.scale * pulse})`,
-                boxShadow: fx.boxShadow !== "none" ? fx.boxShadow : `0 0 ${Math.round(18 * scale)}px ${accent}44`,
-              }}
-            >
-              <span
-                style={{
-                  width: Math.round(10 * scale),
-                  height: Math.round(10 * scale),
-                  borderRadius: 9999,
-                  backgroundColor: accent,
-                  boxShadow: `0 0 ${Math.round(20 * scale)}px ${accent}`,
-                }}
-              />
-              {props.badgeText}
-            </div>
-          )}
-
+        {props.showLiveBadge && (
           <div
             style={{
-              marginTop: Math.round(30 * scale),
-              opacity: headlineE.opacity,
-              transform: `translateX(${headlineE.x}px) translateY(${headlineE.y}px) scale(${headlineE.scale})`,
-              filter: headlineE.blur > 0 ? `blur(${headlineE.blur}px)` : undefined,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: Math.round(10 * scale),
+              padding: `${Math.round(10 * scale)}px ${Math.round(16 * scale)}px`,
+              borderRadius: Math.round(9999 * scale),
+              background: "rgba(0,0,0,0.55)",
+              border: `2px solid ${props.badgeColor}`,
+              color: "#FFFFFF",
+              fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
+              fontWeight: 900,
+              letterSpacing: "0.06em",
+              boxShadow: fx.boxShadow,
+              filter: fx.glowFilter !== "none" ? fx.glowFilter : undefined,
+              opacity: blink,
             }}
           >
             <span
               style={{
-                fontSize: `${fontSize}px`,
-                fontWeight: 900,
-                fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
-                color: props.headlineColor,
-                letterSpacing: typo.letterSpacing ?? "-0.03em",
-                lineHeight: typo.lineHeight ?? 1.0,
-                textTransform: "uppercase",
-                whiteSpace: "pre-wrap",
+                width: Math.round(10 * scale),
+                height: Math.round(10 * scale),
+                borderRadius: 9999,
+                background: props.badgeColor,
+                boxShadow: `0 0 ${Math.round(18 * scale)}px ${props.badgeColor}`,
               }}
-            >
-              {words.map((w, i) => {
-                const isLive = i === liveIdx;
-                return (
-                  <React.Fragment key={i}>
-                    {i > 0 ? " " : ""}
-                    <span
-                      style={{
-                        color: isLive ? accent : props.headlineColor,
-                        filter: isLive ? liveGlow : undefined,
-                      }}
-                    >
-                      {w}
-                    </span>
-                  </React.Fragment>
-                );
-              })}
-            </span>
+            />
+            {props.badgeText}
           </div>
+        )}
+
+        <div
+          style={{
+            fontSize: Math.round(88 * scale),
+            fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
+            fontWeight: typo.fontWeight ?? 800,
+            letterSpacing: typo.letterSpacing ?? "normal",
+            lineHeight: 1.02,
+            color: props.headlineColor,
+            textTransform: "uppercase",
+            textShadow: `0 0 ${Math.round(18 * scale)}px ${props.badgeColor}55`,
+          }}
+        >
+          {props.headline}
         </div>
-      </AbsoluteFill>
+      </div>
     </AbsoluteFill>
   );
 };

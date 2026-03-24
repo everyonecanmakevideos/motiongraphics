@@ -29,10 +29,12 @@ export default function LiveUpdater({ jobId, initialJob, onUpdate }: Props) {
         status: job.status,
         label: job.status,
         error: job.error ?? undefined,
+        detailedPrompt: job.detailed_prompt ?? undefined,
         specJson: job.spec_json ?? undefined,
         videoKey: job.video_r2_key ?? undefined,
         pipelineMode: job.template_id ? "template" : "legacy",
         templateId: job.template_id ?? undefined,
+        templateParams: job.template_params ?? undefined,
       });
     },
     [onUpdate]

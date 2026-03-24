@@ -28,7 +28,19 @@ export default function VideoPlayer({ videoKey }: Props) {
         onCanPlay={() => setReady(true)}
         className={"w-full transition-opacity duration-500 " + (ready ? "opacity-100" : "opacity-80")}
       />
-      <div className="px-4 py-2.5 flex justify-end border-t border-white/5">
+      <div className="px-4 py-2.5 flex items-center justify-end gap-4 border-t border-white/5">
+        <a
+          href={src}
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs text-neutral-300 hover:text-white transition-colors inline-flex items-center gap-1.5"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H19m0 0v5.5M19 6l-8.5 8.5" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H7a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2v-3" />
+          </svg>
+          Preview
+        </a>
         <a
           href={src}
           download

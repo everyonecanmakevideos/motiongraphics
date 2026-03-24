@@ -923,21 +923,11 @@ function validateSpec(spec: Record<string, unknown>): string[] {
   return errors;
 }
 
-export async function generateSpec(
-  promptText: string,
-  opts?: { aspectRatio?: string; durationSec?: number }
-): Promise<SpecValidationResult> {
+export async function generateSpec(promptText: string): Promise<SpecValidationResult> {
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   const MAX_RETRIES = 2;
   let lastError = "";
-  let userPrompt = promptText;
-  if (opts?.aspectRatio) {
-    userPrompt += `\n\nConstraint: aspect_ratio must be "${opts.aspectRatio}"`;
-  }
-  if (typeof opts?.durationSec === "number" && Number.isFinite(opts.durationSec) && opts.durationSec > 0) {
-    userPrompt += `\nConstraint: duration must be exactly ${opts.durationSec} seconds`;
-  }
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -946,7 +936,7 @@ export async function generateSpec(
         temperature: 0,
         input: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: userPrompt },
+          { role: "user", content: promptText },
         ],
       });
 

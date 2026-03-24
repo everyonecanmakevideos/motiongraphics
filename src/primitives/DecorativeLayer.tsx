@@ -45,24 +45,6 @@ const THEME_SHAPES: Record<Exclude<DecorativeTheme, "none">, DecoShape[]> = {
     { type: "bracket", x: "4%", y: "4%", size: 40, depth: 0.1, rotation: 0, opacity: 0.2 },
     { type: "bracket", x: "88%", y: "82%", size: 40, depth: 0.1, rotation: 180, opacity: 0.2 },
   ],
-  confetti: [
-    { type: "dot", x: "10%", y: "18%", size: 10, depth: 0.55, opacity: 0.16 },
-    { type: "dot", x: "20%", y: "82%", size: 12, depth: 0.45, opacity: 0.14 },
-    { type: "dot", x: "86%", y: "22%", size: 9, depth: 0.50, opacity: 0.14 },
-    { type: "dot", x: "78%", y: "78%", size: 11, depth: 0.40, opacity: 0.12 },
-    { type: "circle", x: "8%", y: "55%", size: 22, depth: 0.35, opacity: 0.10 },
-    { type: "circle", x: "92%", y: "55%", size: 18, depth: 0.35, opacity: 0.10 },
-    { type: "line", x: "15%", y: "35%", size: 70, depth: 0.55, rotation: -20, opacity: 0.14 },
-    { type: "line", x: "82%", y: "40%", size: 60, depth: 0.50, rotation: 25, opacity: 0.12 },
-    { type: "line", x: "25%", y: "65%", size: 65, depth: 0.45, rotation: 15, opacity: 0.12 },
-    { type: "line", x: "74%", y: "70%", size: 80, depth: 0.55, rotation: -15, opacity: 0.14 },
-    { type: "square", x: "35%", y: "14%", size: 14, depth: 0.60, rotation: 30, opacity: 0.12 },
-    { type: "square", x: "62%", y: "86%", size: 16, depth: 0.55, rotation: -25, opacity: 0.12 },
-    { type: "dot", x: "50%", y: "10%", size: 8, depth: 0.65, opacity: 0.12 },
-    { type: "dot", x: "48%", y: "90%", size: 8, depth: 0.65, opacity: 0.12 },
-    { type: "dot", x: "4%", y: "40%", size: 7, depth: 0.70, opacity: 0.10 },
-    { type: "dot", x: "96%", y: "42%", size: 7, depth: 0.70, opacity: 0.10 },
-  ],
 };
 
 // ── Shape Renderers ─────────────────────────────────────────────────────

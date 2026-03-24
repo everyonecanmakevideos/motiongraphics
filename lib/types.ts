@@ -15,8 +15,6 @@ export interface Job {
   id: string;
   prompt: string;
   detailed_prompt: string | null;
-  aspect_ratio: "16:9" | "9:16" | "1:1" | "4:3" | "3:4" | null;
-  duration_sec: number | null;
   status: JobStatus;
   step: number;
   error: string | null;
@@ -26,6 +24,12 @@ export interface Job {
   spec_json: object | null;
   template_id: string | null;
   template_params: object | null;
+  /**
+   * Template-pipeline debug artifacts to help verify where params drift.
+   * Stored only for the template path.
+   */
+  debug_intent_analyzer?: object | null;
+  debug_intent_creative?: object | null;
   created_at: string;
   updated_at: string;
 }
@@ -39,6 +43,7 @@ export interface SSEEvent {
   specJson?: object;
   videoKey?: string;
   detailedPrompt?: string;
+  templateParams?: object | null;
   templateId?: string;
   pipelineMode?: "template" | "legacy";
 }

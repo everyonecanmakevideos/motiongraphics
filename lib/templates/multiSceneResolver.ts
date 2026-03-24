@@ -70,17 +70,7 @@ function validateAndNormalizeSingleTemplate(
 function getTransitionFrames(transition: string): number {
   if (transition === "crossfade") return CROSSFADE_FRAMES;
   if (transition === "fade-through-black") return FADE_THROUGH_BLACK_FRAMES;
-  if (
-    transition === "wipe-left" ||
-    transition === "wipe-right" ||
-    transition === "slide-left" ||
-    transition === "slide-right" ||
-    transition === "zoom" ||
-    transition === "glitch-cut"
-  ) {
-    return CROSSFADE_FRAMES;
-  }
-  return 0; // cut (or unknown)
+  return 0; // cut
 }
 
 // ── Main Resolver ─────────────────────────────────────────────────────────

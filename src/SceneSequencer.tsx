@@ -24,16 +24,7 @@ interface SceneData {
   // Frame timing:
   durationFrames: number;
   startFrame: number;
-  transition:
-    | "cut"
-    | "crossfade"
-    | "fade-through-black"
-    | "wipe-left"
-    | "wipe-right"
-    | "slide-left"
-    | "slide-right"
-    | "zoom"
-    | "glitch-cut";
+  transition: "cut" | "crossfade" | "fade-through-black";
   transitionDurationFrames: number;
 }
 
@@ -79,73 +70,6 @@ const SceneWithTransition: React.FC<{
         <AbsoluteFill style={{ opacity: fadeIn * fadeOut }}>
           {children}
         </AbsoluteFill>
-      </AbsoluteFill>
-    );
-  }
-
-  if (scene.transition === "wipe-left" || scene.transition === "wipe-right") {
-    const fadeIn = interpolate(frame, [0, tFrames], [0, 1], CLAMP);
-    const fadeOut = isLast ? 1 : interpolate(frame, [dur - tFrames, dur], [1, 0], CLAMP);
-    const dir = scene.transition === "wipe-left" ? 1 : -1;
-    const clipStart = interpolate(frame, [0, tFrames], [100, 0], CLAMP);
-    const clipEnd = isLast ? 0 : interpolate(frame, [dur - tFrames, dur], [0, 100], CLAMP);
-    const insetLeft = dir === 1 ? clipStart : 0;
-    const insetRight = dir === 1 ? 0 : clipStart;
-    const insetOutLeft = dir === 1 ? 0 : clipEnd;
-    const insetOutRight = dir === 1 ? clipEnd : 0;
-    return (
-      <AbsoluteFill style={{ opacity: fadeIn * fadeOut }}>
-        <AbsoluteFill
-          style={{
-            clipPath: `inset(0% ${insetRight + insetOutRight}% 0% ${insetLeft + insetOutLeft}%)`,
-          }}
-        >
-          {children}
-        </AbsoluteFill>
-      </AbsoluteFill>
-    );
-  }
-
-  if (scene.transition === "slide-left" || scene.transition === "slide-right") {
-    const fadeIn = interpolate(frame, [0, tFrames], [0, 1], CLAMP);
-    const fadeOut = isLast ? 1 : interpolate(frame, [dur - tFrames, dur], [1, 0], CLAMP);
-    const dir = scene.transition === "slide-left" ? 1 : -1;
-    const xIn = interpolate(frame, [0, tFrames], [dir * 140, 0], CLAMP);
-    const xOut = isLast ? 0 : interpolate(frame, [dur - tFrames, dur], [0, -dir * 140], CLAMP);
-    return (
-      <AbsoluteFill
-        style={{
-          opacity: fadeIn * fadeOut,
-          transform: `translateX(${xIn + xOut}px)`,
-        }}
-      >
-        {children}
-      </AbsoluteFill>
-    );
-  }
-
-  if (scene.transition === "zoom") {
-    const fadeIn = interpolate(frame, [0, tFrames], [0, 1], CLAMP);
-    const fadeOut = isLast ? 1 : interpolate(frame, [dur - tFrames, dur], [1, 0], CLAMP);
-    const sIn = interpolate(frame, [0, tFrames], [1.06, 1], CLAMP);
-    const sOut = isLast ? 1 : interpolate(frame, [dur - tFrames, dur], [1, 0.98], CLAMP);
-    return (
-      <AbsoluteFill style={{ opacity: fadeIn * fadeOut, transform: `scale(${sIn * sOut})` }}>
-        {children}
-      </AbsoluteFill>
-    );
-  }
-
-  if (scene.transition === "glitch-cut") {
-    const fadeIn = interpolate(frame, [0, Math.max(1, Math.round(tFrames * 0.35))], [0, 1], CLAMP);
-    const fadeOut = isLast ? 1 : interpolate(frame, [dur - tFrames, dur], [1, 0], CLAMP);
-    const gate = frame % 9 === 0 || frame % 11 === 0;
-    const x = gate ? (frame % 2 === 0 ? 10 : -10) : 0;
-    const y = gate ? (frame % 3 === 0 ? 6 : -6) : 0;
-    const hue = gate ? "hue-rotate(12deg) saturate(1.35)" : "none";
-    return (
-      <AbsoluteFill style={{ opacity: fadeIn * fadeOut, transform: `translate(${x}px, ${y}px)`, filter: hue }}>
-        {children}
       </AbsoluteFill>
     );
   }

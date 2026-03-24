@@ -23,12 +23,6 @@ import type { HeroTextProps } from "./schema";
 
 const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
-function hash01(n: number): number {
-  // Deterministic 0..1 pseudo-random from frame-like integer.
-  const x = Math.sin(n * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
-}
-
 function applyEntrance(
   frame: number,
   preset: string,
@@ -65,7 +59,7 @@ function applyEntrance(
 
 export const HeroText: React.FC<HeroTextProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, isPortrait, scale } = useResponsiveConfig();
+  const { width, scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(
@@ -76,19 +70,6 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
   );
   const typo = resolveTypography(resolved.typography);
   const fx = resolveEffects(resolved.effects, props.accentColor);
-  const accentColor = props.accentColor ?? props.headlineColor;
-  const isShortSlogan = props.headline.trim().length <= 14;
-
-  // If the LLM didn't specify effects/polish, apply a small premium fallback
-  // for single-element “slogan” videos (helps match benchmark-like outputs).
-  let fxResolved = fx;
-  if (isShortSlogan && fx.boxShadow === "none" && fx.glowFilter === "none") {
-    fxResolved = {
-      ...fx,
-      boxShadow: "0 10px 50px rgba(0,0,0,0.65)",
-      glowFilter: `drop-shadow(0 0 18px ${accentColor}66)`,
-    };
-  }
 
   // ── Adaptive phase timing ──────────────────────────────────────────────
   const phases = phaseFrames(props.duration, props.pacingProfile);
@@ -128,9 +109,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
       ? underlineDraw(frame, decoRange)
       : props.decoration === "highlight-box"
         ? highlightReveal(frame, decoRange)
-        : props.decoration === "pill-fill" || props.decoration === "pill-outline"
-          ? highlightReveal(frame, decoRange)
-          : 0;
+        : 0;
 
   // ── Layout computation ─────────────────────────────────────────────────
   const isLeft = props.style === "left-aligned";
@@ -140,21 +119,10 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
   const containerTransform = isLeft || isSplit ? "translateY(-50%)" : "translate(-50%, -50%)";
   const maxWidth = isSplit ? "55%" : "85%";
 
-  // Principle: in 9:16, text must dominate unless explicitly constrained.
-  const portraitBoost =
-    isPortrait && props.style === "centered" && !props.subheadline && props.decoration === "none"
-      ? 1.45
-      : 1;
-
-  const rawFontSize =
-    (isShortSlogan ? 120 : props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96) *
-    portraitBoost;
+  const rawFontSize = props.headline.length > 40 ? 56 : props.headline.length > 20 ? 72 : 96;
   const fontSizeMultiplier = props.fontSize === "medium" ? 0.75 : props.fontSize === "xlarge" ? 1.3 : 1;
   const baseFontSize = Math.round(rawFontSize * scale * fontSizeMultiplier);
-  const fontWeightValue =
-    isShortSlogan
-      ? 900
-      : typo.fontWeight ?? (props.fontWeight === "normal" ? 400 : props.fontWeight === "black" ? 900 : 700);
+  const fontWeightValue = typo.fontWeight ?? (props.fontWeight === "normal" ? 400 : props.fontWeight === "black" ? 900 : 700);
   const subFontSize = Math.round(baseFontSize * 0.4);
   const headlineWidth = baseFontSize * 0.6 * props.headline.length;
 
@@ -163,17 +131,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
       ? props.headline.slice(0, h.chars)
       : props.headline;
 
-  const words = headlineText.split(/\s+/).filter(Boolean);
-  const useSecondWordAccent = props.emphasisMode === "second-word-accent" && words.length >= 2;
-  const firstWord = useSecondWordAccent ? words[0] : null;
-  const secondWord = useSecondWordAccent ? words.slice(1).join(" ") : null;
-
-  const glitchOn = props.textEffect === "glitch";
-  const glitchGate = glitchOn ? (frame % 9 === 0 || frame % 11 === 0) : false;
-  const glitchX = glitchOn ? Math.round((hash01(frame) - 0.5) * 18) : 0;
-  const glitchY = glitchOn ? Math.round((hash01(frame + 99) - 0.5) * 10) : 0;
-  const glitchSliceTop = glitchOn ? Math.round(30 + hash01(frame + 17) * 25) : 0;
-  const glitchSliceHeight = glitchOn ? Math.round(16 + hash01(frame + 31) * 18) : 0;
+  const accentColor = props.accentColor ?? props.headlineColor;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -187,19 +145,6 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
         totalFrames={phases.total}
       />
 
-      {/* Scanlines overlay (for glitch / broadcast / retro UI cues) */}
-      {props.scanlines && (
-        <AbsoluteFill
-          style={{
-            pointerEvents: "none",
-            opacity: interpolate(frame, [0, phases.entrance.endFrame], [0, 0.22], CLAMP) * exitOpacity,
-            background:
-              "repeating-linear-gradient(180deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 2px, transparent 6px)",
-            mixBlendMode: "overlay",
-          }}
-        />
-      )}
-
       {/* Content container */}
       <div
         style={{
@@ -210,18 +155,8 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
           maxWidth,
           textAlign: textAlign as React.CSSProperties["textAlign"],
           opacity: exitOpacity,
-          // Avoid “card UI” for single-headline promos. Keep container shadow
-          // only when there's supporting structure (subheadline/decoration/layout).
-          boxShadow:
-            props.subheadline || props.decoration !== "none" || props.style !== "centered"
-              ? fxResolved.boxShadow
-              : "none",
-          filter:
-            exitBlur > 0
-              ? `blur(${exitBlur}px)`
-              : fxResolved.glowFilter !== "none"
-                ? fxResolved.glowFilter
-                : undefined,
+          boxShadow: fx.boxShadow,
+          filter: exitBlur > 0 ? `blur(${exitBlur}px)` : (fx.glowFilter !== "none" ? fx.glowFilter : undefined),
         }}
       >
         {/* Headline */}
@@ -254,47 +189,6 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
             />
           )}
 
-          {props.decoration === "pill-fill" && (
-            <div
-              style={{
-                position: "absolute",
-                left: textAlign === "center" ? "50%" : "0",
-                top: "50%",
-                transform:
-                  textAlign === "center"
-                    ? "translate(-50%, -50%) scaleX(" + decoProgress + ")"
-                    : "translateY(-50%) scaleX(" + decoProgress + ")",
-                transformOrigin: "0% 50%",
-                width: Math.min(headlineWidth + 56, width * 0.9) + "px",
-                height: baseFontSize + 36 + "px",
-                backgroundColor: accentColor,
-                opacity: 0.14,
-                borderRadius: "9999px",
-              }}
-            />
-          )}
-
-          {props.decoration === "pill-outline" && (
-            <div
-              style={{
-                position: "absolute",
-                left: textAlign === "center" ? "50%" : "0",
-                top: "50%",
-                transform:
-                  textAlign === "center"
-                    ? "translate(-50%, -50%) scaleX(" + decoProgress + ")"
-                    : "translateY(-50%) scaleX(" + decoProgress + ")",
-                transformOrigin: "0% 50%",
-                width: Math.min(headlineWidth + 56, width * 0.9) + "px",
-                height: baseFontSize + 36 + "px",
-                backgroundColor: "transparent",
-                opacity: interpolate(frame, [decoRange.startFrame, decoRange.endFrame], [0, 1], CLAMP),
-                borderRadius: "9999px",
-                border: `3px solid ${accentColor}`,
-              }}
-            />
-          )}
-
           <span
             style={{
               fontSize: baseFontSize + "px",
@@ -308,64 +202,7 @@ export const HeroText: React.FC<HeroTextProps> = (props) => {
               zIndex: 1,
             }}
           >
-            {glitchOn ? (
-              <span style={{ position: "relative", display: "inline-block" }}>
-                {/* Base text */}
-                <span style={{ position: "relative", zIndex: 2 }}>
-                  {useSecondWordAccent ? (
-                    <>
-                      <span style={{ color: props.headlineColor }}>{firstWord}</span>{" "}
-                      <span style={{ color: accentColor }}>{secondWord}</span>
-                    </>
-                  ) : (
-                    headlineText
-                  )}
-                </span>
-
-                {/* RGB split layer */}
-                <span
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    transform: `translate(${glitchX}px, ${glitchY}px)`,
-                    color: "#00D4FF",
-                    opacity: glitchGate ? 0.75 : 0.18,
-                    mixBlendMode: "screen",
-                    zIndex: 1,
-                    textShadow: `0 0 18px ${accentColor}44`,
-                    pointerEvents: "none",
-                  }}
-                >
-                  {headlineText}
-                </span>
-
-                {/* Slice layer */}
-                <span
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    transform: `translate(${-glitchX}px, ${-glitchY}px)`,
-                    color: accentColor,
-                    opacity: glitchGate ? 0.85 : 0,
-                    zIndex: 3,
-                    clipPath: `inset(${glitchSliceTop}px 0px ${Math.max(0, baseFontSize + 40 - (glitchSliceTop + glitchSliceHeight))}px 0px)`,
-                    filter: `drop-shadow(0 0 18px ${accentColor}66)`,
-                    pointerEvents: "none",
-                  }}
-                >
-                  {headlineText}
-                </span>
-              </span>
-            ) : useSecondWordAccent ? (
-              <>
-                <span style={{ color: props.headlineColor }}>{firstWord}</span>{" "}
-                <span style={{ color: accentColor }}>{secondWord}</span>
-              </>
-            ) : (
-              headlineText
-            )}
+            {headlineText}
           </span>
 
           {props.decoration === "underline" && (

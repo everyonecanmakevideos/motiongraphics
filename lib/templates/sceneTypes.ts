@@ -2,16 +2,7 @@ import type { BackgroundConfig } from "../../src/templates/types";
 
 // ── Transition Types ──────────────────────────────────────────────────────
 
-export type TransitionType =
-  | "cut"
-  | "crossfade"
-  | "fade-through-black"
-  | "wipe-left"
-  | "wipe-right"
-  | "slide-left"
-  | "slide-right"
-  | "zoom"
-  | "glitch-cut";
+export type TransitionType = "cut" | "crossfade" | "fade-through-black";
 
 // ── Layout Strategies for Composite Scenes ────────────────────────────────
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import SpecViewer from "@/components/SpecViewer";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -14,12 +14,25 @@ interface Props {
 
 export default function JobDetail({ initialJob }: Props) {
   const [job, setJob] = useState<Job>(initialJob);
+  const [trace, setTrace] = useState<Array<SSEEvent & { at: number }>>([]);
+  const studioUrl = process.env.NEXT_PUBLIC_REMOTION_STUDIO_URL ?? "http://localhost:3002";
   const [pipelineMode, setPipelineMode] = useState<"template" | "legacy" | undefined>(
     initialJob.template_id ? "template" : undefined
   );
+  const lastTraceKeyRef = useRef<string>("");
 
   const handleUpdate = useCallback((event: SSEEvent) => {
     if (event.pipelineMode) setPipelineMode(event.pipelineMode);
+
+    const traceKey = [event.step, event.status, event.templateId ?? "", event.error ?? ""].join("|");
+    if (traceKey !== lastTraceKeyRef.current) {
+      lastTraceKeyRef.current = traceKey;
+      setTrace((prev) => {
+        const next = [...prev, { ...event, at: Date.now() }];
+        return next.slice(-25);
+      });
+    }
+
     setJob((prev) => ({
       ...prev,
       step: event.step > 0 ? event.step : prev.step,
@@ -29,6 +42,7 @@ export default function JobDetail({ initialJob }: Props) {
       spec_json: event.specJson ?? prev.spec_json,
       video_r2_key: event.videoKey ?? prev.video_r2_key,
       template_id: event.templateId ?? prev.template_id,
+      template_params: event.templateParams ?? prev.template_params,
     }));
   }, []);
 
@@ -81,6 +95,37 @@ export default function JobDetail({ initialJob }: Props) {
           </div>
         )}
         <ProgressIndicator step={job.step} status={job.status} error={job.error} pipelineMode={pipelineMode} />
+
+        <div className="mt-4">
+          <details>
+            <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+              Step trace (SSE/polling events)
+            </summary>
+            <div className="mt-3 text-xs text-neutral-400 whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+              {trace.length === 0
+                ? "No events yet."
+                : trace
+                    .map((e) => {
+                      const t = new Date(e.at).toLocaleTimeString();
+                      return `[${t}] step=${e.step} status=${e.status} label=${e.label}${e.templateId ? ` template=${e.templateId}` : ""}${e.error ? ` error=${e.error}` : ""}`;
+                    })
+                    .join("\n")}
+            </div>
+          </details>
+        </div>
+
+        {job.template_id && job.template_params && (
+          <div className="mt-4">
+            <details>
+              <summary className="text-xs text-neutral-500 cursor-pointer hover:text-neutral-300 transition-colors">
+                Template params (creativeEnhancer output + resolution)
+              </summary>
+              <pre className="mt-3 text-xs text-neutral-400 whitespace-pre-wrap bg-white/5 rounded-lg p-3 border border-white/10">
+                {JSON.stringify(job.template_params, null, 2)}
+              </pre>
+            </details>
+          </div>
+        )}
       </div>
 
       {/* Video */}
@@ -95,6 +140,21 @@ export default function JobDetail({ initialJob }: Props) {
               {job.error.length > 200 ? job.error.slice(0, 200) + "..." : job.error}
             </p>
           )}
+        </div>
+      ) : job.status === "done" && !job.video_r2_key ? (
+        <div className="glass-strong rounded-2xl p-8 flex flex-col items-center gap-3 text-center">
+          <p className="text-sm text-neutral-200 font-medium">Preview is ready</p>
+          <p className="text-xs text-neutral-500 max-w-md">
+            This job was created in preview mode, so rendering was skipped. Open Remotion Studio to inspect animation without rendering.
+          </p>
+          <a
+            href={studioUrl + "?jobId=" + job.id}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 px-4 py-2 text-xs rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-neutral-200 transition-colors"
+          >
+            Open Remotion Studio
+          </a>
         </div>
       ) : (
         <VideoPlayer videoKey={job.video_r2_key} />

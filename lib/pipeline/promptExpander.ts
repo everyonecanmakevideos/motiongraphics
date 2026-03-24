@@ -231,8 +231,6 @@ export interface ExpandedPrompt {
 export interface ExpandOptions {
   id?: number;
   category?: string;
-  aspectRatio?: string;
-  durationSec?: number;
 }
 
 export interface ExpandResult {
@@ -317,12 +315,6 @@ export async function expandPrompt(
   let userMessage = "Simple prompt: " + simplePrompt;
   if (options?.category) {
     userMessage += "\nCategory hint: " + options.category;
-  }
-  if (options?.aspectRatio) {
-    userMessage += "\nAspect ratio (must respect exactly): " + options.aspectRatio;
-  }
-  if (typeof options?.durationSec === "number" && Number.isFinite(options.durationSec) && options.durationSec > 0) {
-    userMessage += "\nDuration (seconds, must respect exactly): " + options.durationSec;
   }
   userMessage += "\nAssign id: " + id;
 

@@ -1,7 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  fadeIn,
+  slideUp,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
 import { resolveMotionStyle } from "../../primitives/useMotionStyle";
@@ -30,8 +36,14 @@ export const BarChart: React.FC<BarChartProps> = (props) => {
 
   // Phase timing
   const titleEnd = Math.round(totalFrames * 0.15 * motion.durationMultiplier);
-  const barsStart = Math.round(totalFrames * 0.1);
-  const barsEnd = Math.round(totalFrames * 0.55);
+  const barsWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.1,
+    minSec: 1.6,
+    maxSec: 4.2,
+    maxEndPct: 0.74,
+  });
+  const barsStart = barsWindow.startFrame;
+  const barsEnd = barsWindow.endFrame;
   const exitStart = Math.round(totalFrames * 0.85);
 
   // Title animation

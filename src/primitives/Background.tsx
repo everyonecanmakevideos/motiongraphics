@@ -152,64 +152,6 @@ export const Background: React.FC<{ config: BackgroundConfig; frame?: number }> 
     );
   }
 
-  // ── Dots ───────────────────────────────────────────────────────────────
-  if (config.type === "dots") {
-    const offset = isAnimated ? (frame * 0.35) % config.gap : 0;
-    const bg = `radial-gradient(circle, ${config.dotColor} 0 ${config.size}px, transparent ${config.size + 1}px)`;
-    return (
-      <AbsoluteFill style={{ backgroundColor: config.baseColor, overflow: "hidden" }}>
-        <AbsoluteFill
-          style={{
-            opacity: config.opacity,
-            backgroundImage: bg,
-            backgroundSize: `${config.gap}px ${config.gap}px`,
-            backgroundPosition: `${offset}px ${offset}px`,
-          }}
-        />
-      </AbsoluteFill>
-    );
-  }
-
-  // ── Grid ───────────────────────────────────────────────────────────────
-  if (config.type === "grid") {
-    const offset = isAnimated ? (frame * 0.25) % config.cell : 0;
-    const grid = `
-      linear-gradient(to right, ${config.lineColor} ${config.lineWidth}px, transparent ${config.lineWidth}px),
-      linear-gradient(to bottom, ${config.lineColor} ${config.lineWidth}px, transparent ${config.lineWidth}px)
-    `;
-    return (
-      <AbsoluteFill style={{ backgroundColor: config.baseColor, overflow: "hidden" }}>
-        <AbsoluteFill
-          style={{
-            opacity: config.opacity,
-            backgroundImage: grid,
-            backgroundSize: `${config.cell}px ${config.cell}px`,
-            backgroundPosition: `${offset}px ${offset}px`,
-          }}
-        />
-      </AbsoluteFill>
-    );
-  }
-
-  // ── Radial Glow ────────────────────────────────────────────────────────
-  if (config.type === "radial-glow") {
-    const cx = isAnimated ? 50 + (triangleWave(frame, 220) - 0.5) * 10 : 50;
-    const cy = isAnimated ? 50 + (triangleWave(frame + 60, 180) - 0.5) * 8 : 50;
-    return (
-      <AbsoluteFill style={{ backgroundColor: config.baseColor, overflow: "hidden" }}>
-        <AbsoluteFill
-          style={{
-            background: `radial-gradient(circle at ${cx}% ${cy}%, ${config.glowColor}${Math.round(
-              config.intensity * 255,
-            ).toString(16).padStart(2, "0")}, transparent 60%)`,
-            mixBlendMode: "screen",
-            opacity: 1,
-          }}
-        />
-      </AbsoluteFill>
-    );
-  }
-
   // Fallback: treat as solid white
   return <AbsoluteFill style={{ backgroundColor: "#FFFFFF", overflow: "hidden" }} />;
 };

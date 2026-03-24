@@ -5,7 +5,6 @@ const FONT_FAMILY_MAP: Record<string, string> = {
   inter: "'Inter', sans-serif",
   "clash-display": "'Plus Jakarta Sans', sans-serif",
   "space-grotesk": "'Space Grotesk', sans-serif",
-  "playfair-display": "'Playfair Display', serif",
 };
 
 const WEIGHT_MAP: Record<string, number> = {
@@ -39,6 +38,5 @@ export function resolveTypography(typography?: Typography): React.CSSProperties 
     fontWeight: WEIGHT_MAP[typography.weight] ?? 400,
     letterSpacing: LETTER_SPACING_MAP[typography.letterSpacing] ?? "0em",
     lineHeight: LINE_HEIGHT_MAP[typography.lineHeight] ?? 1.4,
-    fontStyle: typography.fontStyle === "italic" ? "italic" : "normal",
   };
 }

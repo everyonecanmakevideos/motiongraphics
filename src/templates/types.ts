@@ -30,39 +30,11 @@ export const GrainBgSchema = z.object({
   grainOpacity: z.number().min(0).max(1).default(0.08),
 });
 
-export const DotsBgSchema = z.object({
-  type: z.literal("dots"),
-  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-  dotColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-  size: z.number().min(2).max(24).default(6),
-  gap: z.number().min(6).max(120).default(34),
-  opacity: z.number().min(0).max(1).default(0.16),
-});
-
-export const GridBgSchema = z.object({
-  type: z.literal("grid"),
-  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-  lineColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-  cell: z.number().min(12).max(220).default(64),
-  lineWidth: z.number().min(1).max(6).default(1),
-  opacity: z.number().min(0).max(1).default(0.14),
-});
-
-export const RadialGlowBgSchema = z.object({
-  type: z.literal("radial-glow"),
-  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-  glowColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-  intensity: z.number().min(0).max(1).default(0.45),
-});
-
 export const BackgroundSchema = z.discriminatedUnion("type", [
   SolidBgSchema,
   GradientBgSchema,
   StripeBgSchema,
   GrainBgSchema,
-  DotsBgSchema,
-  GridBgSchema,
-  RadialGlowBgSchema,
 ]);
 
 export type BackgroundConfig = z.infer<typeof BackgroundSchema>;
@@ -105,11 +77,10 @@ export const StylePresetSchema = z.enum([
 export type StylePreset = z.infer<typeof StylePresetSchema>;
 
 export const TypographySchema = z.object({
-  fontFamily: z.enum(["inter", "clash-display", "space-grotesk", "playfair-display"]),
+  fontFamily: z.enum(["inter", "clash-display", "space-grotesk"]),
   weight: z.enum(["regular", "medium", "bold", "black"]),
   letterSpacing: z.enum(["tight", "normal", "wide"]),
   lineHeight: z.enum(["compact", "normal", "relaxed"]),
-  fontStyle: z.enum(["normal", "italic"]).default("normal"),
 });
 export type Typography = z.infer<typeof TypographySchema>;
 
@@ -125,10 +96,6 @@ export const EffectsSchema = z.object({
   shadow: z.enum(["none", "soft", "strong"]),
   glow: z.enum(["none", "subtle", "neon"]),
   blur: z.enum(["none", "subtle", "transition"]),
-  scanlines: z.enum(["off", "subtle", "strong"]).default("off"),
-  vignette: z.enum(["off", "subtle", "strong"]).default("off"),
-  chromaticAberration: z.enum(["off", "subtle", "strong"]).default("off"),
-  shake: z.enum(["off", "subtle", "strong"]).default("off"),
 });
 export type Effects = z.infer<typeof EffectsSchema>;
 
@@ -158,7 +125,6 @@ export const DecorativeThemeSchema = z.enum([
   "minimal-dots",
   "light-streaks",
   "corner-accents",
-  "confetti",
   "none",
 ]);
 export type DecorativeTheme = z.infer<typeof DecorativeThemeSchema>;

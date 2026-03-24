@@ -1,8 +1,6 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TEMPLATE_REGISTRY } from "./templates";
 import { AbsoluteFill } from "remotion";
-import { PostFxLayer } from "./primitives/PostFxLayer";
-import type { Effects } from "./templates/types";
 
 export const TemplateRouter: React.FC<{
   templateId?: string;
@@ -11,7 +9,49 @@ export const TemplateRouter: React.FC<{
   templateId = "hero-text",
   params = {},
 }) => {
-  const entry = TEMPLATE_REGISTRY[templateId];
+  const [resolvedTemplateId, setResolvedTemplateId] = useState(templateId);
+  const [resolvedParams, setResolvedParams] = useState<Record<string, unknown>>(params);
+
+  const apiBaseUrl = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    // Studio typically runs on :3002 while Next runs on :3000 in this project.
+    // We derive Next's origin by forcing port 3000.
+    const { protocol, hostname } = window.location;
+    return `${protocol}//${hostname}:3000`;
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!apiBaseUrl) return;
+
+    const search = new URLSearchParams(window.location.search);
+    const jobId = search.get("jobId");
+    if (!jobId) return;
+
+    // Only override when the Studio was opened with default TemplateScene props.
+    const isDefaultInput =
+      resolvedTemplateId === "hero-text" && Object.keys(resolvedParams ?? {}).length === 0;
+    if (!isDefaultInput) return;
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `${apiBaseUrl}/api/studio/props/${encodeURIComponent(jobId)}`
+        );
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          templateId?: string | null;
+          params?: Record<string, unknown> | null;
+        };
+        if (data.templateId) setResolvedTemplateId(data.templateId);
+        setResolvedParams(data.params ?? {});
+      } catch {
+        // Keep default props if Studio can't reach Next.
+      }
+    })();
+  }, [apiBaseUrl, resolvedParams, resolvedTemplateId]);
+
+  const entry = TEMPLATE_REGISTRY[resolvedTemplateId];
 
   if (!entry) {
     // Fallback: render an error card so the video is not blank
@@ -33,19 +73,12 @@ export const TemplateRouter: React.FC<{
             textAlign: "center",
           }}
         >
-          {"Template not found: " + templateId}
+          {"Template not found: " + resolvedTemplateId}
         </div>
       </AbsoluteFill>
     );
   }
 
   const Component = entry.component;
-  const effects = (params as Record<string, unknown>)?.effects as Effects | undefined;
-
-  return (
-    <AbsoluteFill>
-      <Component {...params} />
-      <PostFxLayer effects={effects} />
-    </AbsoluteFill>
-  );
+  return <Component {...resolvedParams} />;
 };

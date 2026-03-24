@@ -1,7 +1,15 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
 import { Background } from "../../primitives/Background";
-import { secToFrame, fadeIn, slideUp, scalePop, staggerDelay, microFloat } from "../../primitives/animations";
+import {
+  secToFrame,
+  fadeIn,
+  slideUp,
+  scalePop,
+  staggerDelay,
+  microFloat,
+  adaptiveEntranceWindow,
+} from "../../primitives/animations";
 import { Asset } from "../../assets/Asset";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
@@ -29,13 +37,19 @@ export const FeatureHighlight: React.FC<FeatureHighlightProps> = (props) => {
 
   const totalFrames = secToFrame(props.duration);
 
-  const iconEnd = Math.round(totalFrames * 0.2 * motion.durationMultiplier);
-  const titleStart = Math.round(totalFrames * 0.05);
-  const titleEnd = Math.round(totalFrames * 0.25 * motion.durationMultiplier);
-  const descStart = Math.round(totalFrames * 0.15);
-  const descEnd = Math.round(totalFrames * 0.35 * motion.durationMultiplier);
-  const bulletsStart = Math.round(totalFrames * 0.25);
-  const bulletsDuration = Math.round(totalFrames * 0.35 * motion.durationMultiplier);
+  const primaryWindow = adaptiveEntranceWindow(props.duration, totalFrames, motion.durationMultiplier, {
+    startPct: 0.04,
+    minSec: 1.5,
+    maxSec: 3.5,
+    maxEndPct: 0.68,
+  });
+  const iconEnd = Math.round(primaryWindow.startFrame + (primaryWindow.endFrame - primaryWindow.startFrame) * 0.38);
+  const titleStart = Math.round(primaryWindow.startFrame + (primaryWindow.endFrame - primaryWindow.startFrame) * 0.06);
+  const titleEnd = Math.round(primaryWindow.startFrame + (primaryWindow.endFrame - primaryWindow.startFrame) * 0.5);
+  const descStart = Math.round(primaryWindow.startFrame + (primaryWindow.endFrame - primaryWindow.startFrame) * 0.28);
+  const descEnd = Math.round(primaryWindow.startFrame + (primaryWindow.endFrame - primaryWindow.startFrame) * 0.7);
+  const bulletsStart = Math.round(primaryWindow.startFrame + (primaryWindow.endFrame - primaryWindow.startFrame) * 0.42);
+  const bulletsDuration = Math.max(1, Math.round((primaryWindow.endFrame - primaryWindow.startFrame) * 0.58));
   const exitStart = Math.round(totalFrames * 0.85);
   const exitEnd = totalFrames;
 

@@ -1,207 +1,67 @@
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
-import { Asset } from "./assets/Asset";
 
 export const GeneratedMotion = () => {
 const frame = useCurrentFrame();
-const canvasW = 1080;
-const canvasH = 1920;
+const canvasW = 1920;
+const canvasH = 1080;
 const halfW = canvasW / 2;
 const halfH = canvasH / 2;
-
-const step1PosX = 0;
-const step1PosY = -330;
-const arrow1PosX = 0;
-const arrow1PosY = -210;
-const step2PosX = 0;
-const step2PosY = 0;
-const arrow2PosX = 0;
-const arrow2PosY = 120;
-const step3PosX = 0;
-const step3PosY = 330;
-
-const stepWidth = 200;
-const stepHeight = 120;
-const arrowWidth = 100;
-const arrowHeight = 60;
-
-const step1Color = "#E53935";
-const step2Color = "#2196F3";
-const step3Color = "#4CAF50";
-const arrowColor = "#333333";
-
-const step1Opacity = interpolate(frame, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const arrow1Opacity = interpolate(frame, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const step2Opacity = interpolate(frame, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const arrow2Opacity = interpolate(frame, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-const step3Opacity = interpolate(frame, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-
-let step1Scale = 1;
-if (frame >= 15 && frame <= 30) {
-  step1Scale = interpolate(frame, [15, 30], [1, 1.1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-} else if (frame > 30 && frame <= 45) {
-  step1Scale = interpolate(frame, [30, 45], [1.1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-} else {
-  step1Scale = 1;
-}
-
-let step2Scale = 1;
-if (frame >= 45 && frame <= 60) {
-  step2Scale = interpolate(frame, [45, 60], [1, 1.1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-} else if (frame > 60 && frame <= 75) {
-  step2Scale = interpolate(frame, [60, 75], [1.1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-} else {
-  step2Scale = 1;
-}
-
-let step3Scale = 1;
-if (frame >= 75 && frame <= 90) {
-  step3Scale = interpolate(frame, [75, 90], [1, 1.1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-} else if (frame > 90 && frame <= 105) {
-  step3Scale = interpolate(frame, [90, 105], [1.1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-} else {
-  step3Scale = 1;
-}
-
-const step1Transform = "translate(-50%, -50%) translateX(" + step1PosX + "px) translateY(" + step1PosY + "px) scale(" + step1Scale + ")";
-const arrow1Transform = "translate(-50%, -50%) translateX(" + arrow1PosX + "px) translateY(" + arrow1PosY + "px)";
-const step2Transform = "translate(-50%, -50%) translateX(" + step2PosX + "px) translateY(" + step2PosY + "px) scale(" + step2Scale + ")";
-const arrow2Transform = "translate(-50%, -50%) translateX(" + arrow2PosX + "px) translateY(" + arrow2PosY + "px)";
-const step3Transform = "translate(-50%, -50%) translateX(" + step3PosX + "px) translateY(" + step3PosY + "px) scale(" + step3Scale + ")";
-
+const fadeInStart = 0;
+const fadeInEnd = 15;
+const glitchStart = 15;
+const glitchEnd = 90;
+const fadeIn = interpolate(frame, [fadeInStart, fadeInEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+// X offsets for colored splits
+const xR = interpolate(frame, [glitchStart, glitchEnd], [0, 5], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const xG = interpolate(frame, [glitchStart, glitchEnd], [0, -5], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const xB = interpolate(frame, [glitchStart, glitchEnd], [0, 3], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+// Opacity modulations from timeline entries
+const modR = interpolate(frame, [glitchStart, glitchEnd], [1, 0.5], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const modG = interpolate(frame, [glitchStart, glitchEnd], [0.5, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const modB = interpolate(frame, [glitchStart, glitchEnd], [1, 0.5], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const opacityR = fadeIn * modR;
+const opacityG = fadeIn * modG;
+const opacityB = fadeIn * modB;
+const opacityMain = fadeIn * 1;
+// Color animations (white -> target) parsed to RGB
+// Red target #E53935 => (229,57,53)
+const rR = interpolate(frame, [glitchStart, glitchEnd], [255, 229], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const gR = interpolate(frame, [glitchStart, glitchEnd], [255, 57], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const bR = interpolate(frame, [glitchStart, glitchEnd], [255, 53], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const colorR = "rgb(" + Math.round(rR) + "," + Math.round(gR) + "," + Math.round(bR) + ")";
+// Green target #4CAF50 => (76,175,80)
+const rG = interpolate(frame, [glitchStart, glitchEnd], [255, 76], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const gG = interpolate(frame, [glitchStart, glitchEnd], [255, 175], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const bG = interpolate(frame, [glitchStart, glitchEnd], [255, 80], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const colorG = "rgb(" + Math.round(rG) + "," + Math.round(gG) + "," + Math.round(bG) + ")";
+// Blue target #2196F3 => (33,150,243)
+const rB = interpolate(frame, [glitchStart, glitchEnd], [255, 33], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const gB = interpolate(frame, [glitchStart, glitchEnd], [255, 150], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const bB = interpolate(frame, [glitchStart, glitchEnd], [255, 243], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+const colorB = "rgb(" + Math.round(rB) + "," + Math.round(gB) + "," + Math.round(bB) + ")";
+// Text layout values
+const posX = 0;
+const posY = 0;
+const fontSize = 200;
+const fontWeight = "bold";
+const fontFamily = "Arial";
+const textAlign = "center";
+const lineHeight = "1";
+const letterSpacing = 0;
+const textTransform = "none";
 return (
-  <AbsoluteFill style={{ backgroundColor: "#F5F5F5", overflow: "hidden" }}>
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: stepWidth + "px",
-        height: stepHeight + "px",
-        backgroundColor: step1Color,
-        transform: step1Transform,
-        opacity: step1Opacity,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1,
-        borderRadius: "8px",
-        boxSizing: "border-box"
-      }}
-    >
-      <div
-        style={{
-          color: "#FFFFFF",
-          fontSize: 24 + "px",
-          fontFamily: "Arial",
-          fontWeight: "bold",
-          textAlign: "center",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          pointerEvents: "none"
-        }}
-      >
-        Upload File
-      </div>
+  <AbsoluteFill style={{ backgroundColor: "#0F0F23", overflow: "hidden" }}>
+    <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%) translateX(" + (posX + xB) + "px) translateY(" + posY + "px)", color: colorB, fontSize: fontSize + "px", fontWeight: fontWeight, fontFamily: fontFamily, whiteSpace: "nowrap", lineHeight: lineHeight, letterSpacing: letterSpacing + "px", textAlign: textAlign, textTransform: textTransform, userSelect: "none", pointerEvents: "none", opacity: opacityB, zIndex: 1 }}>
+      ERROR
     </div>
-
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: arrowWidth + "px",
-        height: arrowHeight + "px",
-        backgroundColor: arrowColor,
-        transform: arrow1Transform,
-        opacity: arrow1Opacity,
-        zIndex: 1,
-        clipPath: "polygon(0% 0%, 100% 0%, 50% 100%)",
-        boxSizing: "border-box"
-      }}
-    />
-
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: stepWidth + "px",
-        height: stepHeight + "px",
-        backgroundColor: step2Color,
-        transform: step2Transform,
-        opacity: step2Opacity,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1,
-        borderRadius: "8px",
-        boxSizing: "border-box"
-      }}
-    >
-      <div
-        style={{
-          color: "#FFFFFF",
-          fontSize: 24 + "px",
-          fontFamily: "Arial",
-          fontWeight: "bold",
-          textAlign: "center",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          pointerEvents: "none"
-        }}
-      >
-        Edit
-      </div>
+    <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%) translateX(" + (posX + xG) + "px) translateY(" + posY + "px)", color: colorG, fontSize: fontSize + "px", fontWeight: fontWeight, fontFamily: fontFamily, whiteSpace: "nowrap", lineHeight: lineHeight, letterSpacing: letterSpacing + "px", textAlign: textAlign, textTransform: textTransform, userSelect: "none", pointerEvents: "none", opacity: opacityG, zIndex: 2 }}>
+      ERROR
     </div>
-
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: arrowWidth + "px",
-        height: arrowHeight + "px",
-        backgroundColor: arrowColor,
-        transform: arrow2Transform,
-        opacity: arrow2Opacity,
-        zIndex: 1,
-        clipPath: "polygon(0% 0%, 100% 0%, 50% 100%)",
-        boxSizing: "border-box"
-      }}
-    />
-
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: stepWidth + "px",
-        height: stepHeight + "px",
-        backgroundColor: step3Color,
-        transform: step3Transform,
-        opacity: step3Opacity,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1,
-        borderRadius: "8px",
-        boxSizing: "border-box"
-      }}
-    >
-      <div
-        style={{
-          color: "#FFFFFF",
-          fontSize: 24 + "px",
-          fontFamily: "Arial",
-          fontWeight: "bold",
-          textAlign: "center",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          pointerEvents: "none"
-        }}
-      >
-        Download
-      </div>
+    <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%) translateX(" + (posX + xR) + "px) translateY(" + posY + "px)", color: colorR, fontSize: fontSize + "px", fontWeight: fontWeight, fontFamily: fontFamily, whiteSpace: "nowrap", lineHeight: lineHeight, letterSpacing: letterSpacing + "px", textAlign: textAlign, textTransform: textTransform, userSelect: "none", pointerEvents: "none", opacity: opacityR, zIndex: 3 }}>
+      ERROR
+    </div>
+    <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%) translateX(" + posX + "px) translateY(" + posY + "px)", color: "#FFFFFF", fontSize: fontSize + "px", fontWeight: fontWeight, fontFamily: fontFamily, whiteSpace: "nowrap", lineHeight: lineHeight, letterSpacing: letterSpacing + "px", textAlign: textAlign, textTransform: textTransform, userSelect: "none", pointerEvents: "none", opacity: opacityMain, zIndex: 4 }}>
+      ERROR
     </div>
   </AbsoluteFill>
 );

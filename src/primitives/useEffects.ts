@@ -13,8 +13,11 @@ export interface EffectStyles {
 
 const SHADOW_MAP: Record<string, string> = {
   none: "none",
-  soft: "0 4px 24px rgba(0,0,0,0.3)",
-  strong: "0 8px 40px rgba(0,0,0,0.6)",
+  // Global policy: avoid adding a card-like container shadow around
+  // the entire template content. Individual templates can still render
+  // their own element-level shadows when needed.
+  soft: "none",
+  strong: "none",
 };
 
 const DEFAULT_EFFECTS: EffectStyles = {
