@@ -1,0 +1,10 @@
+{
+  "id": "yt-chapters",
+  "name": "YT Chapters",
+  "description": "YouTube-style chapter slate with timestamps, active chapter emphasis, structured sections, and creator-friendly broadcast layout.",
+  "tags": ["youtube", "chapters", "timestamps", "video-outline", "sections", "creator", "episode"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

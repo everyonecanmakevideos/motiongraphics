@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { Asset } from "../../assets/Asset";
 import { Background } from "../../primitives/Background";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import {
   adaptiveEntranceWindow,
   fadeIn,
@@ -65,7 +66,7 @@ function getVariant(props: TestimonialWallProps): Variant {
       frameShadow: `0 30px 80px ${alpha("#0F172A", 0.12)}`,
       halo: `radial-gradient(circle at 18% 14%, ${alpha(props.accentColor, 0.12)} 0%, transparent 36%)`,
       titleAlign: "left",
-      titleMaxPct: 0.88,
+      titleMaxPct: 0.9,
       titleScale: 1.04,
       featureBg: alpha("#FFFFFF", 0.98),
       featureBorder: alpha(props.accentColor, 0.22),
@@ -85,7 +86,7 @@ function getVariant(props: TestimonialWallProps): Variant {
       frameShadow: `0 34px 88px ${alpha("#120410", 0.36)}`,
       halo: `radial-gradient(circle at 82% 18%, ${alpha(props.secondaryAccentColor, 0.16)} 0%, transparent 32%), radial-gradient(circle at 12% 88%, ${alpha(props.accentColor, 0.14)} 0%, transparent 36%)`,
       titleAlign: "left",
-      titleMaxPct: 0.8,
+      titleMaxPct: 0.84,
       titleScale: 1.08,
       featureBg: `linear-gradient(180deg, ${alpha(props.secondaryAccentColor, 0.14)} 0%, ${alpha(props.cardBackground, 0.98)} 100%)`,
       featureBorder: alpha(props.secondaryAccentColor, 0.3),
@@ -99,20 +100,20 @@ function getVariant(props: TestimonialWallProps): Variant {
   }
 
   return {
-    frameBg: alpha("#060B18", 0.68),
-    frameBorder: alpha(props.accentColor, 0.16),
-    frameShadow: `0 30px 80px ${alpha("#020617", 0.36)}`,
-    halo: `radial-gradient(circle at 50% 18%, ${alpha(props.accentColor, 0.12)} 0%, transparent 36%)`,
+    frameBg: alpha("#070B14", 0.64),
+    frameBorder: alpha("#475569", 0.26),
+    frameShadow: `0 30px 80px ${alpha("#020617", 0.28)}`,
+    halo: `radial-gradient(circle at 50% 18%, ${alpha(props.accentColor, 0.08)} 0%, transparent 36%)`,
     titleAlign: "center",
-    titleMaxPct: 0.84,
+    titleMaxPct: 0.88,
     titleScale: 1.02,
-    featureBg: `linear-gradient(180deg, ${alpha(props.accentColor, 0.18)} 0%, ${alpha(props.cardBackground, 0.96)} 100%)`,
-    featureBorder: alpha(props.accentColor, 0.26),
-    featureShadow: `0 22px 52px ${alpha(props.accentColor, 0.18)}`,
-    cardBg: alpha(props.mutedCardBackground, 0.92),
-    cardBorder: alpha(props.cardBorderColor, 0.9),
-    cardShadow: `0 14px 34px ${alpha("#020617", 0.22)}`,
-    quoteMarkColor: alpha(props.accentColor, 0.18),
+    featureBg: `linear-gradient(180deg, ${alpha(props.accentColor, 0.12)} 0%, ${alpha(props.cardBackground, 0.96)} 100%)`,
+    featureBorder: alpha("#334155", 0.82),
+    featureShadow: `0 22px 52px ${alpha("#020617", 0.18)}`,
+    cardBg: `linear-gradient(180deg, ${alpha(props.mutedCardBackground, 0.9)} 0%, ${alpha("#080D18", 0.96)} 100%)`,
+    cardBorder: alpha("#334155", 0.86),
+    cardShadow: `0 14px 34px ${alpha("#020617", 0.18)}`,
+    quoteMarkColor: alpha(props.accentColor, 0.14),
     titleTransform: "none",
   };
 }
@@ -121,8 +122,16 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, height, scale, isPortrait } = useResponsiveConfig();
 
+  const effectiveStylePreset =
+    props.stylePreset ??
+    (props.visualStyle === "editorial-light"
+      ? "editorial"
+      : props.visualStyle === "warm-brand"
+        ? "warm-organic"
+        : "modern-clean");
+
   const resolved = resolveStylePreset(
-    props.stylePreset,
+    effectiveStylePreset,
     props.typography,
     props.motionStyle,
     props.effects,
@@ -163,14 +172,14 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
         ? "Praise from the people shaping the work"
         : "Verified customer voices";
 
-  const frameWidth = Math.round(width * (isPortrait ? 0.92 : 0.9));
+  const frameWidth = Math.round(width * (isPortrait ? 0.94 : 0.92));
   const framePaddingX = Math.round((isPortrait ? 26 : 40) * scale);
   const framePaddingY = Math.round((isPortrait ? 26 : 34) * scale);
-  const featureWidth = isPortrait ? frameWidth - framePaddingX * 2 : Math.round((frameWidth - framePaddingX * 2) * 0.6);
-  const supportGap = Math.round(18 * scale);
+  const featureWidth = isPortrait ? frameWidth - framePaddingX * 2 : Math.round((frameWidth - framePaddingX * 2) * 0.58);
+  const supportGap = Math.round(20 * scale);
   const supportCols = isPortrait ? 1 : 2;
   const supportRows = isPortrait ? supporting.length : Math.ceil(supporting.length / supportCols);
-  const supportCardHeight = Math.round((isPortrait ? 164 : 158) * scale);
+  const supportCardHeight = Math.round((isPortrait ? 172 : 166) * scale);
   const wallHeightEstimate =
     Math.round((props.title ? 138 : 72) * scale) +
     Math.max(Math.round(290 * scale), supportRows * supportCardHeight + Math.max(0, supportRows - 1) * supportGap) +
@@ -202,6 +211,18 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       <Background config={props.background} />
+      <DecorativeLayer
+        theme={
+          props.visualStyle === "editorial-light"
+            ? "corner-accents"
+            : props.visualStyle === "warm-brand"
+              ? "light-streaks"
+              : "minimal-dots"
+        }
+        accentColor={props.visualStyle === "warm-brand" ? props.secondaryAccentColor : props.accentColor}
+        frame={frame}
+        totalFrames={totalFrames}
+      />
 
       <div
         style={{
@@ -393,7 +414,7 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
                     <div
                       style={{
                         marginTop: `${Math.round(4 * scale)}px`,
-                        fontSize: `${Math.round(16 * scale)}px`,
+                        fontSize: `${Math.round(17 * scale)}px`,
                         color: props.mutedTextColor,
                         fontFamily: typo.fontFamily ?? "Arial, sans-serif",
                       }}
@@ -430,6 +451,8 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
             {supporting.map((item, index) => {
               const state = entryState(index + 1);
               const isLeadSupport = !isPortrait && supporting.length >= 3 && index === 0;
+              const isAccentSupport = !isPortrait && supporting.length >= 4 && index === 2;
+              const accentGlow = item.accentColor ?? props.secondaryAccentColor;
               return (
                 <div
                   key={`${item.name}-${index}`}
@@ -438,17 +461,35 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
                     minHeight: `${supportCardHeight}px`,
                     padding: `${Math.round((isLeadSupport ? 22 : 20) * scale)}px`,
                     borderRadius: `${Math.round(22 * scale)}px`,
-                    background: variant.cardBg,
-                    border: `1px solid ${variant.cardBorder}`,
-                    boxShadow: variant.cardShadow,
+                    background: isAccentSupport
+                      ? `linear-gradient(180deg, ${alpha(accentGlow, props.visualStyle === "editorial-light" ? 0.08 : 0.12)} 0%, ${variant.cardBg} 100%)`
+                      : variant.cardBg,
+                    border: `1px solid ${isAccentSupport ? alpha(accentGlow, 0.28) : variant.cardBorder}`,
+                    boxShadow: isAccentSupport ? `0 16px 40px ${alpha(accentGlow, 0.12)}` : variant.cardShadow,
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
-                    gap: `${Math.round(12 * scale)}px`,
+                    gap: `${Math.round((isLeadSupport ? 14 : 12) * scale)}px`,
                     opacity: state.opacity,
                     transform: `translateY(${state.y}px) scale(${state.scale})`,
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
+                  {isAccentSupport ? (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: `${Math.round(18 * scale)}px`,
+                        right: `${Math.round(18 * scale)}px`,
+                        height: `${Math.round(3 * scale)}px`,
+                        borderRadius: `${Math.round(999 * scale)}px`,
+                        background: `linear-gradient(90deg, ${accentGlow} 0%, ${alpha(accentGlow, 0)} 100%)`,
+                        opacity: 0.9,
+                      }}
+                    />
+                  ) : null}
                   <div
                     style={{
                       fontSize: `${Math.round((isLeadSupport ? 21 : isPortrait ? 18 : 20) * scale)}px`,

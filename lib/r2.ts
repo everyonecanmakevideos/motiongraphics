@@ -40,9 +40,20 @@ export async function uploadText(
 
 export async function getPresignedUrl(
   key: string,
-  expiresIn = 3600
+  expiresIn = 3600,
+  options?: {
+    download?: boolean;
+    filename?: string;
+  }
 ): Promise<string> {
   const client = getClient();
-  const command = new GetObjectCommand({ Bucket: BUCKET(), Key: key });
+  const command = new GetObjectCommand({
+    Bucket: BUCKET(),
+    Key: key,
+    ResponseContentDisposition:
+      options?.download
+        ? `attachment; filename="${(options.filename ?? key.split("/").pop() ?? "video.mp4").replace(/"/g, "")}"`
+        : undefined,
+  });
   return getSignedUrl(client, command, { expiresIn });
 }

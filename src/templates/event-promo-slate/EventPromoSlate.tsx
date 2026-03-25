@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { Asset } from "../../assets/Asset";
 import { Background } from "../../primitives/Background";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import {
   adaptiveEntranceWindow,
   fadeIn,
@@ -134,8 +135,16 @@ export const EventPromoSlate: React.FC<EventPromoSlateProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, scale, isPortrait, isSquare } = useResponsiveConfig();
 
+  const effectiveStylePreset =
+    props.stylePreset ??
+    (props.visualStyle === "conference-clean"
+      ? "editorial"
+      : props.visualStyle === "festival-burst"
+        ? "warm-organic"
+        : "cinematic-noir");
+
   const resolved = resolveStylePreset(
-    props.stylePreset,
+    effectiveStylePreset,
     props.typography,
     props.motionStyle,
     props.effects,
@@ -200,6 +209,18 @@ export const EventPromoSlate: React.FC<EventPromoSlateProps> = (props) => {
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       <Background config={props.background} />
+      <DecorativeLayer
+        theme={
+          props.visualStyle === "conference-clean"
+            ? "corner-accents"
+            : props.visualStyle === "festival-burst"
+              ? "light-streaks"
+              : "minimal-dots"
+        }
+        accentColor={props.visualStyle === "festival-burst" ? props.secondaryAccentColor : props.accentColor}
+        frame={frame}
+        totalFrames={totalFrames}
+      />
 
       <div
         style={{

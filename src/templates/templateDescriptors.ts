@@ -72,6 +72,8 @@ import eventPromoSlateManifest from "./event-promo-slate/manifest.json";
 
 import { TestimonialWallSchema } from "./testimonial-wall/schema";
 import testimonialWallManifest from "./testimonial-wall/manifest.json";
+import { YTChaptersSchema } from "./yt-chapters/schema";
+import ytChaptersManifest from "./yt-chapters/manifest.json";
 
 import { SplitScreenSchema } from "./split-screen/schema";
 import splitScreenManifest from "./split-screen/manifest.json";
@@ -196,6 +198,11 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "testimonial-wall",
     schema: TestimonialWallSchema,
     manifest: testimonialWallManifest as TemplateManifest,
+  },
+  {
+    id: "yt-chapters",
+    schema: YTChaptersSchema,
+    manifest: ytChaptersManifest as TemplateManifest,
   },
   { id: "split-screen", schema: SplitScreenSchema, manifest: splitScreenManifest as TemplateManifest },
   {

@@ -51,6 +51,9 @@ export default function JobDetail({ initialJob }: Props) {
     }));
   }, []);
 
+  const effectiveProvider: JobProvider | undefined =
+    job.provider ?? pipelineMode ?? (job.template_id ? "template" : undefined);
+
   return (
     <div className="flex flex-col gap-6 max-w-5xl mx-auto">
       <LiveUpdater jobId={job.id} initialJob={initialJob} onUpdate={handleUpdate} />
@@ -71,20 +74,20 @@ export default function JobDetail({ initialJob }: Props) {
           <span className="text-[11px] px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-neutral-300 font-medium">
             Job {job.id.slice(0, 8)}
           </span>
-          {pipelineMode && (
+          {effectiveProvider && (
             <span className={
               "text-[11px] px-2.5 py-1 rounded-full font-medium border " +
-              (pipelineMode === "template"
+              (effectiveProvider === "template"
                 ? "border-indigo-400/20 bg-indigo-500/10 text-indigo-300"
-                : pipelineMode === "hera"
+                : effectiveProvider === "hera"
                   ? "border-cyan-400/20 bg-cyan-500/10 text-cyan-300"
                   : "border-amber-400/20 bg-amber-500/10 text-amber-300")
             }>
-              {pipelineMode === "template"
+              {effectiveProvider === "template"
                 ? "Template Pipeline"
-                : pipelineMode === "hera"
+                : effectiveProvider === "hera"
                   ? "Hera Fallback"
-                  : "Legacy Pipeline (Deprecated)"}
+                  : "Legacy Pipeline"}
             </span>
           )}
           {job.template_id && (
@@ -120,7 +123,7 @@ export default function JobDetail({ initialJob }: Props) {
               <p className="text-[11px] uppercase tracking-[0.22em] text-neutral-500">Pipeline Status</p>
               <p className="text-sm text-neutral-400 mt-1">Tracking analysis, render, and final delivery.</p>
             </div>
-            <ProgressIndicator step={job.step} status={job.status} error={job.error} pipelineMode={pipelineMode} />
+            <ProgressIndicator step={job.step} status={job.status} error={job.error} pipelineMode={effectiveProvider} />
           </div>
 
           {job.status === "failed" ? (
@@ -151,7 +154,7 @@ export default function JobDetail({ initialJob }: Props) {
               </a>
             </div>
           ) : (
-            <VideoPlayer videoKey={job.video_r2_key} videoUrl={job.video_url} provider={job.provider ?? pipelineMode} />
+            <VideoPlayer videoKey={job.video_r2_key} videoUrl={job.video_url} provider={effectiveProvider} />
           )}
 
           <SpecViewer spec={job.spec_json} />

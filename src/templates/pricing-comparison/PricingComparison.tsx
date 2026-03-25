@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { Asset } from "../../assets/Asset";
 import { Background } from "../../primitives/Background";
+import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import {
   adaptiveEntranceWindow,
   fadeIn,
@@ -124,18 +125,18 @@ function getVariantConfig(style: VisualStyle, accent: string, props: PricingComp
     titleMaxWidthPct: 0.86,
     subtitleMaxWidthPct: 0.76,
     accentHalo: `radial-gradient(circle at 50% 18%, ${alpha(accent, 0.12)} 0%, transparent 36%)`,
-    overlay: `linear-gradient(180deg, transparent 0%, ${alpha("#020617", 0.08)} 100%)`,
+    overlay: `linear-gradient(180deg, ${alpha("#020617", 0.02)} 0%, ${alpha("#020617", 0.08)} 100%)`,
     contentInset: 0.04,
     contentRadius: 36,
     contentBorder: alpha(accent, 0.14),
-    contentShadow: `0 28px 72px ${alpha("#020617", 0.38)}`,
+    contentShadow: `0 28px 72px ${alpha("#020617", 0.28)}`,
     cardRadius: 28,
-    mutedCardBackground: alpha(props.mutedCardBackground, 0.92),
-    highlightedCardBackground: `linear-gradient(180deg, ${alpha(accent, 0.22)} 0%, ${alpha(props.cardBackground, 0.96)} 65%)`,
+    mutedCardBackground: `linear-gradient(180deg, ${alpha(props.mutedCardBackground, 0.88)} 0%, ${alpha("#060912", 0.96)} 100%)`,
+    highlightedCardBackground: `linear-gradient(180deg, ${alpha(accent, 0.14)} 0%, ${alpha(props.cardBackground, 0.94)} 68%)`,
     highlightLift: -12,
     highlightedScale: 1.03,
-    mutedShadow: `0 14px 34px rgba(0, 0, 0, 0.18)`,
-    highlightShadow: `0 24px 60px ${alpha(accent, 0.24)}`,
+    mutedShadow: `0 14px 34px rgba(0, 0, 0, 0.14)`,
+    highlightShadow: `0 24px 60px ${alpha(accent, 0.16)}`,
     noteBackground: alpha("#FFFFFF", 0.05),
     noteBorder: alpha("#FFFFFF", 0.08),
     titleSizeBoost: 1,
@@ -151,8 +152,16 @@ export const PricingComparison: React.FC<PricingComparisonProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, height, scale, isPortrait, isSquare } = useResponsiveConfig();
 
+  const effectiveStylePreset =
+    props.stylePreset ??
+    (props.visualStyle === "investor-clean"
+      ? "editorial"
+      : props.visualStyle === "creative-studio"
+        ? "warm-organic"
+        : "modern-clean");
+
   const resolved = resolveStylePreset(
-    props.stylePreset,
+    effectiveStylePreset,
     props.typography,
     props.motionStyle,
     props.effects,
@@ -204,6 +213,18 @@ export const PricingComparison: React.FC<PricingComparisonProps> = (props) => {
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       <Background config={props.background} />
+      <DecorativeLayer
+        theme={
+          props.visualStyle === "creative-studio"
+            ? "light-streaks"
+            : props.visualStyle === "investor-clean"
+              ? "corner-accents"
+              : "minimal-dots"
+        }
+        accentColor={accentSeed}
+        frame={frame}
+        totalFrames={totalFrames}
+      />
 
       <div
         style={{

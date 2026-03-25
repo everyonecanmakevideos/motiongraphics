@@ -22,6 +22,12 @@ export default function VideoPlayer({ videoKey, videoUrl, provider }: Props) {
   const src = videoUrl
     ? videoUrl
     : "/api/assets?key=" + encodeURIComponent(videoKey as string);
+  const downloadHref = videoKey
+    ? "/api/assets?key=" +
+      encodeURIComponent(videoKey) +
+      "&download=1&filename=" +
+      encodeURIComponent((videoKey.split("/").pop() || "video.mp4").replace(/\s+/g, "-"))
+    : src;
   const sourceLabel = provider === "hera" ? "Hera fallback output" : "Final MP4 from the pipeline";
 
   return (
@@ -63,7 +69,7 @@ export default function VideoPlayer({ videoKey, videoUrl, provider }: Props) {
           Preview
         </a>
         <a
-          href={src}
+          href={downloadHref}
           download
           className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors inline-flex items-center gap-1.5"
         >
