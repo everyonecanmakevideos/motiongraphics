@@ -21,10 +21,17 @@ export interface IntentResult {
  * Returns a TemplateResolution indicating whether to use the template path or fall back.
  */
 export function resolveTemplate(intent: IntentResult): TemplateResolution {
-  // Allow template path for both high and medium confidence.
-  // If params don't validate, we'll still fall back to legacy below.
-  if (intent.confidence === "low") {
-    return { mode: "legacy", error: "Low confidence: " + intent.reasoning };
+  // Only explicit high-confidence matches are allowed onto the deterministic
+  // template path. Medium / low confidence should fall through to fallback.
+  if (intent.confidence !== "high") {
+    return {
+      mode: "legacy",
+      error:
+        intent.confidence.charAt(0).toUpperCase() +
+        intent.confidence.slice(1) +
+        " confidence: " +
+        intent.reasoning,
+    };
   }
 
   const entry = TEMPLATE_REGISTRY[intent.templateId];
@@ -51,13 +58,6 @@ export function resolveTemplate(intent: IntentResult): TemplateResolution {
     const errors = result.error.issues.map(
       (i) => i.path.join(".") + ": " + i.message
     );
-    // For high confidence, the validation errors might be fixable
-    if (intent.confidence === "high") {
-      return {
-        mode: "legacy",
-        error: "Param validation failed: " + errors.join("; "),
-      };
-    }
     return { mode: "legacy", error: "Param validation failed: " + errors.join("; ") };
   }
 

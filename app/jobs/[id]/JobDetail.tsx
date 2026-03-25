@@ -84,7 +84,7 @@ export default function JobDetail({ initialJob }: Props) {
                 ? "Template Pipeline"
                 : pipelineMode === "hera"
                   ? "Hera Fallback"
-                  : "Legacy Pipeline"}
+                  : "Legacy Pipeline (Deprecated)"}
             </span>
           )}
           {job.template_id && (
@@ -135,7 +135,7 @@ export default function JobDetail({ initialJob }: Props) {
                 </p>
               )}
             </div>
-          ) : job.status === "done" && !job.video_r2_key ? (
+          ) : job.status === "done" && !job.video_r2_key && !job.video_url ? (
             <div className="glass-strong rounded-[28px] p-8 flex flex-col items-center gap-3 text-center">
               <p className="text-sm text-neutral-200 font-medium">Preview is ready</p>
               <p className="text-xs text-neutral-500 max-w-md">

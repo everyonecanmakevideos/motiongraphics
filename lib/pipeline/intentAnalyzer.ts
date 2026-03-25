@@ -12,6 +12,12 @@ Given a user prompt describing a desired motion graphics video, you must:
 2. Fill the template's parameters based on the prompt
 3. Rate your confidence in the match
 
+CONFIDENCE POLICY:
+- Use "high" only when the prompt is a clear, direct match for an existing deterministic template.
+- Use "medium" when the prompt only loosely fits a template, especially for cinematic ads, luxury promos, abstract fashion/editorial pieces, brand films, trailers, or mood-driven campaign work.
+- Use "low" when the fit is weak or ambiguous.
+- Do NOT use "high" just because you can force a prompt into a multi-scene structure.
+
 AVAILABLE TEMPLATES:
 {TEMPLATE_LIST}
 
@@ -409,6 +415,75 @@ export function isMultiSceneResult(result: AnalyzerResult): result is MultiScene
   return "scenes" in result && Array.isArray((result as MultiSceneResult).scenes);
 }
 
+function promptLooksLikeCreativeFallbackCandidate(prompt: string): boolean {
+  const normalized = prompt.toLowerCase();
+  return [
+    "cinematic",
+    "trailer",
+    "teaser",
+    "luxury",
+    "abstract",
+    "fashion",
+    "streetwear",
+    "runway",
+    "editorial",
+    "brand film",
+    "brand-film",
+    "campaign film",
+    "campaign video",
+    "perfume",
+    "skincare",
+    "beauty ad",
+    "supercar",
+    "silhouette",
+    "spotlight",
+    "moody",
+    "high-end",
+  ].some((term) => normalized.includes(term));
+}
+
+function promptHasExplicitDeterministicTemplateAnchor(prompt: string): boolean {
+  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements)/i.test(prompt);
+}
+
+function downgradeBorderlineCreativeMatch(prompt: string, result: AnalyzerResult): AnalyzerResult {
+  if (!promptLooksLikeCreativeFallbackCandidate(prompt)) return result;
+  if (promptHasExplicitDeterministicTemplateAnchor(prompt)) return result;
+
+  const downgradeReason =
+    "Borderline cinematic / brand-film style prompt should fall back unless the template match is exceptionally clear.";
+
+  if (isMultiSceneResult(result)) {
+    if (result.confidence === "high") {
+      return {
+        ...result,
+        confidence: "medium",
+        reasoning: downgradeReason + " " + result.reasoning,
+      };
+    }
+    return result;
+  }
+
+  const likelyOverfitTemplateIds = new Set([
+    "hero-text",
+    "cinematic-hero",
+    "cinematic-transition",
+    "dynamic-showcase",
+    "parallax-showcase",
+    "masked-text-reveal",
+  ]);
+
+  if (result.confidence === "high" && likelyOverfitTemplateIds.has(result.templateId)) {
+    return {
+      ...result,
+      confidence: "medium",
+      reasoning: downgradeReason + " " + result.reasoning,
+    };
+  }
+
+  return result;
+}
+
 /**
  * Validates all scenes in a multi-scene result against their template schemas.
  * Returns an array of error strings (empty = valid).
@@ -594,6 +669,7 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
       }
 
       // Multi-scene result — validate each scene's params before returning
+      parsed = downgradeBorderlineCreativeMatch(prompt, parsed);
       if (isMultiSceneResult(parsed)) {
         const msErrors = validateMultiSceneParams(parsed);
         if (msErrors.length === 0) {
@@ -609,7 +685,7 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
       // Single-scene: validate the params against the template schema
       const singleResult = parsed as IntentResult;
-      if (singleResult.templateId && singleResult.confidence !== "low") {
+      if (singleResult.templateId && singleResult.confidence === "high") {
         const errors = validateTemplateParams(singleResult.templateId, singleResult.params);
         if (errors.length > 0) {
           lastError = errors.join("; ");

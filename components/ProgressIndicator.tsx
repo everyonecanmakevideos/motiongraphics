@@ -55,7 +55,7 @@ function getPhaseStates(step: number, status: JobStatus, isTemplate: boolean): [
     return [p1, p2];
   }
 
-  // Legacy: Phase 1: steps 1-6 (expand + spec + code), Phase 2: steps 7-8 (render + done)
+  // Deprecated legacy: Phase 1: steps 1-6 (expand + spec + code), Phase 2: steps 7-8 (render + done)
   const p1: PhaseState = step <= 6 ? "active" : "done";
   const p2: PhaseState = step <= 6 ? "pending" : "active";
   return [p1, p2];

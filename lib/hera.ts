@@ -1,6 +1,6 @@
 type HeraOutputConfig = {
   aspect_ratio: "16:9" | "9:16" | "1:1" | "4:5";
-  fps: 30;
+  fps: "30";
   resolution: "1080p";
   format: "mp4";
 };
@@ -13,6 +13,13 @@ type HeraCreateResponse = {
 type HeraOutputStatus = {
   status?: string;
   file_url?: string;
+  config?: {
+    format?: string;
+    aspect_ratio?: string;
+    fps?: string;
+    resolution?: string;
+  };
+  error?: string;
 };
 
 type HeraStatusResponse = {
@@ -22,10 +29,11 @@ type HeraStatusResponse = {
   error?: string;
 };
 
-const DEFAULT_BASE_URL = "https://api.hera.video";
+const DEFAULT_BASE_URL = "https://api.hera.video/v1";
 
 function getBaseUrl(): string {
-  return (process.env.HERA_API_BASE_URL ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
+  const raw = (process.env.HERA_API_BASE_URL ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
+  return /\/v1$/i.test(raw) ? raw : raw + "/v1";
 }
 
 function getApiKey(): string | null {
@@ -47,7 +55,7 @@ function parseDurationSeconds(prompt: string): number | undefined {
   if (!match) return undefined;
   const duration = Number(match[1]);
   if (!Number.isFinite(duration)) return undefined;
-  return Math.min(15, Math.max(2, Math.round(duration)));
+  return Math.min(60, Math.max(1, Math.round(duration)));
 }
 
 async function heraFetch<T>(pathname: string, init: RequestInit): Promise<T> {
@@ -81,7 +89,7 @@ export async function createHeraVideoJob(prompt: string): Promise<HeraCreateResp
     outputs: [
       {
         aspect_ratio: parseAspectRatio(prompt),
-        fps: 30,
+        fps: "30",
         resolution: "1080p",
         format: "mp4",
       } satisfies HeraOutputConfig,

@@ -33,6 +33,10 @@ const jobQueue: QueueJob[] = [];
 let isProcessing = false;
 const subscribers = new Map<string, Set<ReadableStreamDefaultController<Uint8Array>>>();
 
+function isLegacyFallbackEnabled(): boolean {
+  return process.env.ENABLE_LEGACY_PIPELINE_FALLBACK === "true";
+}
+
 // ── SSE helpers ────────────────────────────────────────────────────────────
 
 export function subscribe(
@@ -112,12 +116,22 @@ async function runPipeline(jobId: string, previewOnly: boolean): Promise<void> {
 
   try {
     // Preview mode: use template pipeline (so template params like `currentStep` exist),
-    // but skip MP4 rendering/upload.
+    // but skip MP4 rendering/upload. Hera is not used for preview-only jobs.
     if (previewOnly) {
       const usedTemplate = await tryTemplatePipeline(jobId, job.prompt, true);
       if (usedTemplate) return;
-      // If template routing declined, fall back to legacy preview (generated code, no MP4).
-      await runLegacyPipeline(jobId, job.prompt, true);
+
+      if (isLegacyFallbackEnabled()) {
+        console.log("[queue] Template preview declined for", jobId, "— using deprecated legacy preview fallback");
+        await runLegacyPipeline(jobId, job.prompt, true);
+        return;
+      }
+
+      await failJob(
+        jobId,
+        2,
+        "Preview mode supports only high-confidence template jobs. Set ENABLE_LEGACY_PIPELINE_FALLBACK=true if you need the deprecated legacy preview fallback."
+      );
       return;
     }
 
