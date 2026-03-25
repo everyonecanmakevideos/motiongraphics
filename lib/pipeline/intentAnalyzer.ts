@@ -478,14 +478,15 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
     result.params = {
       ...result.params,
-      steps: stepsAny.map((s: any, i: number) => {
+      steps: stepsAny.map((s: unknown, i: number) => {
         if (!s || typeof s !== "object") return s;
-        if (typeof s.iconId === "string" && s.iconId.trim()) return s;
-        const label = typeof s.label === "string" ? s.label : "";
+        const step = s as Record<string, unknown>;
+        if (typeof step.iconId === "string" && step.iconId.trim()) return step;
+        const label = typeof step.label === "string" ? step.label : "";
         const inferred = normalizedToIcon(label);
-        if (inferred) return { ...s, iconId: inferred };
+        if (inferred) return { ...step, iconId: inferred };
         const fallback = [undefined, "checkmark", "gear", "truck", "home"][i + 1];
-        return fallback ? { ...s, iconId: fallback } : s;
+        return fallback ? { ...step, iconId: fallback } : step;
       }),
     };
   }
@@ -539,15 +540,16 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
     result.params = {
       ...result.params,
-      steps: stepsAny.map((s: any, i: number) => {
+      steps: stepsAny.map((s: unknown, i: number) => {
         if (!s || typeof s !== "object") return s;
-        if (typeof s.iconId === "string" && s.iconId.trim()) return s;
-        const label = typeof s.label === "string" ? s.label : "";
+        const step = s as Record<string, unknown>;
+        if (typeof step.iconId === "string" && step.iconId.trim()) return step;
+        const label = typeof step.label === "string" ? step.label : "";
         const inferred = normalizedToIcon(label);
-        if (inferred) return { ...s, iconId: inferred };
+        if (inferred) return { ...step, iconId: inferred };
         // Fallback by progression index for delivery-style step sets.
         const fallback = [undefined, "checkmark", "gear", "truck", "home"][i + 1];
-        return fallback ? { ...s, iconId: fallback } : s;
+        return fallback ? { ...step, iconId: fallback } : step;
       }),
     };
   }

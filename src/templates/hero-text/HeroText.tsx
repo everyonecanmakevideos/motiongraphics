@@ -8,7 +8,6 @@ import {
   scalePop,
   blurReveal,
   typewriter,
-  fadeOut,
   highlightReveal,
   underlineDraw,
   choreograph,

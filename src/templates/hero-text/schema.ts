@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BackgroundSchema, AnimationPresetSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema, PacingProfileSchema, SecondaryMotionSchema, DecorativeThemeSchema } from "../types";
+import { BackgroundSchema, StylePresetSchema, TypographySchema, MotionStyleSchema, EffectsSchema, PacingProfileSchema, SecondaryMotionSchema, DecorativeThemeSchema } from "../types";
 
 export const HeroTextSchema = z.object({
   headline: z.string().min(1).max(80),

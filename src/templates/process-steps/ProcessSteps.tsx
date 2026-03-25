@@ -31,7 +31,6 @@ export const ProcessSteps: React.FC<ProcessStepsProps> = (props) => {
   const numberFontSize = Math.round(markerSize * 0.42);
   const stepLabelFontSize = Math.round(props.labelFontSizePx * localScale);
   const descriptionFontSize = Math.round(props.descriptionFontSizePx * localScale);
-  const connectorArrowFontSize = Math.round(16 * localScale);
   const connectorLineThickness = Math.max(1, Math.round(2 * localScale));
   const iconSize = Math.max(14, Math.round(markerSize * 0.48));
 
@@ -259,11 +258,6 @@ export const ProcessSteps: React.FC<ProcessStepsProps> = (props) => {
                     ? 1
                     : 0
                   : 0;
-
-            const connectorIsActive =
-              i < stepCount - 1 && nextRange && isProgressive
-                ? frame >= nextRange.startFrame && frame < nextRange.endFrame
-                : activeIndex !== null && i === activeIndex;
 
             const connectorCompleted =
               i < stepCount - 1 && nextRange && isProgressive

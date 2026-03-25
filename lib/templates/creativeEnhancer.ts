@@ -12,6 +12,7 @@
  */
 
 import OpenAI from "openai";
+import type { ZodIssue } from "zod";
 import { SERVER_TEMPLATE_REGISTRY } from "../../src/templates/registry-server";
 import type { IntentResult } from "./resolver";
 import type { MultiSceneResult, SceneDefinition } from "./sceneTypes";
@@ -1015,8 +1016,7 @@ function sanitizeBackground(
 function stripFailedFields(
   original: Record<string, unknown>,
   enhanced: Record<string, unknown>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  issues: any[],
+  issues: ZodIssue[],
   templateId?: string,
 ): Record<string, unknown> {
   // Collect top-level field names that failed
@@ -1856,7 +1856,6 @@ function snapParamsToVibePalette(
   const warmBrown = detectWarmBrownAccent(p);
   const offwhite = detectOffwhite(p);
   const explicitDarkBg = detectExplicitDarkBackground(p);
-  const wantsGradient = p.includes("gradient");
 
   const pinnedKeys = new Set<string>();
   // Pin background only when user expressed explicit light/dark background intent.
@@ -2176,7 +2175,7 @@ export async function enhanceCreatively(
       const retryParams = stripFailedFields(
         intent.params as Record<string, unknown>,
         enhancedAfterArchetype,
-        validation.error.issues as any[],
+        validation.error.issues,
         intent.templateId,
       );
 
@@ -2326,7 +2325,7 @@ export async function enhanceMultiSceneCreatively(
             const retryParams = stripFailedFields(
               (region.params || {}) as Record<string, unknown>,
               regionParamsAfterArchetype,
-              validation.error.issues as any[],
+              validation.error.issues,
               region.templateId,
             );
             const retryWithPromptColors = applyPromptColorOverrides(originalPrompt, retryParams as Record<string, unknown>);
@@ -2394,7 +2393,7 @@ export async function enhanceMultiSceneCreatively(
           const retryParams = stripFailedFields(
             (scene.params || {}) as Record<string, unknown>,
             sceneParamsAfterArchetype,
-            validation.error.issues as any[],
+            validation.error.issues,
             scene.templateId,
           );
           const retryWithPromptColors = applyPromptColorOverrides(originalPrompt, retryParams as Record<string, unknown>);

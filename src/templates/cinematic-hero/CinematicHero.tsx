@@ -136,7 +136,7 @@ function renderAccent(
 
 export const CinematicHero: React.FC<CinematicHeroProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, height, scale } = useResponsiveConfig();
+  const { scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // ── Resolve creative enhancement fields ────────────────────────────────

@@ -116,7 +116,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = (props) => {
           {isDots ? (
             Array.from({ length: dotCount }).map((_, i) => (
               <span
-                // eslint-disable-next-line react/no-array-index-key
                 key={i}
                 style={{
                   width: dotSize,

@@ -30,11 +30,40 @@ export const GrainBgSchema = z.object({
   grainOpacity: z.number().min(0).max(1).default(0.08),
 });
 
+export const DotsBgSchema = z.object({
+  type: z.literal("dots"),
+  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  dotColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
+  dotOpacity: z.number().min(0).max(1).default(0.14),
+  dotSize: z.number().min(1).max(6).default(2),
+  density: z.enum(["sparse", "normal", "dense"]).default("normal"),
+});
+
+export const GridBgSchema = z.object({
+  type: z.literal("grid"),
+  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  gridColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#FFFFFF"),
+  gridOpacity: z.number().min(0).max(1).default(0.12),
+  cellSize: z.number().min(10).max(120).default(24),
+  lineWidth: z.number().min(1).max(4).default(1),
+});
+
+export const RadialGlowBgSchema = z.object({
+  type: z.literal("radial-glow"),
+  baseColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  glowColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default("#60A5FA"),
+  glowOpacity: z.number().min(0).max(1).default(0.22),
+  glowRadiusPct: z.number().min(20).max(100).default(65),
+});
+
 export const BackgroundSchema = z.discriminatedUnion("type", [
   SolidBgSchema,
   GradientBgSchema,
   StripeBgSchema,
   GrainBgSchema,
+  DotsBgSchema,
+  GridBgSchema,
+  RadialGlowBgSchema,
 ]);
 
 export type BackgroundConfig = z.infer<typeof BackgroundSchema>;

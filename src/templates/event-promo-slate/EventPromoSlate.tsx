@@ -132,7 +132,7 @@ function getVariant(props: EventPromoSlateProps): Variant {
 
 export const EventPromoSlate: React.FC<EventPromoSlateProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, height, scale, isPortrait, isSquare } = useResponsiveConfig();
+  const { width, scale, isPortrait, isSquare } = useResponsiveConfig();
 
   const resolved = resolveStylePreset(
     props.stylePreset,

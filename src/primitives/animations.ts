@@ -208,7 +208,7 @@ export function slideRight(
 export function scalePop(
   frame: number,
   range: FrameRange,
-  _overshoot?: number
+  overshoot: number = 1.12
 ): { scale: number; opacity: number } {
   const dur = range.endFrame - range.startFrame;
   const scale = interpolate(
@@ -220,7 +220,7 @@ export function scalePop(
       range.startFrame + Math.round(dur * 0.75),
       range.endFrame,
     ],
-    [0, 0.95, 1.12, 0.98, 1.0],
+    [0, 0.95, overshoot, 0.98, 1.0],
     CLAMP
   );
   const opacity = interpolate(

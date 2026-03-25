@@ -121,7 +121,7 @@ function renderFgElement(el: FgElement, accentColor: string, scale: number): Rea
 
 export const ParallaxShowcase: React.FC<ParallaxShowcaseProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, height, scale } = useResponsiveConfig();
+  const { scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(

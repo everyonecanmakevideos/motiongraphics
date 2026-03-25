@@ -14,7 +14,7 @@ const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as 
 
 export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, isPortrait, scale } = useResponsiveConfig();
+  const { width, scale } = useResponsiveConfig();
 
   const fontWeightMap: Record<string, number> = {
     regular: 400,
@@ -197,8 +197,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = (props) => {
               textOpacity = s.opacity;
               textY = s.y;
             }
-
-            const isEven = i % 2 === 0;
 
             return (
               <div

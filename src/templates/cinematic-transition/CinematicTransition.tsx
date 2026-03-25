@@ -6,7 +6,6 @@ import {
   fadeIn,
   scalePop,
   springIn,
-  microFloat,
 } from "../../primitives/animations";
 import { resolveStylePreset } from "../../primitives/useStylePreset";
 import { resolveTypography } from "../../primitives/useTypography";
@@ -21,7 +20,7 @@ const SPEED_MAP: Record<string, number> = { slow: 0.9, normal: 1.0, fast: 0.7 };
 
 export const CinematicTransition: React.FC<CinematicTransitionProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, height, scale } = useResponsiveConfig();
+  const { scale } = useResponsiveConfig();
   const totalFrames = secToFrame(props.duration);
 
   // ── Resolve creative enhancement fields ────────────────────────────────

@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, useCurrentFrame } from "remotion";
 import type { StreamStartProps } from "./schema";
 import { Background } from "../../primitives/Background";
 import { phaseFrames, fadeIn, slideUp, slideLeft, slideRight, scalePop, blurReveal } from "../../primitives/animations";
@@ -8,8 +8,6 @@ import { resolveTypography } from "../../primitives/useTypography";
 import { resolveEffects } from "../../primitives/useEffects";
 import { DecorativeLayer } from "../../primitives/DecorativeLayer";
 import { useResponsiveConfig } from "../../primitives/useResponsiveConfig";
-
-const CLAMP = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 
 function applyEntrance(
   frame: number,

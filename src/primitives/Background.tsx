@@ -42,6 +42,20 @@ function triangleWave(frame: number, period: number): number {
     : interpolate(posInCycle, [halfPeriod, period], [1, 0], CLAMP);
 }
 
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const safe = hex.replace("#", "");
+  return {
+    r: parseInt(safe.slice(0, 2), 16),
+    g: parseInt(safe.slice(2, 4), 16),
+    b: parseInt(safe.slice(4, 6), 16),
+  };
+}
+
+function alpha(hex: string, opacity: number): string {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
 export const Background: React.FC<{ config: BackgroundConfig; frame?: number }> = ({
   config,
   frame,
@@ -148,6 +162,67 @@ export const Background: React.FC<{ config: BackgroundConfig; frame?: number }> 
             <rect width="100%" height="100%" filter={`url(#${filterId})`} />
           </svg>
         </AbsoluteFill>
+      </AbsoluteFill>
+    );
+  }
+
+  // ── Dots ───────────────────────────────────────────────────────────────
+  if (config.type === "dots") {
+    const densityMap: Record<string, number> = { sparse: 36, normal: 24, dense: 16 };
+    const spacing = densityMap[config.density] ?? 24;
+    const dotRadius = Math.max(1, Math.round(config.dotSize));
+    const seed = isAnimated ? Math.floor(frame / 3) : 0;
+    const offset = isAnimated ? (frame * 0.2 + seed * 0.7) % spacing : 0;
+
+    return (
+      <AbsoluteFill style={{ backgroundColor: config.baseColor, overflow: "hidden" }}>
+        <AbsoluteFill
+          style={{
+            backgroundImage: `radial-gradient(circle, ${alpha(config.dotColor, config.dotOpacity)} ${dotRadius}px, transparent ${dotRadius + 0.6}px)`,
+            backgroundSize: `${spacing}px ${spacing}px`,
+            backgroundPosition: `${offset}px ${offset}px`,
+            opacity: 1,
+          }}
+        />
+      </AbsoluteFill>
+    );
+  }
+
+  // ── Grid ───────────────────────────────────────────────────────────────
+  if (config.type === "grid") {
+    const cell = Math.max(10, Math.round(config.cellSize));
+    const lineW = Math.max(1, Math.round(config.lineWidth));
+    const offset = isAnimated ? (frame * 0.25) % cell : 0;
+
+    const gridBg = `linear-gradient(to right, ${alpha(config.gridColor, config.gridOpacity)} ${lineW}px, transparent ${lineW}px),
+linear-gradient(to bottom, ${alpha(config.gridColor, config.gridOpacity)} ${lineW}px, transparent ${lineW}px)`;
+
+    return (
+      <AbsoluteFill style={{ backgroundColor: config.baseColor, overflow: "hidden" }}>
+        <AbsoluteFill
+          style={{
+            backgroundImage: gridBg,
+            backgroundSize: `${cell}px ${cell}px`,
+            backgroundPosition: `${-offset}px ${-offset}px`,
+          }}
+        />
+      </AbsoluteFill>
+    );
+  }
+
+  // ── Radial glow ────────────────────────────────────────────────────────
+  if (config.type === "radial-glow") {
+    const cx = isAnimated ? 50 + (triangleWave(frame, 240) - 0.5) * 10 : 50;
+    const cy = isAnimated ? 50 + (triangleWave(frame + 60, 180) - 0.5) * 8 : 50;
+    const glow = alpha(config.glowColor, config.glowOpacity);
+    return (
+      <AbsoluteFill style={{ backgroundColor: config.baseColor, overflow: "hidden" }}>
+        <AbsoluteFill
+          style={{
+            background: `radial-gradient(circle at ${cx}% ${cy}%, ${glow} 0%, transparent 60%)`,
+            opacity: 1,
+          }}
+        />
       </AbsoluteFill>
     );
   }

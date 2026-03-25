@@ -51,7 +51,7 @@ const GRID_ROWS = 30;
 
 export const MapHighlight: React.FC<MapHighlightProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, height, scale } = useResponsiveConfig();
+  const { width, scale } = useResponsiveConfig();
 
   // ── Resolve creative enhancement fields ────────────────────────────────
   const resolved = resolveStylePreset(

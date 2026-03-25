@@ -169,9 +169,6 @@ export const TestimonialWall: React.FC<TestimonialWallProps> = (props) => {
   const featureWidth = isPortrait ? frameWidth - framePaddingX * 2 : Math.round((frameWidth - framePaddingX * 2) * 0.6);
   const supportGap = Math.round(18 * scale);
   const supportCols = isPortrait ? 1 : 2;
-  const supportWidth = isPortrait
-    ? frameWidth - framePaddingX * 2
-    : Math.round(((frameWidth - framePaddingX * 2) - supportGap * (supportCols - 1) - featureWidth - supportGap) / supportCols);
   const supportRows = isPortrait ? supporting.length : Math.ceil(supporting.length / supportCols);
   const supportCardHeight = Math.round((isPortrait ? 164 : 158) * scale);
   const wallHeightEstimate =

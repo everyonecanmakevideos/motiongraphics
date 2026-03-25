@@ -89,11 +89,11 @@ function renderSequential(
   }
 
   // Solution entrance during transition
-  let solutionOpacity = interpolate(frame, [transitionStart, transitionEnd], [0, 1], CLAMP);
-  let solutionX = isSlideSwitch
+  const solutionOpacity = interpolate(frame, [transitionStart, transitionEnd], [0, 1], CLAMP);
+  const solutionX = isSlideSwitch
     ? interpolate(frame, [transitionStart, transitionEnd], [200, 0], CLAMP)
     : 0;
-  let solutionY = !isSlideSwitch
+  const solutionY = !isSlideSwitch
     ? interpolate(frame, [transitionStart, transitionEnd], [30, 0], CLAMP)
     : 0;
 

@@ -3,13 +3,12 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import type { ComponentType } from "react";
-import type { PlayerProps } from "@remotion/player";
 import { TemplateRouter } from "@/src/TemplateRouter";
 
 const Player = dynamic(
   async () => {
     const mod = await import("@remotion/player");
-    return mod.Player as unknown as ComponentType<PlayerProps>;
+    return mod.Player as unknown as ComponentType<Record<string, unknown>>;
   },
   { ssr: false },
 );
@@ -37,10 +36,14 @@ export default function InlineRemotionPreview({
   durationSec,
 }: {
   templateId: string;
-  params: Record<string, unknown>;
+  params: object;
   aspectRatio: string;
   durationSec: number;
 }) {
+  type TemplateRouterInputProps = {
+    templateId?: string;
+    params?: object;
+  };
   const { width, height } = getAspectPreset(aspectRatio);
   const fps = 30;
   const durationInFrames = Math.max(1, Math.floor(durationSec * fps));
@@ -57,7 +60,7 @@ export default function InlineRemotionPreview({
       </div>
 
       <Player
-        component={TemplateRouter as unknown as ComponentType<any>}
+        component={TemplateRouter as unknown as ComponentType<TemplateRouterInputProps>}
         inputProps={{
           templateId,
           params,
