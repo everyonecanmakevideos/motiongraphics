@@ -25,6 +25,7 @@ import { PricingComparison } from "./pricing-comparison/PricingComparison";
 import { EventPromoSlate } from "./event-promo-slate/EventPromoSlate";
 import { TestimonialWall } from "./testimonial-wall/TestimonialWall";
 import { YTChapters } from "./yt-chapters/YTChapters";
+import { NewspaperFrontPage } from "./newspaper-front-page/NewspaperFrontPage";
 import { SplitScreen } from "./split-screen/SplitScreen";
 import { ProblemSolution } from "./problem-solution/ProblemSolution";
 import { BeforeAfter } from "./before-after/BeforeAfter";
@@ -67,6 +68,7 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "event-promo-slate": EventPromoSlate,
   "testimonial-wall": TestimonialWall,
   "yt-chapters": YTChapters,
+  "newspaper-front-page": NewspaperFrontPage,
   "split-screen": SplitScreen,
   "problem-solution": ProblemSolution,
   "before-after": BeforeAfter,

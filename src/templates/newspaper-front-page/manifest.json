@@ -1,0 +1,10 @@
+{
+  "id": "newspaper-front-page",
+  "name": "Newspaper Front Page",
+  "description": "A stylized newspaper front page with masthead, bold headline, editorial columns, and a photo block.",
+  "tags": ["newspaper", "front-page", "headline", "editorial", "breaking-news", "print"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "camera-drift", "none"],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

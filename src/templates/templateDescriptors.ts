@@ -74,6 +74,8 @@ import { TestimonialWallSchema } from "./testimonial-wall/schema";
 import testimonialWallManifest from "./testimonial-wall/manifest.json";
 import { YTChaptersSchema } from "./yt-chapters/schema";
 import ytChaptersManifest from "./yt-chapters/manifest.json";
+import { NewspaperFrontPageSchema } from "./newspaper-front-page/schema";
+import newspaperFrontPageManifest from "./newspaper-front-page/manifest.json";
 
 import { SplitScreenSchema } from "./split-screen/schema";
 import splitScreenManifest from "./split-screen/manifest.json";
@@ -203,6 +205,11 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "yt-chapters",
     schema: YTChaptersSchema,
     manifest: ytChaptersManifest as TemplateManifest,
+  },
+  {
+    id: "newspaper-front-page",
+    schema: NewspaperFrontPageSchema,
+    manifest: newspaperFrontPageManifest as TemplateManifest,
   },
   { id: "split-screen", schema: SplitScreenSchema, manifest: splitScreenManifest as TemplateManifest },
   {

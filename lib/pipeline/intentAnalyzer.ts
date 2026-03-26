@@ -47,6 +47,7 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Icon with text, feature highlight, callout, explainer | "icon-callout" |
 | Testimonial wall, customer reviews, wall of love, multiple testimonials, user feedback collage, review cards | "testimonial-wall" |
 | YouTube chapters, video chapters, chapter list, timestamped sections, episode outline, chapter markers, watch guide | "yt-chapters" |
+| Newspaper front page, newspaper headline, front page story, historic newspaper, editorial front page, headline edition, breaking edition | "newspaper-front-page" |
 | Event promo, event poster, webinar announcement, conference registration, summit invite, launch event, ticketed event, save the date | "event-promo-slate" |
 | Pricing table, pricing comparison, pricing tiers, subscription plans, packages, 3-tier cards, three plans, best value plan, recommended middle card | "pricing-comparison" |
 | Side-by-side comparison, versus, pros/cons, A vs B | "comparison-layout" |
@@ -448,7 +449,7 @@ function promptLooksLikeCreativeFallbackCandidate(prompt: string): boolean {
 }
 
 function promptHasExplicitDeterministicTemplateAnchor(prompt: string): boolean {
-  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements)/i.test(prompt);
+  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print)/i.test(prompt);
 }
 
 function downgradeBorderlineCreativeMatch(prompt: string, result: AnalyzerResult): AnalyzerResult {
@@ -586,6 +587,11 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   // the template path even when the model drifts toward older card layouts.
   const pricingHeuristic = heuristicPricingComparisonIntent(prompt);
   if (pricingHeuristic) return pricingHeuristic;
+
+  // Heuristic fallback for obvious newspaper / front-page prompts so they stay
+  // on the deterministic template path instead of being downgraded into Hera.
+  const newspaperHeuristic = heuristicNewspaperFrontPageIntent(prompt);
+  if (newspaperHeuristic) return newspaperHeuristic;
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -1136,5 +1142,334 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
       entranceAnimation: "slide-up",
       duration: 7,
     },
+  };
+}
+
+function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null {
+  const normalized = prompt.toLowerCase();
+
+  const hasNewspaperIntent =
+    /\bnewspaper\b/.test(normalized) ||
+    /\bfront[ -]?page\b/.test(normalized) ||
+    /\bnewspaper cover\b/.test(normalized) ||
+    /\bheadline edition\b/.test(normalized) ||
+    /\bbreaking edition\b/.test(normalized) ||
+    /\bextra edition\b/.test(normalized) ||
+    /\barchive edition\b/.test(normalized) ||
+    /\bcover story\b/.test(normalized) ||
+    /\bnewsprint\b/.test(normalized) ||
+    /\btabloid\b/.test(normalized);
+
+  if (!hasNewspaperIntent) return null;
+
+  const visualStyle = (() => {
+      if (
+        normalized.includes("historic") ||
+        normalized.includes("vintage") ||
+        normalized.includes("archival") ||
+        normalized.includes("old-print") ||
+        normalized.includes("moon landing")
+      ) {
+        return "historic-edition" as const;
+      }
+      if (
+        normalized.includes("finance") ||
+        normalized.includes("financial") ||
+        normalized.includes("market") ||
+        normalized.includes("economy") ||
+        normalized.includes("earnings") ||
+        normalized.includes("business")
+      ) {
+        return "financial-journal" as const;
+      }
+      if (
+        normalized.includes("sports") ||
+        normalized.includes("champions") ||
+        normalized.includes("underdogs") ||
+        normalized.includes("upset") ||
+        normalized.includes("final") ||
+        normalized.includes("match") ||
+        normalized.includes("league")
+      ) {
+        return "sports-daily" as const;
+      }
+      if (
+        normalized.includes("tabloid") ||
+        normalized.includes("celebrity") ||
+        normalized.includes("scandal") ||
+        normalized.includes("exclusive") ||
+        normalized.includes("sensational")
+      ) {
+        return "tabloid-shock" as const;
+      }
+      if (
+        normalized.includes("breaking-news") ||
+        normalized.includes("breaking news") ||
+        normalized.includes("market crash") ||
+        normalized.includes("crash") ||
+      normalized.includes("urgent") ||
+      normalized.includes("dramatic")
+    ) {
+      return "modern-breaking-news" as const;
+    }
+    return "classic-front-page" as const;
+  })();
+
+  const titleCase = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+      .trim();
+
+  const extractProductOrSubject = () =>
+    prompt.match(/called\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    prompt.match(/covering\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    prompt.match(/about\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    prompt.match(/:\s*([^.!?\n]+)/)?.[1]?.trim() ||
+    "";
+
+  const subject = extractProductOrSubject();
+
+  const deriveHeadline = (): string => {
+    if (normalized.includes("moon landing")) return "Men Walk On Moon";
+    if (normalized.includes("market crash")) return "Global Market Crash";
+    if (normalized.includes("100 million users")) return "100 Million Users In 60 Days";
+    if (normalized.includes("product launch") && subject) {
+      return `${titleCase(subject)} Arrives`;
+    }
+    if (subject) {
+      return titleCase(subject);
+    }
+    return "Extra! Historic News!";
+  };
+
+  const deriveSubheadline = (): string => {
+    if (normalized.includes("moon landing")) {
+      return "Astronauts land on plain; collect rocks, plant flag.";
+    }
+    if (normalized.includes("market crash")) {
+      return "Investors react as markets swing and uncertainty spreads.";
+    }
+    if (normalized.includes("100 million users")) {
+      return "AI startup shatters adoption records as growth accelerates worldwide.";
+    }
+    if (normalized.includes("product launch")) {
+      return "A landmark launch story unfolds with momentum, speculation, and market attention.";
+    }
+    return "A major story unfolds as events draw widespread public attention.";
+  };
+
+  const buildColumns = () => {
+    if (normalized.includes("moon landing")) {
+      return [
+        {
+          title: "A Giant Leap",
+          text:
+            "Astronaut Neil Armstrong descends the ladder as millions watch. The mission marks a defining moment in space exploration and global history.",
+        },
+        {
+          title: "Mission Details",
+          text:
+            "Early reports describe a successful landing, measured movement on the lunar surface, and careful collection of early samples.",
+        },
+        {
+          title: "World Watches",
+          text:
+            "Newsrooms, families, and governments across the globe follow every step as the mission reshapes what feels possible.",
+        },
+      ];
+    }
+
+    if (normalized.includes("market crash")) {
+      return [
+        {
+          title: "Impact On Globe",
+          text:
+            "Markets react sharply as confidence slips and volatility rises. Analysts warn of cascading consequences across sectors and regions.",
+        },
+        {
+          title: "Investor Reactions",
+          text:
+            "Traders scramble to reposition portfolios while regulators monitor the pace of the downturn and calls for stability grow louder.",
+        },
+        {
+          title: "What Comes Next",
+          text:
+            "Leaders debate emergency measures as businesses and households brace for aftershocks in the days ahead.",
+        },
+      ];
+    }
+
+    if (normalized.includes("100 million users")) {
+      return [
+        {
+          title: "A Record Pace",
+          text:
+            "In an unprecedented surge, the platform attracts users at a historic rate and forces a reassessment of category demand.",
+        },
+        {
+          title: "Why It Matters",
+          text:
+            "The speed of adoption signals a turning point for AI products and raises expectations for what consumer tools can achieve.",
+        },
+        {
+          title: "Industry Response",
+          text:
+            "Competitors, investors, and analysts rush to interpret the milestone as one of the defining technology stories of the year.",
+        },
+      ];
+    }
+
+    return [
+      {
+        title: "Lead Story",
+        text:
+          "Editors frame the moment as a defining event, with public attention building quickly as new details continue to emerge.",
+      },
+      {
+        title: "Inside Report",
+        text:
+          "Early reactions suggest broad interest, strong momentum, and significant implications for the category involved.",
+      },
+      {
+        title: "Why It Matters",
+        text:
+          "The story lands with enough force to feel larger than a normal update, signaling a major shift rather than a routine announcement.",
+      },
+    ];
+  };
+
+    const masthead =
+      visualStyle === "historic-edition"
+        ? "Evening Chronicle"
+        : visualStyle === "modern-breaking-news"
+          ? "The Daily Times"
+          : visualStyle === "financial-journal"
+            ? "The Financial Ledger"
+            : visualStyle === "sports-daily"
+              ? "The Matchday Standard"
+              : "The Global Chronicle";
+
+    const kicker =
+      visualStyle === "modern-breaking-news"
+        ? "Breaking News"
+        : visualStyle === "historic-edition"
+          ? "Archive Edition"
+          : visualStyle === "financial-journal"
+            ? "Market Bulletin"
+            : visualStyle === "sports-daily"
+              ? "Match Report"
+              : "Special Report";
+
+    const footerNote =
+      visualStyle === "historic-edition"
+        ? "Reconstructed in archival print style for dramatic historical storytelling."
+        : visualStyle === "modern-breaking-news"
+          ? "Developing story: updates and reaction continue across markets and institutions."
+          : visualStyle === "financial-journal"
+            ? "A denser journal-style front page for consequential market and business coverage."
+            : visualStyle === "sports-daily"
+              ? "A sports-desk front page treatment designed for major matchday headlines."
+              : "A clean front-page composition for modern product launches and major business moments.";
+
+    const palette =
+      visualStyle === "modern-breaking-news"
+        ? {
+            paperTone: "#F6F8FB",
+            inkColor: "#0F172A",
+            accentColor: "#C2410C",
+            frameColor: "#CBD5E1",
+            background: { type: "gradient" as const, from: "#F2F6FB", to: "#E3EAF3", direction: "to-bottom-right" as const },
+          }
+        : visualStyle === "historic-edition"
+          ? {
+              paperTone: "#EEE0C2",
+              inkColor: "#1A1410",
+              accentColor: "#7C2D12",
+              frameColor: "#C5B38A",
+              background: { type: "grain" as const, baseColor: "#EFE4CD", grainOpacity: 0.09 },
+            }
+          : visualStyle === "financial-journal"
+            ? {
+                paperTone: "#F7F7F4",
+                inkColor: "#111827",
+                accentColor: "#0F4C81",
+                frameColor: "#D1D5DB",
+                background: { type: "gradient" as const, from: "#F4F6F8", to: "#E5EBF2", direction: "to-bottom-right" as const },
+              }
+            : visualStyle === "sports-daily"
+              ? {
+                  paperTone: "#F6F3EA",
+                  inkColor: "#151515",
+                  accentColor: "#C2410C",
+                  frameColor: "#D9D1C3",
+                  background: { type: "gradient" as const, from: "#F9F5EB", to: "#EDE5D7", direction: "to-bottom-right" as const },
+                }
+              : visualStyle === "tabloid-shock"
+                ? {
+                    paperTone: "#F5E6D4",
+                    inkColor: "#140E0A",
+                    accentColor: "#B91C1C",
+                    frameColor: "#D3B99E",
+                    background: { type: "gradient" as const, from: "#FBECDE", to: "#E8D3C0", direction: "to-bottom-right" as const },
+                  }
+                : {
+                    paperTone: "#FAF8F2",
+                    inkColor: "#111827",
+                    accentColor: "#2563EB",
+                    frameColor: "#D6DDE7",
+                    background: { type: "gradient" as const, from: "#F6F8FB", to: "#E7EEF7", direction: "to-bottom-right" as const },
+                  };
+
+    const paperTilt =
+      visualStyle === "historic-edition"
+        ? -3.5
+        : visualStyle === "tabloid-shock"
+          ? -2.5
+        : visualStyle === "sports-daily"
+            ? -1.8
+            : visualStyle === "modern-breaking-news"
+              ? -0.4
+              : visualStyle === "financial-journal"
+                ? -0.8
+                : -0.6;
+
+  return {
+    templateId: "newspaper-front-page",
+    confidence: "high",
+    reasoning: "Heuristic: detected an explicit newspaper/front-page prompt with deterministic layout intent",
+    aspect_ratio: "16:9",
+    params: {
+      masthead,
+      editionLine: visualStyle === "historic-edition" ? "Vol. CMLXIX · Historic Edition" : "Vol. XLII · No. 184",
+      dateLine:
+        visualStyle === "historic-edition"
+          ? "New York, Sunday, July 21, 1969"
+          : visualStyle === "modern-breaking-news"
+            ? "Global Desk, Breaking Edition"
+            : "Special Morning Edition",
+      priceLine: visualStyle === "historic-edition" ? "10 cents" : "Price 25 cents",
+      kicker,
+      headline: deriveHeadline(),
+      subheadline: deriveSubheadline(),
+      photoLabel: visualStyle === "historic-edition" ? "Archive Photo" : "Wire Photo",
+      photoCaption:
+        visualStyle === "historic-edition"
+          ? "Mission image from the lunar surface."
+          : visualStyle === "modern-breaking-news"
+            ? "Wire photo"
+            : "Front-page wire photo",
+      columns: buildColumns(),
+      footerLine: footerNote,
+      visualStyle,
+      paperTone: palette.paperTone,
+      inkColor: palette.inkColor,
+        accentColor: palette.accentColor,
+        frameColor: palette.frameColor,
+        background: palette.background,
+        paperTilt,
+        entranceAnimation: "fade-in",
+        duration: 7,
+      },
   };
 }

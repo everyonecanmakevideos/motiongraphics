@@ -1,0 +1,43 @@
+{
+  "templateId": "newspaper-front-page",
+  "params": {
+    "masthead": "Evening Chronicle",
+    "editionLine": "Vol. CMLXIX · Historic Edition",
+    "dateLine": "New York, Sunday, July 21, 1969",
+    "priceLine": "10 cents",
+    "kicker": "Archive Edition",
+    "headline": "Global Market Crash",
+    "subheadline": "Investors react as markets swing and uncertainty spreads.",
+    "photoLabel": "Archive Photo",
+    "photoCaption": "Mission image from the lunar surface.",
+    "footerLine": "Reconstructed in archival print style for dramatic historical storytelling.",
+    "columns": [
+      {
+        "title": "Impact On Globe",
+        "text": "Markets react sharply as confidence slips and volatility rises. Analysts warn of cascading consequences across sectors and regions."
+      },
+      {
+        "title": "Investor Reactions",
+        "text": "Traders scramble to reposition portfolios while regulators monitor the pace of the downturn and calls for stability grow louder."
+      },
+      {
+        "title": "What Comes Next",
+        "text": "Leaders debate emergency measures as businesses and households brace for aftershocks in the days ahead."
+      }
+    ],
+    "visualStyle": "historic-edition",
+    "paperTone": "#EEE0C2",
+    "inkColor": "#1A1410",
+    "accentColor": "#7C2D12",
+    "frameColor": "#C5B38A",
+    "background": {
+      "type": "grain",
+      "baseColor": "#EFE4CD",
+      "grainOpacity": 0.09
+    },
+    "entranceAnimation": "fade-in",
+    "duration": 7,
+    "paperTilt": -3.5,
+    "showPhotoFrame": true
+  }
+}
