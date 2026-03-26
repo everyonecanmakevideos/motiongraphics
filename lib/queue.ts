@@ -107,7 +107,10 @@ async function failJob(jobId: string, step: number, error: string): Promise<void
   emit(jobId, { jobId, step, status: "failed", label: "Failed: " + error.slice(0, 200), error });
 }
 
-async function runPipeline(jobId: string, previewOnly: boolean): Promise<void> {
+async function runPipeline(
+  jobId: string,
+  previewOnly: boolean,
+): Promise<void> {
   const job = await getJob(jobId);
   if (!job) return;
 

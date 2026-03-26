@@ -21,6 +21,36 @@ function resolveDimensions(aspectRatio?: string): { width: number; height: numbe
   return { width: 1920, height: 1080 };
 }
 
+function getBrowserExecutable(): string | null {
+  const fromEnv = process.env.REMOTION_BROWSER_EXECUTABLE;
+  const fallback = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  const candidate = fromEnv || fallback;
+  if (candidate && fs.existsSync(candidate)) return candidate;
+  return null;
+}
+
+function getBrowserExecutableFlag(): string {
+  const browserExecutable = getBrowserExecutable();
+  if (!browserExecutable) return "";
+  // Quote path for shell safety.
+  const escaped = browserExecutable.replace(/"/g, '\\"');
+  return ` --browser-executable="${escaped}"`;
+}
+
+function ensureRemotionBrowser(): void {
+  // Remotion needs a headless browser for rendering frames.
+  // On fresh machines it may not exist yet; this downloads Chrome Headless Shell.
+  execSync("npx remotion browser ensure", {
+    stdio: "pipe",
+    cwd: PROJECT_ROOT,
+    env: { ...process.env },
+  });
+}
+
+function isNoBrowserError(message: string): boolean {
+  return message.includes("No browser found for rendering frames!");
+}
+
 /**
  * Renders a template scene by passing inputProps to Remotion's TemplateScene composition.
  * No source file is overwritten — the template component is pre-compiled.
@@ -52,6 +82,7 @@ export async function renderTemplate(
         videoLocalPath +
         " --props=" +
         propsFilePath +
+        getBrowserExecutableFlag() +
         " --concurrency=1 --gl=swangle --disable-web-security",
       {
         stdio: "pipe",
@@ -69,12 +100,48 @@ export async function renderTemplate(
     const stderr = e.stderr?.toString() ?? "";
     const stdout = e.stdout?.toString() ?? "";
     const detail = (stderr + "\n" + stdout).trim();
-    // Clean up props file
-    try { fs.unlinkSync(propsFilePath); } catch { /* non-fatal */ }
-    throw new Error(
-      "Template render failed: " +
-        (detail || e.message || "Unknown error").slice(0, 1000)
-    );
+    if (isNoBrowserError(detail || e.message || "")) {
+      // Install headless shell and retry once.
+      ensureRemotionBrowser();
+      try {
+        execSync(
+          "npx remotion render src/index.ts TemplateScene " +
+            videoLocalPath +
+            " --props=" +
+            propsFilePath +
+            getBrowserExecutableFlag() +
+            " --concurrency=1 --gl=swangle --disable-web-security",
+          {
+            stdio: "pipe",
+            cwd: PROJECT_ROOT,
+            env: {
+              ...process.env,
+              REMOTION_APP_DURATION_FRAMES: String(durationFrames),
+              REMOTION_APP_VIDEO_WIDTH: String(width),
+              REMOTION_APP_VIDEO_HEIGHT: String(height),
+            },
+          },
+        );
+      } catch (retryErr) {
+        const re = retryErr as { stderr?: Buffer; stdout?: Buffer; message?: string };
+        const rstderr = re.stderr?.toString() ?? "";
+        const rstdout = re.stdout?.toString() ?? "";
+        const rdetail = (rstderr + "\n" + rstdout).trim();
+        // Clean up props file
+        try { fs.unlinkSync(propsFilePath); } catch { /* non-fatal */ }
+        throw new Error(
+          "Template render failed: " +
+            (rdetail || re.message || "Unknown error").slice(0, 1000),
+        );
+      }
+    } else {
+      // Clean up props file
+      try { fs.unlinkSync(propsFilePath); } catch { /* non-fatal */ }
+      throw new Error(
+        "Template render failed: " +
+          (detail || e.message || "Unknown error").slice(0, 1000),
+      );
+    }
   }
 
   // Upload to R2
@@ -118,6 +185,7 @@ export async function renderMultiScene(
         videoLocalPath +
         " --props=" +
         propsFilePath +
+        getBrowserExecutableFlag() +
         " --concurrency=1 --gl=swangle --disable-web-security",
       {
         stdio: "pipe",
@@ -135,11 +203,45 @@ export async function renderMultiScene(
     const stderr = e.stderr?.toString() ?? "";
     const stdout = e.stdout?.toString() ?? "";
     const detail = (stderr + "\n" + stdout).trim();
-    try { fs.unlinkSync(propsFilePath); } catch { /* non-fatal */ }
-    throw new Error(
-      "Multi-scene render failed: " +
-        (detail || e.message || "Unknown error").slice(0, 1000)
-    );
+    if (isNoBrowserError(detail || e.message || "")) {
+      ensureRemotionBrowser();
+      try {
+        execSync(
+          "npx remotion render src/index.ts SceneSequence " +
+            videoLocalPath +
+            " --props=" +
+            propsFilePath +
+            getBrowserExecutableFlag() +
+            " --concurrency=1 --gl=swangle --disable-web-security",
+          {
+            stdio: "pipe",
+            cwd: PROJECT_ROOT,
+            env: {
+              ...process.env,
+              REMOTION_APP_DURATION_FRAMES: String(totalDurationFrames),
+              REMOTION_APP_VIDEO_WIDTH: String(width),
+              REMOTION_APP_VIDEO_HEIGHT: String(height),
+            },
+          },
+        );
+      } catch (retryErr) {
+        const re = retryErr as { stderr?: Buffer; stdout?: Buffer; message?: string };
+        const rstderr = re.stderr?.toString() ?? "";
+        const rstdout = re.stdout?.toString() ?? "";
+        const rdetail = (rstderr + "\n" + rstdout).trim();
+        try { fs.unlinkSync(propsFilePath); } catch { /* non-fatal */ }
+        throw new Error(
+          "Multi-scene render failed: " +
+            (rdetail || re.message || "Unknown error").slice(0, 1000),
+        );
+      }
+    } else {
+      try { fs.unlinkSync(propsFilePath); } catch { /* non-fatal */ }
+      throw new Error(
+        "Multi-scene render failed: " +
+          (detail || e.message || "Unknown error").slice(0, 1000),
+      );
+    }
   }
 
   const videoKey = "videos/video_" + jobId + ".mp4";

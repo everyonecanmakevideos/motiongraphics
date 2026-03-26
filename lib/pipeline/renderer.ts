@@ -52,6 +52,31 @@ function getDimensions(specData: Record<string, unknown>): { width: number; heig
   return DEFAULT_DIMS;
 }
 
+function ensureRemotionBrowser(): void {
+  // Remotion needs a headless browser (Chrome Headless Shell) for rendering.
+  // On fresh machines this may not be present; `remotion browser ensure` downloads it.
+  execSync("npx remotion browser ensure", {
+    stdio: "pipe",
+    cwd: PROJECT_ROOT,
+    env: {
+      ...process.env,
+    },
+  });
+}
+
+function isNoBrowserError(message: string): boolean {
+  return message.includes("No browser found for rendering frames!");
+}
+
+function getBrowserExecutableFlag(): string {
+  const fromEnv = process.env.REMOTION_BROWSER_EXECUTABLE;
+  const fallback = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  const candidate = fromEnv || fallback;
+  if (!candidate || !fs.existsSync(candidate)) return "";
+  const escaped = candidate.replace(/"/g, '\\"');
+  return ` --browser-executable="${escaped}"`;
+}
+
 export function typeCheck(): { success: boolean; error: string | null } {
   try {
     execSync("npx tsc --noEmit", { stdio: "pipe", cwd: PROJECT_ROOT });
@@ -95,26 +120,36 @@ export async function renderAndUpload(
   }
 
   // Remotion render
+  const renderCmd =
+    "npx remotion render src/index.ts GeneratedMotion " +
+    videoLocalPath +
+    getBrowserExecutableFlag() +
+    " --concurrency=1 --gl=swangle --disable-web-security";
+
+  const renderEnv = {
+    ...process.env,
+    REMOTION_APP_DURATION_FRAMES: String(durationFrames),
+    REMOTION_APP_VIDEO_WIDTH: String(width),
+    REMOTION_APP_VIDEO_HEIGHT: String(height),
+  };
+
   try {
-    execSync(
-      "npx remotion render src/index.ts GeneratedMotion " + videoLocalPath + " --concurrency=1 --gl=swangle --disable-web-security",
-      {
-        stdio: "pipe",
-        cwd: PROJECT_ROOT,
-        env: {
-          ...process.env,
-          REMOTION_APP_DURATION_FRAMES: String(durationFrames),
-          REMOTION_APP_VIDEO_WIDTH: String(width),
-          REMOTION_APP_VIDEO_HEIGHT: String(height),
-        },
-      }
-    );
+    execSync(renderCmd, { stdio: "pipe", cwd: PROJECT_ROOT, env: renderEnv });
   } catch (err) {
     const e = err as { stderr?: Buffer; stdout?: Buffer; message?: string };
     const stderr = e.stderr?.toString() ?? "";
     const stdout = e.stdout?.toString() ?? "";
     const detail = (stderr + "\n" + stdout).trim();
-    throw new Error("Remotion render failed: " + (detail || e.message || "Unknown error").slice(0, 1000));
+
+    if (isNoBrowserError(detail || e.message || "")) {
+      ensureRemotionBrowser();
+      execSync(renderCmd, { stdio: "pipe", cwd: PROJECT_ROOT, env: renderEnv });
+    } else {
+      throw new Error(
+        "Remotion render failed: " +
+          (detail || e.message || "Unknown error").slice(0, 1000)
+      );
+    }
   }
 
   // Upload to R2

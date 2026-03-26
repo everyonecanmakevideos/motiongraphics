@@ -24,9 +24,9 @@ export default function PromptForm() {
     return typeof durationSec === "number" && Number.isFinite(durationSec) ? durationSec : 6;
   }, [durationSec]);
 
-  async function submitJob(e: React.FormEvent, previewOnly: boolean) {
+  async function submitPreviewJob(e: React.FormEvent) {
     e.preventDefault();
-    if (!prompt.trim()) return;
+    if (!prompt.trim() || loading) return;
     setLoading(true);
     setError("");
 
@@ -38,7 +38,7 @@ export default function PromptForm() {
           prompt,
           aspectRatio,
           durationSec,
-          previewOnly,
+          previewOnly: true,
         }),
       });
       const data = await res.json();
@@ -47,14 +47,10 @@ export default function PromptForm() {
         return;
       }
 
-      if (previewOnly) {
-        setPreviewJobId(data.id);
-        setPreviewJob(null);
-        setTrace([]);
-        lastTraceKeyRef.current = "";
-      } else {
-        router.push("/jobs/" + data.id);
-      }
+      setPreviewJobId(data.id);
+      setPreviewJob(null);
+      setTrace([]);
+      lastTraceKeyRef.current = "";
     } catch {
       setError("Network error — please try again");
     } finally {
@@ -88,7 +84,12 @@ export default function PromptForm() {
           });
         }
 
-        if (job.status === "done" || job.status === "failed") {
+        if (job.status === "failed") {
+          if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+          return;
+        }
+        // Preview mode: stop polling when preview is done.
+        if (job.status === "done") {
           if (pollTimerRef.current) clearInterval(pollTimerRef.current);
         }
       } catch {
@@ -101,8 +102,37 @@ export default function PromptForm() {
     };
   }, [previewJobId]);
 
+  async function handleGenerateClicked() {
+    if (!prompt.trim() || loading) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt,
+          aspectRatio,
+          durationSec,
+          previewOnly: false,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Failed to submit");
+        return;
+      }
+      router.push(`/jobs/${data.id}`);
+    } catch {
+      setError("Network error — please try again");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <form onSubmit={(e) => submitJob(e, false)} className="flex flex-col gap-4">
+    <form onSubmit={(e) => submitPreviewJob(e)} className="flex flex-col gap-4">
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
@@ -149,52 +179,46 @@ export default function PromptForm() {
         <span className="text-xs text-neutral-600">{prompt.length} / 3000</span>
         <div className="flex items-center gap-3">
           {error && <span className="text-xs text-red-400">{error}</span>}
-          <button
-            type="button"
-            onClick={(e) => submitJob(e, true)}
-            disabled={loading || !prompt.trim()}
-            className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/15 disabled:bg-white/5 disabled:border-white/10 disabled:text-neutral-500 text-neutral-200 text-sm font-medium rounded-xl transition-all duration-200"
-          >
-            {loading ? "Working..." : "Preview (Instant)"}
-          </button>
-          <button
-            type="submit"
-            disabled={loading || !prompt.trim()}
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 disabled:from-neutral-700 disabled:to-neutral-700 disabled:text-neutral-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 disabled:shadow-none flex items-center gap-2"
-          >
-            {loading && (
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-            )}
-            {loading ? "Submitting..." : "Generate Animation"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={loading || !prompt.trim()}
+              className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/15 disabled:bg-white/5 disabled:border-white/10 disabled:text-neutral-500 text-neutral-200 text-sm font-medium rounded-xl transition-all duration-200"
+            >
+              {loading ? "Working..." : "Preview (Instant)"}
+            </button>
+            <button
+              type="button"
+              onClick={handleGenerateClicked}
+              disabled={loading || !prompt.trim()}
+              className="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 disabled:from-neutral-700 disabled:to-neutral-700 disabled:text-neutral-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 disabled:shadow-none"
+            >
+              {loading ? "Working..." : "Generate Animation"}
+            </button>
+          </div>
         </div>
       </div>
 
       {previewJobId && (
         <div className="mt-1">
           {previewJob?.status === "done" && previewJob?.template_id && previewJob?.template_params ? (
-            <InlineRemotionPreview
-              templateId={previewJob.template_id}
-              params={previewJob.template_params ?? {}}
-              aspectRatio={aspectRatio}
-              durationSec={previewDurationSec}
-            />
+            <>
+              <InlineRemotionPreview
+                templateId={previewJob.template_id}
+                params={previewJob.template_params ?? {}}
+                aspectRatio={aspectRatio}
+                durationSec={previewDurationSec}
+              />
+            </>
           ) : (
             <div className="glass rounded-2xl p-4 text-center">
               {previewJob?.status === "failed" ? (
                 <>
                   <p className="text-sm text-red-400">Preview failed.</p>
-                  {previewJob?.error && (
-                    <p className="text-xs text-neutral-500 mt-2">{previewJob.error}</p>
-                  )}
+                  {previewJob?.error && <p className="text-xs text-neutral-500 mt-2">{previewJob.error}</p>}
                 </>
               ) : (
-                <>
-                  <p className="text-sm text-neutral-400">Generating preview…</p>
-                </>
+                <p className="text-sm text-neutral-400">Generating preview…</p>
               )}
             </div>
           )}
