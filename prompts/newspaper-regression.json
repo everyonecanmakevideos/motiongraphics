@@ -1,0 +1,50 @@
+[
+  {
+    "id": "newspaper-classic-railway-launch",
+    "prompt": "Create a classic newspaper front page about a city opening a major new railway line. Make it feel like a respected daily paper with a centered masthead, formal headline hierarchy, a traditional broadsheet structure, balanced editorial columns, section labels, and a moderate news photo.",
+    "expectedTemplateId": "newspaper-front-page",
+    "coverage": "classic baseline"
+  },
+  {
+    "id": "newspaper-classic-election-result",
+    "prompt": "Create a traditional broadsheet newspaper front page about a national election result with formal hierarchy, balanced columns, classic editorial packaging, and a serious front-page newspaper feel.",
+    "expectedTemplateId": "newspaper-front-page",
+    "coverage": "classic alternate wording"
+  },
+  {
+    "id": "newspaper-modern-metro-transit",
+    "prompt": "Create a metro newspaper grid front page about a city transit expansion with a modular modern newspaper layout. Make it feel like a fast city-desk product with news cards, brief panels, commuter updates, a modern metro masthead, a modular editorial grid, and a clean transit-news identity.",
+    "expectedTemplateId": "newspaper-modern-grid",
+    "coverage": "modern grid baseline"
+  },
+  {
+    "id": "newspaper-modern-service-disruptions",
+    "prompt": "Create a modern city metro newspaper layout about service disruptions with modular briefing cards, commuter notes, update blocks, metro-desk packaging, and a fast newsroom grid.",
+    "expectedTemplateId": "newspaper-modern-grid",
+    "coverage": "modern grid alternate wording"
+  },
+  {
+    "id": "newspaper-magazine-celebrity-cover",
+    "prompt": "Create a magazine-style newspaper cover story about a celebrity interview with a dominant cover image and editorial cover feel. Make it feel like a premium weekend review with bold cover packaging, teaser lines, a large cover headline, feature-led publication styling, and a polished cover-story identity.",
+    "expectedTemplateId": "newspaper-magazine-cover",
+    "coverage": "magazine cover baseline"
+  },
+  {
+    "id": "newspaper-magazine-weekend-review",
+    "prompt": "Create a weekend review newspaper cover story about a major film star with a dominant cover image, editorial teaser packaging, premium magazine-like presentation, and a feature-cover publication feel.",
+    "expectedTemplateId": "newspaper-magazine-cover",
+    "coverage": "magazine cover alternate wording"
+  },
+  {
+    "id": "newspaper-ledger-market-briefing",
+    "prompt": "Create a minimal newspaper briefing layout about market updates with a clean ledger-style newspaper design. Make it feel like a disciplined morning briefing with restrained typography, compact note panels, briefing cards, financial-desk structure, and a quiet market-report identity.",
+    "expectedTemplateId": "newspaper-minimal-ledger",
+    "coverage": "minimal ledger baseline"
+  },
+  {
+    "id": "newspaper-ledger-polar-cut-funding",
+    "prompt": "Create a minimal ledger-style newspaper briefing about startup funding news, with the lead story stating that Polar Cut raised 50 million dollars in a new funding round. Make it feel like a disciplined morning financial briefing with restrained typography, compact note panels, briefing cards, financial-desk structure, and a quiet market-report identity.",
+    "expectedTemplateId": "newspaper-minimal-ledger",
+    "coverage": "minimal ledger named-entity funding story"
+  }
+]

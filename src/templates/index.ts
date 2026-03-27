@@ -34,6 +34,8 @@ import { ProblemSolution } from "./problem-solution/ProblemSolution";
 import { BeforeAfter } from "./before-after/BeforeAfter";
 import { ProcessSteps } from "./process-steps/ProcessSteps";
 import { MapHighlight } from "./map-highlight/MapHighlight";
+import { MapRouteAnimation } from "./map-route-animation/MapRouteAnimation";
+import { MapNetwork } from "./map-network/MapNetwork";
 import { MaskedTextReveal } from "./masked-text-reveal/MaskedTextReveal";
 import { CinematicHero } from "./cinematic-hero/CinematicHero";
 import { CinematicTransition } from "./cinematic-transition/CinematicTransition";
@@ -83,6 +85,8 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "before-after": BeforeAfter,
   "process-steps": ProcessSteps,
   "map-highlight": MapHighlight,
+  "map-route-animation": MapRouteAnimation,
+  "map-network": MapNetwork,
   "masked-text-reveal": MaskedTextReveal,
   "cinematic-hero": CinematicHero,
   "cinematic-transition": CinematicTransition,

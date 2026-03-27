@@ -53,10 +53,10 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Icon with text, feature highlight, callout, explainer | "icon-callout" |
 | Testimonial wall, customer reviews, wall of love, multiple testimonials, user feedback collage, review cards | "testimonial-wall" |
 | YouTube chapters, video chapters, chapter list, timestamped sections, episode outline, chapter markers, watch guide | "yt-chapters" |
-| Newspaper front page, newspaper headline, front page story, historic newspaper, editorial front page, headline edition, breaking edition | "newspaper-front-page" |
-| Metro newspaper, modular newspaper grid, modern newspaper layout, compact city newspaper, newspaper grid | "newspaper-modern-grid" |
-| Magazine-style newspaper, newspaper cover story, feature cover, editorial cover, weekly newspaper cover | "newspaper-magazine-cover" |
-| Minimal newspaper, clean newspaper briefing, ledger-style newspaper, minimalist newspaper layout | "newspaper-minimal-ledger" |
+| Newspaper front page, newspaper headline, front page story, historic newspaper, editorial front page, headline edition, breaking edition, broadsheet, respected daily paper, traditional daily paper | "newspaper-front-page" |
+| Metro newspaper, modular newspaper grid, modern newspaper layout, compact city newspaper, newspaper grid, city-desk newspaper, metro desk, commuter newspaper, transit-news front page | "newspaper-modern-grid" |
+| Magazine-style newspaper, newspaper cover story, feature cover, editorial cover, weekly newspaper cover, weekend review cover, feature-led publication, teaser-led cover package | "newspaper-magazine-cover" |
+| Minimal newspaper, clean newspaper briefing, ledger-style newspaper, minimalist newspaper layout, market briefing newspaper, morning financial briefing, investor update newspaper | "newspaper-minimal-ledger" |
 | Event promo, event poster, webinar announcement, conference registration, summit invite, launch event, ticketed event, save the date | "event-promo-slate" |
 | Pricing table, pricing comparison, pricing tiers, subscription plans, packages, 3-tier cards, three plans, best value plan, recommended middle card | "pricing-comparison" |
 | Side-by-side comparison, versus, pros/cons, A vs B | "comparison-layout" |
@@ -71,6 +71,8 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Problem and solution, challenge and answer, issue and fix | "problem-solution" |
 | Before and after, transformation, change, improvement | "before-after" |
 | Numbered steps, onboarding steps, step 1/2/3 phrasing, process flow, workflow, procedure, how-to | "process-steps" |
+| Route map, travel route, journey path, flight path, shipping route, point-to-point map, common map animation | "map-route-animation" |
+| Network map, hub-and-spoke map, connected hubs, global network, city network, office network, infrastructure network | "map-network" |
 | Map, locations, geographic markers, global presence, offices | "map-highlight" |
 | Masked text reveal, cinematic unveil, text behind mask, wipe reveal, circle reveal | "masked-text-reveal" |
 | Cinematic title, movie-style intro, dramatic opening, epic hero title, film title card | "cinematic-hero" |
@@ -463,7 +465,7 @@ function promptLooksLikeCreativeFallbackCandidate(prompt: string): boolean {
 }
 
 function promptHasExplicitDeterministicTemplateAnchor(prompt: string): boolean {
-  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print)/i.test(
+  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print|route map|journey path|flight path|shipping route|point-to-point map|common map animation|network map|hub-and-spoke|connected hubs|global network|office network|city network|infrastructure network|\bmap\b|locations|global presence|offices)/i.test(
     prompt,
   );
 }
@@ -1278,6 +1280,72 @@ function heuristicNewspaperFrontPageIntent(
 ): IntentResult | null {
   const normalized = prompt.toLowerCase();
 
+  const includesAny = (signals: string[]) =>
+    signals.some((signal) => normalized.includes(signal));
+
+  const classicSignals = [
+    "broadsheet",
+    "respected daily paper",
+    "traditional daily paper",
+    "serious front-page",
+    "balanced editorial columns",
+    "formal hierarchy",
+    "centered masthead",
+  ];
+
+  const modernGridSignals = [
+    "modern grid",
+    "newspaper grid",
+    "metro",
+    "compact city",
+    "modular newspaper",
+    "city-desk",
+    "city desk",
+    "metro desk",
+    "commuter updates",
+    "transit-news",
+    "transit news",
+    "modular editorial grid",
+    "brief panels",
+    "news cards",
+  ];
+
+  const magazineSignals = [
+    "magazine-style",
+    "magazine style",
+    "feature cover",
+    "editorial cover",
+    "weekly cover",
+    "weekend review",
+    "cover package",
+    "cover packaging",
+    "feature-led publication",
+    "feature-led",
+    "teaser lines",
+    "dominant cover image",
+    "cover-story identity",
+  ];
+
+  const minimalLedgerSignals = [
+    "minimal newspaper",
+    "minimalist newspaper",
+    "clean newspaper",
+    "ledger-style",
+    "ledger style",
+    "briefing",
+    "morning briefing",
+    "financial briefing",
+    "market briefing",
+    "market-report",
+    "market report",
+    "investor update",
+    "startup funding",
+    "funding round",
+    "briefing cards",
+    "note panels",
+    "market updates",
+  ];
+
   const hasNewspaperIntent =
     /\bnewspaper\b/.test(normalized) ||
     /\bfront[ -]?page\b/.test(normalized) ||
@@ -1288,39 +1356,24 @@ function heuristicNewspaperFrontPageIntent(
     /\barchive edition\b/.test(normalized) ||
     /\bcover story\b/.test(normalized) ||
     /\bnewsprint\b/.test(normalized) ||
-    /\btabloid\b/.test(normalized);
+    /\btabloid\b/.test(normalized) ||
+    includesAny(classicSignals) ||
+    includesAny(modernGridSignals) ||
+    includesAny(magazineSignals) ||
+    includesAny(minimalLedgerSignals);
 
   if (!hasNewspaperIntent) return null;
 
   const templateId = (() => {
-    if (
-      normalized.includes("magazine-style") ||
-      normalized.includes("magazine style") ||
-      normalized.includes("feature cover") ||
-      normalized.includes("editorial cover") ||
-      normalized.includes("weekly cover")
-    ) {
+    if (includesAny(magazineSignals)) {
       return "newspaper-magazine-cover" as const;
     }
 
-    if (
-      normalized.includes("modern grid") ||
-      normalized.includes("newspaper grid") ||
-      normalized.includes("metro") ||
-      normalized.includes("compact city") ||
-      normalized.includes("modular newspaper")
-    ) {
+    if (includesAny(modernGridSignals)) {
       return "newspaper-modern-grid" as const;
     }
 
-    if (
-      normalized.includes("minimal newspaper") ||
-      normalized.includes("minimalist newspaper") ||
-      normalized.includes("clean newspaper") ||
-      normalized.includes("ledger-style") ||
-      normalized.includes("ledger style") ||
-      normalized.includes("briefing")
-    ) {
+    if (includesAny(minimalLedgerSignals)) {
       return "newspaper-minimal-ledger" as const;
     }
 

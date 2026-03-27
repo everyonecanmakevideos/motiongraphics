@@ -1,0 +1,18 @@
+{
+  "id": "map-network",
+  "name": "Map Network",
+  "description": "A connected network map for hub-and-spoke systems, global infrastructure, office networks, and multi-city connectivity.",
+  "tags": [
+    "map",
+    "network",
+    "hubs",
+    "connectivity",
+    "infrastructure",
+    "global",
+    "locations"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

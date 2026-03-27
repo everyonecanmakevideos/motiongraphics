@@ -1,0 +1,18 @@
+{
+  "id": "map-route-animation",
+  "name": "Map Route Animation",
+  "description": "A common animated route map for journeys, travel paths, shipping flows, and point-to-point movement.",
+  "tags": [
+    "map",
+    "route",
+    "journey",
+    "travel",
+    "shipping",
+    "path",
+    "locations"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

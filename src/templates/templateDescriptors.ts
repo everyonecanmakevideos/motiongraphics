@@ -97,6 +97,10 @@ import processStepsManifest from "./process-steps/manifest.json";
 
 import { MapHighlightSchema } from "./map-highlight/schema";
 import mapHighlightManifest from "./map-highlight/manifest.json";
+import { MapRouteAnimationSchema } from "./map-route-animation/schema";
+import mapRouteAnimationManifest from "./map-route-animation/manifest.json";
+import { MapNetworkSchema } from "./map-network/schema";
+import mapNetworkManifest from "./map-network/manifest.json";
 
 import { MaskedTextRevealSchema } from "./masked-text-reveal/schema";
 import maskedTextRevealManifest from "./masked-text-reveal/manifest.json";
@@ -296,6 +300,16 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "map-highlight",
     schema: MapHighlightSchema,
     manifest: mapHighlightManifest as TemplateManifest,
+  },
+  {
+    id: "map-route-animation",
+    schema: MapRouteAnimationSchema,
+    manifest: mapRouteAnimationManifest as TemplateManifest,
+  },
+  {
+    id: "map-network",
+    schema: MapNetworkSchema,
+    manifest: mapNetworkManifest as TemplateManifest,
   },
   {
     id: "masked-text-reveal",
