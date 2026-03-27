@@ -1,0 +1,16 @@
+{
+  "id": "newspaper-magazine-cover",
+  "name": "Newspaper Magazine Cover",
+  "description": "A feature-cover newspaper treatment with a dominant image area, cover-story headline, and teaser rail.",
+  "tags": ["newspaper", "magazine", "cover", "feature", "editorial", "print"],
+  "compatibleAnimations": [
+    "fade-in",
+    "slide-up",
+    "scale-pop",
+    "camera-drift",
+    "none"
+  ],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

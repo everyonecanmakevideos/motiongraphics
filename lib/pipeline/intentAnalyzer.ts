@@ -1,8 +1,14 @@
 import OpenAI from "openai";
-import { getTemplateDescriptions, getTemplateIds } from "../../src/templates/registry-server";
+import {
+  getTemplateDescriptions,
+  getTemplateIds,
+} from "../../src/templates/registry-server";
 import type { IntentResult } from "../templates/resolver";
 import { validateTemplateParams } from "../templates/resolver";
-import type { MultiSceneResult, SceneDefinition } from "../templates/sceneTypes";
+import type {
+  MultiSceneResult,
+  SceneDefinition,
+} from "../templates/sceneTypes";
 import { isCompositeScene } from "../templates/sceneTypes";
 
 const SYSTEM_PROMPT = `You are a motion graphics intent analyzer.
@@ -48,6 +54,9 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Testimonial wall, customer reviews, wall of love, multiple testimonials, user feedback collage, review cards | "testimonial-wall" |
 | YouTube chapters, video chapters, chapter list, timestamped sections, episode outline, chapter markers, watch guide | "yt-chapters" |
 | Newspaper front page, newspaper headline, front page story, historic newspaper, editorial front page, headline edition, breaking edition | "newspaper-front-page" |
+| Metro newspaper, modular newspaper grid, modern newspaper layout, compact city newspaper, newspaper grid | "newspaper-modern-grid" |
+| Magazine-style newspaper, newspaper cover story, feature cover, editorial cover, weekly newspaper cover | "newspaper-magazine-cover" |
+| Minimal newspaper, clean newspaper briefing, ledger-style newspaper, minimalist newspaper layout | "newspaper-minimal-ledger" |
 | Event promo, event poster, webinar announcement, conference registration, summit invite, launch event, ticketed event, save the date | "event-promo-slate" |
 | Pricing table, pricing comparison, pricing tiers, subscription plans, packages, 3-tier cards, three plans, best value plan, recommended middle card | "pricing-comparison" |
 | Side-by-side comparison, versus, pros/cons, A vs B | "comparison-layout" |
@@ -407,9 +416,10 @@ For composite scenes within the scenes array, replace templateId/params with:
 }`;
 
 function buildSystemPrompt(): string {
-  return SYSTEM_PROMPT
-    .replace("{TEMPLATE_LIST}", getTemplateDescriptions())
-    .replace("{TEMPLATE_IDS}", getTemplateIds().join(", "));
+  return SYSTEM_PROMPT.replace(
+    "{TEMPLATE_LIST}",
+    getTemplateDescriptions(),
+  ).replace("{TEMPLATE_IDS}", getTemplateIds().join(", "));
 }
 
 export type AnalyzerResult = IntentResult | MultiSceneResult;
@@ -417,8 +427,12 @@ export type AnalyzerResult = IntentResult | MultiSceneResult;
 /**
  * Type guard: returns true if the LLM returned a multi-scene result.
  */
-export function isMultiSceneResult(result: AnalyzerResult): result is MultiSceneResult {
-  return "scenes" in result && Array.isArray((result as MultiSceneResult).scenes);
+export function isMultiSceneResult(
+  result: AnalyzerResult,
+): result is MultiSceneResult {
+  return (
+    "scenes" in result && Array.isArray((result as MultiSceneResult).scenes)
+  );
 }
 
 function promptLooksLikeCreativeFallbackCandidate(prompt: string): boolean {
@@ -449,10 +463,15 @@ function promptLooksLikeCreativeFallbackCandidate(prompt: string): boolean {
 }
 
 function promptHasExplicitDeterministicTemplateAnchor(prompt: string): boolean {
-  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print)/i.test(prompt);
+  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print)/i.test(
+    prompt,
+  );
 }
 
-function downgradeBorderlineCreativeMatch(prompt: string, result: AnalyzerResult): AnalyzerResult {
+function downgradeBorderlineCreativeMatch(
+  prompt: string,
+  result: AnalyzerResult,
+): AnalyzerResult {
   if (!promptLooksLikeCreativeFallbackCandidate(prompt)) return result;
   if (promptHasExplicitDeterministicTemplateAnchor(prompt)) return result;
 
@@ -479,7 +498,10 @@ function downgradeBorderlineCreativeMatch(prompt: string, result: AnalyzerResult
     "masked-text-reveal",
   ]);
 
-  if (result.confidence === "high" && likelyOverfitTemplateIds.has(result.templateId)) {
+  if (
+    result.confidence === "high" &&
+    likelyOverfitTemplateIds.has(result.templateId)
+  ) {
     return {
       ...result,
       confidence: "medium",
@@ -504,7 +526,10 @@ function validateMultiSceneParams(result: MultiSceneResult): string[] {
       // Validate each region's params
       for (let r = 0; r < (scene.regions?.length ?? 0); r++) {
         const region = scene.regions![r];
-        const regionErrors = validateTemplateParams(region.templateId, region.params);
+        const regionErrors = validateTemplateParams(
+          region.templateId,
+          region.params,
+        );
         for (const err of regionErrors) {
           errors.push(`scene[${i}].region[${r}].${region.templateId}: ${err}`);
         }
@@ -531,7 +556,10 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   // obvious "numbered onboarding steps" prompts to process-steps so the
   // template (and current-step highlighting) works reliably.
 
-  function maybeInjectDeliveryProcessStepIconsEarly(p: string, result: IntentResult): void {
+  function maybeInjectDeliveryProcessStepIconsEarly(
+    p: string,
+    result: IntentResult,
+  ): void {
     if (result.templateId !== "process-steps") return;
     const l = p.toLowerCase();
     const wantsDelivery =
@@ -550,10 +578,25 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
     const normalizedToIcon = (label: string): string | undefined => {
       const ll = label.toLowerCase();
-      if (ll.includes("order placed") || ll.includes("placed") || ll.includes("order")) return "checkmark";
+      if (
+        ll.includes("order placed") ||
+        ll.includes("placed") ||
+        ll.includes("order")
+      )
+        return "checkmark";
       if (ll.includes("prepar") || ll.includes("being prepared")) return "gear";
-      if (ll.includes("out for delivery") || ll.includes("on the way") || ll.includes("deliver")) return "truck";
-      if (ll.includes("delivered") || ll.includes("complete") || ll.includes("received")) return "home";
+      if (
+        ll.includes("out for delivery") ||
+        ll.includes("on the way") ||
+        ll.includes("deliver")
+      )
+        return "truck";
+      if (
+        ll.includes("delivered") ||
+        ll.includes("complete") ||
+        ll.includes("received")
+      )
+        return "home";
       return undefined;
     };
 
@@ -566,7 +609,9 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
         const label = typeof step.label === "string" ? step.label : "";
         const inferred = normalizedToIcon(label);
         if (inferred) return { ...step, iconId: inferred };
-        const fallback = [undefined, "checkmark", "gear", "truck", "home"][i + 1];
+        const fallback = [undefined, "checkmark", "gear", "truck", "home"][
+          i + 1
+        ];
         return fallback ? { ...step, iconId: fallback } : step;
       }),
     };
@@ -598,7 +643,10 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   const MAX_RETRIES = 2;
   let lastError = "";
 
-  function maybeInjectDeliveryProcessStepIcons(p: string, result: IntentResult): void {
+  function maybeInjectDeliveryProcessStepIcons(
+    p: string,
+    result: IntentResult,
+  ): void {
     if (result.templateId !== "process-steps") return;
     const l = p.toLowerCase();
     const wantsDelivery =
@@ -617,10 +665,25 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
     const normalizedToIcon = (label: string): string | undefined => {
       const ll = label.toLowerCase();
-      if (ll.includes("order placed") || ll.includes("placed") || ll.includes("order")) return "checkmark";
+      if (
+        ll.includes("order placed") ||
+        ll.includes("placed") ||
+        ll.includes("order")
+      )
+        return "checkmark";
       if (ll.includes("prepar") || ll.includes("being prepared")) return "gear";
-      if (ll.includes("out for delivery") || ll.includes("on the way") || ll.includes("deliver")) return "truck";
-      if (ll.includes("delivered") || ll.includes("complete") || ll.includes("received")) return "home";
+      if (
+        ll.includes("out for delivery") ||
+        ll.includes("on the way") ||
+        ll.includes("deliver")
+      )
+        return "truck";
+      if (
+        ll.includes("delivered") ||
+        ll.includes("complete") ||
+        ll.includes("received")
+      )
+        return "home";
       return undefined;
     };
 
@@ -634,7 +697,9 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
         const inferred = normalizedToIcon(label);
         if (inferred) return { ...step, iconId: inferred };
         // Fallback by progression index for delivery-style step sets.
-        const fallback = [undefined, "checkmark", "gear", "truck", "home"][i + 1];
+        const fallback = [undefined, "checkmark", "gear", "truck", "home"][
+          i + 1
+        ];
         return fallback ? { ...step, iconId: fallback } : step;
       }),
     };
@@ -651,7 +716,10 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
       if (attempt > 0 && lastError) {
         messages.push({
           role: "user",
-          content: "The previous response had validation errors: " + lastError + "\nPlease fix the params and try again.",
+          content:
+            "The previous response had validation errors: " +
+            lastError +
+            "\nPlease fix the params and try again.",
         });
       }
 
@@ -663,7 +731,10 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const raw = (response.output[0] as any).content[0].text as string;
-      const cleaned = raw.replace(/```json/g, "").replace(/```/g, "").trim();
+      const cleaned = raw
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
 
       let parsed: AnalyzerResult;
       try {
@@ -690,20 +761,25 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
         if (attempt < MAX_RETRIES) continue;
         // If validation keeps failing, return as low confidence
         parsed.confidence = "low";
-        parsed.reasoning = "Multi-scene param validation failed after retries: " + lastError;
+        parsed.reasoning =
+          "Multi-scene param validation failed after retries: " + lastError;
         return parsed;
       }
 
       // Single-scene: validate the params against the template schema
       const singleResult = parsed as IntentResult;
       if (singleResult.templateId && singleResult.confidence === "high") {
-        const errors = validateTemplateParams(singleResult.templateId, singleResult.params);
+        const errors = validateTemplateParams(
+          singleResult.templateId,
+          singleResult.params,
+        );
         if (errors.length > 0) {
           lastError = errors.join("; ");
           if (attempt < MAX_RETRIES) continue;
           // Return as low confidence if validation keeps failing
           singleResult.confidence = "low";
-          singleResult.reasoning = "Param validation failed after retries: " + lastError;
+          singleResult.reasoning =
+            "Param validation failed after retries: " + lastError;
         }
       }
 
@@ -759,9 +835,10 @@ function heuristicProcessStepsIntent(prompt: string): IntentResult | null {
   // Parse UI-added constraints if present.
   const durationMatch = prompt.match(/Total duration:\s*(\d+)\s*s/i);
   const durationRaw = durationMatch ? Number(durationMatch[1]) : undefined;
-  const durationSec = typeof durationRaw === "number" && Number.isFinite(durationRaw)
-    ? Math.min(15, Math.max(3, Math.round(durationRaw)))
-    : undefined;
+  const durationSec =
+    typeof durationRaw === "number" && Number.isFinite(durationRaw)
+      ? Math.min(15, Math.max(3, Math.round(durationRaw)))
+      : undefined;
 
   const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
   const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
@@ -790,12 +867,16 @@ function heuristicProcessStepsIntent(prompt: string): IntentResult | null {
       connectorStyle: "arrow",
       duration: durationSec ?? 7,
       steps: stepNums.map((n) => ({ label: "Step " + n })),
-      ...(typeof explicitCurrentStep === "number" ? { currentStep: explicitCurrentStep } : {}),
+      ...(typeof explicitCurrentStep === "number"
+        ? { currentStep: explicitCurrentStep }
+        : {}),
     },
   };
 }
 
-function heuristicHeroTextFromTextAnimation(prompt: string): IntentResult | null {
+function heuristicHeroTextFromTextAnimation(
+  prompt: string,
+): IntentResult | null {
   const normalized = prompt.toLowerCase();
 
   const looksLikeTextAnimation =
@@ -818,9 +899,10 @@ function heuristicHeroTextFromTextAnimation(prompt: string): IntentResult | null
 
   const durationMatch = prompt.match(/Total duration:\s*(\d+)\s*s/i);
   const durationRaw = durationMatch ? Number(durationMatch[1]) : undefined;
-  const durationSec = typeof durationRaw === "number" && Number.isFinite(durationRaw)
-    ? Math.min(15, Math.max(2, Math.round(durationRaw)))
-    : undefined;
+  const durationSec =
+    typeof durationRaw === "number" && Number.isFinite(durationRaw)
+      ? Math.min(15, Math.max(2, Math.round(durationRaw)))
+      : undefined;
 
   const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
   const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
@@ -835,7 +917,8 @@ function heuristicHeroTextFromTextAnimation(prompt: string): IntentResult | null
   return {
     templateId: "hero-text",
     confidence: "high",
-    reasoning: "Heuristic: detected simple text animation prompt with quoted headline",
+    reasoning:
+      "Heuristic: detected simple text animation prompt with quoted headline",
     aspect_ratio,
     params: {
       headline,
@@ -868,7 +951,9 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
 
   if (!hasPricingIntent) return null;
 
-  const priceTokens = Array.from(prompt.matchAll(/\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?/g));
+  const priceTokens = Array.from(
+    prompt.matchAll(/\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?/g),
+  );
   const wantsThreePlans =
     /(?:three|3)\s+(?:plans|tiers|packages|cards)/i.test(prompt) ||
     normalized.includes("middle one") ||
@@ -890,7 +975,9 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
       })
       .join(" ");
 
-  const splitPriceToken = (value: string): { price: string; priceSuffix?: string } => {
+  const splitPriceToken = (
+    value: string,
+  ): { price: string; priceSuffix?: string } => {
     const compact = value.replace(/\s+/g, "");
     const parts = compact.split("/");
     return parts.length > 1
@@ -898,12 +985,20 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
       : { price: compact };
   };
 
-  const extractNamedPlans = (): Array<{ name: string; price: string; priceSuffix?: string }> => {
+  const extractNamedPlans = (): Array<{
+    name: string;
+    price: string;
+    priceSuffix?: string;
+  }> => {
     const patterns = [
       /([A-Za-z][A-Za-z0-9&+/-]*(?:\s+[A-Za-z][A-Za-z0-9&+/-]*){0,2})\s+at\s+(\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?)/gi,
       /([A-Za-z][A-Za-z0-9&+/-]*(?:\s+[A-Za-z][A-Za-z0-9&+/-]*){0,2})\s*[-:]\s*(\$[\d,]+(?:\s*\/\s*[A-Za-z]+)?)/gi,
     ];
-    const results: Array<{ name: string; price: string; priceSuffix?: string }> = [];
+    const results: Array<{
+      name: string;
+      price: string;
+      priceSuffix?: string;
+    }> = [];
     const seen = new Set<string>();
 
     for (const pattern of patterns) {
@@ -921,11 +1016,15 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
   };
 
   const extractListedNames = (): string[] => {
-    const listMatch = prompt.match(/(?:three|3)\s+(?:plans|tiers|packages)\s*:\s*([^.!?\n]+)/i);
+    const listMatch = prompt.match(
+      /(?:three|3)\s+(?:plans|tiers|packages)\s*:\s*([^.!?\n]+)/i,
+    );
     if (!listMatch) return [];
     return listMatch[1]
       .split(/,|and/gi)
-      .map((part) => toTitleCase(part.replace(/[^A-Za-z0-9&+/\-\s]/g, "").trim()))
+      .map((part) =>
+        toTitleCase(part.replace(/[^A-Za-z0-9&+/\-\s]/g, "").trim()),
+      )
       .filter(Boolean)
       .slice(0, 3);
   };
@@ -934,7 +1033,9 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
     prompt.match(/highlight\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
     prompt.match(/emphas(?:i|y)ze\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
     prompt.match(/recommended\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
-    prompt.match(/best value(?:\s+is|\s*[:=-])?\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i)?.[1] ||
+    prompt.match(
+      /best value(?:\s+is|\s*[:=-])?\s+([A-Za-z][A-Za-z0-9&+\-/ ]{1,24})/i,
+    )?.[1] ||
     undefined;
 
   const visualStyle = (() => {
@@ -972,7 +1073,8 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
       ? namedPlans
       : listedNames.length >= 3
         ? listedNames.map((name, index) => ({
-            ...(defaultPlans[index] ?? defaultPlans[Math.min(index, defaultPlans.length - 1)]),
+            ...(defaultPlans[index] ??
+              defaultPlans[Math.min(index, defaultPlans.length - 1)]),
             name,
           }))
         : priceTokens.length >= 3
@@ -985,8 +1087,12 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
   if (plans.length < 3) return null;
 
   const highlightIndex = (() => {
-    const hint = inferredHighlightName ? toTitleCase(inferredHighlightName).toLowerCase() : "";
-    const hintedIndex = hint ? plans.findIndex((plan) => plan.name.toLowerCase() === hint) : -1;
+    const hint = inferredHighlightName
+      ? toTitleCase(inferredHighlightName).toLowerCase()
+      : "";
+    const hintedIndex = hint
+      ? plans.findIndex((plan) => plan.name.toLowerCase() === hint)
+      : -1;
     if (hintedIndex >= 0) return hintedIndex;
     return 1;
   })();
@@ -1007,8 +1113,10 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
   const buildPlanFeatures = (planIndex: number) =>
     uniqueFeatures.map((label, featureIndex) => ({
       label,
-      included: planIndex === 2 ? true : planIndex === 1 ? true : featureIndex < 3,
-      ...(planIndex === highlightIndex && featureIndex === Math.min(3, uniqueFeatures.length - 1)
+      included:
+        planIndex === 2 ? true : planIndex === 1 ? true : featureIndex < 3,
+      ...(planIndex === highlightIndex &&
+      featureIndex === Math.min(3, uniqueFeatures.length - 1)
         ? { emphasis: true }
         : {}),
     }));
@@ -1024,14 +1132,13 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
       : visualStyle === "investor-clean"
         ? "Investment Tiers"
         : "Pricing Plans";
-  const subtitle =
-    subject
-      ? `Designed for ${subject}`
-      : visualStyle === "creative-studio"
-        ? "Three signature packages with a standout center offer"
-        : visualStyle === "investor-clean"
-          ? "A structured pricing slide with a recommended growth tier"
-          : "Three plans with a clear recommended tier";
+  const subtitle = subject
+    ? `Designed for ${subject}`
+    : visualStyle === "creative-studio"
+      ? "Three signature packages with a standout center offer"
+      : visualStyle === "investor-clean"
+        ? "A structured pricing slide with a recommended growth tier"
+        : "Three plans with a clear recommended tier";
 
   const accentColors =
     visualStyle === "creative-studio"
@@ -1045,7 +1152,12 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
   const palette =
     visualStyle === "investor-clean"
       ? {
-          background: { type: "gradient" as const, from: "#F7F4EE", to: "#EAE5DC", direction: "to-bottom-right" as const },
+          background: {
+            type: "gradient" as const,
+            from: "#F7F4EE",
+            to: "#EAE5DC",
+            direction: "to-bottom-right" as const,
+          },
           titleColor: "#0F172A",
           subtitleColor: "#475569",
           planNameColor: "#0F172A",
@@ -1062,7 +1174,12 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
         }
       : visualStyle === "creative-studio"
         ? {
-            background: { type: "gradient" as const, from: "#15081C", to: "#30104A", direction: "radial" as const },
+            background: {
+              type: "gradient" as const,
+              from: "#15081C",
+              to: "#30104A",
+              direction: "radial" as const,
+            },
             titleColor: "#FFF7ED",
             subtitleColor: "#F5D0FE",
             planNameColor: "#FFF7ED",
@@ -1078,7 +1195,12 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
             buttonTextColor: "#120A1E",
           }
         : {
-            background: { type: "gradient" as const, from: "#070B1A", to: "#101C3A", direction: "radial" as const },
+            background: {
+              type: "gradient" as const,
+              from: "#070B1A",
+              to: "#101C3A",
+              direction: "radial" as const,
+            },
             titleColor: "#F8FAFC",
             subtitleColor: "#A7B0C0",
             planNameColor: "#F8FAFC",
@@ -1100,7 +1222,8 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
   return {
     templateId: "pricing-comparison",
     confidence: "high",
-    reasoning: "Heuristic: detected an obvious three-plan pricing prompt with a recommended tier",
+    reasoning:
+      "Heuristic: detected an obvious three-plan pricing prompt with a recommended tier",
     aspect_ratio,
     params: {
       title,
@@ -1111,8 +1234,13 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
         price: plan.price,
         ...(plan.priceSuffix ? { priceSuffix: plan.priceSuffix } : {}),
         description:
-          index === 0 ? "For individuals or small teams" : index === 1 ? "Recommended for growing teams" : "For larger organizations",
-        badge: index === highlightIndex ? "Best Value" : badges[index] ?? "Plan",
+          index === 0
+            ? "For individuals or small teams"
+            : index === 1
+              ? "Recommended for growing teams"
+              : "For larger organizations",
+        badge:
+          index === highlightIndex ? "Best Value" : (badges[index] ?? "Plan"),
         accentColor: accentColors[index] ?? accentColors[1],
         ctaLabel: ctas[index] ?? "Choose plan",
         features: buildPlanFeatures(index),
@@ -1145,7 +1273,9 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
   };
 }
 
-function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null {
+function heuristicNewspaperFrontPageIntent(
+  prompt: string,
+): IntentResult | null {
   const normalized = prompt.toLowerCase();
 
   const hasNewspaperIntent =
@@ -1162,51 +1292,95 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
 
   if (!hasNewspaperIntent) return null;
 
+  const templateId = (() => {
+    if (
+      normalized.includes("magazine-style") ||
+      normalized.includes("magazine style") ||
+      normalized.includes("feature cover") ||
+      normalized.includes("editorial cover") ||
+      normalized.includes("weekly cover")
+    ) {
+      return "newspaper-magazine-cover" as const;
+    }
+
+    if (
+      normalized.includes("modern grid") ||
+      normalized.includes("newspaper grid") ||
+      normalized.includes("metro") ||
+      normalized.includes("compact city") ||
+      normalized.includes("modular newspaper")
+    ) {
+      return "newspaper-modern-grid" as const;
+    }
+
+    if (
+      normalized.includes("minimal newspaper") ||
+      normalized.includes("minimalist newspaper") ||
+      normalized.includes("clean newspaper") ||
+      normalized.includes("ledger-style") ||
+      normalized.includes("ledger style") ||
+      normalized.includes("briefing")
+    ) {
+      return "newspaper-minimal-ledger" as const;
+    }
+
+    return "newspaper-front-page" as const;
+  })();
+
   const visualStyle = (() => {
-      if (
-        normalized.includes("historic") ||
-        normalized.includes("vintage") ||
-        normalized.includes("archival") ||
-        normalized.includes("old-print") ||
-        normalized.includes("moon landing")
-      ) {
-        return "historic-edition" as const;
-      }
-      if (
-        normalized.includes("finance") ||
-        normalized.includes("financial") ||
-        normalized.includes("market") ||
-        normalized.includes("economy") ||
-        normalized.includes("earnings") ||
-        normalized.includes("business")
-      ) {
-        return "financial-journal" as const;
-      }
-      if (
-        normalized.includes("sports") ||
-        normalized.includes("champions") ||
-        normalized.includes("underdogs") ||
-        normalized.includes("upset") ||
-        normalized.includes("final") ||
-        normalized.includes("match") ||
-        normalized.includes("league")
-      ) {
-        return "sports-daily" as const;
-      }
-      if (
-        normalized.includes("tabloid") ||
-        normalized.includes("celebrity") ||
-        normalized.includes("scandal") ||
-        normalized.includes("exclusive") ||
-        normalized.includes("sensational")
-      ) {
-        return "tabloid-shock" as const;
-      }
-      if (
-        normalized.includes("breaking-news") ||
-        normalized.includes("breaking news") ||
-        normalized.includes("market crash") ||
-        normalized.includes("crash") ||
+    if (templateId === "newspaper-magazine-cover") {
+      return "classic-front-page" as const;
+    }
+    if (templateId === "newspaper-modern-grid") {
+      return "modern-breaking-news" as const;
+    }
+    if (templateId === "newspaper-minimal-ledger") {
+      return "financial-journal" as const;
+    }
+    if (
+      normalized.includes("historic") ||
+      normalized.includes("vintage") ||
+      normalized.includes("archival") ||
+      normalized.includes("old-print") ||
+      normalized.includes("moon landing")
+    ) {
+      return "historic-edition" as const;
+    }
+    if (
+      normalized.includes("finance") ||
+      normalized.includes("financial") ||
+      normalized.includes("market") ||
+      normalized.includes("economy") ||
+      normalized.includes("earnings") ||
+      normalized.includes("business")
+    ) {
+      return "financial-journal" as const;
+    }
+    if (
+      normalized.includes("sports") ||
+      normalized.includes("champions") ||
+      normalized.includes("underdogs") ||
+      normalized.includes("upset") ||
+      normalized.includes("final") ||
+      normalized.includes("match") ||
+      normalized.includes("league")
+    ) {
+      return "sports-daily" as const;
+    }
+    if (
+      normalized.includes("tabloid") ||
+      normalized.includes("celebrity") ||
+      normalized.includes("scandal") ||
+      normalized.includes("exclusive") ||
+      normalized.includes("sensational")
+    ) {
+      return "tabloid-shock" as const;
+    }
+    if (
+      normalized.includes("breaking-news") ||
+      normalized.includes("breaking news") ||
+      normalized.includes("market crash") ||
+      normalized.includes("crash") ||
       normalized.includes("urgent") ||
       normalized.includes("dramatic")
     ) {
@@ -1233,7 +1407,8 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
   const deriveHeadline = (): string => {
     if (normalized.includes("moon landing")) return "Men Walk On Moon";
     if (normalized.includes("market crash")) return "Global Market Crash";
-    if (normalized.includes("100 million users")) return "100 Million Users In 60 Days";
+    if (normalized.includes("100 million users"))
+      return "100 Million Users In 60 Days";
     if (normalized.includes("product launch") && subject) {
       return `${titleCase(subject)} Arrives`;
     }
@@ -1264,18 +1439,15 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
       return [
         {
           title: "A Giant Leap",
-          text:
-            "Astronaut Neil Armstrong descends the ladder as millions watch. The mission marks a defining moment in space exploration and global history.",
+          text: "Astronaut Neil Armstrong descends the ladder as millions watch. The mission marks a defining moment in space exploration and global history.",
         },
         {
           title: "Mission Details",
-          text:
-            "Early reports describe a successful landing, measured movement on the lunar surface, and careful collection of early samples.",
+          text: "Early reports describe a successful landing, measured movement on the lunar surface, and careful collection of early samples.",
         },
         {
           title: "World Watches",
-          text:
-            "Newsrooms, families, and governments across the globe follow every step as the mission reshapes what feels possible.",
+          text: "Newsrooms, families, and governments across the globe follow every step as the mission reshapes what feels possible.",
         },
       ];
     }
@@ -1284,18 +1456,15 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
       return [
         {
           title: "Impact On Globe",
-          text:
-            "Markets react sharply as confidence slips and volatility rises. Analysts warn of cascading consequences across sectors and regions.",
+          text: "Markets react sharply as confidence slips and volatility rises. Analysts warn of cascading consequences across sectors and regions.",
         },
         {
           title: "Investor Reactions",
-          text:
-            "Traders scramble to reposition portfolios while regulators monitor the pace of the downturn and calls for stability grow louder.",
+          text: "Traders scramble to reposition portfolios while regulators monitor the pace of the downturn and calls for stability grow louder.",
         },
         {
           title: "What Comes Next",
-          text:
-            "Leaders debate emergency measures as businesses and households brace for aftershocks in the days ahead.",
+          text: "Leaders debate emergency measures as businesses and households brace for aftershocks in the days ahead.",
         },
       ];
     }
@@ -1304,18 +1473,15 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
       return [
         {
           title: "A Record Pace",
-          text:
-            "In an unprecedented surge, the platform attracts users at a historic rate and forces a reassessment of category demand.",
+          text: "In an unprecedented surge, the platform attracts users at a historic rate and forces a reassessment of category demand.",
         },
         {
           title: "Why It Matters",
-          text:
-            "The speed of adoption signals a turning point for AI products and raises expectations for what consumer tools can achieve.",
+          text: "The speed of adoption signals a turning point for AI products and raises expectations for what consumer tools can achieve.",
         },
         {
           title: "Industry Response",
-          text:
-            "Competitors, investors, and analysts rush to interpret the milestone as one of the defining technology stories of the year.",
+          text: "Competitors, investors, and analysts rush to interpret the milestone as one of the defining technology stories of the year.",
         },
       ];
     }
@@ -1323,136 +1489,225 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
     return [
       {
         title: "Lead Story",
-        text:
-          "Editors frame the moment as a defining event, with public attention building quickly as new details continue to emerge.",
+        text: "Editors frame the moment as a defining event, with public attention building quickly as new details continue to emerge.",
       },
       {
         title: "Inside Report",
-        text:
-          "Early reactions suggest broad interest, strong momentum, and significant implications for the category involved.",
+        text: "Early reactions suggest broad interest, strong momentum, and significant implications for the category involved.",
       },
       {
         title: "Why It Matters",
-        text:
-          "The story lands with enough force to feel larger than a normal update, signaling a major shift rather than a routine announcement.",
+        text: "The story lands with enough force to feel larger than a normal update, signaling a major shift rather than a routine announcement.",
       },
     ];
   };
 
-    const masthead =
-      visualStyle === "historic-edition"
-        ? "Evening Chronicle"
-        : visualStyle === "modern-breaking-news"
-          ? "The Daily Times"
-          : visualStyle === "financial-journal"
-            ? "The Financial Ledger"
-            : visualStyle === "sports-daily"
-              ? "The Matchday Standard"
-              : "The Global Chronicle";
-
-    const kicker =
-      visualStyle === "modern-breaking-news"
-        ? "Breaking News"
-        : visualStyle === "historic-edition"
-          ? "Archive Edition"
-          : visualStyle === "financial-journal"
-            ? "Market Bulletin"
-            : visualStyle === "sports-daily"
-              ? "Match Report"
-              : "Special Report";
-
-    const footerNote =
-      visualStyle === "historic-edition"
-        ? "Reconstructed in archival print style for dramatic historical storytelling."
-        : visualStyle === "modern-breaking-news"
-          ? "Developing story: updates and reaction continue across markets and institutions."
-          : visualStyle === "financial-journal"
-            ? "A denser journal-style front page for consequential market and business coverage."
-            : visualStyle === "sports-daily"
-              ? "A sports-desk front page treatment designed for major matchday headlines."
-              : "A clean front-page composition for modern product launches and major business moments.";
-
-    const palette =
-      visualStyle === "modern-breaking-news"
-        ? {
-            paperTone: "#F6F8FB",
-            inkColor: "#0F172A",
-            accentColor: "#C2410C",
-            frameColor: "#CBD5E1",
-            background: { type: "gradient" as const, from: "#F2F6FB", to: "#E3EAF3", direction: "to-bottom-right" as const },
-          }
-        : visualStyle === "historic-edition"
-          ? {
-              paperTone: "#EEE0C2",
-              inkColor: "#1A1410",
-              accentColor: "#7C2D12",
-              frameColor: "#C5B38A",
-              background: { type: "grain" as const, baseColor: "#EFE4CD", grainOpacity: 0.09 },
-            }
-          : visualStyle === "financial-journal"
-            ? {
-                paperTone: "#F7F7F4",
-                inkColor: "#111827",
-                accentColor: "#0F4C81",
-                frameColor: "#D1D5DB",
-                background: { type: "gradient" as const, from: "#F4F6F8", to: "#E5EBF2", direction: "to-bottom-right" as const },
-              }
-            : visualStyle === "sports-daily"
-              ? {
-                  paperTone: "#F6F3EA",
-                  inkColor: "#151515",
-                  accentColor: "#C2410C",
-                  frameColor: "#D9D1C3",
-                  background: { type: "gradient" as const, from: "#F9F5EB", to: "#EDE5D7", direction: "to-bottom-right" as const },
-                }
-              : visualStyle === "tabloid-shock"
-                ? {
-                    paperTone: "#F5E6D4",
-                    inkColor: "#140E0A",
-                    accentColor: "#B91C1C",
-                    frameColor: "#D3B99E",
-                    background: { type: "gradient" as const, from: "#FBECDE", to: "#E8D3C0", direction: "to-bottom-right" as const },
-                  }
-                : {
-                    paperTone: "#FAF8F2",
-                    inkColor: "#111827",
-                    accentColor: "#2563EB",
-                    frameColor: "#D6DDE7",
-                    background: { type: "gradient" as const, from: "#F6F8FB", to: "#E7EEF7", direction: "to-bottom-right" as const },
-                  };
-
-    const paperTilt =
-      visualStyle === "historic-edition"
-        ? -3.5
-        : visualStyle === "tabloid-shock"
-          ? -2.5
-        : visualStyle === "sports-daily"
-            ? -1.8
+  const masthead =
+    templateId === "newspaper-magazine-cover"
+      ? "The Sunday Review"
+      : templateId === "newspaper-modern-grid"
+        ? "The Metro Bulletin"
+        : templateId === "newspaper-minimal-ledger"
+          ? "The Morning Ledger"
+          : visualStyle === "historic-edition"
+            ? "Evening Chronicle"
             : visualStyle === "modern-breaking-news"
-              ? -0.4
+              ? "The Daily Times"
               : visualStyle === "financial-journal"
-                ? -0.8
-                : -0.6;
+                ? "The Financial Ledger"
+                : visualStyle === "sports-daily"
+                  ? "The Matchday Standard"
+                  : "The Global Chronicle";
+
+  const kicker =
+    templateId === "newspaper-magazine-cover"
+      ? "Cover Story"
+      : templateId === "newspaper-modern-grid"
+        ? "Metro Edition"
+        : templateId === "newspaper-minimal-ledger"
+          ? "Daily Briefing"
+          : visualStyle === "modern-breaking-news"
+            ? "Breaking News"
+            : visualStyle === "historic-edition"
+              ? "Archive Edition"
+              : visualStyle === "financial-journal"
+                ? "Market Bulletin"
+                : visualStyle === "sports-daily"
+                  ? "Match Report"
+                  : "Special Report";
+
+  const footerNote =
+    templateId === "newspaper-magazine-cover"
+      ? "A feature-cover treatment with a dominant image area and curated editorial teasers."
+      : templateId === "newspaper-modern-grid"
+        ? "A modular metro layout built for a fast-scanning newspaper front page."
+        : templateId === "newspaper-minimal-ledger"
+          ? "A restrained briefing layout with compact notes and a cleaner hierarchy."
+          : visualStyle === "historic-edition"
+            ? "Reconstructed in archival print style for dramatic historical storytelling."
+            : visualStyle === "modern-breaking-news"
+              ? "Developing story: updates and reaction continue across markets and institutions."
+              : visualStyle === "financial-journal"
+                ? "A denser journal-style front page for consequential market and business coverage."
+                : visualStyle === "sports-daily"
+                  ? "A sports-desk front page treatment designed for major matchday headlines."
+                  : "A clean front-page composition for modern product launches and major business moments.";
+
+  const palette =
+    templateId === "newspaper-magazine-cover"
+      ? {
+          paperTone: "#F7F0E5",
+          inkColor: "#1A1410",
+          accentColor: "#8B5E3C",
+          frameColor: "#D7C7B1",
+          background: {
+            type: "gradient" as const,
+            from: "#F8F2E8",
+            to: "#E7DBCC",
+            direction: "to-bottom-right" as const,
+          },
+        }
+      : templateId === "newspaper-modern-grid"
+        ? {
+            paperTone: "#F8FAFC",
+            inkColor: "#0F172A",
+            accentColor: "#2563EB",
+            frameColor: "#CBD5E1",
+            background: {
+              type: "gradient" as const,
+              from: "#F4F8FD",
+              to: "#E5EEF8",
+              direction: "to-bottom-right" as const,
+            },
+          }
+        : templateId === "newspaper-minimal-ledger"
+          ? {
+              paperTone: "#FAFAF8",
+              inkColor: "#111827",
+              accentColor: "#0F4C81",
+              frameColor: "#D7DCE3",
+              background: {
+                type: "gradient" as const,
+                from: "#F6F7F8",
+                to: "#EBEEF2",
+                direction: "to-bottom-right" as const,
+              },
+            }
+          : visualStyle === "modern-breaking-news"
+            ? {
+                paperTone: "#F6F8FB",
+                inkColor: "#0F172A",
+                accentColor: "#C2410C",
+                frameColor: "#CBD5E1",
+                background: {
+                  type: "gradient" as const,
+                  from: "#F2F6FB",
+                  to: "#E3EAF3",
+                  direction: "to-bottom-right" as const,
+                },
+              }
+            : visualStyle === "historic-edition"
+              ? {
+                  paperTone: "#EEE0C2",
+                  inkColor: "#1A1410",
+                  accentColor: "#7C2D12",
+                  frameColor: "#C5B38A",
+                  background: {
+                    type: "grain" as const,
+                    baseColor: "#EFE4CD",
+                    grainOpacity: 0.09,
+                  },
+                }
+              : visualStyle === "financial-journal"
+                ? {
+                    paperTone: "#F7F7F4",
+                    inkColor: "#111827",
+                    accentColor: "#0F4C81",
+                    frameColor: "#D1D5DB",
+                    background: {
+                      type: "gradient" as const,
+                      from: "#F4F6F8",
+                      to: "#E5EBF2",
+                      direction: "to-bottom-right" as const,
+                    },
+                  }
+                : visualStyle === "sports-daily"
+                  ? {
+                      paperTone: "#F6F3EA",
+                      inkColor: "#151515",
+                      accentColor: "#C2410C",
+                      frameColor: "#D9D1C3",
+                      background: {
+                        type: "gradient" as const,
+                        from: "#F9F5EB",
+                        to: "#EDE5D7",
+                        direction: "to-bottom-right" as const,
+                      },
+                    }
+                  : visualStyle === "tabloid-shock"
+                    ? {
+                        paperTone: "#F5E6D4",
+                        inkColor: "#140E0A",
+                        accentColor: "#B91C1C",
+                        frameColor: "#D3B99E",
+                        background: {
+                          type: "gradient" as const,
+                          from: "#FBECDE",
+                          to: "#E8D3C0",
+                          direction: "to-bottom-right" as const,
+                        },
+                      }
+                    : {
+                        paperTone: "#FAF8F2",
+                        inkColor: "#111827",
+                        accentColor: "#2563EB",
+                        frameColor: "#D6DDE7",
+                        background: {
+                          type: "gradient" as const,
+                          from: "#F6F8FB",
+                          to: "#E7EEF7",
+                          direction: "to-bottom-right" as const,
+                        },
+                      };
+
+  const paperTilt =
+    visualStyle === "historic-edition"
+      ? -3.5
+      : visualStyle === "tabloid-shock"
+        ? -2.5
+        : visualStyle === "sports-daily"
+          ? -1.8
+          : visualStyle === "modern-breaking-news"
+            ? -0.4
+            : visualStyle === "financial-journal"
+              ? -0.8
+              : -0.6;
 
   return {
-    templateId: "newspaper-front-page",
+    templateId,
     confidence: "high",
-    reasoning: "Heuristic: detected an explicit newspaper/front-page prompt with deterministic layout intent",
+    reasoning:
+      "Heuristic: detected an explicit newspaper/front-page prompt with deterministic layout intent",
     aspect_ratio: "16:9",
     params: {
       masthead,
-      editionLine: visualStyle === "historic-edition" ? "Vol. CMLXIX · Historic Edition" : "Vol. XLII · No. 184",
+      editionLine:
+        visualStyle === "historic-edition"
+          ? "Vol. CMLXIX · Historic Edition"
+          : "Vol. XLII · No. 184",
       dateLine:
         visualStyle === "historic-edition"
           ? "New York, Sunday, July 21, 1969"
           : visualStyle === "modern-breaking-news"
             ? "Global Desk, Breaking Edition"
             : "Special Morning Edition",
-      priceLine: visualStyle === "historic-edition" ? "10 cents" : "Price 25 cents",
+      priceLine:
+        visualStyle === "historic-edition" ? "10 cents" : "Price 25 cents",
       kicker,
       headline: deriveHeadline(),
       subheadline: deriveSubheadline(),
-      photoLabel: visualStyle === "historic-edition" ? "Archive Photo" : "Wire Photo",
+      photoLabel:
+        visualStyle === "historic-edition" ? "Archive Photo" : "Wire Photo",
       photoCaption:
         visualStyle === "historic-edition"
           ? "Mission image from the lunar surface."
@@ -1464,12 +1719,12 @@ function heuristicNewspaperFrontPageIntent(prompt: string): IntentResult | null 
       visualStyle,
       paperTone: palette.paperTone,
       inkColor: palette.inkColor,
-        accentColor: palette.accentColor,
-        frameColor: palette.frameColor,
-        background: palette.background,
-        paperTilt,
-        entranceAnimation: "fade-in",
-        duration: 7,
-      },
+      accentColor: palette.accentColor,
+      frameColor: palette.frameColor,
+      background: palette.background,
+      paperTilt,
+      entranceAnimation: "fade-in",
+      duration: 7,
+    },
   };
 }

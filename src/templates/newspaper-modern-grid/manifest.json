@@ -1,0 +1,16 @@
+{
+  "id": "newspaper-modern-grid",
+  "name": "Newspaper Modern Grid",
+  "description": "A modular newspaper layout with a metro-style headline block, feature image, and stacked story grid.",
+  "tags": ["newspaper", "grid", "metro", "editorial", "modern", "print"],
+  "compatibleAnimations": [
+    "fade-in",
+    "slide-up",
+    "scale-pop",
+    "camera-drift",
+    "none"
+  ],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

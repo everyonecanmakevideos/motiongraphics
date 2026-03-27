@@ -76,6 +76,12 @@ import { YTChaptersSchema } from "./yt-chapters/schema";
 import ytChaptersManifest from "./yt-chapters/manifest.json";
 import { NewspaperFrontPageSchema } from "./newspaper-front-page/schema";
 import newspaperFrontPageManifest from "./newspaper-front-page/manifest.json";
+import { NewspaperModernGridSchema } from "./newspaper-modern-grid/schema";
+import newspaperModernGridManifest from "./newspaper-modern-grid/manifest.json";
+import { NewspaperMagazineCoverSchema } from "./newspaper-magazine-cover/schema";
+import newspaperMagazineCoverManifest from "./newspaper-magazine-cover/manifest.json";
+import { NewspaperMinimalLedgerSchema } from "./newspaper-minimal-ledger/schema";
+import newspaperMinimalLedgerManifest from "./newspaper-minimal-ledger/manifest.json";
 
 import { SplitScreenSchema } from "./split-screen/schema";
 import splitScreenManifest from "./split-screen/manifest.json";
@@ -121,18 +127,46 @@ export interface TemplateDescriptor {
  * Remotion components into the server bundle.
  */
 export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
-  { id: "hero-text", schema: HeroTextSchema, manifest: heroTextManifest as TemplateManifest },
-  { id: "news-alert", schema: NewsAlertSchema, manifest: newsAlertManifest as TemplateManifest },
+  {
+    id: "hero-text",
+    schema: HeroTextSchema,
+    manifest: heroTextManifest as TemplateManifest,
+  },
+  {
+    id: "news-alert",
+    schema: NewsAlertSchema,
+    manifest: newsAlertManifest as TemplateManifest,
+  },
   {
     id: "loading-screen",
     schema: LoadingScreenSchema,
     manifest: loadingScreenManifest as TemplateManifest,
   },
-  { id: "stream-start", schema: StreamStartSchema, manifest: streamStartManifest as TemplateManifest },
-  { id: "bar-chart", schema: BarChartSchema, manifest: barChartManifest as TemplateManifest },
-  { id: "pie-chart", schema: PieChartSchema, manifest: pieChartManifest as TemplateManifest },
-  { id: "line-chart", schema: LineChartSchema, manifest: lineChartManifest as TemplateManifest },
-  { id: "stat-counter", schema: StatCounterSchema, manifest: statCounterManifest as TemplateManifest },
+  {
+    id: "stream-start",
+    schema: StreamStartSchema,
+    manifest: streamStartManifest as TemplateManifest,
+  },
+  {
+    id: "bar-chart",
+    schema: BarChartSchema,
+    manifest: barChartManifest as TemplateManifest,
+  },
+  {
+    id: "pie-chart",
+    schema: PieChartSchema,
+    manifest: pieChartManifest as TemplateManifest,
+  },
+  {
+    id: "line-chart",
+    schema: LineChartSchema,
+    manifest: lineChartManifest as TemplateManifest,
+  },
+  {
+    id: "stat-counter",
+    schema: StatCounterSchema,
+    manifest: statCounterManifest as TemplateManifest,
+  },
   {
     id: "kinetic-typography",
     schema: KineticTypographySchema,
@@ -168,19 +202,31 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     schema: TimelineSceneSchema,
     manifest: timelineSceneManifest as TemplateManifest,
   },
-  { id: "card-layout", schema: CardLayoutSchema, manifest: cardLayoutManifest as TemplateManifest },
+  {
+    id: "card-layout",
+    schema: CardLayoutSchema,
+    manifest: cardLayoutManifest as TemplateManifest,
+  },
   {
     id: "section-title",
     schema: SectionTitleSchema,
     manifest: sectionTitleManifest as TemplateManifest,
   },
-  { id: "bullet-list", schema: BulletListSchema, manifest: bulletListManifest as TemplateManifest },
+  {
+    id: "bullet-list",
+    schema: BulletListSchema,
+    manifest: bulletListManifest as TemplateManifest,
+  },
   {
     id: "quote-highlight",
     schema: QuoteHighlightSchema,
     manifest: quoteHighlightManifest as TemplateManifest,
   },
-  { id: "data-callout", schema: DataCalloutSchema, manifest: dataCalloutManifest as TemplateManifest },
+  {
+    id: "data-callout",
+    schema: DataCalloutSchema,
+    manifest: dataCalloutManifest as TemplateManifest,
+  },
   {
     id: "feature-highlight",
     schema: FeatureHighlightSchema,
@@ -211,7 +257,26 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     schema: NewspaperFrontPageSchema,
     manifest: newspaperFrontPageManifest as TemplateManifest,
   },
-  { id: "split-screen", schema: SplitScreenSchema, manifest: splitScreenManifest as TemplateManifest },
+  {
+    id: "newspaper-modern-grid",
+    schema: NewspaperModernGridSchema,
+    manifest: newspaperModernGridManifest as TemplateManifest,
+  },
+  {
+    id: "newspaper-magazine-cover",
+    schema: NewspaperMagazineCoverSchema,
+    manifest: newspaperMagazineCoverManifest as TemplateManifest,
+  },
+  {
+    id: "newspaper-minimal-ledger",
+    schema: NewspaperMinimalLedgerSchema,
+    manifest: newspaperMinimalLedgerManifest as TemplateManifest,
+  },
+  {
+    id: "split-screen",
+    schema: SplitScreenSchema,
+    manifest: splitScreenManifest as TemplateManifest,
+  },
   {
     id: "problem-solution",
     schema: ProblemSolutionSchema,
@@ -262,4 +327,3 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
 export function getTemplateIdsFromDescriptors(): string[] {
   return TEMPLATE_DESCRIPTORS.map((d) => d.id);
 }
-

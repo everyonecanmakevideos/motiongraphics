@@ -26,6 +26,9 @@ import { EventPromoSlate } from "./event-promo-slate/EventPromoSlate";
 import { TestimonialWall } from "./testimonial-wall/TestimonialWall";
 import { YTChapters } from "./yt-chapters/YTChapters";
 import { NewspaperFrontPage } from "./newspaper-front-page/NewspaperFrontPage";
+import { NewspaperModernGrid } from "./newspaper-modern-grid/NewspaperModernGrid";
+import { NewspaperMagazineCover } from "./newspaper-magazine-cover/NewspaperMagazineCover";
+import { NewspaperMinimalLedger } from "./newspaper-minimal-ledger/NewspaperMinimalLedger";
 import { SplitScreen } from "./split-screen/SplitScreen";
 import { ProblemSolution } from "./problem-solution/ProblemSolution";
 import { BeforeAfter } from "./before-after/BeforeAfter";
@@ -37,7 +40,10 @@ import { CinematicTransition } from "./cinematic-transition/CinematicTransition"
 import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
 import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
 
-import { TEMPLATE_DESCRIPTORS, getTemplateIdsFromDescriptors } from "./templateDescriptors";
+import {
+  TEMPLATE_DESCRIPTORS,
+  getTemplateIdsFromDescriptors,
+} from "./templateDescriptors";
 
 // Keep values untyped here; TemplateEntry's `component` type is intentionally very broad,
 // and most template components have more specific props. We cast when building the registry.
@@ -69,6 +75,9 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "testimonial-wall": TestimonialWall,
   "yt-chapters": YTChapters,
   "newspaper-front-page": NewspaperFrontPage,
+  "newspaper-modern-grid": NewspaperModernGrid,
+  "newspaper-magazine-cover": NewspaperMagazineCover,
+  "newspaper-minimal-ledger": NewspaperMinimalLedger,
   "split-screen": SplitScreen,
   "problem-solution": ProblemSolution,
   "before-after": BeforeAfter,
@@ -81,36 +90,39 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "parallax-showcase": ParallaxShowcase,
 };
 
-export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> = Object.fromEntries(
-  TEMPLATE_DESCRIPTORS.map((d) => {
-    const component = CLIENT_COMPONENTS[d.id];
-    if (!component) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error(`[templates] Missing client component for template "${d.id}"`);
+export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> =
+  Object.fromEntries(
+    TEMPLATE_DESCRIPTORS.map((d) => {
+      const component = CLIENT_COMPONENTS[d.id];
+      if (!component) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error(
+            `[templates] Missing client component for template "${d.id}"`,
+          );
+        }
+        return [
+          d.id,
+          {
+            id: d.id,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            component: (() => null) as any,
+            schema: d.schema,
+            manifest: d.manifest,
+          } satisfies TemplateEntry,
+        ];
       }
+
       return [
         d.id,
         {
           id: d.id,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          component: (() => null) as any,
+          component: component as TemplateEntry["component"],
           schema: d.schema,
           manifest: d.manifest,
         } satisfies TemplateEntry,
       ];
-    }
-
-    return [
-      d.id,
-      {
-        id: d.id,
-        component: component as TemplateEntry["component"],
-        schema: d.schema,
-        manifest: d.manifest,
-      } satisfies TemplateEntry,
-    ];
-  }),
-) as Record<string, TemplateEntry>;
+    }),
+  ) as Record<string, TemplateEntry>;
 
 if (process.env.NODE_ENV !== "production") {
   const descriptorIds = getTemplateIdsFromDescriptors().sort();

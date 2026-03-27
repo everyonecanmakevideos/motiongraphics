@@ -1,0 +1,16 @@
+{
+  "id": "newspaper-minimal-ledger",
+  "name": "Newspaper Minimal Ledger",
+  "description": "A restrained newspaper briefing layout with clean spacing, compact side notes, and a minimal editorial hierarchy.",
+  "tags": ["newspaper", "minimal", "ledger", "briefing", "editorial", "print"],
+  "compatibleAnimations": [
+    "fade-in",
+    "slide-up",
+    "scale-pop",
+    "camera-drift",
+    "none"
+  ],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}
