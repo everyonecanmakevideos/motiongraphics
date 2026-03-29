@@ -95,12 +95,20 @@ import beforeAfterManifest from "./before-after/manifest.json";
 import { ProcessStepsSchema } from "./process-steps/schema";
 import processStepsManifest from "./process-steps/manifest.json";
 
-import { MapHighlightSchema } from "./map-highlight/schema";
-import mapHighlightManifest from "./map-highlight/manifest.json";
 import { MapRouteAnimationSchema } from "./map-route-animation/schema";
 import mapRouteAnimationManifest from "./map-route-animation/manifest.json";
 import { MapNetworkSchema } from "./map-network/schema";
 import mapNetworkManifest from "./map-network/manifest.json";
+import { EarthGlobeSchema } from "./earth-globe/schema";
+import earthGlobeManifest from "./earth-globe/manifest.json";
+import { MapCitySpotlightSchema } from "./map-city-spotlight/schema";
+import mapCitySpotlightManifest from "./map-city-spotlight/manifest.json";
+import { MapHeatmapSchema } from "./map-heatmap/schema";
+import mapHeatmapManifest from "./map-heatmap/manifest.json";
+import { MapRadiusRingsSchema } from "./map-radius-rings/schema";
+import mapRadiusRingsManifest from "./map-radius-rings/manifest.json";
+import { MapTargetingSchema } from "./map-targeting/schema";
+import mapTargetingManifest from "./map-targeting/manifest.json";
 
 import { MaskedTextRevealSchema } from "./masked-text-reveal/schema";
 import maskedTextRevealManifest from "./masked-text-reveal/manifest.json";
@@ -297,11 +305,6 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     manifest: processStepsManifest as TemplateManifest,
   },
   {
-    id: "map-highlight",
-    schema: MapHighlightSchema,
-    manifest: mapHighlightManifest as TemplateManifest,
-  },
-  {
     id: "map-route-animation",
     schema: MapRouteAnimationSchema,
     manifest: mapRouteAnimationManifest as TemplateManifest,
@@ -310,6 +313,31 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "map-network",
     schema: MapNetworkSchema,
     manifest: mapNetworkManifest as TemplateManifest,
+  },
+  {
+    id: "earth-globe",
+    schema: EarthGlobeSchema,
+    manifest: earthGlobeManifest as TemplateManifest,
+  },
+  {
+    id: "map-city-spotlight",
+    schema: MapCitySpotlightSchema,
+    manifest: mapCitySpotlightManifest as TemplateManifest,
+  },
+  {
+    id: "map-heatmap",
+    schema: MapHeatmapSchema,
+    manifest: mapHeatmapManifest as TemplateManifest,
+  },
+  {
+    id: "map-radius-rings",
+    schema: MapRadiusRingsSchema,
+    manifest: mapRadiusRingsManifest as TemplateManifest,
+  },
+  {
+    id: "map-targeting",
+    schema: MapTargetingSchema,
+    manifest: mapTargetingManifest as TemplateManifest,
   },
   {
     id: "masked-text-reveal",

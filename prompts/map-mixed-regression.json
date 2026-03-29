@@ -1,0 +1,44 @@
+[
+  {
+    "id": "map-mixed-network-infra",
+    "prompt": "Show our global infrastructure hubs across New York, London, Singapore, and Tokyo as a connected network map with a premium technical feel.",
+    "expectedTemplateId": "map-network",
+    "coverage": "global infrastructure network"
+  },
+  {
+    "id": "map-mixed-route-logistics",
+    "prompt": "Visualize a logistics route from Mumbai to Singapore to Sydney with clean animated stop progression and shipment flow.",
+    "expectedTemplateId": "map-route-animation",
+    "coverage": "logistics route wording"
+  },
+  {
+    "id": "map-mixed-targeting-tactical",
+    "prompt": "Show a tactical targeting map locking onto Dubai with supporting nodes in Mumbai and Singapore and a scanner-style interface.",
+    "expectedTemplateId": "map-targeting",
+    "coverage": "tactical scanner"
+  },
+  {
+    "id": "map-mixed-radius-service",
+    "prompt": "Create a service coverage map centered on Chicago with concentric reach zones and nearby points in Seattle, Austin, and New York.",
+    "expectedTemplateId": "map-radius-rings",
+    "coverage": "service radius"
+  },
+  {
+    "id": "map-mixed-heatmap-customers",
+    "prompt": "Show customer hotspot intensity across London, Paris, Berlin, Amsterdam, and Madrid as a regional density map.",
+    "expectedTemplateId": "map-heatmap",
+    "coverage": "regional hotspot density"
+  },
+  {
+    "id": "map-mixed-spotlight-city",
+    "prompt": "Highlight Sao Paulo as the priority location on a polished geographic spotlight map with strong local emphasis.",
+    "expectedTemplateId": "map-city-spotlight",
+    "coverage": "single-city spotlight outside core regions"
+  },
+  {
+    "id": "map-mixed-globe-orbital",
+    "prompt": "Create an orbital earth globe showing our worldwide presence across San Francisco, New York, London, Singapore, and Tokyo.",
+    "expectedTemplateId": "earth-globe",
+    "coverage": "orbital globe"
+  }
+]

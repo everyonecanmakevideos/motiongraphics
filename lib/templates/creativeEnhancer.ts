@@ -292,15 +292,17 @@ DESIGN PRINCIPLES:
    - section-title fontSize: "xlarge" for dramatic, "medium" for secondary sections
    - bullet-list spacing: "relaxed" for few items, "tight" for many items
    - pie-chart strokeWidth: 2-3 for modern segmented look, 0 for classic
-   - map-highlight connectionStyle: "dashed" for subtle, "dotted" for tech feel
-
 6. TEMPLATE-SPECIFIC ENHANCEMENTS:
    - cinematic-hero: ALWAYS use gradient background. lightSweep should usually be true.
    - dynamic-showcase: glowColor should complement accentColor (slightly darker or analogous hue).
    - cinematic-transition: wipeColor should match the overall scene accent palette.
    - parallax-showcase: ALWAYS use gradient background. clip-reveal is the strongest entrance for this template.
    - data-callout: If trend is "up", use green trendUpColor. If "down", use red. If neutral, use subtle gray.
-   - map-highlight: markerPulse=true adds energy. connectionLines=true for network/global-presence feel.
+   - map-city-spotlight: prefer geo-color or editorial-light styling; emphasize the primary location and avoid generic world-map framing.
+   - map-heatmap: prefer geo-color styling with warm or cool density palettes, softer labels, and cleaner map contrast.
+   - map-radius-rings: prefer editorial-light or geo-color styling with crisp ring contrast and clear center emphasis.
+   - map-targeting: prefer technical-dark styling, scanner greens, and high-contrast targeting accents.
+   - earth-globe: prefer technical-dark styling, subtle glow, and progressive marker reveals for a premium orbital feel.
 
 7. STYLE PRESET — If the prompt has a clear vibe, set stylePreset:
    - "modern-clean" for clean, minimal, professional vibes
@@ -711,7 +713,7 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     subtitleFontSizePx: "10-90 (number, pixels)",
     nodeSizePx: "20-140 (number, pixels)",
   },
-  "map-highlight": {
+  "earth-globe": {
     ...SHARED_CREATIVE_FIELDS,
     markerColor: "hex color #RRGGBB",
     markerPulse: "boolean",
@@ -719,7 +721,59 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     labelColor: "hex color #RRGGBB",
     mapColor: "hex color #RRGGBB",
     connectionLines: "boolean",
-    mapStyle: "world-dots|abstract-grid|minimal-outline",
+    mapStyle: "world-dots|abstract-grid|minimal-outline|technical-dark|editorial-light|geo-color",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|scale-pop|progressive|none",
+    connectionStyle: "solid|dashed|dotted",
+  },
+  "map-city-spotlight": {
+    ...SHARED_CREATIVE_FIELDS,
+    markerColor: "hex color #RRGGBB",
+    markerPulse: "boolean",
+    titleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    mapColor: "hex color #RRGGBB",
+    connectionLines: "boolean",
+    mapStyle: "world-dots|abstract-grid|minimal-outline|technical-dark|editorial-light|geo-color",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|scale-pop|progressive|none",
+    connectionStyle: "solid|dashed|dotted",
+  },
+  "map-heatmap": {
+    ...SHARED_CREATIVE_FIELDS,
+    markerColor: "hex color #RRGGBB",
+    markerPulse: "boolean",
+    titleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    mapColor: "hex color #RRGGBB",
+    connectionLines: "boolean",
+    mapStyle: "world-dots|abstract-grid|minimal-outline|technical-dark|editorial-light|geo-color",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|scale-pop|progressive|none",
+    connectionStyle: "solid|dashed|dotted",
+  },
+  "map-radius-rings": {
+    ...SHARED_CREATIVE_FIELDS,
+    markerColor: "hex color #RRGGBB",
+    markerPulse: "boolean",
+    titleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    mapColor: "hex color #RRGGBB",
+    connectionLines: "boolean",
+    mapStyle: "world-dots|abstract-grid|minimal-outline|technical-dark|editorial-light|geo-color",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|scale-pop|progressive|none",
+    connectionStyle: "solid|dashed|dotted",
+  },
+  "map-targeting": {
+    ...SHARED_CREATIVE_FIELDS,
+    markerColor: "hex color #RRGGBB",
+    markerPulse: "boolean",
+    titleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    mapColor: "hex color #RRGGBB",
+    connectionLines: "boolean",
+    mapStyle: "world-dots|abstract-grid|minimal-outline|technical-dark|editorial-light|geo-color",
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
     entranceAnimation: "fade-in|scale-pop|progressive|none",
     connectionStyle: "solid|dashed|dotted",
@@ -1824,8 +1878,20 @@ function detectVibeFromPrompt(prompt: string, templateId?: string): VibeId {
 function selectVibeMode(prompt: string, vibeId: VibeId, templateId?: string): VibeMode {
   const p = prompt.toLowerCase();
 
-  const templateLightBias = new Set<string>(["process-steps", "timeline-scene", "education", "map-highlight"]);
-  const templateDarkBias = new Set<string>(["news-alert", "loading-screen"]);
+  const templateLightBias = new Set<string>([
+    "process-steps",
+    "timeline-scene",
+    "education",
+    "map-heatmap",
+    "map-radius-rings",
+  ]);
+  const templateDarkBias = new Set<string>([
+    "news-alert",
+    "loading-screen",
+    "earth-globe",
+    "map-city-spotlight",
+    "map-targeting",
+  ]);
 
   let mode: VibeMode = templateLightBias.has(templateId ?? "") ? "light" : templateDarkBias.has(templateId ?? "") ? "dark" : "light";
 

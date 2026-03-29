@@ -1,0 +1,18 @@
+{
+  "id": "map-targeting",
+  "name": "Map Targeting",
+  "description": "A tactical targeting map for surveillance, operations, mission focus, scanner views, and radar-style location lock-ons.",
+  "tags": [
+    "map",
+    "targeting",
+    "scanner",
+    "operations",
+    "radar",
+    "surveillance",
+    "focus"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

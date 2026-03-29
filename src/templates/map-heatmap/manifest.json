@@ -1,0 +1,18 @@
+{
+  "id": "map-heatmap",
+  "name": "Map Heatmap",
+  "description": "A density-style map for hotspots, customer concentration, activity clusters, and geographic intensity overlays.",
+  "tags": [
+    "map",
+    "heatmap",
+    "hotspots",
+    "density",
+    "coverage",
+    "activity",
+    "regional"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

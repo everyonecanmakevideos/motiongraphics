@@ -1,0 +1,18 @@
+{
+  "id": "map-city-spotlight",
+  "name": "Map City Spotlight",
+  "description": "A focused spotlight map for a city, office, facility, or priority location with cinematic emphasis and callout framing.",
+  "tags": [
+    "map",
+    "spotlight",
+    "city",
+    "location",
+    "focus",
+    "marker",
+    "regional"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

@@ -1,0 +1,18 @@
+{
+  "id": "map-radius-rings",
+  "name": "Map Radius Rings",
+  "description": "A range-ring map for service zones, reach radii, delivery coverage, geofencing, and concentric distance emphasis.",
+  "tags": [
+    "map",
+    "radius",
+    "rings",
+    "coverage",
+    "geofence",
+    "service-area",
+    "zones"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}

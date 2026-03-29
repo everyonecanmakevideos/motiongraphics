@@ -3,6 +3,10 @@ import {
   getTemplateDescriptions,
   getTemplateIds,
 } from "../../src/templates/registry-server";
+import {
+  CITY_CATALOG,
+  CITY_FALLBACK_COORDS,
+} from "../geo/cityCatalog";
 import type { IntentResult } from "../templates/resolver";
 import { validateTemplateParams } from "../templates/resolver";
 import type {
@@ -73,7 +77,11 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Numbered steps, onboarding steps, step 1/2/3 phrasing, process flow, workflow, procedure, how-to | "process-steps" |
 | Route map, travel route, journey path, flight path, shipping route, point-to-point map, common map animation | "map-route-animation" |
 | Network map, hub-and-spoke map, connected hubs, global network, city network, office network, infrastructure network | "map-network" |
-| Map, locations, geographic markers, global presence, offices | "map-highlight" |
+| City spotlight map, location focus, spotlight over a city, zoom to one city, focused location map | "map-city-spotlight" |
+| Heatmap, hotspot map, density map, activity concentration map, intensity map | "map-heatmap" |
+| Radius rings, service radius, concentric coverage circles, geofence map, coverage bands | "map-radius-rings" |
+| Targeting map, tactical scanner map, radar lock, surveillance focus, target lock-on map | "map-targeting" |
+| Earth globe, globe animation, rotating earth, spinning globe, planet earth with locations, orbital world view | "earth-globe" |
 | Masked text reveal, cinematic unveil, text behind mask, wipe reveal, circle reveal | "masked-text-reveal" |
 | Cinematic title, movie-style intro, dramatic opening, epic hero title, film title card | "cinematic-hero" |
 | Scene transition, wipe between scenes, iris transition, chapter break wipe | "cinematic-transition" |
@@ -142,7 +150,7 @@ SPLIT-SCREEN ANIMATION: "slide-in" (panels slide from sides), "fade-in", "scale-
 PROBLEM-SOLUTION ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "transitionStyle": "fade-switch"|"slide-switch"|"side-by-side"
 BEFORE-AFTER ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "revealStyle": "wipe"|"fade"|"split"
 PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in", "slide-up", "none"
-MAP-HIGHLIGHT ANIMATION: "fade-in", "scale-pop", "progressive" (markers appear one by one), "none"
+MAP CITY / HEAT / RADIUS / TARGETING ANIMATION: "fade-in", "scale-pop", "progressive", "none"
 
 CURRENT-STEP HIGHLIGHTING (process-steps only):
 - If the user says "highlight current step", "current step", or explicitly references a numbered step (e.g., "highlight step 2" / "step 1, step 2, step 3" and highlight one of them), set currentStep to the step number (1-based).
@@ -215,7 +223,11 @@ CRITICAL RULES:
    - kinetic-typography "lines": minimum 1, maximum 8
    - bullet-list "items": minimum 2, maximum 8
    - process-steps "steps": minimum 3, maximum 6
-   - map-highlight "locations": minimum 1, maximum 8
+   - map-city-spotlight "locations": minimum 1, maximum 8
+   - map-heatmap "locations": minimum 1, maximum 8
+   - map-radius-rings "locations": minimum 1, maximum 8
+   - map-targeting "locations": minimum 1, maximum 8
+   - earth-globe "locations": minimum 1, maximum 8
    - feature-highlight "bulletPoints": maximum 4
    - before-after "beforeItems"/"afterItems": maximum 4
 5. All hex colors MUST be exactly 7 characters: #RRGGBB (e.g., "#FF0000", not "red" or "#F00")
@@ -330,9 +342,6 @@ Response: { "templateId": "before-after", "params": { "beforeTitle": "Manual Tes
 
 Prompt: "Show the onboarding process: Sign Up → Verify Email → Set Profile → Start Using"
 Response: { "templateId": "process-steps", "params": { "title": "Onboarding Process", "subtitle": "Get started in seconds", "steps": [{"label":"Sign Up","iconId":"user"},{"label":"Verify Email","iconId":"bell"},{"label":"Set Profile","iconId":"smartphone"},{"label":"Start Using","iconId":"arrow-right"}], "connectorStyle": "arrow", "titleColor": "#F8FAFC", "stepColor": "#818CF8", "textColor": "#CBD5E1", "numberColor": "#F8FAFC", "background": { "type": "gradient", "from": "#10101A", "to": "#1A2040", "direction": "to-right" }, "entranceAnimation": "progressive", "duration": 7 }, "confidence": "high", "reasoning": "Sequential steps with flow → process-steps with progressive animation (icons + subtitle)", "aspect_ratio": "16:9" }
-
-Prompt: "Show our global offices on a map: New York (25%, 30%), London (45%, 22%), Tokyo (80%, 35%), Sydney (85%, 70%)"
-Response: { "templateId": "map-highlight", "params": { "title": "Global Offices", "locations": [{"label":"New York","x":25,"y":30},{"label":"London","x":45,"y":22},{"label":"Tokyo","x":80,"y":35},{"label":"Sydney","x":85,"y":70}], "mapStyle": "world-dots", "markerPulse": true, "connectionLines": true, "markerColor": "#38BDF8", "titleColor": "#F8FAFC", "labelColor": "#CBD5E1", "mapColor": "#1E293B", "background": { "type": "gradient", "from": "#020010", "to": "#0A0030", "direction": "radial" }, "entranceAnimation": "progressive", "duration": 7 }, "confidence": "high", "reasoning": "Office locations on map → map-highlight with progressive markers", "aspect_ratio": "16:9" }
 
 Prompt: "Instagram story: big bold 'Flash Sale' with subtitle '50% off today only' on a red gradient. Fade-in animation."
 Response: { "templateId": "hero-text", "params": { "headline": "Flash Sale", "subheadline": "50% off today only", "headlineColor": "#FFFFFF", "subheadlineColor": "#FFE0E0", "background": { "type": "gradient", "from": "#E53935", "to": "#B71C1C", "direction": "to-bottom" }, "entranceAnimation": "fade-in", "subheadlineAnimation": "fade-in", "duration": 4, "style": "centered", "decoration": "none" }, "confidence": "high", "reasoning": "Instagram story → portrait 9:16, bold headline with subtitle → hero-text", "aspect_ratio": "9:16" }
@@ -465,7 +474,7 @@ function promptLooksLikeCreativeFallbackCandidate(prompt: string): boolean {
 }
 
 function promptHasExplicitDeterministicTemplateAnchor(prompt: string): boolean {
-  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print|route map|journey path|flight path|shipping route|point-to-point map|common map animation|network map|hub-and-spoke|connected hubs|global network|office network|city network|infrastructure network|\bmap\b|locations|global presence|offices)/i.test(
+  return /(pricing|tiers|plans|testimonial|reviews|wall of love|event|conference|webinar|summit|register|tickets|save the date|bar chart|line chart|pie chart|donut chart|market share|counter|kpi|metric|timeline|roadmap|milestones|process|workflow|step\b|steps\b|before[ -]?after|comparison|compare|quote|bullet list|loading screen|breaking news|news ticker|stream|masked text|wipe reveal|circle reveal|parallax|product spotlight|feature showcase|orbiting elements|newspaper|front page|front-page|headline edition|newspaper cover|historic newspaper|archival editorial|old-print|route map|journey path|flight path|shipping route|point-to-point map|common map animation|network map|hub-and-spoke|connected hubs|global network|office network|city network|infrastructure network|cluster map|hotspot map|coverage map|regional footprint|store footprint|service coverage|dense locations|\bmap\b|locations|global presence|offices)/i.test(
     prompt,
   );
 }
@@ -639,6 +648,11 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   // on the deterministic template path instead of being downgraded into Hera.
   const newspaperHeuristic = heuristicNewspaperFrontPageIntent(prompt);
   if (newspaperHeuristic) return newspaperHeuristic;
+
+  // Heuristic fallback for obvious map prompts so reusable map templates stay
+  // on the deterministic path even when the model is uncertain.
+  const mapHeuristic = heuristicMapIntent(prompt);
+  if (mapHeuristic) return mapHeuristic;
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -1273,6 +1287,409 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
       duration: 7,
     },
   };
+}
+
+function heuristicMapIntent(prompt: string): IntentResult | null {
+  const normalized = prompt.toLowerCase();
+
+  const routeSignals = [
+    "route map",
+    "travel route",
+    "journey path",
+    "flight path",
+    "shipping route",
+    "point-to-point",
+    "point to point",
+    "travel path",
+  ];
+  const networkSignals = [
+    "network map",
+    "hub-and-spoke",
+    "hub and spoke",
+    "connected network",
+    "connected hubs",
+    "global network",
+    "office network",
+    "operations hubs",
+    "operations network",
+    "infrastructure hubs",
+    "infrastructure network",
+  ];
+  const spotlightSignals = [
+    "city spotlight",
+    "spotlight map",
+    "spotlight over",
+    "location focus",
+    "focus on",
+    "zoom into",
+    "zoom toward",
+    "priority location",
+    "city focus",
+    "facility focus",
+  ];
+  const heatmapSignals = [
+    "heatmap",
+    "hotspot map",
+    "density map",
+    "density view",
+    "customer concentration",
+    "activity concentration",
+    "intensity map",
+    "hotspots",
+    "regional hotspots",
+  ];
+  const radiusSignals = [
+    "radius rings",
+    "service radius",
+    "coverage radius",
+    "concentric rings",
+    "geofence",
+    "geofencing",
+    "coverage bands",
+    "impact radius",
+    "5 mi",
+    "10 mi",
+    "20 mi",
+  ];
+  const targetingSignals = [
+    "targeting map",
+    "target lock",
+    "lock on",
+    "scanner view",
+    "radar view",
+    "surveillance map",
+    "tactical map",
+    "tracking lock",
+    "crosshair",
+  ];
+  const globeSignals = [
+    "earth globe",
+    "globe animation",
+    "rotating earth",
+    "spinning globe",
+    "planet earth",
+    "orbital world view",
+    "globe with locations",
+    "rotating globe",
+    "earth with markers",
+    "world globe",
+  ];
+
+  const hasAny = (signals: string[]) =>
+    signals.some((signal) => normalized.includes(signal));
+
+  const extractedLocations = CITY_CATALOG
+    .map(({ canonical, aliases }) => {
+      const matches = aliases
+        .map((alias) => ({
+          alias,
+          index: normalized.search(
+            new RegExp(
+              `\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+              "i",
+            ),
+          ),
+        }))
+        .filter((match) => match.index >= 0)
+        .sort((a, b) => a.index - b.index);
+
+      if (matches.length === 0) {
+        return null;
+      }
+
+      return {
+        canonical,
+        firstIndex: matches[0].index,
+      };
+    })
+    .filter(
+      (
+        entry,
+      ): entry is {
+        canonical: (typeof CITY_CATALOG)[number]["canonical"];
+        firstIndex: number;
+      } => entry !== null,
+    )
+    .sort((a, b) => a.firstIndex - b.firstIndex)
+    .map((entry) => entry.canonical)
+    .filter((value, index, array) => array.indexOf(value) === index);
+
+  const inferMapRegion = (): "world" | "europe" | "usa" | "india" => {
+    const matchedEntries = CITY_CATALOG.filter(({ canonical }) =>
+      extractedLocations.includes(canonical),
+    );
+    const explicitIndia =
+      /\bindia\b/.test(normalized) || /\bindian\b/.test(normalized);
+    const explicitUsa =
+      /\busa\b|\bunited states\b|\bu\.s\.a?\b|\bamerican\b|\bcalifornia\b|\btexas\b/.test(
+        normalized,
+      );
+    const explicitEurope =
+      /\beurope\b|\beuropean\b|\bwestern europe\b|\bcontinental europe\b/.test(
+        normalized,
+      );
+
+    if (explicitIndia) return "india";
+    if (explicitUsa) return "usa";
+    if (explicitEurope) return "europe";
+
+    if (matchedEntries.length === 0) return "world";
+    if (matchedEntries.every((entry) => entry.region === "india"))
+      return "india";
+    if (matchedEntries.every((entry) => entry.region === "usa")) return "usa";
+    if (matchedEntries.every((entry) => entry.region === "europe"))
+      return "europe";
+
+    return "world";
+  };
+
+  const buildLocations = () =>
+    extractedLocations.slice(0, 8).map((label) => ({
+      label,
+      ...(CITY_FALLBACK_COORDS[label] ?? { x: 50, y: 50 }),
+    }));
+
+  const titleCase = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+      .trim();
+
+  const inferredRegion = inferMapRegion();
+  const regionDisplay =
+    inferredRegion === "world"
+      ? "Global"
+      : inferredRegion === "usa"
+        ? "US"
+        : inferredRegion === "india"
+          ? "India"
+          : "Europe";
+  const subject =
+    prompt.match(/about\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    prompt
+      .match(/\b(?:show|highlight|map)\s+our\s+(.+?)\s+across\b/i)?.[1]
+      ?.trim() ||
+    "";
+
+  if (hasAny(globeSignals) && extractedLocations.length >= 1) {
+    return {
+      templateId: "earth-globe",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a globe-style world visualization prompt with named locations",
+      aspect_ratio: "16:9",
+      params: {
+        title: subject ? titleCase(subject) : `${regionDisplay} Reach`,
+        mapRegion: "world",
+        locations: buildLocations(),
+        mapStyle: "technical-dark",
+        markerPulse: true,
+        connectionLines: true,
+        markerColor: "#7CC7FF",
+        titleColor: "#F8FAFC",
+        labelColor: "#CBD5E1",
+        mapColor: "#7C93AF",
+        background: {
+          type: "gradient",
+          from: "#030712",
+          to: "#0F172A",
+          direction: "radial",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  if (hasAny(targetingSignals) && extractedLocations.length >= 1) {
+    return {
+      templateId: "map-targeting",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a tactical targeting or scanner-style map prompt with a named location",
+      aspect_ratio: "16:9",
+      params: {
+        title: subject ? titleCase(subject) : "Target Tracking",
+        mapRegion: inferredRegion,
+        locations: buildLocations(),
+        mapStyle: "technical-dark",
+        markerPulse: true,
+        connectionLines: false,
+        markerColor: "#10B981",
+        titleColor: "#EAFBF4",
+        labelColor: "#A7F3D0",
+        mapColor: "#6B8F82",
+        background: {
+          type: "gradient",
+          from: "#03130F",
+          to: "#071D18",
+          direction: "to-bottom",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  if (hasAny(spotlightSignals) && extractedLocations.length >= 1) {
+    return {
+      templateId: "map-city-spotlight",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a city or facility spotlight map prompt with a primary named location",
+      aspect_ratio: "16:9",
+      params: {
+        title: subject ? titleCase(subject) : `${extractedLocations[0]} Focus`,
+        mapRegion: inferredRegion,
+        locations: buildLocations(),
+        mapStyle: "geo-color",
+        markerPulse: true,
+        connectionLines: false,
+        markerColor: "#F97316",
+        titleColor: "#F8FAFC",
+        labelColor: "#D7E1EA",
+        mapColor: "#7B8A98",
+        background: {
+          type: "gradient",
+          from: "#0B1220",
+          to: "#162132",
+          direction: "to-bottom",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  if (hasAny(radiusSignals) && extractedLocations.length >= 1) {
+    return {
+      templateId: "map-radius-rings",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a radius, coverage-band, or geofence map prompt centered on a named location",
+      aspect_ratio: "16:9",
+      params: {
+        title: subject ? titleCase(subject) : "Coverage Radius",
+        mapRegion: inferredRegion,
+        locations: buildLocations(),
+        mapStyle: "editorial-light",
+        markerPulse: true,
+        connectionLines: false,
+        markerColor: "#3B82F6",
+        titleColor: "#1E3A5F",
+        labelColor: "#47627C",
+        mapColor: "#84A0BA",
+        background: {
+          type: "gradient",
+          from: "#F3F8FD",
+          to: "#E7EFF7",
+          direction: "to-bottom-right",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  if (hasAny(heatmapSignals) && extractedLocations.length >= 2) {
+    return {
+      templateId: "map-heatmap",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a heatmap or hotspot-density prompt with multiple named locations",
+      aspect_ratio: "16:9",
+      params: {
+        title: subject
+          ? titleCase(subject)
+          : normalized.includes("customer")
+            ? "Customer Hotspots"
+            : "Activity Density",
+        mapRegion: inferredRegion,
+        locations: buildLocations(),
+        mapStyle: "geo-color",
+        markerPulse: true,
+        connectionLines: false,
+        markerColor: "#F97316",
+        titleColor: "#18323A",
+        labelColor: "#35515B",
+        mapColor: "#8AA1A8",
+        background: {
+          type: "gradient",
+          from: "#F7F4EF",
+          to: "#ECE5DA",
+          direction: "to-bottom-right",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  if (hasAny(routeSignals) && extractedLocations.length >= 2) {
+    return {
+      templateId: "map-route-animation",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a route-focused map prompt with named stops",
+      aspect_ratio: "16:9",
+      params: {
+        title: normalized.includes("shipping")
+          ? "Shipping Route"
+          : "Flight Path",
+        mapRegion: inferredRegion,
+        locations: buildLocations(),
+        mapStyle: "editorial-light",
+        markerPulse: true,
+        connectionLines: true,
+        markerColor: "#4C6670",
+        titleColor: "#FFFFFF",
+        labelColor: "#CBD5E1",
+        mapColor: "#9AA8B1",
+        background: {
+          type: "gradient",
+          from: "#0C0B1C",
+          to: "#1A1730",
+          direction: "to-bottom",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  if (hasAny(networkSignals) && extractedLocations.length >= 3) {
+    return {
+      templateId: "map-network",
+      confidence: "high",
+      reasoning:
+        "Heuristic: detected a network-style map prompt with multiple hubs",
+      aspect_ratio: "16:9",
+      params: {
+        title: subject
+          ? titleCase(subject)
+          : `${regionDisplay} Infrastructure Hubs`,
+        mapRegion: inferredRegion,
+        locations: buildLocations(),
+        mapStyle: "technical-dark",
+        markerPulse: true,
+        connectionLines: true,
+        markerColor: "#8CB9C4",
+        titleColor: "#FFFFFF",
+        labelColor: "#EAF2F5",
+        mapColor: "#41505A",
+        background: {
+          type: "gradient",
+          from: "#060813",
+          to: "#111827",
+          direction: "to-bottom",
+        },
+        entranceAnimation: "progressive",
+        duration: 6,
+      },
+    };
+  }
+
+  return null;
 }
 
 function heuristicNewspaperFrontPageIntent(

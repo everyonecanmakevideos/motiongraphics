@@ -145,7 +145,7 @@ function getVariant(props: YTChaptersProps): Variant {
 
 export const YTChapters: React.FC<YTChaptersProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width, height, scale, isPortrait, isSquare } = useResponsiveConfig();
+  const { width, scale, isPortrait, isSquare } = useResponsiveConfig();
 
   const effectiveStylePreset =
     props.stylePreset ??

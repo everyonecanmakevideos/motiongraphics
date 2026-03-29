@@ -1,0 +1,18 @@
+{
+  "id": "earth-globe",
+  "name": "Earth Globe",
+  "description": "A cinematic rotating earth-globe visualization for global reach, worldwide presence, orbit-style location reveals, and planet-scale connectivity.",
+  "tags": [
+    "earth",
+    "globe",
+    "planet",
+    "world",
+    "global",
+    "locations",
+    "orbit"
+  ],
+  "compatibleAnimations": ["fade-in", "scale-pop", "progressive", "none"],
+  "minDuration": 3,
+  "maxDuration": 15,
+  "defaultDuration": 7
+}
