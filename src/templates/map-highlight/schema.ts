@@ -12,6 +12,11 @@ const LocationSchema = z.object({
   x: z.number().min(0).max(100),
   y: z.number().min(0).max(100),
   description: z.string().max(100).optional(),
+  placeCanonical: z.string().min(1).max(80).optional(),
+  placeKind: z
+    .enum(["city", "country", "us-state", "india-state"])
+    .optional(),
+  placeRegion: z.enum(["world", "europe", "usa", "india"]).optional(),
 });
 
 export const MapHighlightSchema = z.object({

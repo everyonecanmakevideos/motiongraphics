@@ -1,0 +1,41 @@
+{
+  "templateId": "map-route-animation",
+  "params": {
+    "title": "Flight Path",
+    "locations": [
+      {
+        "label": "Kerala",
+        "x": 58,
+        "y": 58,
+        "placeCanonical": "Kerala",
+        "placeKind": "city",
+        "placeRegion": "india"
+      },
+      {
+        "label": "New York",
+        "x": 24,
+        "y": 34,
+        "placeCanonical": "New York",
+        "placeKind": "city",
+        "placeRegion": "usa"
+      }
+    ],
+    "mapRegion": "world",
+    "mapStyle": "editorial-light",
+    "markerColor": "#4C6670",
+    "markerPulse": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#CBD5E1",
+    "mapColor": "#9AA8B1",
+    "connectionLines": true,
+    "connectionStyle": "solid",
+    "background": {
+      "type": "gradient",
+      "from": "#0C0B1C",
+      "to": "#1A1730",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 6
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "templateId": "map-city-spotlight",
+  "params": {
+    "title": "Bangalore Focus",
+    "locations": [
+      {
+        "label": "Bangalore",
+        "x": 60,
+        "y": 56,
+        "placeCanonical": "Bangalore",
+        "placeKind": "city",
+        "placeRegion": "india"
+      }
+    ],
+    "mapRegion": "india",
+    "mapStyle": "geo-color",
+    "markerColor": "#F97316",
+    "markerPulse": true,
+    "titleColor": "#F8FAFC",
+    "labelColor": "#D7E1EA",
+    "mapColor": "#7B8A98",
+    "connectionLines": false,
+    "connectionStyle": "solid",
+    "background": {
+      "type": "gradient",
+      "from": "#0B1220",
+      "to": "#162132",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 6
+  }
+}

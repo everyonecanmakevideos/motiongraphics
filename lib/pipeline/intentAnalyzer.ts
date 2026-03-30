@@ -4,9 +4,8 @@ import {
   getTemplateIds,
 } from "../../src/templates/registry-server";
 import {
-  CITY_CATALOG,
-  CITY_FALLBACK_COORDS,
-} from "../geo/cityCatalog";
+  extractPlacesFromText,
+} from "../geo/placeResolver";
 import type { IntentResult } from "../templates/resolver";
 import { validateTemplateParams } from "../templates/resolver";
 import type {
@@ -1316,6 +1315,7 @@ function heuristicMapIntent(prompt: string): IntentResult | null {
     "infrastructure network",
   ];
   const spotlightSignals = [
+    "spotlight ",
     "city spotlight",
     "spotlight map",
     "spotlight over",
@@ -1326,6 +1326,7 @@ function heuristicMapIntent(prompt: string): IntentResult | null {
     "priority location",
     "city focus",
     "facility focus",
+    "editorial map",
   ];
   const heatmapSignals = [
     "heatmap",
@@ -1378,46 +1379,10 @@ function heuristicMapIntent(prompt: string): IntentResult | null {
   const hasAny = (signals: string[]) =>
     signals.some((signal) => normalized.includes(signal));
 
-  const extractedLocations = CITY_CATALOG
-    .map(({ canonical, aliases }) => {
-      const matches = aliases
-        .map((alias) => ({
-          alias,
-          index: normalized.search(
-            new RegExp(
-              `\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
-              "i",
-            ),
-          ),
-        }))
-        .filter((match) => match.index >= 0)
-        .sort((a, b) => a.index - b.index);
-
-      if (matches.length === 0) {
-        return null;
-      }
-
-      return {
-        canonical,
-        firstIndex: matches[0].index,
-      };
-    })
-    .filter(
-      (
-        entry,
-      ): entry is {
-        canonical: (typeof CITY_CATALOG)[number]["canonical"];
-        firstIndex: number;
-      } => entry !== null,
-    )
-    .sort((a, b) => a.firstIndex - b.firstIndex)
-    .map((entry) => entry.canonical)
-    .filter((value, index, array) => array.indexOf(value) === index);
+  const extractedPlaces = extractPlacesFromText(prompt);
+  const extractedLocations = extractedPlaces.map((place) => place.canonical);
 
   const inferMapRegion = (): "world" | "europe" | "usa" | "india" => {
-    const matchedEntries = CITY_CATALOG.filter(({ canonical }) =>
-      extractedLocations.includes(canonical),
-    );
     const explicitIndia =
       /\bindia\b/.test(normalized) || /\bindian\b/.test(normalized);
     const explicitUsa =
@@ -1433,20 +1398,23 @@ function heuristicMapIntent(prompt: string): IntentResult | null {
     if (explicitUsa) return "usa";
     if (explicitEurope) return "europe";
 
-    if (matchedEntries.length === 0) return "world";
-    if (matchedEntries.every((entry) => entry.region === "india"))
+    if (extractedPlaces.length === 0) return "world";
+    if (extractedPlaces.every((entry) => entry.region === "india"))
       return "india";
-    if (matchedEntries.every((entry) => entry.region === "usa")) return "usa";
-    if (matchedEntries.every((entry) => entry.region === "europe"))
+    if (extractedPlaces.every((entry) => entry.region === "usa")) return "usa";
+    if (extractedPlaces.every((entry) => entry.region === "europe"))
       return "europe";
 
     return "world";
   };
 
   const buildLocations = () =>
-    extractedLocations.slice(0, 8).map((label) => ({
-      label,
-      ...(CITY_FALLBACK_COORDS[label] ?? { x: 50, y: 50 }),
+    extractedPlaces.slice(0, 8).map((place) => ({
+      label: place.canonical,
+      ...place.fallback,
+      placeCanonical: place.canonical,
+      placeKind: place.kind,
+      placeRegion: place.region,
     }));
 
   const titleCase = (value: string) =>

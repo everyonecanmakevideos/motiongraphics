@@ -4,9 +4,8 @@ import { geoGraticule10, geoOrthographic, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import countriesTopologyData from "../../../public/geo/countries-110m.json";
 import {
-  CITY_COORDINATES,
-  normalizeLocationKey,
-} from "../../../lib/geo/cityCatalog";
+  resolvePlaceLabel,
+} from "../../../lib/geo/placeResolver";
 import { Background } from "../../primitives/Background";
 import { fadeIn, scalePop, secToFrame, staggerDelay } from "../../primitives/animations";
 import { resolveEffects } from "../../primitives/useEffects";
@@ -58,6 +57,13 @@ const isFrontHemisphere = (
   );
 };
 
+const resolveGlobeLocation = (location: EarthGlobeProps["locations"][number]) =>
+  resolvePlaceLabel(location.label, {
+    preferredRegion: location.placeRegion ?? "world",
+    preferredKind: location.placeKind,
+    canonical: location.placeCanonical,
+  });
+
 export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
   const frame = useCurrentFrame();
   const { width, height, scale } = useResponsiveConfig();
@@ -75,9 +81,9 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
   const totalFrames = secToFrame(props.duration);
   const panelWidth = Math.round(width * 0.9);
   const panelHeight = Math.round(height * 0.74);
-  const globeSize = Math.round(Math.min(panelWidth * 0.48, panelHeight * 0.72));
-  const globeX = Math.round(panelWidth * 0.5 - globeSize / 2);
-  const globeY = Math.round(panelHeight * 0.18);
+  const globeSize = Math.round(Math.min(panelWidth * 0.62, panelHeight * 0.84));
+  const globeX = Math.round(panelWidth * 0.52 - globeSize / 2);
+  const globeY = Math.round(panelHeight * 0.14);
 
   const titleEnd = Math.round(totalFrames * 0.14 * motion.durationMultiplier);
   const markersStart = Math.round(totalFrames * 0.18);
@@ -87,8 +93,8 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
   const globeOpacity = fadeIn(frame, { startFrame: 0, endFrame: titleEnd }).opacity;
 
   const locationCoordinates = props.locations.map((location) => {
-    const key = normalizeLocationKey(location.label);
-    const coordinates = CITY_COORDINATES[key];
+    const place = resolveGlobeLocation(location);
+    const coordinates = place?.coordinates;
     return {
       ...location,
       longitude: coordinates?.[0],
@@ -105,22 +111,45 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
 
   const averageLongitude =
     resolvedCoordinates.length > 0
-      ? resolvedCoordinates.reduce((sum, location) => sum + location.longitude, 0) /
-        resolvedCoordinates.length
+      ? (Math.atan2(
+          resolvedCoordinates.reduce(
+            (sum, location) => sum + Math.sin((location.longitude * Math.PI) / 180),
+            0,
+          ),
+          resolvedCoordinates.reduce(
+            (sum, location) => sum + Math.cos((location.longitude * Math.PI) / 180),
+            0,
+          ),
+        ) *
+          180) /
+        Math.PI
       : 20;
   const averageLatitude =
     resolvedCoordinates.length > 0
       ? resolvedCoordinates.reduce((sum, location) => sum + location.latitude, 0) /
         resolvedCoordinates.length
       : 16;
+  const longitudeSpread =
+    resolvedCoordinates.length > 1
+      ? Math.max(...resolvedCoordinates.map((location) => location.longitude)) -
+        Math.min(...resolvedCoordinates.map((location) => location.longitude))
+      : 0;
+  const globeScaleBoost =
+    longitudeSpread < 35
+      ? 1.08
+      : longitudeSpread < 90
+        ? 1.03
+        : longitudeSpread > 165
+          ? 0.94
+          : 0.99;
 
-  const drift = interpolate(frame, [0, totalFrames], [-8, 8], CLAMP);
+  const drift = interpolate(frame, [0, totalFrames], [-5.5, 5.5], CLAMP);
   const centerLongitude = averageLongitude + drift;
-  const centerLatitude = averageLatitude * 0.45 + 8;
+  const centerLatitude = averageLatitude * 0.42 + 7;
 
   const projection = geoOrthographic()
     .translate([globeSize / 2, globeSize / 2])
-    .scale(globeSize * 0.34)
+    .scale(globeSize * 0.355 * globeScaleBoost)
     .clipAngle(90)
     .rotate([-centerLongitude, -centerLatitude, 0]);
 
@@ -162,8 +191,8 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
   const connectionPairs =
     markerData.length > 1
       ? markerData
-          .slice(1)
-          .map((location) => [markerData[0], location] as const)
+          .slice(0, -1)
+          .map((location, index) => [location, markerData[index + 1]] as const)
           .filter(([start, end]) => start.visible && end.visible)
       : [];
 
@@ -421,12 +450,14 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
         <div
           style={{
             position: "absolute",
-            left: `${Math.round(panelWidth * 0.11)}px`,
+            left: "50%",
             bottom: `${Math.round(32 * scale)}px`,
             display: "flex",
             gap: `${Math.round(12 * scale)}px`,
             flexWrap: "wrap",
-            maxWidth: `${Math.round(panelWidth * 0.78)}px`,
+            justifyContent: "center",
+            transform: "translateX(-50%)",
+            maxWidth: `${Math.round(panelWidth * 0.72)}px`,
             zIndex: 4,
           }}
         >
@@ -441,12 +472,25 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = (props) => {
                 color: props.labelColor,
                 fontSize: `${Math.round(12 * scale)}px`,
                 fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
+                display: "flex",
+                alignItems: "center",
+                gap: `${Math.round(8 * scale)}px`,
                 boxShadow:
                   index === 0
                     ? "0 0 0 1px rgba(124,199,255,0.2), 0 10px 24px rgba(0,0,0,0.16)"
                     : "0 8px 18px rgba(0,0,0,0.14)",
               }}
             >
+              <span
+                style={{
+                  width: `${Math.max(6, Math.round(6 * scale))}px`,
+                  height: `${Math.max(6, Math.round(6 * scale))}px`,
+                  borderRadius: "50%",
+                  background: props.markerColor,
+                  boxShadow: `0 0 10px ${props.markerColor}66`,
+                  display: "inline-block",
+                }}
+              />
               {location.label}
             </div>
           ))}

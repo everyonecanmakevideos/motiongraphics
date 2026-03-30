@@ -1,0 +1,50 @@
+[
+  {
+    "id": "geo-route-kerala-new-york",
+    "prompt": "Show a flight path from Kerala to New York with animated route line",
+    "expectedTemplateId": "map-route-animation",
+    "coverage": "india state to us city route"
+  },
+  {
+    "id": "geo-network-haryana-punjab-hyderabad",
+    "prompt": "Show a network map connecting Haryana, Punjab, and Hyderabad",
+    "expectedTemplateId": "map-network",
+    "coverage": "india states mixed with city"
+  },
+  {
+    "id": "geo-spotlight-bengaluru",
+    "prompt": "Spotlight Bengaluru on a dark editorial map",
+    "expectedTemplateId": "map-city-spotlight",
+    "coverage": "single indian city spotlight"
+  },
+  {
+    "id": "geo-heatmap-bengaluru-hyderabad-kerala",
+    "prompt": "Create a heatmap of customer activity across Bengaluru, Hyderabad, and Kerala",
+    "expectedTemplateId": "map-heatmap",
+    "coverage": "india city plus state heatmap"
+  },
+  {
+    "id": "geo-heatmap-new-york-boston-chicago",
+    "prompt": "Create a heatmap of customer activity across New York, Boston, and Chicago",
+    "expectedTemplateId": "map-heatmap",
+    "coverage": "us city heatmap"
+  },
+  {
+    "id": "geo-radius-california-texas-new-york",
+    "prompt": "Show 3 service radius rings around California, Texas, and New York",
+    "expectedTemplateId": "map-radius-rings",
+    "coverage": "us states with ambiguous new york"
+  },
+  {
+    "id": "geo-targeting-india-with-cities",
+    "prompt": "Create a tactical targeting map focused on India with supporting nodes in Delhi, Mumbai, and Kolkata",
+    "expectedTemplateId": "map-targeting",
+    "coverage": "country plus indian cities targeting"
+  },
+  {
+    "id": "geo-globe-london-new-york-singapore-india",
+    "prompt": "Show a rotating earth with markers for London, New York, Singapore, and India",
+    "expectedTemplateId": "earth-globe",
+    "coverage": "mixed city and country globe"
+  }
+]

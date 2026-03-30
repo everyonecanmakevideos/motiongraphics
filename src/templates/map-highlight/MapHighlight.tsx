@@ -12,9 +12,8 @@ import countriesTopologyData from "../../../public/geo/countries-110m.json";
 import indiaGeoData from "../../../public/geo/india_state.json";
 import statesTopologyData from "../../../public/geo/states-10m.json";
 import {
-  CITY_COORDINATES,
-  normalizeLocationKey,
-} from "../../../lib/geo/cityCatalog";
+  resolvePlaceLabel,
+} from "../../../lib/geo/placeResolver";
 import { Background } from "../../primitives/Background";
 import {
   fadeIn,
@@ -75,6 +74,8 @@ type ResolvedLocation = MapHighlightProps["locations"][number] & {
   latitude?: number;
 };
 
+type MapLocation = MapHighlightProps["locations"][number];
+
 type GeoFeatureCollection = {
   type: "FeatureCollection";
   features: Array<{
@@ -82,6 +83,16 @@ type GeoFeatureCollection = {
     geometry: unknown;
     properties?: Record<string, unknown>;
   }>;
+};
+
+type PointFocus = {
+  scale: number;
+  translateX: number;
+  translateY: number;
+  centerX: number;
+  centerY: number;
+  boxWidth: number;
+  boxHeight: number;
 };
 
 const countriesTopology = countriesTopologyData as {
@@ -155,64 +166,38 @@ const getQuadraticPoint = (segment: RouteSegment, progress: number) => {
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
-const inferMapRegionFromLabels = (
-  labels: string[],
+const resolveLocationPlace = (
+  location: MapLocation,
+  preferredRegion?: MapHighlightProps["mapRegion"],
+) =>
+  resolvePlaceLabel(location.label, {
+    preferredRegion: location.placeRegion ?? preferredRegion,
+    preferredKind: location.placeKind,
+    canonical: location.placeCanonical,
+  });
+
+const inferMapRegionFromLocations = (
+  locations: MapLocation[],
   requestedRegion: MapHighlightProps["mapRegion"],
 ): MapHighlightProps["mapRegion"] => {
   if (requestedRegion !== "world") {
     return requestedRegion;
   }
 
-  const normalizedLabels = labels.map(normalizeLocationKey);
-  const matches = {
-    india: normalizedLabels.filter((label) => {
-      const coords = CITY_COORDINATES[label];
-      return (
-        coords !== undefined &&
-        [
-          "bangalore",
-          "bengaluru",
-          "hyderabad",
-          "pune",
-          "chennai",
-          "mumbai",
-          "delhi",
-          "delhi ncr",
-        ].includes(label)
-      );
-    }).length,
-    europe: normalizedLabels.filter((label) =>
-      [
-        "london",
-        "paris",
-        "berlin",
-        "amsterdam",
-        "madrid",
-        "rotterdam",
-      ].includes(label),
-    ).length,
-    usa: normalizedLabels.filter((label) =>
-      [
-        "san francisco",
-        "sf",
-        "new york",
-        "los angeles",
-        "seattle",
-        "austin",
-        "chicago",
-        "boston",
-      ].includes(label),
-    ).length,
-  };
+  const matchedRegions = locations
+    .map((location) => location.placeRegion ?? resolveLocationPlace(location)?.region ?? null)
+    .filter((value): value is MapHighlightProps["mapRegion"] => value !== null);
 
-  if (matches.india > 0 && matches.india === normalizedLabels.length) {
-    return "india";
+  if (matchedRegions.length === 0) {
+    return "world";
   }
-  if (matches.europe > 0 && matches.europe === normalizedLabels.length) {
-    return "europe";
-  }
-  if (matches.usa > 0 && matches.usa === normalizedLabels.length) {
-    return "usa";
+
+  const uniqueRegions = new Set(matchedRegions);
+  if (uniqueRegions.size === 1) {
+    const [onlyRegion] = [...uniqueRegions];
+    if (onlyRegion !== "world") {
+      return onlyRegion;
+    }
   }
 
   return "world";
@@ -237,16 +222,16 @@ const createCoordinateBoundsFeature = (
   const regionPadding =
     focusMode === "tight"
       ? {
-          world: { lon: 9, lat: 6 },
-          europe: { lon: 3.2, lat: 2.4 },
-          usa: { lon: 4.5, lat: 3.2 },
-          india: { lon: 2.4, lat: 2 },
+          world: { lon: 7, lat: 5 },
+          europe: { lon: 2.6, lat: 2 },
+          usa: { lon: 3.5, lat: 2.8 },
+          india: { lon: 1.45, lat: 1.2 },
         }[region]
       : {
-          world: { lon: 18, lat: 10 },
-          europe: { lon: 7, lat: 5 },
-          usa: { lon: 9, lat: 6 },
-          india: { lon: 4, lat: 3.5 },
+          world: { lon: 16, lat: 9 },
+          europe: { lon: 5.5, lat: 4.2 },
+          usa: { lon: 7.5, lat: 5 },
+          india: { lon: 3, lat: 2.4 },
         }[region];
 
   const hasSpread =
@@ -281,6 +266,57 @@ const createCoordinateBoundsFeature = (
         },
       },
     ],
+  };
+};
+
+const createPointFocus = ({
+  points,
+  mapWidth,
+  mapHeight,
+  minWidthRatio,
+  minHeightRatio,
+  padXRatio,
+  padYRatio,
+  targetWidthRatio,
+  targetHeightRatio,
+  minScale,
+  maxScale,
+  anchorY,
+}: {
+  points: Array<{ x: number; y: number }>;
+  mapWidth: number;
+  mapHeight: number;
+  minWidthRatio: number;
+  minHeightRatio: number;
+  padXRatio: number;
+  padYRatio: number;
+  targetWidthRatio: number;
+  targetHeightRatio: number;
+  minScale: number;
+  maxScale: number;
+  anchorY: number;
+}): PointFocus => {
+  const minX = Math.min(...points.map((point) => point.x));
+  const maxX = Math.max(...points.map((point) => point.x));
+  const minY = Math.min(...points.map((point) => point.y));
+  const maxY = Math.max(...points.map((point) => point.y));
+  const boxWidth = Math.max(maxX - minX, mapWidth * minWidthRatio);
+  const boxHeight = Math.max(maxY - minY, mapHeight * minHeightRatio);
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const scaleX = (mapWidth * targetWidthRatio) / (boxWidth + mapWidth * padXRatio);
+  const scaleY =
+    (mapHeight * targetHeightRatio) / (boxHeight + mapHeight * padYRatio);
+  const scale = clamp(Math.min(scaleX, scaleY), minScale, maxScale);
+
+  return {
+    scale,
+    translateX: mapWidth / 2 - centerX * scale,
+    translateY: mapHeight * anchorY - centerY * scale,
+    centerX,
+    centerY,
+    boxWidth,
+    boxHeight,
   };
 };
 
@@ -392,24 +428,26 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
     CLAMP,
   );
 
-  const activeMapRegion = inferMapRegionFromLabels(
-    props.locations.map((loc) => loc.label),
+  const activeMapRegion = inferMapRegionFromLocations(
+    props.locations,
     props.mapRegion,
   );
   const coordinateMatches = props.locations
     .map((loc) => {
-      const cityKey = normalizeLocationKey(loc.label);
-      const coordinates = CITY_COORDINATES[cityKey];
-      return coordinates ?? null;
+      const place = resolveLocationPlace(loc, activeMapRegion);
+      return place?.coordinates ?? null;
     })
     .filter((value): value is [number, number] => value !== null);
   const coordinateFocusEnabled =
     isHighlightVariant ||
+    isRouteVariant ||
+    isNetworkVariant ||
     isClusterVariant ||
     isSpotlightVariant ||
-    isRadiusVariant;
+    isRadiusVariant ||
+    isTargetingVariant;
   const coordinateFocusThreshold =
-    isSpotlightVariant || isRadiusVariant ? 1 : 2;
+    isSpotlightVariant || isRadiusVariant || isTargetingVariant ? 1 : 2;
   const regionalProjectionTarget =
     coordinateFocusEnabled && coordinateMatches.length >= coordinateFocusThreshold
       ? createCoordinateBoundsFeature(
@@ -424,10 +462,14 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
       ? 0.02
       : isRadiusVariant && hasRegionalFocus
         ? 0.03
+        : isTargetingVariant && hasRegionalFocus
+          ? 0.045
+          : isRouteVariant && hasRegionalFocus
+            ? 0.045
         : (isHighlightVariant && hasRegionalFocus)
           ? 0.05
           : isNetworkVariant
-            ? 0.025
+            ? (hasRegionalFocus ? 0.04 : 0.025)
             : 0.03;
   const regionalInsetYStart =
     isSpotlightVariant && hasRegionalFocus
@@ -436,6 +478,10 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
         ? 0.1
         : isRadiusVariant && hasRegionalFocus
           ? 0.11
+          : isTargetingVariant && hasRegionalFocus
+            ? 0.08
+            : isRouteVariant && hasRegionalFocus
+              ? 0.1
           : (isHighlightVariant && hasRegionalFocus)
             ? 0.16
             : 0.1;
@@ -444,10 +490,14 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
       ? 0.98
       : isRadiusVariant && hasRegionalFocus
         ? 0.97
+        : isTargetingVariant && hasRegionalFocus
+          ? 0.955
+          : isRouteVariant && hasRegionalFocus
+            ? 0.955
         : (isHighlightVariant && hasRegionalFocus)
           ? 0.95
           : isNetworkVariant
-            ? 0.975
+            ? (hasRegionalFocus ? 0.96 : 0.975)
             : 0.97;
   const regionalInsetYEnd =
     isSpotlightVariant && hasRegionalFocus
@@ -456,6 +506,10 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
         ? 0.92
         : isRadiusVariant && hasRegionalFocus
           ? 0.91
+          : isTargetingVariant && hasRegionalFocus
+            ? 0.92
+            : isRouteVariant && hasRegionalFocus
+              ? 0.9
           : (isHighlightVariant && hasRegionalFocus)
             ? 0.9
             : isNetworkVariant
@@ -478,13 +532,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
         ? usaFeatureCollection
         : worldFeatureCollection;
   const projectionTarget =
-    (((isClusterVariant ||
-      isHighlightVariant ||
-      isSpotlightVariant ||
-      isRadiusVariant) &&
-      hasRegionalFocus)
-      ? regionalProjectionTarget
-      : null) ??
+    (hasRegionalFocus ? regionalProjectionTarget : null) ??
     (activeMapRegion === "europe"
       ? EUROPE_FOCUS_BOUNDS
       : regionFeatureCollection);
@@ -520,11 +568,11 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
     .filter((item) => item.d.length > 0);
 
   const resolvedLocations: ResolvedLocation[] = props.locations.map((loc) => {
-    const cityKey = normalizeLocationKey(loc.label);
-    const coordinates = CITY_COORDINATES[cityKey];
+    const place = resolveLocationPlace(loc, activeMapRegion);
+    const coordinates = place?.coordinates;
     const projectedPoint = coordinates ? projection(coordinates) : null;
-    const fallbackX = (loc.x / 100) * MAP_WIDTH;
-    const fallbackY = (loc.y / 100) * MAP_HEIGHT;
+    const fallbackX = ((place?.fallback.x ?? loc.x) / 100) * MAP_WIDTH;
+    const fallbackY = ((place?.fallback.y ?? loc.y) / 100) * MAP_HEIGHT;
 
     return {
       ...loc,
@@ -789,50 +837,48 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
           x: loc.pixelX,
           y: loc.pixelY,
         }));
-        const minX = Math.min(...points.map((point) => point.x));
-        const maxX = Math.max(...points.map((point) => point.x));
-        const minY = Math.min(...points.map((point) => point.y));
-        const maxY = Math.max(...points.map((point) => point.y));
-        const bboxWidth = Math.max(maxX - minX, MAP_WIDTH * 0.08);
-        const bboxHeight = Math.max(maxY - minY, MAP_HEIGHT * 0.08);
-        const centerX = (minX + maxX) / 2;
-        const centerY = (minY + maxY) / 2;
 
         if (activeMapRegion !== "world") {
-          const padX = MAP_WIDTH * 0.06;
-          const padY = MAP_HEIGHT * 0.08;
-          const scaleX = (MAP_WIDTH * 0.82) / (bboxWidth + padX);
-          const scaleY = (MAP_HEIGHT * 0.74) / (bboxHeight + padY);
-          const focusScale = clamp(
-            Math.min(scaleX, scaleY),
-            activeMapRegion === "europe" ? 1.6 : 1.35,
-            activeMapRegion === "europe" ? 2.55 : 2.25,
-          );
+          const focus = createPointFocus({
+            points,
+            mapWidth: MAP_WIDTH,
+            mapHeight: MAP_HEIGHT,
+            minWidthRatio: 0.06,
+            minHeightRatio: 0.06,
+            padXRatio: 0.03,
+            padYRatio: 0.05,
+            targetWidthRatio: 0.94,
+            targetHeightRatio: 0.82,
+            minScale: activeMapRegion === "europe" ? 1.95 : 1.7,
+            maxScale: activeMapRegion === "europe" ? 3.05 : 2.8,
+            anchorY: 0.58,
+          });
           return {
-            scale: focusScale,
-            translateX: MAP_WIDTH / 2 - centerX * focusScale,
-            translateY: MAP_HEIGHT * 0.56 - centerY * focusScale,
-            centerX,
-            centerY,
-            radiusX: Math.max(MAP_WIDTH * 0.07, bboxWidth * 0.82),
-            radiusY: Math.max(MAP_HEIGHT * 0.09, bboxHeight * 0.96),
+            ...focus,
+            radiusX: Math.max(MAP_WIDTH * 0.08, focus.boxWidth * 0.88),
+            radiusY: Math.max(MAP_HEIGHT * 0.1, focus.boxHeight * 1.04),
           };
         }
 
-        const padX = MAP_WIDTH * 0.08;
-        const padY = MAP_HEIGHT * 0.12;
-        const scaleX = (MAP_WIDTH * 0.52) / (bboxWidth + padX);
-        const scaleY = (MAP_HEIGHT * 0.46) / (bboxHeight + padY);
-        const focusScale = clamp(Math.min(scaleX, scaleY), 1.05, 1.55);
+        const focus = createPointFocus({
+          points,
+          mapWidth: MAP_WIDTH,
+          mapHeight: MAP_HEIGHT,
+          minWidthRatio: 0.07,
+          minHeightRatio: 0.08,
+          padXRatio: 0.06,
+          padYRatio: 0.1,
+          targetWidthRatio: 0.62,
+          targetHeightRatio: 0.56,
+          minScale: 1.16,
+          maxScale: 1.78,
+          anchorY: 0.58,
+        });
 
         return {
-          scale: focusScale,
-          translateX: MAP_WIDTH / 2 - centerX * focusScale,
-          translateY: MAP_HEIGHT * 0.56 - centerY * focusScale,
-          centerX,
-          centerY,
-          radiusX: Math.max(MAP_WIDTH * 0.08, bboxWidth * 0.92),
-          radiusY: Math.max(MAP_HEIGHT * 0.11, bboxHeight * 1.08),
+          ...focus,
+          radiusX: Math.max(MAP_WIDTH * 0.09, focus.boxWidth * 0.98),
+          radiusY: Math.max(MAP_HEIGHT * 0.12, focus.boxHeight * 1.14),
         };
       })()
     : {
@@ -841,6 +887,8 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
         translateY: 0,
         centerX: MAP_WIDTH / 2,
         centerY: MAP_HEIGHT / 2,
+        boxWidth: MAP_WIDTH * 0.18,
+        boxHeight: MAP_HEIGHT * 0.18,
         radiusX: MAP_WIDTH * 0.18,
         radiusY: MAP_HEIGHT * 0.18,
       };
@@ -911,19 +959,146 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
         });
       })()
     : [];
-  const spotlightFocusScale =
-    activeMapRegion === "world"
-      ? 2.15
-      : activeMapRegion === "europe" || activeMapRegion === "usa"
-        ? 3.05
-        : 2.75;
+  const spotlightFocus = isSpotlightVariant
+    ? createPointFocus({
+        points: resolvedLocations.map((loc) => ({
+          x: loc.pixelX,
+          y: loc.pixelY,
+        })),
+        mapWidth: MAP_WIDTH,
+        mapHeight: MAP_HEIGHT,
+        minWidthRatio: 0.05,
+        minHeightRatio: 0.05,
+        padXRatio: activeMapRegion === "world" ? 0.08 : 0.04,
+        padYRatio: activeMapRegion === "world" ? 0.12 : 0.06,
+        targetWidthRatio: activeMapRegion === "world" ? 0.58 : 0.72,
+        targetHeightRatio: activeMapRegion === "world" ? 0.56 : 0.76,
+        minScale:
+          activeMapRegion === "world"
+            ? 2.65
+            : activeMapRegion === "europe" || activeMapRegion === "usa"
+              ? 3.5
+              : 3.95,
+        maxScale:
+          activeMapRegion === "world"
+            ? 3.15
+            : activeMapRegion === "europe" || activeMapRegion === "usa"
+              ? 4
+              : 4.45,
+        anchorY: 0.59,
+      })
+    : {
+        scale: 1,
+        translateX: 0,
+        translateY: 0,
+        centerX: MAP_WIDTH / 2,
+        centerY: MAP_HEIGHT / 2,
+        boxWidth: MAP_WIDTH * 0.12,
+        boxHeight: MAP_HEIGHT * 0.12,
+      };
   const radiusFocusScale =
-    activeMapRegion === "world" ? 1.32 : activeMapRegion === "usa" ? 1.22 : 1.16;
-  const targetingFocusScale = activeMapRegion === "world" ? 1.5 : 1.18;
+    activeMapRegion === "world" ? 1.42 : activeMapRegion === "usa" ? 1.26 : 1.34;
+  const targetingFocus = isTargetingVariant
+    ? createPointFocus({
+        points: resolvedLocations.map((loc) => ({
+          x: loc.pixelX,
+          y: loc.pixelY,
+        })),
+        mapWidth: MAP_WIDTH,
+        mapHeight: MAP_HEIGHT,
+        minWidthRatio: 0.08,
+        minHeightRatio: 0.08,
+        padXRatio: activeMapRegion === "world" ? 0.08 : 0.05,
+        padYRatio: activeMapRegion === "world" ? 0.1 : 0.07,
+        targetWidthRatio: activeMapRegion === "world" ? 0.72 : 0.84,
+        targetHeightRatio: activeMapRegion === "world" ? 0.68 : 0.8,
+        minScale: activeMapRegion === "world" ? 1.78 : 1.55,
+        maxScale: activeMapRegion === "world" ? 2.24 : 2.05,
+        anchorY: 0.57,
+      })
+    : {
+        scale: 1,
+        translateX: 0,
+        translateY: 0,
+        centerX: MAP_WIDTH / 2,
+        centerY: MAP_HEIGHT / 2,
+        boxWidth: MAP_WIDTH * 0.16,
+        boxHeight: MAP_HEIGHT * 0.16,
+      };
   const spotlightCenter = primaryLocation ?? {
     pixelX: MAP_WIDTH / 2,
     pixelY: MAP_HEIGHT / 2,
   };
+  const targetingLabelPlacements = isTargetingVariant
+    ? (() => {
+        const sideCounts = { left: 0, right: 0, top: 0, bottom: 0 };
+
+        return resolvedLocations.map((loc, index) => {
+          const dx = loc.pixelX - targetingFocus.centerX;
+          const dy = loc.pixelY - targetingFocus.centerY;
+          const horizontalBias = Math.abs(dx) >= Math.abs(dy) * 0.82;
+          const side =
+            index === 0
+              ? dx <= 0
+                ? "left"
+                : "right"
+              : horizontalBias
+                ? dx < 0
+                  ? "left"
+                  : "right"
+                : dy < 0
+                  ? "top"
+                  : "bottom";
+          const stackIndex = sideCounts[side]++;
+          const spreadDirection =
+            side === "left" || side === "right"
+              ? dy < 0
+                ? -1
+                : 1
+              : dx < 0
+                ? -1
+                : 1;
+          const stackOffset =
+            stackIndex === 0
+              ? 0
+              : spreadDirection * (14 + (stackIndex - 1) * 18);
+
+          if (side === "left") {
+            return {
+              left: -Math.round((index === 0 ? 44 : 38) * scale),
+              top: stackOffset,
+              align: "flex-end" as const,
+              transform: "translate(-100%, -50%)",
+            };
+          }
+
+          if (side === "right") {
+            return {
+              left: Math.round((index === 0 ? 44 : 38) * scale),
+              top: stackOffset,
+              align: "flex-start" as const,
+              transform: "translate(0, -50%)",
+            };
+          }
+
+          if (side === "top") {
+            return {
+              left: stackOffset,
+              top: -Math.round(34 * scale),
+              align: "center" as const,
+              transform: "translate(-50%, -100%)",
+            };
+          }
+
+          return {
+            left: stackOffset,
+            top: Math.round(30 * scale),
+            align: "center" as const,
+            transform: "translate(-50%, 0)",
+          };
+        });
+      })()
+    : [];
   const routeFocus = isRouteVariant
     ? (() => {
         const points = resolvedLocations.map((loc) => ({
@@ -1256,7 +1431,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               style={{
                 position: "absolute",
                 left: "50%",
-                top: `${Math.round(18 * scale)}px`,
+                top: `${Math.round(16 * scale)}px`,
                 transform: "translateX(-50%)",
                 display: "flex",
                 flexDirection: "column",
@@ -1281,7 +1456,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               </div>
               <div
                 style={{
-                  fontSize: `${Math.round(28 * scale)}px`,
+                  fontSize: `${Math.round(26 * scale)}px`,
                   fontWeight: typo.fontWeight ?? "bold",
                   fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: clusterTextPrimary,
@@ -1311,7 +1486,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               style={{
                 position: "absolute",
                 left: "50%",
-                top: `${Math.round(18 * scale)}px`,
+                top: `${Math.round(15 * scale)}px`,
                 transform: "translateX(-50%)",
                 display: "flex",
                 flexDirection: "column",
@@ -1336,7 +1511,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               </div>
               <div
                 style={{
-                  fontSize: `${Math.round(34 * scale)}px`,
+                  fontSize: `${Math.round(30 * scale)}px`,
                   fontWeight: typo.fontWeight ?? "bold",
                   fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: spotlightTextPrimary,
@@ -1421,7 +1596,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               style={{
                 position: "absolute",
                 left: "50%",
-                top: `${Math.round(18 * scale)}px`,
+                top: `${Math.round(15 * scale)}px`,
                 transform: "translateX(-50%)",
                 display: "flex",
                 flexDirection: "column",
@@ -1446,7 +1621,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               </div>
               <div
                 style={{
-                  fontSize: `${Math.round(34 * scale)}px`,
+                  fontSize: `${Math.round(30 * scale)}px`,
                   fontWeight: typo.fontWeight ?? "bold",
                   fontFamily: typo.fontFamily ?? "Arial, Helvetica, sans-serif",
                   color: targetingTextPrimary,
@@ -1915,9 +2090,9 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               transform: isNetworkVariant
                 ? `translate(${networkFocus.translateX}px, ${networkFocus.translateY}px) scale(${networkFocus.scale})`
                 : isTargetingVariant
-                  ? `translate(${MAP_WIDTH / 2 - (primaryLocation?.pixelX ?? MAP_WIDTH / 2) * targetingFocusScale}px, ${MAP_HEIGHT * 0.56 - (primaryLocation?.pixelY ?? MAP_HEIGHT / 2) * targetingFocusScale}px) scale(${targetingFocusScale})`
+                  ? `translate(${targetingFocus.translateX}px, ${targetingFocus.translateY}px) scale(${targetingFocus.scale})`
                   : isSpotlightVariant
-                    ? `translate(${MAP_WIDTH / 2 - (primaryLocation?.pixelX ?? MAP_WIDTH / 2) * spotlightFocusScale}px, ${MAP_HEIGHT * 0.58 - (primaryLocation?.pixelY ?? MAP_HEIGHT / 2) * spotlightFocusScale}px) scale(${spotlightFocusScale})`
+                    ? `translate(${spotlightFocus.translateX}px, ${spotlightFocus.translateY}px) scale(${spotlightFocus.scale})`
                 : isClusterVariant
                   ? `translate(${clusterFocus.translateX}px, ${clusterFocus.translateY}px) scale(${clusterFocus.scale})`
                   : isRadiusVariant
@@ -2415,6 +2590,9 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
               const routePlacement = isRouteVariant
                 ? routeLabelPlacements[index]
                 : null;
+              const targetingPlacement = isTargetingVariant
+                ? targetingLabelPlacements[index]
+                : null;
               const labelOffsetX = isNetworkVariant
                 ? pointXPercent < 55
                   ? Math.round(18 * scale)
@@ -2428,9 +2606,10 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                       ? Math.round(24 * scale)
                       : Math.round(-24 * scale)
                     : isTargetingVariant
-                      ? pointXPercent < 55
-                        ? Math.round(34 * scale)
-                        : Math.round(-34 * scale)
+                      ? (targetingPlacement?.left ??
+                        (pointXPercent < 55
+                          ? Math.round(34 * scale)
+                          : Math.round(-34 * scale)))
                 : isClusterVariant
                   ? (clusterPlacement?.left ?? Math.round(18 * scale))
                   : isRouteVariant
@@ -2449,7 +2628,7 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                       ? -Math.round(14 * scale)
                       : Math.round(14 * scale)
                     : isTargetingVariant
-                      ? Math.round(-12 * scale)
+                      ? (targetingPlacement?.top ?? Math.round(-12 * scale))
                 : isClusterVariant
                   ? (clusterPlacement?.top ?? Math.round(-18 * scale))
                   : isRouteVariant
@@ -2459,7 +2638,10 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                 ? pointXPercent < 55
                   ? "flex-start"
                   : "flex-end"
-                : isSpotlightVariant || isRadiusVariant || isTargetingVariant
+                : isTargetingVariant
+                  ? (targetingPlacement?.align ??
+                    (pointXPercent < 55 ? "flex-start" : "flex-end"))
+                : isSpotlightVariant || isRadiusVariant
                   ? pointXPercent < 55
                     ? "flex-start"
                     : "flex-end"
@@ -2558,9 +2740,9 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                       width: isRouteVariant
                         ? "16px"
                         : isTargetingVariant
-                          ? "16px"
+                          ? "18px"
                           : isSpotlightVariant
-                            ? "14px"
+                            ? "16px"
                             : isRadiusVariant
                               ? "13px"
                         : isClusterVariant
@@ -2573,9 +2755,9 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                       height: isRouteVariant
                         ? "16px"
                         : isTargetingVariant
-                          ? "16px"
+                          ? "18px"
                           : isSpotlightVariant
-                            ? "14px"
+                            ? "16px"
                             : isRadiusVariant
                               ? "13px"
                         : isClusterVariant
@@ -2683,9 +2865,9 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                       minWidth: isNetworkVariant
                         ? `${Math.round(132 * scale)}px`
                         : isTargetingVariant
-                          ? `${Math.round(142 * scale)}px`
+                          ? `${Math.round(132 * scale)}px`
                           : isSpotlightVariant || isRadiusVariant
-                            ? `${Math.round(116 * scale)}px`
+                            ? `${Math.round(110 * scale)}px`
                         : isClusterVariant
                           ? `${Math.round(
                               (activeMapRegion === "world" ? 98 : 88) * scale,
@@ -2695,7 +2877,12 @@ export const MapHighlight: React.FC<MapRenderProps> = (props) => {
                         ? pointXPercent < 55
                           ? "translate(0, -50%)"
                           : "translate(-100%, -50%)"
-                        : isSpotlightVariant || isRadiusVariant || isTargetingVariant
+                        : isTargetingVariant
+                          ? (targetingPlacement?.transform ??
+                            (pointXPercent < 55
+                              ? "translate(0, -50%)"
+                              : "translate(-100%, -50%)"))
+                        : isSpotlightVariant || isRadiusVariant
                           ? pointXPercent < 55
                             ? "translate(0, -50%)"
                             : "translate(-100%, -50%)"

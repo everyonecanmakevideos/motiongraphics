@@ -1,0 +1,49 @@
+{
+  "templateId": "map-network",
+  "params": {
+    "title": "India Infrastructure Hubs",
+    "locations": [
+      {
+        "label": "Haryana",
+        "x": 59,
+        "y": 43,
+        "placeCanonical": "Haryana",
+        "placeKind": "city",
+        "placeRegion": "india"
+      },
+      {
+        "label": "Punjab",
+        "x": 57,
+        "y": 41,
+        "placeCanonical": "Punjab",
+        "placeKind": "city",
+        "placeRegion": "india"
+      },
+      {
+        "label": "Hyderabad",
+        "x": 61,
+        "y": 52,
+        "placeCanonical": "Hyderabad",
+        "placeKind": "city",
+        "placeRegion": "india"
+      }
+    ],
+    "mapRegion": "india",
+    "mapStyle": "technical-dark",
+    "markerColor": "#8CB9C4",
+    "markerPulse": true,
+    "titleColor": "#FFFFFF",
+    "labelColor": "#EAF2F5",
+    "mapColor": "#41505A",
+    "connectionLines": true,
+    "connectionStyle": "solid",
+    "background": {
+      "type": "gradient",
+      "from": "#060813",
+      "to": "#111827",
+      "direction": "to-bottom"
+    },
+    "entranceAnimation": "progressive",
+    "duration": 6
+  }
+}
