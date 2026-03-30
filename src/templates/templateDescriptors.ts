@@ -82,6 +82,10 @@ import { NewspaperMagazineCoverSchema } from "./newspaper-magazine-cover/schema"
 import newspaperMagazineCoverManifest from "./newspaper-magazine-cover/manifest.json";
 import { NewspaperMinimalLedgerSchema } from "./newspaper-minimal-ledger/schema";
 import newspaperMinimalLedgerManifest from "./newspaper-minimal-ledger/manifest.json";
+import { NewspaperHighlightCoverSchema } from "./newspaper-highlight-cover/schema";
+import newspaperHighlightCoverManifest from "./newspaper-highlight-cover/manifest.json";
+import { NewspaperOpinionColumnSchema } from "./newspaper-opinion-column/schema";
+import newspaperOpinionColumnManifest from "./newspaper-opinion-column/manifest.json";
 
 import { SplitScreenSchema } from "./split-screen/schema";
 import splitScreenManifest from "./split-screen/manifest.json";
@@ -283,6 +287,16 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "newspaper-minimal-ledger",
     schema: NewspaperMinimalLedgerSchema,
     manifest: newspaperMinimalLedgerManifest as TemplateManifest,
+  },
+  {
+    id: "newspaper-highlight-cover",
+    schema: NewspaperHighlightCoverSchema,
+    manifest: newspaperHighlightCoverManifest as TemplateManifest,
+  },
+  {
+    id: "newspaper-opinion-column",
+    schema: NewspaperOpinionColumnSchema,
+    manifest: newspaperOpinionColumnManifest as TemplateManifest,
   },
   {
     id: "split-screen",

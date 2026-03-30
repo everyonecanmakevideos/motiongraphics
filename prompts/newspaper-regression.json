@@ -46,5 +46,29 @@
     "prompt": "Create a minimal ledger-style newspaper briefing about startup funding news, with the lead story stating that Polar Cut raised 50 million dollars in a new funding round. Make it feel like a disciplined morning financial briefing with restrained typography, compact note panels, briefing cards, financial-desk structure, and a quiet market-report identity.",
     "expectedTemplateId": "newspaper-minimal-ledger",
     "coverage": "minimal ledger named-entity funding story"
+  },
+  {
+    "id": "newspaper-broadsheet-civic-budget",
+    "prompt": "Create a broadsheet front page about a city budget showdown with a centered masthead, formal hierarchy, balanced editorial columns, and a serious front-page daily newspaper feel.",
+    "expectedTemplateId": "newspaper-front-page",
+    "coverage": "classic broadsheet wording"
+  },
+  {
+    "id": "newspaper-compact-berliner-transit",
+    "prompt": "Create a compact newspaper front page in a Berliner-style city format about a transit expansion. Make it feel like a metro desk paper with commuter updates, a modular editorial grid, and a compact newspaper identity.",
+    "expectedTemplateId": "newspaper-modern-grid",
+    "coverage": "modern grid berliner wording"
+  },
+  {
+    "id": "newspaper-sunday-review-profile",
+    "prompt": "Create a Sunday review newspaper cover with a dominant image, bold coverlines, a premium feature-cover feel, and a newsmagazine-style weekend profile story.",
+    "expectedTemplateId": "newspaper-magazine-cover",
+    "coverage": "magazine cover sunday review wording"
+  },
+  {
+    "id": "newspaper-financial-desk-earnings",
+    "prompt": "Create a minimal newspaper financial desk briefing about quarterly earnings with restrained typography, compact note panels, markets-desk packaging, and a disciplined morning briefing feel.",
+    "expectedTemplateId": "newspaper-minimal-ledger",
+    "coverage": "minimal ledger financial desk wording"
   }
 ]

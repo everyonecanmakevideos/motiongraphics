@@ -1,0 +1,16 @@
+{
+  "id": "newspaper-opinion-column",
+  "name": "Newspaper Opinion Column",
+  "description": "A newspaper editorial page with a large argument headline, centered opinion essay, and supporting quote rail.",
+  "tags": ["newspaper", "opinion", "editorial", "essay", "column", "print"],
+  "compatibleAnimations": [
+    "fade-in",
+    "slide-up",
+    "scale-pop",
+    "camera-drift",
+    "none"
+  ],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

@@ -13,6 +13,29 @@ const ColumnSchema = z.object({
   text: z.string().min(20).max(500),
 });
 
+const NewspaperMotionVariantSchema = z
+  .enum([
+    "auto",
+    "headline-punch",
+    "press-build",
+    "sunday-slow-reveal",
+    "tabloid-blast",
+  ])
+  .default("auto");
+
+const NewspaperHeadlineTreatmentSchema = z
+  .enum([
+    "auto",
+    "plain",
+    "yellow-highlight",
+    "strike-through",
+    "sequence-stack",
+    "black-bar-banner",
+    "red-alert-strip",
+    "double-underline-editorial",
+  ])
+  .default("auto");
+
 export const NewspaperFrontPageSchema = z.object({
   masthead: z.string().min(1).max(48).default("The Daily Chronicle"),
   editionLine: z.string().max(80).default("Vol. XLII No. 184"),
@@ -56,6 +79,8 @@ export const NewspaperFrontPageSchema = z.object({
   decorativeTheme: DecorativeThemeSchema.optional(),
   paperTilt: z.number().min(-10).max(10).default(-3),
   showPhotoFrame: z.boolean().default(true),
+  newspaperMotionVariant: NewspaperMotionVariantSchema,
+  headlineTreatment: NewspaperHeadlineTreatmentSchema,
 });
 
 export type NewspaperFrontPageProps = z.infer<typeof NewspaperFrontPageSchema>;

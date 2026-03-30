@@ -6,6 +6,7 @@ import {
 import {
   extractPlacesFromText,
 } from "../geo/placeResolver";
+import { getDisplayPrompt } from "../promptDisplay";
 import type { IntentResult } from "../templates/resolver";
 import { validateTemplateParams } from "../templates/resolver";
 import type {
@@ -60,6 +61,8 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Metro newspaper, modular newspaper grid, modern newspaper layout, compact city newspaper, newspaper grid, city-desk newspaper, metro desk, commuter newspaper, transit-news front page | "newspaper-modern-grid" |
 | Magazine-style newspaper, newspaper cover story, feature cover, editorial cover, weekly newspaper cover, weekend review cover, feature-led publication, teaser-led cover package | "newspaper-magazine-cover" |
 | Minimal newspaper, clean newspaper briefing, ledger-style newspaper, minimalist newspaper layout, market briefing newspaper, morning financial briefing, investor update newspaper | "newspaper-minimal-ledger" |
+| Opinion newspaper, editorial page, newspaper column, op-ed page, signed editorial, newspaper essay, argument-led editorial | "newspaper-opinion-column" |
+| Highlighted newspaper cover, yellow-highlight headline, editorial poster newspaper, cutout portrait newspaper, newspaper explainer poster | "newspaper-highlight-cover" |
 | Event promo, event poster, webinar announcement, conference registration, summit invite, launch event, ticketed event, save the date | "event-promo-slate" |
 | Pricing table, pricing comparison, pricing tiers, subscription plans, packages, 3-tier cards, three plans, best value plan, recommended middle card | "pricing-comparison" |
 | Side-by-side comparison, versus, pros/cons, A vs B | "comparison-layout" |
@@ -1663,13 +1666,18 @@ function heuristicMapIntent(prompt: string): IntentResult | null {
 function heuristicNewspaperFrontPageIntent(
   prompt: string,
 ): IntentResult | null {
-  const normalized = prompt.toLowerCase();
+  const displayPrompt = getDisplayPrompt(prompt);
+  const normalized = displayPrompt.toLowerCase();
 
   const includesAny = (signals: string[]) =>
     signals.some((signal) => normalized.includes(signal));
 
   const classicSignals = [
     "broadsheet",
+    "broadsheet front page",
+    "front page daily",
+    "national newspaper",
+    "serious national newspaper",
     "respected daily paper",
     "traditional daily paper",
     "serious front-page",
@@ -1682,7 +1690,13 @@ function heuristicNewspaperFrontPageIntent(
     "modern grid",
     "newspaper grid",
     "metro",
+    "city paper",
+    "city morning edition",
+    "compact newspaper",
+    "compact daily",
     "compact city",
+    "berliner",
+    "berliner format",
     "modular newspaper",
     "city-desk",
     "city desk",
@@ -1698,17 +1712,54 @@ function heuristicNewspaperFrontPageIntent(
   const magazineSignals = [
     "magazine-style",
     "magazine style",
+    "newsmagazine",
+    "news magazine",
+    "sunday newspaper cover",
+    "sunday cover",
     "feature cover",
     "editorial cover",
     "weekly cover",
     "weekend review",
+    "sunday review",
+    "sunday supplement",
     "cover package",
     "cover packaging",
+    "cover lines",
+    "coverlines",
     "feature-led publication",
     "feature-led",
     "teaser lines",
     "dominant cover image",
     "cover-story identity",
+  ];
+
+  const highlightCoverSignals = [
+    "highlighted newspaper",
+    "highlighted headline",
+    "yellow headline",
+    "yellow highlight headline",
+    "headline highlight",
+    "editorial poster",
+    "newspaper poster",
+    "cutout portrait",
+    "portrait newspaper",
+    "political adviser",
+    "explainer newspaper",
+    "new york times style graphic",
+    "nyt style graphic",
+  ];
+
+  const opinionSignals = [
+    "opinion newspaper",
+    "editorial page",
+    "newspaper opinion",
+    "op-ed",
+    "op ed",
+    "newspaper column",
+    "signed editorial",
+    "editorial essay",
+    "newspaper essay",
+    "opinion column",
   ];
 
   const minimalLedgerSignals = [
@@ -1720,7 +1771,15 @@ function heuristicNewspaperFrontPageIntent(
     "briefing",
     "morning briefing",
     "financial briefing",
+    "financial desk",
+    "financial daily",
     "market briefing",
+    "markets desk",
+    "central bank",
+    "rate cut",
+    "stock market rally",
+    "market rally",
+    "bond market",
     "market-report",
     "market report",
     "investor update",
@@ -1745,11 +1804,21 @@ function heuristicNewspaperFrontPageIntent(
     includesAny(classicSignals) ||
     includesAny(modernGridSignals) ||
     includesAny(magazineSignals) ||
+    includesAny(opinionSignals) ||
+    includesAny(highlightCoverSignals) ||
     includesAny(minimalLedgerSignals);
 
   if (!hasNewspaperIntent) return null;
 
   const templateId = (() => {
+    if (includesAny(opinionSignals)) {
+      return "newspaper-opinion-column" as const;
+    }
+
+    if (includesAny(highlightCoverSignals)) {
+      return "newspaper-highlight-cover" as const;
+    }
+
     if (includesAny(magazineSignals)) {
       return "newspaper-magazine-cover" as const;
     }
@@ -1766,6 +1835,12 @@ function heuristicNewspaperFrontPageIntent(
   })();
 
   const visualStyle = (() => {
+    if (templateId === "newspaper-opinion-column") {
+      return "classic-front-page" as const;
+    }
+    if (templateId === "newspaper-highlight-cover") {
+      return "classic-front-page" as const;
+    }
     if (templateId === "newspaper-magazine-cover") {
       return "classic-front-page" as const;
     }
@@ -1833,16 +1908,78 @@ function heuristicNewspaperFrontPageIntent(
       .replace(/\b\w/g, (char) => char.toUpperCase())
       .trim();
 
+  const compactSubject = (value: string) =>
+    value
+      .replace(/\s+/g, " ")
+      .replace(/^[-:–—\s]+/, "")
+      .split(/(?:,|\bwith\b|\band\b|\bafter\b|\bwhile\b)/i)[0]
+      .trim();
+
   const extractProductOrSubject = () =>
-    prompt.match(/called\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
-    prompt.match(/covering\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
-    prompt.match(/about\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
-    prompt.match(/:\s*([^.!?\n]+)/)?.[1]?.trim() ||
+    displayPrompt.match(/called\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    displayPrompt.match(/covering\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    displayPrompt.match(/about\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
+    displayPrompt.match(/:\s*([^.!?\n]+)/)?.[1]?.trim() ||
     "";
 
   const subject = extractProductOrSubject();
 
   const deriveHeadline = (): string => {
+    if (
+      normalized.includes("hung parliament") ||
+      (normalized.includes("coalition talks") &&
+        normalized.includes("parliament"))
+    ) {
+      return "Hung Parliament";
+    }
+    if (
+      normalized.includes("metro line opens") ||
+      (normalized.includes("metro") && normalized.includes("opens"))
+    ) {
+      return "New Metro Line Opens";
+    }
+    if (
+      normalized.includes("central bank") &&
+      normalized.includes("rate cut")
+    ) {
+      return "Central Bank Shocks Markets";
+    }
+    if (
+      normalized.includes("film star") &&
+      normalized.includes("stepping away from acting")
+    ) {
+      return "The Final Curtain";
+    }
+    if (
+      normalized.includes("remote work") &&
+      normalized.includes("cities")
+    ) {
+      return "Remote Work Remakes The City";
+    }
+    if (
+      normalized.includes("athlete") &&
+      normalized.includes("retirement")
+    ) {
+      return "The Last Lap";
+    }
+    if (
+      normalized.includes("underdog") &&
+      normalized.includes("extra time")
+    ) {
+      return "Miracle In Extra Time";
+    }
+    if (
+      normalized.includes("pop singer") &&
+      normalized.includes("leaked messages")
+    ) {
+      return "Leaked Messages Rock Pop Star";
+    }
+    if (
+      normalized.includes("elon musk") &&
+      normalized.includes("political adviser")
+    ) {
+      return "Elon Musk Hires Republican Adviser";
+    }
     if (normalized.includes("moon landing")) return "Men Walk On Moon";
     if (normalized.includes("market crash")) return "Global Market Crash";
     if (normalized.includes("100 million users"))
@@ -1851,12 +1988,63 @@ function heuristicNewspaperFrontPageIntent(
       return `${titleCase(subject)} Arrives`;
     }
     if (subject) {
-      return titleCase(subject);
+      return titleCase(compactSubject(subject));
     }
     return "Extra! Historic News!";
   };
 
   const deriveSubheadline = (): string => {
+    if (normalized.includes("hung parliament")) {
+      return "No party wins outright as leaders scramble to assemble a governing coalition before markets and institutions lose patience.";
+    }
+    if (
+      normalized.includes("metro line opens") ||
+      (normalized.includes("metro") && normalized.includes("opens"))
+    ) {
+      return "Commuters celebrate the opening morning as delays, crowding, and neighbourhood reaction quickly reshape the story.";
+    }
+    if (
+      normalized.includes("central bank") &&
+      normalized.includes("rate cut")
+    ) {
+      return "A surprise emergency move sends stocks sharply higher, slams yields, and forces traders to rewrite their expectations before the close.";
+    }
+    if (
+      normalized.includes("film star") &&
+      normalized.includes("stepping away from acting")
+    ) {
+      return "After three decades on screen, one of cinema's most recognisable faces signals the end of an era.";
+    }
+    if (
+      normalized.includes("remote work") &&
+      normalized.includes("cities")
+    ) {
+      return "The office no longer defines urban life as commuting patterns, neighbourhood demand, and downtown economies begin to reorganise themselves.";
+    }
+    if (
+      normalized.includes("athlete") &&
+      normalized.includes("retirement")
+    ) {
+      return "After years at the top, a defining figure steps away and leaves a sport, and its audience, looking at what comes after greatness.";
+    }
+    if (
+      normalized.includes("underdog") &&
+      normalized.includes("extra time")
+    ) {
+      return "The outsiders stun the favourites in the dying moments and leave a city celebrating deep into the night.";
+    }
+    if (
+      normalized.includes("pop singer") &&
+      normalized.includes("leaked messages")
+    ) {
+      return "A private exchange becomes a public spectacle as the breakup story explodes across gossip desks and social feeds.";
+    }
+    if (
+      normalized.includes("elon musk") &&
+      normalized.includes("political adviser")
+    ) {
+      return "The move signals a deeper political turn as the billionaire inches closer to campaign influence and national power circles.";
+    }
     if (normalized.includes("moon landing")) {
       return "Astronauts land on plain; collect rocks, plant flag.";
     }
@@ -1873,6 +2061,163 @@ function heuristicNewspaperFrontPageIntent(
   };
 
   const buildColumns = () => {
+    if (normalized.includes("hung parliament")) {
+      return [
+        {
+          title: "Frantic Negotiations",
+          text: "Party leaders emerge from overnight meetings facing a fractured result, with no single bloc close to a majority and coalition arithmetic dominating every conversation in the capital.",
+        },
+        {
+          title: "Inside Westminster",
+          text: "Advisers privately acknowledge that once-unthinkable compromises are already on the table as both rival camps race to shape the first viable governing agreement.",
+        },
+        {
+          title: "Why It Matters",
+          text: "Markets, ministries, and public institutions now brace for prolonged uncertainty as the balance of power shifts from campaign rhetoric to hard parliamentary bargaining.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("metro line opens") ||
+      (normalized.includes("metro") && normalized.includes("opens"))
+    ) {
+      return [
+        {
+          title: "Commuters cheer as doors open",
+          text: "Before dawn, thousands gather at newly opened stations, eager to test a route that promises to reshape daily travel for entire neighbourhoods across the city.",
+        },
+        {
+          title: "Signal delays hit first hour",
+          text: "The celebration quickly meets real-world pressure as early technical faults ripple down the line, prompting platform crowding, emergency announcements, and a scramble by operations teams.",
+        },
+        {
+          title: "Voices Of The City",
+          text: "Residents near the new stations speak of relief, noise, business optimism, and the strange feeling of seeing long-promised infrastructure suddenly become part of everyday life.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("central bank") &&
+      normalized.includes("rate cut")
+    ) {
+      return [
+        {
+          title: "Bond Markets Reprice",
+          text: "Treasury yields plunge across the curve as traders rapidly abandon yesterday's assumptions and begin pricing a much deeper slowdown than policy makers had admitted.",
+        },
+        {
+          title: "Stocks Surge On Relief",
+          text: "Equity desks flip from caution to aggressive buying as the size of the cut convinces investors that officials are prepared to defend growth and liquidity at almost any cost.",
+        },
+        {
+          title: "Dollar Slips Lower",
+          text: "Foreign-exchange markets react immediately, with the dollar losing ground against major peers as the policy shock narrows the country's relative rate advantage.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("film star") &&
+      normalized.includes("stepping away from acting")
+    ) {
+      return [
+        {
+          title: "A Career That Defined An Era",
+          text: "From awards-season favourites to box-office landmarks, the actor's three-decade run reshaped the industry's idea of mainstream stardom.",
+        },
+        {
+          title: "Inside The Farewell",
+          text: "Friends and collaborators describe a carefully weighed decision, one motivated less by scandal than by a desire to leave the stage on deliberate terms.",
+        },
+        {
+          title: "What Comes Next",
+          text: "Studios, festivals, and audiences now look ahead to retrospectives, tributes, and the final projects that will define the closing chapter of a remarkable career.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("remote work") &&
+      normalized.includes("cities")
+    ) {
+      return [
+        {
+          title: "The Commute Unravels",
+          text: "Rush-hour patterns weaken first, then office districts, transit rhythms, and lunch-counter economies begin adjusting to a city that is no longer moving in one shared direction every morning.",
+        },
+        {
+          title: "Neighbourhood Life Expands",
+          text: "Local high streets, residential hubs, and flexible work routines gain power as people spend more weekday hours closer to home and further from the old centre.",
+        },
+        {
+          title: "What Cities Do Next",
+          text: "Mayors, landlords, employers, and planners now face the same question: whether to restore the old urban model or build for a more distributed one.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("athlete") &&
+      normalized.includes("retirement")
+    ) {
+      return [
+        {
+          title: "A Career Beyond Records",
+          text: "The athlete leaves behind more than titles, having shaped the tempo, ambition, and mythology of an entire era in the sport.",
+        },
+        {
+          title: "The Final Season",
+          text: "What began as one more campaign gradually became a farewell tour, with every appearance carrying the weight of legacy and finality.",
+        },
+        {
+          title: "What Remains",
+          text: "The retirement invites reflection not only on victories, but on influence, style, and the standards that will now define whoever comes next.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("underdog") &&
+      normalized.includes("extra time")
+    ) {
+      return [
+        {
+          title: "City Stunned In Final Seconds",
+          text: "The favourites were dismantled by a team that refused to break, turning a tense final into the kind of upset supporters will retell for generations.",
+        },
+        {
+          title: "Manager Speaks Out",
+          text: "Players and staff describe a dressing room defined by belief, tactical discipline, and the conviction that the match could still be stolen in the final moments.",
+        },
+        {
+          title: "Fans Flood The Streets",
+          text: "Celebrations erupt across the city as the final whistle sends supporters into squares, pubs, and transit stations long after midnight.",
+        },
+      ];
+    }
+
+    if (
+      normalized.includes("elon musk") &&
+      normalized.includes("political adviser")
+    ) {
+      return [
+        {
+          title: "The Political Move",
+          text: "The hiring is read as a calculated step into campaign strategy, extending influence beyond business, media platforms, and casual political commentary.",
+        },
+        {
+          title: "Why It Matters",
+          text: "Advisers and donors see the move as evidence that elite money, platform power, and electoral strategy are becoming harder to separate.",
+        },
+        {
+          title: "What Comes Next",
+          text: "Washington operatives now watch for deeper staffing moves, fresh endorsements, and signs that the billionaire is preparing for a much larger public role.",
+        },
+      ];
+    }
+
     if (normalized.includes("moon landing")) {
       return [
         {
@@ -1943,10 +2288,14 @@ function heuristicNewspaperFrontPageIntent(
   const masthead =
     templateId === "newspaper-magazine-cover"
       ? "The Sunday Review"
+      : templateId === "newspaper-opinion-column"
+        ? "Editorial Review"
+      : templateId === "newspaper-highlight-cover"
+        ? "The National Desk"
       : templateId === "newspaper-modern-grid"
-        ? "The Metro Bulletin"
+        ? "The City Morning Herald"
         : templateId === "newspaper-minimal-ledger"
-          ? "The Morning Ledger"
+          ? "The Financial Record"
           : visualStyle === "historic-edition"
             ? "Evening Chronicle"
             : visualStyle === "modern-breaking-news"
@@ -1960,6 +2309,10 @@ function heuristicNewspaperFrontPageIntent(
   const kicker =
     templateId === "newspaper-magazine-cover"
       ? "Cover Story"
+      : templateId === "newspaper-opinion-column"
+        ? "Opinion"
+      : templateId === "newspaper-highlight-cover"
+        ? "Spotlight Report"
       : templateId === "newspaper-modern-grid"
         ? "Metro Edition"
         : templateId === "newspaper-minimal-ledger"
@@ -1977,6 +2330,10 @@ function heuristicNewspaperFrontPageIntent(
   const footerNote =
     templateId === "newspaper-magazine-cover"
       ? "A feature-cover treatment with a dominant image area and curated editorial teasers."
+      : templateId === "newspaper-opinion-column"
+        ? "An opinion-page layout built for argument-led essays, signed editorials, and high-legibility commentary."
+      : templateId === "newspaper-highlight-cover"
+        ? "A highlighted newspaper poster with a cutout portrait and a high-emphasis editorial headline."
       : templateId === "newspaper-modern-grid"
         ? "A modular metro layout built for a fast-scanning newspaper front page."
         : templateId === "newspaper-minimal-ledger"
@@ -1991,6 +2348,33 @@ function heuristicNewspaperFrontPageIntent(
                   ? "A sports-desk front page treatment designed for major matchday headlines."
                   : "A clean front-page composition for modern product launches and major business moments.";
 
+  const newspaperMotionVariant =
+    templateId === "newspaper-highlight-cover"
+      ? "headline-punch"
+      : templateId === "newspaper-magazine-cover"
+        ? "sunday-slow-reveal"
+        : visualStyle === "tabloid-shock"
+          ? "tabloid-blast"
+          : "press-build";
+
+  const headlineTreatment = /\b(yellow highlight|highlighted headline|highlight headline|yellow headline|marker headline)\b/i.test(prompt)
+    ? "yellow-highlight"
+    : /\b(red alert strip|red alert headline|alert strip headline|emergency strip|urgent red strip)\b/i.test(prompt)
+      ? "red-alert-strip"
+    : /\b(double underline|double underline headline|editorial underline|underlined editorial headline)\b/i.test(prompt)
+      ? "double-underline-editorial"
+    : /\b(black bar headline|black banner headline|banner headline|special edition banner|reversed headline)\b/i.test(prompt)
+      ? "black-bar-banner"
+    : /\b(strike through|strikethrough|crossed out|cross out|editorial slash)\b/i.test(prompt)
+      ? "strike-through"
+      : /\b(sequence|numbered headline|chaptered headline|counted headline|01|02|03)\b/i.test(prompt)
+        ? "sequence-stack"
+        : templateId === "newspaper-highlight-cover"
+          ? "yellow-highlight"
+          : visualStyle === "tabloid-shock"
+            ? "strike-through"
+            : "plain";
+
   const palette =
     templateId === "newspaper-magazine-cover"
       ? {
@@ -2004,7 +2388,33 @@ function heuristicNewspaperFrontPageIntent(
             to: "#E7DBCC",
             direction: "to-bottom-right" as const,
           },
-        }
+          }
+      : templateId === "newspaper-opinion-column"
+        ? {
+            paperTone: "#F4EBDD",
+            inkColor: "#1A1612",
+            accentColor: "#A03C2B",
+            frameColor: "#D8C9B7",
+            background: {
+              type: "gradient" as const,
+              from: "#F5EEE4",
+              to: "#E8DACC",
+              direction: "to-bottom-right" as const,
+            },
+          }
+      : templateId === "newspaper-highlight-cover"
+        ? {
+            paperTone: "#F2E7C9",
+            inkColor: "#17120D",
+            accentColor: "#E2C128",
+            frameColor: "#D7C7A2",
+            background: {
+              type: "gradient" as const,
+              from: "#F5E9C8",
+              to: "#E8D9B1",
+              direction: "to-bottom-right" as const,
+            },
+          }
       : templateId === "newspaper-modern-grid"
         ? {
             paperTone: "#F8FAFC",
@@ -2021,13 +2431,13 @@ function heuristicNewspaperFrontPageIntent(
         : templateId === "newspaper-minimal-ledger"
           ? {
               paperTone: "#FAFAF8",
-              inkColor: "#111827",
-              accentColor: "#0F4C81",
-              frameColor: "#D7DCE3",
+              inkColor: "#161616",
+              accentColor: "#D12C2C",
+              frameColor: "#D9D4CC",
               background: {
                 type: "gradient" as const,
-                from: "#F6F7F8",
-                to: "#EBEEF2",
+                from: "#F7F3ED",
+                to: "#EEE8DF",
                 direction: "to-bottom-right" as const,
               },
             }
@@ -2154,6 +2564,8 @@ function heuristicNewspaperFrontPageIntent(
             : "Front-page wire photo",
       columns: buildColumns(),
       footerLine: footerNote,
+      newspaperMotionVariant,
+      headlineTreatment,
       visualStyle,
       paperTone: palette.paperTone,
       inkColor: palette.inkColor,

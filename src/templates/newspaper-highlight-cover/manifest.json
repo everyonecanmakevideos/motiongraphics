@@ -1,0 +1,16 @@
+{
+  "id": "newspaper-highlight-cover",
+  "name": "Newspaper Highlight Cover",
+  "description": "A newspaper poster treatment with a highlighted multi-line headline, date tag, and cutout portrait composition.",
+  "tags": ["newspaper", "headline", "highlight", "editorial", "poster", "print"],
+  "compatibleAnimations": [
+    "fade-in",
+    "slide-up",
+    "scale-pop",
+    "camera-drift",
+    "none"
+  ],
+  "minDuration": 5,
+  "maxDuration": 12,
+  "defaultDuration": 7
+}

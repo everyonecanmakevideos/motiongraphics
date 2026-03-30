@@ -29,6 +29,8 @@ import { NewspaperFrontPage } from "./newspaper-front-page/NewspaperFrontPage";
 import { NewspaperModernGrid } from "./newspaper-modern-grid/NewspaperModernGrid";
 import { NewspaperMagazineCover } from "./newspaper-magazine-cover/NewspaperMagazineCover";
 import { NewspaperMinimalLedger } from "./newspaper-minimal-ledger/NewspaperMinimalLedger";
+import { NewspaperHighlightCover } from "./newspaper-highlight-cover/NewspaperHighlightCover";
+import { NewspaperOpinionColumn } from "./newspaper-opinion-column/NewspaperOpinionColumn";
 import { SplitScreen } from "./split-screen/SplitScreen";
 import { ProblemSolution } from "./problem-solution/ProblemSolution";
 import { BeforeAfter } from "./before-after/BeforeAfter";
@@ -84,6 +86,8 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "newspaper-modern-grid": NewspaperModernGrid,
   "newspaper-magazine-cover": NewspaperMagazineCover,
   "newspaper-minimal-ledger": NewspaperMinimalLedger,
+  "newspaper-highlight-cover": NewspaperHighlightCover,
+  "newspaper-opinion-column": NewspaperOpinionColumn,
   "split-screen": SplitScreen,
   "problem-solution": ProblemSolution,
   "before-after": BeforeAfter,
