@@ -527,6 +527,9 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
   const middleColumn = columns[Math.min(1, columns.length - 1)] ?? leadColumn;
   const trailingColumns = columns.slice(1);
   const dividerThickness = `${Math.max(1, Math.round(scale))}px`;
+  const isHungParliamentPackage =
+    templateVariant === "front-page" &&
+    /hung parliament/i.test(props.headline);
 
   const getSectionRevealStyle = (order: number) => {
     if (resolvedMotionVariant === "press-build") {
@@ -1855,111 +1858,350 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
         </div>
       ) : null}
 
-      <div
-        style={{
-          marginTop: `${Math.round(10 * scale)}px`,
-          alignSelf: "stretch",
-          ...headlineRevealStyle,
-        }}
-      >
-        {renderHeadlineTreatment({
-          text: props.headline,
-          fontFamily:
-            '"Arial Narrow", "Arial Narrow Bold", Impact, Haettenschweiler, sans-serif',
-          fontSize: Math.round(headlineSize * 1.18),
-          fontWeight: 900,
-          color: inkColor,
-          lineHeight: 0.8,
-          letterSpacing: "-0.065em",
-          textTransform: "uppercase",
-          textAlign: "left",
-          maxWidth: Math.round(paperWidth * 0.98),
-        })}
-      </div>
+      {isHungParliamentPackage ? (
+        <>
+          <div
+            style={{
+              marginTop: `${Math.round(18 * scale)}px`,
+              display: "grid",
+              gridTemplateColumns: isPortrait ? "1fr" : "1.08fr 0.32fr",
+              gap: `${Math.round(20 * scale)}px`,
+              alignItems: "start",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  ...headlineRevealStyle,
+                }}
+              >
+                {renderHeadlineTreatment({
+                  text: props.headline,
+                  fontFamily: '"Bodoni MT", Didot, "Times New Roman", serif',
+                  fontSize: Math.round(headlineSize * 1.06),
+                  fontWeight: 700,
+                  color: inkColor,
+                  lineHeight: 0.82,
+                  letterSpacing: "-0.055em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  maxWidth: Math.round(paperWidth * 0.52),
+                })}
+              </div>
 
-      {props.subheadline ? (
-        <div
-          style={{
-            marginTop: `${Math.round(10 * scale)}px`,
-            alignSelf: "stretch",
-            fontFamily: bodyFont,
-            fontStyle: "italic",
-            fontSize: `${Math.round((isPortrait ? 17 : 19) * scale)}px`,
-            lineHeight: 1.22,
-            color: alpha(inkColor, 0.84),
-            textAlign: "left",
-          }}
-        >
-          {props.subheadline}
-        </div>
-      ) : null}
+              {props.subheadline ? (
+                <div
+                  style={{
+                    marginTop: `${Math.round(10 * scale)}px`,
+                    maxWidth: `${Math.round(paperWidth * 0.58)}px`,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    fontFamily: bodyFont,
+                    fontStyle: "italic",
+                    fontSize: `${Math.round((isPortrait ? 18 : 22) * scale)}px`,
+                    lineHeight: 1.06,
+                    color: alpha(inkColor, 0.9),
+                    textAlign: "center",
+                  }}
+                >
+                  {props.subheadline}
+                </div>
+              ) : null}
 
-      <div
-        style={{
-          marginTop: `${Math.round(12 * scale)}px`,
-          display: "grid",
-          gridTemplateColumns: isPortrait ? "1fr" : "repeat(3, minmax(0, 1fr))",
-          gap: `${Math.round(12 * scale)}px`,
-        }}
-      >
-        {["Morning Edition", "City & Nation", "Markets & Culture"].map(
-          (label) => (
+              <div
+                style={{
+                  marginTop: `${Math.round(10 * scale)}px`,
+                  maxWidth: `${Math.round(paperWidth * 0.6)}px`,
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  fontFamily: bodyFont,
+                  fontSize: `${Math.round((isPortrait ? 14 : 16) * scale)}px`,
+                  lineHeight: 1.22,
+                  color: alpha(inkColor, 0.8),
+                  textAlign: "center",
+                }}
+              >
+                Markets brace for uncertainty as leaders scramble for power
+              </div>
+            </div>
+
+            {!isPortrait ? (
+              <div
+                style={{
+                  paddingLeft: `${Math.round(16 * scale)}px`,
+                  borderLeft: `${dividerThickness} solid ${alpha(inkColor, 0.24)}`,
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: headlineFont,
+                    fontSize: `${Math.round((isPortrait ? 18 : 22) * scale)}px`,
+                    fontWeight: 700,
+                    lineHeight: 0.96,
+                    color: inkColor,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Results Breakdown
+                </div>
+                <div
+                  style={{
+                    marginTop: `${Math.round(12 * scale)}px`,
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: `${Math.round(8 * scale)}px ${Math.round(10 * scale)}px`,
+                    fontFamily: bodyFont,
+                    fontSize: `${Math.round((isPortrait ? 12 : 14) * scale)}px`,
+                    lineHeight: 1.24,
+                    color: alpha(inkColor, 0.9),
+                  }}
+                >
+                  <div style={{ fontFamily: sansFont, letterSpacing: "0.08em", textTransform: "uppercase", color: alpha(inkColor, 0.66) }}>Party</div>
+                  <div style={{ fontFamily: sansFont, letterSpacing: "0.08em", textTransform: "uppercase", color: alpha(inkColor, 0.66), textAlign: "right" }}>Seats</div>
+                  {[
+                    ["Conservatives", "302"],
+                    ["Labour", "298"],
+                    ["Lib Dems", "28"],
+                    ["SNP", "15"],
+                    ["Greens", "4"],
+                    ["Others", "3"],
+                  ].map(([party, seats]) => (
+                    <React.Fragment key={party}>
+                      <div
+                        style={{
+                          paddingTop: `${Math.round(6 * scale)}px`,
+                          borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.12)}`,
+                        }}
+                      >
+                        {party}
+                      </div>
+                      <div
+                        style={{
+                          paddingTop: `${Math.round(6 * scale)}px`,
+                          borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.12)}`,
+                          textAlign: "right",
+                        }}
+                      >
+                        {seats}
+                      </div>
+                    </React.Fragment>
+                  ))}
+                  <div
+                    style={{
+                      marginTop: `${Math.round(8 * scale)}px`,
+                      paddingTop: `${Math.round(8 * scale)}px`,
+                      borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.32)}`,
+                      fontFamily: sansFont,
+                      fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Short of majority
+                  </div>
+                  <div
+                    style={{
+                      marginTop: `${Math.round(8 * scale)}px`,
+                      paddingTop: `${Math.round(8 * scale)}px`,
+                      borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.32)}`,
+                      textAlign: "right",
+                      color: "#B33A2B",
+                      fontFamily: sansFont,
+                      fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    24 seats
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            style={{
+              marginTop: `${Math.round(18 * scale)}px`,
+              border: `${dividerThickness} solid ${alpha(inkColor, 0.18)}`,
+              background: "linear-gradient(180deg, #111316 0%, #060708 100%)",
+              height: `${Math.round((isPortrait ? 180 : 250) * scale)}px`,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
             <div
-              key={label}
               style={{
-                paddingTop: `${Math.round(8 * scale)}px`,
-                borderTop: `${dividerThickness} solid ${dividerColor}`,
-                display: "flex",
-                alignItems: "center",
-                gap: `${Math.round(8 * scale)}px`,
-                color: alpha(inkColor, 0.74),
-                fontFamily: sansFont,
-                fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
+                position: "absolute",
+                left: "50%",
+                bottom: `${Math.round(28 * scale)}px`,
+                width: `${Math.round((isPortrait ? 220 : 420) * scale)}px`,
+                height: `${Math.round((isPortrait ? 90 : 140) * scale)}px`,
+                transform: "translateX(-50%)",
+                background: "#08090A",
+                clipPath:
+                  "polygon(0 100%, 0 55%, 10% 55%, 10% 46%, 22% 46%, 22% 36%, 40% 36%, 40% 30%, 60% 30%, 60% 36%, 78% 36%, 78% 46%, 90% 46%, 90% 55%, 100% 55%, 100% 100%)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                bottom: `${Math.round(92 * scale)}px`,
+                width: `${Math.round(28 * scale)}px`,
+                height: `${Math.round(10 * scale)}px`,
+                transform: "translateX(-50%)",
+                background: alpha("#F3E7B9", 0.9),
+                boxShadow: `0 0 ${Math.round(10 * scale)}px ${alpha("#F3E7B9", 0.38)}`,
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              marginTop: `${Math.round(8 * scale)}px`,
+              fontFamily: bodyFont,
+              fontSize: `${Math.round((isPortrait ? 11 : 12) * scale)}px`,
+              color: alpha(inkColor, 0.62),
+              fontStyle: "italic",
+            }}
+          >
+            Lights burn late at Parliament as negotiations stretch into the early hours.
+          </div>
+
+          <div
+            style={{
+              marginTop: `${Math.round(16 * scale)}px`,
+              display: "grid",
+              gridTemplateColumns: isPortrait ? "1fr" : "repeat(3, minmax(0, 1fr))",
+              gap: `${Math.round(16 * scale)}px`,
+              flex: 1,
+            }}
+          >
+            {columns.slice(0, 3).map((column, index) =>
+              renderColumn(column, index, {
+                borderLeft: index > 0 && !isPortrait,
+                titleFont: headlineFont,
+                titleTransform: "none",
+                titleSize: Math.round((isPortrait ? 16 : 18) * scale),
+                bodySize: Math.round((isPortrait ? 15 : 17) * scale),
+                bodyOpacity: 0.92,
+                compact: false,
+                paddingLeft: Math.round(14 * scale),
+              }),
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <div
+            style={{
+              marginTop: `${Math.round(10 * scale)}px`,
+              alignSelf: "stretch",
+              ...headlineRevealStyle,
+            }}
+          >
+            {renderHeadlineTreatment({
+              text: props.headline,
+              fontFamily:
+                '"Arial Narrow", "Arial Narrow Bold", Impact, Haettenschweiler, sans-serif',
+              fontSize: Math.round(headlineSize * 1.18),
+              fontWeight: 900,
+              color: inkColor,
+              lineHeight: 0.8,
+              letterSpacing: "-0.065em",
+              textTransform: "uppercase",
+              textAlign: "left",
+              maxWidth: Math.round(paperWidth * 0.98),
+            })}
+          </div>
+
+          {props.subheadline ? (
+            <div
+              style={{
+                marginTop: `${Math.round(10 * scale)}px`,
+                alignSelf: "stretch",
+                fontFamily: bodyFont,
+                fontStyle: "italic",
+                fontSize: `${Math.round((isPortrait ? 17 : 19) * scale)}px`,
+                lineHeight: 1.22,
+                color: alpha(inkColor, 0.84),
+                textAlign: "left",
               }}
             >
-              {renderTemplateMark("front-page", {
-                size: Math.round(14 * scale),
-                tone: "accent",
-              })}
-              <span>{label}</span>
+              {props.subheadline}
             </div>
-          ),
-        )}
-      </div>
+          ) : null}
 
-      <div
-        style={{
-          marginTop: `${Math.round(18 * scale)}px`,
-          display: "grid",
-          gridTemplateColumns: isPortrait
-            ? "1fr"
-            : columns.length >= 3
-              ? "0.96fr 1.22fr 0.9fr"
-              : "1fr 1fr",
-          gap: `${columnGap}px`,
-          flex: 1,
-        }}
-      >
-        {columns.map((column, index) =>
-          renderColumn(column, index, {
-            borderLeft: index > 0 && !isPortrait,
-            showPhoto:
-              index === Math.min(1, columns.length - 1) &&
-              !isPortrait &&
-              props.showPhotoFrame,
-            photoTone: "light",
-            photoHeight,
-            caption:
-              index === Math.min(1, columns.length - 1)
-                ? props.photoCaption
-                : undefined,
-            footerLeft: "Archive",
-            footerRight: "No. 01",
-          }),
-        )}
-      </div>
+          <div
+            style={{
+              marginTop: `${Math.round(12 * scale)}px`,
+              display: "grid",
+              gridTemplateColumns: isPortrait ? "1fr" : "repeat(3, minmax(0, 1fr))",
+              gap: `${Math.round(12 * scale)}px`,
+            }}
+          >
+            {["Morning Edition", "City & Nation", "Markets & Culture"].map(
+              (label) => (
+                <div
+                  key={label}
+                  style={{
+                    paddingTop: `${Math.round(8 * scale)}px`,
+                    borderTop: `${dividerThickness} solid ${dividerColor}`,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: `${Math.round(8 * scale)}px`,
+                    color: alpha(inkColor, 0.74),
+                    fontFamily: sansFont,
+                    fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {renderTemplateMark("front-page", {
+                    size: Math.round(14 * scale),
+                    tone: "accent",
+                  })}
+                  <span>{label}</span>
+                </div>
+              ),
+            )}
+          </div>
+
+          <div
+            style={{
+              marginTop: `${Math.round(18 * scale)}px`,
+              display: "grid",
+              gridTemplateColumns: isPortrait
+                ? "1fr"
+                : columns.length >= 3
+                  ? "0.96fr 1.22fr 0.9fr"
+                  : "1fr 1fr",
+              gap: `${columnGap}px`,
+              flex: 1,
+            }}
+          >
+            {columns.map((column, index) =>
+              renderColumn(column, index, {
+                borderLeft: index > 0 && !isPortrait,
+                showPhoto:
+                  index === Math.min(1, columns.length - 1) &&
+                  !isPortrait &&
+                  props.showPhotoFrame,
+                photoTone: "light",
+                photoHeight,
+                caption:
+                  index === Math.min(1, columns.length - 1)
+                    ? props.photoCaption
+                    : undefined,
+                footerLeft: "Archive",
+                footerRight: "No. 01",
+              }),
+            )}
+          </div>
+        </>
+      )}
 
       <div
         style={{
@@ -2745,144 +2987,264 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
           gridTemplateColumns: "1fr auto 1fr",
           gap: `${Math.round(10 * scale)}px`,
           alignItems: "center",
-          padding: `${Math.round(9 * scale)}px ${Math.round(12 * scale)}px`,
-          borderRadius: `${Math.round(999 * scale)}px`,
-          background: alpha(props.accentColor, 0.12),
           color: props.inkColor,
           fontFamily: sansFont,
           fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
-          letterSpacing: "0.14em",
+          letterSpacing: "0.1em",
           textTransform: "uppercase",
+          paddingBottom: `${Math.round(8 * scale)}px`,
+          borderBottom: `${dividerThickness} solid ${alpha(inkColor, 0.78)}`,
         }}
       >
-        <div>{props.kicker ?? "Match Report"}</div>
-        <div style={{ fontWeight: 800 }}>Final</div>
-        <div style={{ textAlign: "right" }}>{props.dateLine}</div>
+        <div>{props.editionLine}</div>
+        <div style={{ fontWeight: 800 }}>{props.dateLine}</div>
+        <div style={{ textAlign: "right" }}>{props.priceLine}</div>
       </div>
 
       <div
         style={{
           marginTop: `${Math.round(18 * scale)}px`,
           display: "grid",
-          gridTemplateColumns: isPortrait ? "1fr" : "0.88fr 1.12fr",
+          gridTemplateColumns: isPortrait ? "1fr" : "0.22fr 0.58fr 0.2fr",
           gap: `${Math.round(20 * scale)}px`,
-          alignItems: "stretch",
+          alignItems: "start",
         }}
       >
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
             gap: `${Math.round(14 * scale)}px`,
+            paddingTop: `${Math.round(8 * scale)}px`,
           }}
         >
           <div
             style={{
+              color: inkColor,
+              fontFamily: sansFont,
+              fontSize: `${Math.round((isPortrait ? 12 : 13) * scale)}px`,
+              fontWeight: 800,
+              lineHeight: 1.08,
+              textTransform: "uppercase",
+            }}
+          >
+            City stunned in final seconds
+          </div>
+
+          <div
+            style={{
+              color: alpha(props.inkColor, 0.82),
+              fontFamily: bodyFont,
+              fontSize: `${Math.round((isPortrait ? 14 : 15) * scale)}px`,
+              lineHeight: 1.5,
+            }}
+          >
+            In a match that will be remembered for decades, the heavy favorites were completely dismantled in the dying moments of extra time. The tactical masterclass from the underdogs left the stadium in absolute shock.
+          </div>
+
+          <div
+            style={{
+              paddingTop: `${Math.round(14 * scale)}px`,
+              borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.14)}`,
+            }}
+          >
+            <div
+              style={{
+                color: inkColor,
+                fontFamily: sansFont,
+                fontSize: `${Math.round((isPortrait ? 12 : 13) * scale)}px`,
+                fontWeight: 800,
+                lineHeight: 1.08,
+                textTransform: "uppercase",
+              }}
+            >
+              Manager speaks out
+            </div>
+            <div
+              style={{
+                marginTop: `${Math.round(8 * scale)}px`,
+                color: alpha(props.inkColor, 0.82),
+                fontFamily: bodyFont,
+                fontSize: `${Math.round((isPortrait ? 14 : 15) * scale)}px`,
+                lineHeight: 1.5,
+                fontStyle: "italic",
+              }}
+            >
+              "We knew we had a chance if we stuck to the plan. Nobody believed in us outside that dressing room."
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+            }}
+          >
+            {renderPhotoCard({
+              heightPx: Math.round(photoHeight * (isPortrait ? 1.24 : 1.56)),
+              tone: "dark",
+              badgeText: props.photoLabel,
+              footerLeft: "Championship celebration",
+              footerRight: props.priceLine,
+            })}
+            <div
+              style={{
+                position: "absolute",
+                top: `${Math.round(-10 * scale)}px`,
+                right: `${Math.round(-8 * scale)}px`,
+                transform: "rotate(-4deg)",
+                padding: `${Math.round(10 * scale)}px ${Math.round(18 * scale)}px`,
+                background: "#F44336",
+                boxShadow: `0 ${Math.round(6 * scale)}px ${Math.round(14 * scale)}px ${alpha("#000000", 0.18)}`,
+                border: `${Math.max(2, Math.round(3 * scale))}px solid ${alpha("#FFFFFF", 0.84)}`,
+              }}
+            >
+              <div
+                style={{
+                  color: "#FFFFFF",
+                  fontFamily: sansFont,
+                  fontSize: `${Math.round((isPortrait ? 22 : 28) * scale)}px`,
+                  fontWeight: 900,
+                  lineHeight: 0.9,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                2 - 1
+              </div>
+              <div
+                style={{
+                  marginTop: `${Math.round(2 * scale)}px`,
+                  color: "#FFFFFF",
+                  fontFamily: sansFont,
+                  fontSize: `${Math.round((isPortrait ? 11 : 13) * scale)}px`,
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                A.E.T.
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: `${Math.round(14 * scale)}px`,
+              display: "flex",
+              justifyContent: "center",
+              ...headlineRevealStyle,
             }}
           >
             {renderHeadlineTreatment({
               text: props.headline,
-              fontFamily: headlineFont,
-              fontSize: Math.round(headlineSize * 0.96),
+              fontFamily: sansFont,
+              fontSize: Math.round(headlineSize * 1.08),
               fontWeight: 900,
               color: props.inkColor,
               lineHeight: 0.88,
-              letterSpacing: "-0.055em",
+              letterSpacing: "-0.06em",
               textTransform: "uppercase",
-              maxWidth: Math.round(paperWidth * 0.56),
+              textAlign: "center",
+              maxWidth: Math.round(paperWidth * 0.44),
             })}
           </div>
 
           {props.subheadline ? (
             <div
               style={{
-                fontFamily: sansFont,
-                fontSize: `${Math.round((isPortrait ? 16 : 18) * scale)}px`,
-                lineHeight: 1.28,
+                marginTop: `${Math.round(8 * scale)}px`,
+                textAlign: "center",
+                fontFamily: bodyFont,
+                fontStyle: "italic",
+                fontSize: `${Math.round((isPortrait ? 16 : 19) * scale)}px`,
+                lineHeight: 1.18,
                 color: alpha(props.inkColor, 0.8),
               }}
             >
               {props.subheadline}
             </div>
           ) : null}
-
-          <div
-            style={{
-              display: "flex",
-              gap: `${Math.round(8 * scale)}px`,
-              flexWrap: "wrap",
-            }}
-          >
-            {["Championship", "Last Second", "Full Time"].map((label) => (
-              <span
-                key={label}
-                style={{
-                  padding: `${Math.round(6 * scale)}px ${Math.round(10 * scale)}px`,
-                  borderRadius: `${Math.round(999 * scale)}px`,
-                  background: alpha(props.accentColor, 0.14),
-                  color: props.inkColor,
-                  fontFamily: sansFont,
-                  fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
         </div>
 
-        <div>
-          {renderPhotoCard({
-            heightPx: Math.round(photoHeight * (isPortrait ? 1.24 : 1.56)),
-            tone: "dark",
-            badgeText: props.photoLabel,
-            footerLeft: "Game Photo",
-            footerRight: props.priceLine,
-          })}
-          {props.photoCaption ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: `${Math.round(18 * scale)}px`,
+            paddingTop: `${Math.round(8 * scale)}px`,
+          }}
+        >
+          <div
+            style={{
+              paddingLeft: `${Math.round(14 * scale)}px`,
+              borderLeft: `${Math.max(2, Math.round(3 * scale))}px solid ${accentColor}`,
+            }}
+          >
+            <div
+              style={{
+                color: alpha(props.inkColor, 0.88),
+                fontFamily: bodyFont,
+                fontSize: `${Math.round((isPortrait ? 22 : 24) * scale)}px`,
+                lineHeight: 1.18,
+                fontStyle: "italic",
+                fontWeight: 700,
+              }}
+            >
+              "They laughed at us in August. Look who's laughing now. This is for the fans!"
+            </div>
             <div
               style={{
                 marginTop: `${Math.round(8 * scale)}px`,
+                color: alpha(props.inkColor, 0.62),
                 fontFamily: sansFont,
                 fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
-                lineHeight: 1.3,
-                color: alpha(props.inkColor, 0.62),
+                fontWeight: 700,
+                letterSpacing: "0.08em",
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
               }}
             >
-              {props.photoCaption}
+              Captain's post-match interview
             </div>
-          ) : null}
-        </div>
-      </div>
+          </div>
 
-      <div
-        style={{
-          marginTop: `${Math.round(18 * scale)}px`,
-          display: "grid",
-          gridTemplateColumns: isPortrait
-            ? "1fr"
-            : `repeat(${Math.min(3, columns.length)}, minmax(0, 1fr))`,
-          gap: `${Math.round(16 * scale)}px`,
-          flex: 1,
-        }}
-      >
-        {columns.map((column, index) =>
-          renderColumn(column, index, {
-            borderLeft: !isPortrait && index > 0,
-            titleFont: sansFont,
-            titleSize: Math.round((isPortrait ? 15 : 16) * scale),
-            titleWeight: 800,
-            titleLetterSpacing: "0.08em",
-            bodySize: Math.round((isPortrait ? 14 : 15) * scale),
-            compact: true,
-            paddingLeft: Math.round(14 * scale),
-          }),
-        )}
+          <div
+            style={{
+              paddingTop: `${Math.round(12 * scale)}px`,
+              borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.16)}`,
+            }}
+          >
+            <div
+              style={{
+                color: inkColor,
+                fontFamily: sansFont,
+                fontSize: `${Math.round((isPortrait ? 14 : 15) * scale)}px`,
+                fontWeight: 800,
+                lineHeight: 1.08,
+                textTransform: "uppercase",
+              }}
+            >
+              Fans flood the streets
+            </div>
+            <div
+              style={{
+                marginTop: `${Math.round(8 * scale)}px`,
+                color: alpha(props.inkColor, 0.82),
+                fontFamily: bodyFont,
+                fontSize: `${Math.round((isPortrait ? 14 : 15) * scale)}px`,
+                lineHeight: 1.5,
+              }}
+            >
+              Celebrations erupted across the city as the final whistle blew. Thousands gathered in the main square, setting off flares and chanting the names of their new heroes.
+            </div>
+          </div>
+        </div>
       </div>
 
       <div
@@ -3456,15 +3818,11 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
       <div
         style={{
           marginTop: `${Math.round(18 * scale)}px`,
-          display: "grid",
-          gridTemplateColumns: isPortrait ? "1fr" : "0.95fr 1.05fr",
-          gap: `${Math.round(18 * scale)}px`,
         }}
       >
         <div
           style={{
             textAlign: "center",
-            paddingRight: !isPortrait ? `${Math.round(6 * scale)}px` : "0px",
           }}
         >
           <div
@@ -3510,90 +3868,14 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
             </div>
           ) : null}
         </div>
-
-        <div
-          style={{
-            borderLeft: !isPortrait
-              ? `${dividerThickness} solid ${alpha(inkColor, 0.16)}`
-              : "none",
-            paddingLeft: !isPortrait ? `${Math.round(18 * scale)}px` : "0px",
-          }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr",
-              gap: `${Math.round(14 * scale)}px`,
-            }}
-          >
-            <div
-              style={{
-                paddingTop: `${Math.round(8 * scale)}px`,
-                borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.24)}`,
-              }}
-            >
-              <div
-                style={{
-                  color: inkColor,
-                  fontFamily: headlineFont,
-                  fontSize: `${Math.round((isPortrait ? 17 : 18) * scale)}px`,
-                  fontWeight: 700,
-                  lineHeight: 1.06,
-                }}
-              >
-                Bond markets reprice rapidly as yield curve flattens
-              </div>
-              <div
-                style={{
-                  marginTop: `${Math.round(8 * scale)}px`,
-                  color: alpha(inkColor, 0.76),
-                  fontFamily: bodyFont,
-                  fontSize: `${Math.round((isPortrait ? 13 : 14) * scale)}px`,
-                  lineHeight: 1.34,
-                }}
-              >
-                Treasury yields fall sharply after the emergency move, forcing desks to reassess recession bets and funding costs before the close.
-              </div>
-            </div>
-            <div
-              style={{
-                paddingTop: `${Math.round(8 * scale)}px`,
-                borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.14)}`,
-              }}
-            >
-              <div
-                style={{
-                  color: inkColor,
-                  fontFamily: headlineFont,
-                  fontSize: `${Math.round((isPortrait ? 17 : 18) * scale)}px`,
-                  fontWeight: 700,
-                  lineHeight: 1.06,
-                }}
-              >
-                Dollar weakens against major currencies on rate shock
-              </div>
-              <div
-                style={{
-                  marginTop: `${Math.round(8 * scale)}px`,
-                  color: alpha(inkColor, 0.76),
-                  fontFamily: bodyFont,
-                  fontSize: `${Math.round((isPortrait ? 13 : 14) * scale)}px`,
-                  lineHeight: 1.34,
-                }}
-              >
-                FX traders unwind defensive positions as the surprise cut narrows yield advantages and sends the greenback lower through the afternoon.
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div
         style={{
-          marginTop: `${Math.round(16 * scale)}px`,
+          marginTop: `${Math.round(20 * scale)}px`,
           display: "grid",
-          gridTemplateColumns: isPortrait ? "1fr" : "1.28fr 0.72fr",
-          gap: `${Math.round(16 * scale)}px`,
+          gridTemplateColumns: isPortrait ? "1fr" : "1.36fr 0.64fr",
+          gap: "0px",
           flex: 1,
         }}
       >
@@ -3602,6 +3884,7 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
             display: "flex",
             flexDirection: "column",
             gap: `${Math.round(12 * scale)}px`,
+            paddingRight: !isPortrait ? `${Math.round(18 * scale)}px` : "0px",
           }}
         >
           {renderMarketChartPanel({
@@ -3655,66 +3938,44 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
 
         <div
           style={{
+            paddingLeft: !isPortrait ? `${Math.round(18 * scale)}px` : "0px",
             borderLeft: !isPortrait
-              ? `${dividerThickness} solid ${alpha(inkColor, 0.16)}`
+              ? `${dividerThickness} solid ${alpha(inkColor, 0.32)}`
               : "none",
-            paddingLeft: !isPortrait ? `${Math.round(16 * scale)}px` : "0px",
             display: "flex",
             flexDirection: "column",
-            gap: `${Math.round(16 * scale)}px`,
+            gap: `${Math.round(12 * scale)}px`,
           }}
         >
-          {[
-            {
-              title: "Bond markets reprice rapidly as yield curve flattens",
-              body:
-                "Treasury yields plummet across the board, signalling deep economic concerns as desks race to reframe expectations for growth and inflation.",
-            },
-            {
-              title: "Dollar weakens against major currencies on rate shock",
-              body:
-                "The greenback falls against the euro and yen as traders unwind the dollar's relative rate advantage after the emergency move.",
-            },
-          ].map((story, index) => (
-            <div
-              key={story.title}
-              style={{
-                paddingTop: `${Math.round(8 * scale)}px`,
-                borderTop: `${dividerThickness} solid ${alpha(inkColor, index === 0 ? 0.24 : 0.14)}`,
-              }}
-            >
-              <div
-                style={{
-                  color: inkColor,
-                  fontFamily: headlineFont,
-                  fontSize: `${Math.round((isPortrait ? 18 : 20) * scale)}px`,
-                  fontWeight: 700,
-                  lineHeight: 1.08,
-                }}
-              >
-                {story.title}
-              </div>
-              <div
-                style={{
-                  marginTop: `${Math.round(8 * scale)}px`,
-                  color: alpha(inkColor, 0.78),
-                  fontFamily: bodyFont,
-                  fontSize: `${Math.round((isPortrait ? 13 : 14) * scale)}px`,
-                  lineHeight: 1.34,
-                }}
-              >
-                {story.body}
-              </div>
-              <div
-                style={{
-                  marginTop: `${Math.round(10 * scale)}px`,
-                  width: `${Math.round(22 * scale)}px`,
-                  height: `${Math.max(2, Math.round(3 * scale))}px`,
-                  background: "#D12C2C",
-                }}
-              />
-            </div>
-          ))}
+          <div
+            style={{
+              color: alpha(inkColor, 0.72),
+              fontFamily: headlineFont,
+              fontSize: `${Math.round((isPortrait ? 26 : 34) * scale)}px`,
+              fontWeight: 700,
+              lineHeight: 1.04,
+            }}
+          >
+            Bond Markets Reprice Rapidly as Yield Curve Flattens
+          </div>
+          <div
+            style={{
+              color: alpha(inkColor, 0.5),
+              fontFamily: bodyFont,
+              fontSize: `${Math.round((isPortrait ? 15 : 17) * scale)}px`,
+              lineHeight: 1.42,
+            }}
+          >
+            Treasury yields plummeted across the board following the central bank&apos;s emergency intervention, signalling deep economic concerns.
+          </div>
+          <div
+            style={{
+              marginTop: `${Math.round(8 * scale)}px`,
+              width: `${Math.round(26 * scale)}px`,
+              height: `${Math.max(2, Math.round(3 * scale))}px`,
+              background: "#D12C2C",
+            }}
+          />
         </div>
       </div>
 
@@ -3725,12 +3986,11 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
   );
 
   const renderHighlightCoverLayout = () => {
-    const headlineLines = splitHeadlineIntoLines(props.headline, 2).slice(0, 2);
-    const emphasisLine =
-      columns[0]?.title ?? props.kicker ?? "Power Move";
-    const supportingQuote =
-      columns[1]?.text ??
-      "A political staffing move can instantly change how a story is read, shifting it from rumor into signal.";
+    const headlineLines = splitHeadlineIntoLines(props.headline, 3).slice(0, 3);
+    const summaryText =
+      props.subheadline ??
+      columns[0]?.text ??
+      "A major story unfolds as events draw widespread public attention.";
 
     return (
       <div
@@ -3746,7 +4006,7 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
             inset: 0,
             backgroundImage: `linear-gradient(${alpha(inkColor, 0.08)} 1px, transparent 1px), linear-gradient(90deg, ${alpha(inkColor, 0.08)} 1px, transparent 1px)`,
             backgroundSize: `${Math.round(40 * scale)}px ${Math.round(40 * scale)}px`,
-            opacity: 0.75,
+            opacity: 0.12,
           }}
         />
 
@@ -3756,57 +4016,47 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
             zIndex: 2,
             display: "flex",
             flexDirection: "column",
-            gap: `${Math.round(12 * scale)}px`,
+            gap: `${Math.round(10 * scale)}px`,
             ...getSectionRevealStyle(0),
           }}
         >
           <div
             style={{
-              alignSelf: "flex-start",
-              padding: `${Math.round(7 * scale)}px ${Math.round(14 * scale)}px`,
-              background: "#C92020",
-              color: "#FFF7ED",
-              fontFamily: headlineFont,
-              fontSize: `${Math.round((isPortrait ? 14 : 16) * scale)}px`,
-              fontWeight: 800,
-              letterSpacing: "0.01em",
-              textTransform: "uppercase",
+              marginTop: `${Math.round(8 * scale)}px`,
+              width: "100%",
+              height: dividerThickness,
+              background: alpha(inkColor, 0.64),
             }}
-          >
-            {props.dateLine}
-          </div>
+          />
 
           <div
             style={{
+              marginTop: `${Math.round(10 * scale)}px`,
               display: "flex",
               flexDirection: "column",
-              gap: `${Math.round(4 * scale)}px`,
-              maxWidth: "100%",
+              alignItems: "center",
+              gap: `${Math.round(8 * scale)}px`,
             }}
           >
             {headlineLines.map((line, index) => (
               <div
                 key={`${line}-${index}`}
                 style={{
-                  alignSelf: "stretch",
-                  display: "block",
-                  width: "100%",
-                  padding: `${Math.round(2 * scale)}px ${Math.round(8 * scale)}px ${Math.round(5 * scale)}px`,
-                  background:
-                    index < 2
-                      ? alpha(accentColor, 0.96)
-                      : alpha(accentColor, 0.88),
-                  boxDecorationBreak: "clone",
-                  WebkitBoxDecorationBreak: "clone",
+                  display: "inline-block",
+                  minWidth: `${Math.round(paperWidth * 0.78)}px`,
+                  maxWidth: `${Math.round(paperWidth * 0.96)}px`,
+                  padding: `${Math.round(8 * scale)}px ${Math.round(14 * scale)}px ${Math.round(11 * scale)}px`,
+                  background: alpha(accentColor, 0.96),
+                  textAlign: "center",
                 }}
               >
                 <span
                   style={{
                     fontFamily: mastheadFont,
-                    fontSize: `${Math.round((isPortrait ? 34 : 52) * scale)}px`,
-                    fontWeight: 700,
-                    letterSpacing: "-0.045em",
-                    lineHeight: 0.9,
+                    fontSize: `${Math.round((isPortrait ? 48 : 78) * scale)}px`,
+                    fontWeight: 800,
+                    letterSpacing: "-0.05em",
+                    lineHeight: 0.84,
                     color: inkColor,
                   }}
                 >
@@ -3816,163 +4066,71 @@ export const NewspaperFrontPage: React.FC<NewspaperRenderProps> = (props) => {
             ))}
           </div>
 
-          {props.subheadline ? (
-            <div
-              style={{
-                maxWidth: `${Math.round(paperWidth * 0.94)}px`,
-                fontFamily: bodyFont,
-                fontSize: `${Math.round((isPortrait ? 15 : 19) * scale)}px`,
-                lineHeight: 1.22,
-                color: alpha(inkColor, 0.92),
-              }}
-            >
-              {props.subheadline}
-            </div>
-          ) : null}
-
           <div
             style={{
-              width: "100%",
-              height: dividerThickness,
-              background: alpha(inkColor, 0.68),
-            }}
-          />
-
-          <div
-            style={{
-              alignSelf: "flex-end",
-              fontFamily: mastheadFont,
-              fontSize: `${Math.round((isPortrait ? 24 : 30) * scale)}px`,
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              color: alpha(inkColor, 0.96),
+              marginTop: `${Math.round(4 * scale)}px`,
+              maxWidth: `${Math.round(paperWidth * 0.82)}px`,
+              alignSelf: "center",
+              fontFamily: bodyFont,
+              fontSize: `${Math.round((isPortrait ? 14 : 16) * scale)}px`,
+              lineHeight: 1.18,
+              color: alpha(inkColor, 0.76),
+              textAlign: "center",
             }}
           >
-            {props.masthead}
+            {summaryText}
           </div>
 
           <div
             style={{
-              marginTop: `${Math.round(8 * scale)}px`,
-              display: "flex",
-              flexDirection: "column",
-              gap: `${Math.round(18 * scale)}px`,
-              flex: 1,
-              minHeight: 0,
-              justifyContent: "space-between",
+              marginTop: `${Math.round(34 * scale)}px`,
+              display: "grid",
+              gridTemplateColumns: isPortrait ? "1fr" : "0.46fr 0.54fr",
+              gap: `${Math.round(12 * scale)}px`,
+              alignItems: "stretch",
             }}
           >
             <div
               style={{
-                paddingTop: `${Math.round(12 * scale)}px`,
-                borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.18)}`,
+                minHeight: `${Math.round((isPortrait ? 120 : 168) * scale)}px`,
+                border: `${dividerThickness} solid ${alpha(inkColor, 0.18)}`,
+                background:
+                  "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.02) 100%)",
+                padding: `${Math.round(12 * scale)}px`,
+                overflow: "hidden",
               }}
             >
-              <div
-                style={{
-                  fontFamily: sansFont,
-                  fontSize: `${Math.round((isPortrait ? 11 : 12) * scale)}px`,
-                  fontWeight: 800,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: alpha("#C92020", 0.92),
-                }}
-              >
-                {emphasisLine}
-              </div>
-              <div
-                style={{
-                  marginTop: `${Math.round(8 * scale)}px`,
-                  maxWidth: `${Math.round(paperWidth * 0.74)}px`,
-                  fontFamily: mastheadFont,
-                  fontSize: `${Math.round((isPortrait ? 34 : 48) * scale)}px`,
-                  fontWeight: 700,
-                  lineHeight: 0.94,
-                  letterSpacing: "-0.04em",
-                  color: alpha(inkColor, 0.92),
-                  textTransform: "uppercase",
-                }}
-              >
-                Power, timing, and influence collide in one move.
-              </div>
+              {Array.from({ length: isPortrait ? 9 : 13 }).map((_, index) => (
+                <div
+                  key={index}
+                  style={{
+                    marginTop: index === 0 ? "0px" : `${Math.round(7 * scale)}px`,
+                    width: `${82 - (index % 3) * 8}%`,
+                    height: `${Math.round((isPortrait ? 5 : 6) * scale)}px`,
+                    background: alpha(inkColor, index < 2 ? 0.18 : 0.12),
+                    filter: "blur(0.4px)",
+                  }}
+                />
+              ))}
             </div>
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: isPortrait ? "1fr" : "1.05fr 0.95fr",
-                gap: `${Math.round(18 * scale)}px`,
-                alignItems: "end",
+                minHeight: `${Math.round((isPortrait ? 120 : 168) * scale)}px`,
+                border: `${dividerThickness} solid ${alpha(inkColor, 0.18)}`,
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.04) 100%)",
+                overflow: "hidden",
               }}
             >
-              <div
-                style={{
-                  borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.18)}`,
-                  paddingTop: `${Math.round(12 * scale)}px`,
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: bodyFont,
-                    fontStyle: "italic",
-                    fontSize: `${Math.round((isPortrait ? 22 : 28) * scale)}px`,
-                    lineHeight: 1.18,
-                    color: alpha(inkColor, 0.88),
-                    maxWidth: `${Math.round(paperWidth * 0.5)}px`,
-                  }}
-                >
-                  "{paragraphize(supportingQuote)[0]}"
-                </div>
-              </div>
-
-              <div
-                style={{
-                  borderTop: `${dividerThickness} solid ${alpha(inkColor, 0.18)}`,
-                  paddingTop: `${Math.round(12 * scale)}px`,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: `${Math.round(6 * scale)}px`,
-                }}
-              >
-                {["Earlier", "Now", "Next"].map((label, index) => (
-                  <div
-                    key={label}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: `${Math.round(60 * scale)}px 1fr`,
-                      gap: `${Math.round(10 * scale)}px`,
-                      alignItems: "start",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontFamily: sansFont,
-                        fontSize: `${Math.round((isPortrait ? 10 : 11) * scale)}px`,
-                        fontWeight: 800,
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        color: alpha("#C92020", 0.9),
-                      }}
-                    >
-                      {label}
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: bodyFont,
-                        fontSize: `${Math.round((isPortrait ? 15 : 18) * scale)}px`,
-                        lineHeight: 1.18,
-                        color: alpha(inkColor, 0.84),
-                      }}
-                    >
-                      {index === 0
-                        ? "Private conversations begin."
-                        : index === 1
-                          ? "A public move resets the story."
-                          : "Observers watch for deeper alignment."}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {renderPhotoCard({
+                heightPx: Math.round((isPortrait ? 118 : 166) * scale),
+                tone: "light",
+                badgeText: props.photoLabel,
+                footerLeft: "Feature image",
+                footerRight: props.masthead,
+                compact: true,
+              })}
             </div>
           </div>
         </div>

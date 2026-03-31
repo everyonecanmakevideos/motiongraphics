@@ -1980,6 +1980,12 @@ function heuristicNewspaperFrontPageIntent(
     ) {
       return "Elon Musk Hires Republican Adviser";
     }
+    if (
+      normalized.includes("government crisis") ||
+      (normalized.includes("government") && normalized.includes("crisis"))
+    ) {
+      return "Government Crisis Grips The Capital";
+    }
     if (normalized.includes("moon landing")) return "Men Walk On Moon";
     if (normalized.includes("market crash")) return "Global Market Crash";
     if (normalized.includes("100 million users"))
@@ -1996,6 +2002,12 @@ function heuristicNewspaperFrontPageIntent(
   const deriveSubheadline = (): string => {
     if (normalized.includes("hung parliament")) {
       return "No party wins outright as leaders scramble to assemble a governing coalition before markets and institutions lose patience.";
+    }
+    if (
+      normalized.includes("government crisis") ||
+      (normalized.includes("government") && normalized.includes("crisis"))
+    ) {
+      return "Power fractures at the top as ministers, markets, and party insiders brace for the next move.";
     }
     if (
       normalized.includes("metro line opens") ||
