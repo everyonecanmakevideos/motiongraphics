@@ -1,0 +1,10 @@
+{
+  "id": "india-map-highlight",
+  "name": "India Map Highlight",
+  "description": "Deterministic India state map using GeoJSON-driven SVG paths with staggered state fill animation.",
+  "tags": ["map", "india", "geojson", "state", "highlight", "regional"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

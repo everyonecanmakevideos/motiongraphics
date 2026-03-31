@@ -35,18 +35,12 @@ import { SplitScreen } from "./split-screen/SplitScreen";
 import { ProblemSolution } from "./problem-solution/ProblemSolution";
 import { BeforeAfter } from "./before-after/BeforeAfter";
 import { ProcessSteps } from "./process-steps/ProcessSteps";
-import { MapRouteAnimation } from "./map-route-animation/MapRouteAnimation";
-import { MapNetwork } from "./map-network/MapNetwork";
-import { EarthGlobe } from "./earth-globe/EarthGlobe";
-import { MapCitySpotlight } from "./map-city-spotlight/MapCitySpotlight";
-import { MapHeatmap } from "./map-heatmap/MapHeatmap";
-import { MapRadiusRings } from "./map-radius-rings/MapRadiusRings";
-import { MapTargeting } from "./map-targeting/MapTargeting";
 import { MaskedTextReveal } from "./masked-text-reveal/MaskedTextReveal";
 import { CinematicHero } from "./cinematic-hero/CinematicHero";
 import { CinematicTransition } from "./cinematic-transition/CinematicTransition";
 import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
 import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
+import { IndiaMapHighlight } from "./india-map-highlight/IndiaMapHighlight";
 
 import {
   TEMPLATE_DESCRIPTORS,
@@ -92,18 +86,12 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "problem-solution": ProblemSolution,
   "before-after": BeforeAfter,
   "process-steps": ProcessSteps,
-  "map-route-animation": MapRouteAnimation,
-  "map-network": MapNetwork,
-  "earth-globe": EarthGlobe,
-  "map-city-spotlight": MapCitySpotlight,
-  "map-heatmap": MapHeatmap,
-  "map-radius-rings": MapRadiusRings,
-  "map-targeting": MapTargeting,
   "masked-text-reveal": MaskedTextReveal,
   "cinematic-hero": CinematicHero,
   "cinematic-transition": CinematicTransition,
   "dynamic-showcase": DynamicShowcase,
   "parallax-showcase": ParallaxShowcase,
+  "india-map-highlight": IndiaMapHighlight,
 };
 
 export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> =

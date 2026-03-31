@@ -3,9 +3,6 @@ import {
   getTemplateDescriptions,
   getTemplateIds,
 } from "../../src/templates/registry-server";
-import {
-  extractPlacesFromText,
-} from "../geo/placeResolver";
 import { getDisplayPrompt } from "../promptDisplay";
 import type { IntentResult } from "../templates/resolver";
 import { validateTemplateParams } from "../templates/resolver";
@@ -77,18 +74,12 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Problem and solution, challenge and answer, issue and fix | "problem-solution" |
 | Before and after, transformation, change, improvement | "before-after" |
 | Numbered steps, onboarding steps, step 1/2/3 phrasing, process flow, workflow, procedure, how-to | "process-steps" |
-| Route map, travel route, journey path, flight path, shipping route, point-to-point map, common map animation | "map-route-animation" |
-| Network map, hub-and-spoke map, connected hubs, global network, city network, office network, infrastructure network | "map-network" |
-| City spotlight map, location focus, spotlight over a city, zoom to one city, focused location map | "map-city-spotlight" |
-| Heatmap, hotspot map, density map, activity concentration map, intensity map | "map-heatmap" |
-| Radius rings, service radius, concentric coverage circles, geofence map, coverage bands | "map-radius-rings" |
-| Targeting map, tactical scanner map, radar lock, surveillance focus, target lock-on map | "map-targeting" |
-| Earth globe, globe animation, rotating earth, spinning globe, planet earth with locations, orbital world view | "earth-globe" |
 | Masked text reveal, cinematic unveil, text behind mask, wipe reveal, circle reveal | "masked-text-reveal" |
 | Cinematic title, movie-style intro, dramatic opening, epic hero title, film title card | "cinematic-hero" |
 | Scene transition, wipe between scenes, iris transition, chapter break wipe | "cinematic-transition" |
 | Product spotlight, feature showcase, icon spotlight, premium showcase, orbiting elements | "dynamic-showcase" |
 | Parallax depth scene, layered depth, 3D-like depth, immersive layers, parallax | "parallax-showcase" |
+| India map, map of India, India states, highlight Gujarat on India map, highlight Kerala on India map, show one or more Indian states filled on a map | "india-map-highlight" |
 
 BACKGROUND STYLES:
 Each template accepts a "background" parameter. Choose one of these types:
@@ -153,6 +144,22 @@ PROBLEM-SOLUTION ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has
 BEFORE-AFTER ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "revealStyle": "wipe"|"fade"|"split"
 PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in", "slide-up", "none"
 MAP CITY / HEAT / RADIUS / TARGETING ANIMATION: "fade-in", "scale-pop", "progressive", "none"
+INDIA-MAP-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+
+INDIA-MAP-HIGHLIGHT PARAMS:
+- Use "india-map-highlight" when the user explicitly wants India, an India map, Indian states, state-wise India highlights, or wants one or more Indian states marked on the India map.
+- "highlightedStates" is REQUIRED and must contain 1-12 items.
+- Each highlightedStates item must be:
+  { "state": "State Name", "value": "optional short label", "accentColor": "#RRGGBB" }
+- Keep state names human-readable, for example: "Gujarat", "Kerala", "Maharashtra", "Tamil Nadu".
+- If the user only names states and gives no value text, omit "value".
+- Recommended defaults:
+  - titleColor: "#F8FAFC"
+  - subtitleColor: "#C8D3E0"
+  - labelColor: "#E2E8F0"
+  - baseFillColor: "#122033"
+  - outlineColor: "#35506A"
+  - highlightColor: "#F97316"
 
 CURRENT-STEP HIGHLIGHTING (process-steps only):
 - If the user says "highlight current step", "current step", or explicitly references a numbered step (e.g., "highlight step 2" / "step 1, step 2, step 3" and highlight one of them), set currentStep to the step number (1-based).
@@ -225,13 +232,9 @@ CRITICAL RULES:
    - kinetic-typography "lines": minimum 1, maximum 8
    - bullet-list "items": minimum 2, maximum 8
    - process-steps "steps": minimum 3, maximum 6
-   - map-city-spotlight "locations": minimum 1, maximum 8
-   - map-heatmap "locations": minimum 1, maximum 8
-   - map-radius-rings "locations": minimum 1, maximum 8
-   - map-targeting "locations": minimum 1, maximum 8
-   - earth-globe "locations": minimum 1, maximum 8
    - feature-highlight "bulletPoints": maximum 4
    - before-after "beforeItems"/"afterItems": maximum 4
+   - india-map-highlight "highlightedStates": minimum 1, maximum 12
 5. All hex colors MUST be exactly 7 characters: #RRGGBB (e.g., "#FF0000", not "red" or "#F00")
 6. "duration" must be between 2 and 15 seconds for all templates.
 7. For multi-scene: every scene MUST include all required fields including background, entranceAnimation, and duration in params.
@@ -641,6 +644,9 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   const textHeuristic = heuristicHeroTextFromTextAnimation(prompt);
   if (textHeuristic) return textHeuristic;
 
+  const indiaMapHeuristic = heuristicIndiaMapHighlightIntent(prompt);
+  if (indiaMapHeuristic) return indiaMapHeuristic;
+
   // Heuristic fallback for obvious 3-tier pricing prompts so they stay on
   // the template path even when the model drifts toward older card layouts.
   const pricingHeuristic = heuristicPricingComparisonIntent(prompt);
@@ -650,11 +656,6 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   // on the deterministic template path instead of being downgraded into Hera.
   const newspaperHeuristic = heuristicNewspaperFrontPageIntent(prompt);
   if (newspaperHeuristic) return newspaperHeuristic;
-
-  // Heuristic fallback for obvious map prompts so reusable map templates stay
-  // on the deterministic path even when the model is uncertain.
-  const mapHeuristic = heuristicMapIntent(prompt);
-  if (mapHeuristic) return mapHeuristic;
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -944,6 +945,104 @@ function heuristicHeroTextFromTextAnimation(
       duration: durationSec ?? 6,
       style: "centered",
       decoration: "none",
+    },
+  };
+}
+
+function heuristicIndiaMapHighlightIntent(prompt: string): IntentResult | null {
+  const normalized = getDisplayPrompt(prompt).toLowerCase();
+
+  const indiaSignal =
+    /\bindia\b/.test(normalized) ||
+    normalized.includes("indian states") ||
+    normalized.includes("map of india");
+  const mapSignal =
+    /\bmap\b/.test(normalized) ||
+    normalized.includes("highlight") ||
+    normalized.includes("mark");
+
+  if (!indiaSignal || !mapSignal) return null;
+
+  const knownStates = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar",
+    "Chandigarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Delhi",
+    "Jammu and Kashmir",
+    "Ladakh",
+    "Lakshadweep",
+    "Puducherry",
+  ];
+
+  const foundStates = knownStates.filter((state) =>
+    normalized.includes(state.toLowerCase()),
+  );
+
+  if (foundStates.length === 0) return null;
+
+  const uniqueStates = Array.from(new Set(foundStates)).slice(0, 12);
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+
+  return {
+    templateId: "india-map-highlight",
+    confidence: "high",
+    reasoning:
+      "Heuristic: detected an India map prompt with explicit Indian state highlights",
+    aspect_ratio,
+    params: {
+      title:
+        uniqueStates.length === 1
+          ? `${uniqueStates[0]} Focus`
+          : "India State Highlights",
+      subtitle:
+        uniqueStates.length === 1
+          ? `Highlighting ${uniqueStates[0]} on the India map`
+          : `Highlighting ${uniqueStates.join(", ")}`,
+      highlightedStates: uniqueStates.map((state) => ({ state })),
+      background: {
+        type: "gradient",
+        from: "#08111F",
+        to: "#10233E",
+        direction: "to-bottom-right",
+      },
+      titleColor: "#F8FAFC",
+      subtitleColor: "#C8D3E0",
+      labelColor: "#E2E8F0",
+      baseFillColor: "#122033",
+      outlineColor: "#35506A",
+      highlightColor: "#F97316",
+      entranceAnimation: "slide-up",
+      duration: 8,
     },
   };
 }
@@ -1290,379 +1389,6 @@ function heuristicPricingComparisonIntent(prompt: string): IntentResult | null {
     },
   };
 }
-
-function heuristicMapIntent(prompt: string): IntentResult | null {
-  const normalized = prompt.toLowerCase();
-
-  const routeSignals = [
-    "route map",
-    "travel route",
-    "journey path",
-    "flight path",
-    "shipping route",
-    "point-to-point",
-    "point to point",
-    "travel path",
-  ];
-  const networkSignals = [
-    "network map",
-    "hub-and-spoke",
-    "hub and spoke",
-    "connected network",
-    "connected hubs",
-    "global network",
-    "office network",
-    "operations hubs",
-    "operations network",
-    "infrastructure hubs",
-    "infrastructure network",
-  ];
-  const spotlightSignals = [
-    "spotlight ",
-    "city spotlight",
-    "spotlight map",
-    "spotlight over",
-    "location focus",
-    "focus on",
-    "zoom into",
-    "zoom toward",
-    "priority location",
-    "city focus",
-    "facility focus",
-    "editorial map",
-  ];
-  const heatmapSignals = [
-    "heatmap",
-    "hotspot map",
-    "density map",
-    "density view",
-    "customer concentration",
-    "activity concentration",
-    "intensity map",
-    "hotspots",
-    "regional hotspots",
-  ];
-  const radiusSignals = [
-    "radius rings",
-    "service radius",
-    "coverage radius",
-    "concentric rings",
-    "geofence",
-    "geofencing",
-    "coverage bands",
-    "impact radius",
-    "5 mi",
-    "10 mi",
-    "20 mi",
-  ];
-  const targetingSignals = [
-    "targeting map",
-    "target lock",
-    "lock on",
-    "scanner view",
-    "radar view",
-    "surveillance map",
-    "tactical map",
-    "tracking lock",
-    "crosshair",
-  ];
-  const globeSignals = [
-    "earth globe",
-    "globe animation",
-    "rotating earth",
-    "spinning globe",
-    "planet earth",
-    "orbital world view",
-    "globe with locations",
-    "rotating globe",
-    "earth with markers",
-    "world globe",
-  ];
-
-  const hasAny = (signals: string[]) =>
-    signals.some((signal) => normalized.includes(signal));
-
-  const extractedPlaces = extractPlacesFromText(prompt);
-  const extractedLocations = extractedPlaces.map((place) => place.canonical);
-
-  const inferMapRegion = (): "world" | "europe" | "usa" | "india" => {
-    const explicitIndia =
-      /\bindia\b/.test(normalized) || /\bindian\b/.test(normalized);
-    const explicitUsa =
-      /\busa\b|\bunited states\b|\bu\.s\.a?\b|\bamerican\b|\bcalifornia\b|\btexas\b/.test(
-        normalized,
-      );
-    const explicitEurope =
-      /\beurope\b|\beuropean\b|\bwestern europe\b|\bcontinental europe\b/.test(
-        normalized,
-      );
-
-    if (explicitIndia) return "india";
-    if (explicitUsa) return "usa";
-    if (explicitEurope) return "europe";
-
-    if (extractedPlaces.length === 0) return "world";
-    if (extractedPlaces.every((entry) => entry.region === "india"))
-      return "india";
-    if (extractedPlaces.every((entry) => entry.region === "usa")) return "usa";
-    if (extractedPlaces.every((entry) => entry.region === "europe"))
-      return "europe";
-
-    return "world";
-  };
-
-  const buildLocations = () =>
-    extractedPlaces.slice(0, 8).map((place) => ({
-      label: place.canonical,
-      ...place.fallback,
-      placeCanonical: place.canonical,
-      placeKind: place.kind,
-      placeRegion: place.region,
-    }));
-
-  const titleCase = (value: string) =>
-    value
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-      .trim();
-
-  const inferredRegion = inferMapRegion();
-  const regionDisplay =
-    inferredRegion === "world"
-      ? "Global"
-      : inferredRegion === "usa"
-        ? "US"
-        : inferredRegion === "india"
-          ? "India"
-          : "Europe";
-  const subject =
-    prompt.match(/about\s+([^,.!?\n]+)/i)?.[1]?.trim() ||
-    prompt
-      .match(/\b(?:show|highlight|map)\s+our\s+(.+?)\s+across\b/i)?.[1]
-      ?.trim() ||
-    "";
-
-  if (hasAny(globeSignals) && extractedLocations.length >= 1) {
-    return {
-      templateId: "earth-globe",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a globe-style world visualization prompt with named locations",
-      aspect_ratio: "16:9",
-      params: {
-        title: subject ? titleCase(subject) : `${regionDisplay} Reach`,
-        mapRegion: "world",
-        locations: buildLocations(),
-        mapStyle: "technical-dark",
-        markerPulse: true,
-        connectionLines: true,
-        markerColor: "#7CC7FF",
-        titleColor: "#F8FAFC",
-        labelColor: "#CBD5E1",
-        mapColor: "#7C93AF",
-        background: {
-          type: "gradient",
-          from: "#030712",
-          to: "#0F172A",
-          direction: "radial",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  if (hasAny(targetingSignals) && extractedLocations.length >= 1) {
-    return {
-      templateId: "map-targeting",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a tactical targeting or scanner-style map prompt with a named location",
-      aspect_ratio: "16:9",
-      params: {
-        title: subject ? titleCase(subject) : "Target Tracking",
-        mapRegion: inferredRegion,
-        locations: buildLocations(),
-        mapStyle: "technical-dark",
-        markerPulse: true,
-        connectionLines: false,
-        markerColor: "#10B981",
-        titleColor: "#EAFBF4",
-        labelColor: "#A7F3D0",
-        mapColor: "#6B8F82",
-        background: {
-          type: "gradient",
-          from: "#03130F",
-          to: "#071D18",
-          direction: "to-bottom",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  if (hasAny(spotlightSignals) && extractedLocations.length >= 1) {
-    return {
-      templateId: "map-city-spotlight",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a city or facility spotlight map prompt with a primary named location",
-      aspect_ratio: "16:9",
-      params: {
-        title: subject ? titleCase(subject) : `${extractedLocations[0]} Focus`,
-        mapRegion: inferredRegion,
-        locations: buildLocations(),
-        mapStyle: "geo-color",
-        markerPulse: true,
-        connectionLines: false,
-        markerColor: "#F97316",
-        titleColor: "#F8FAFC",
-        labelColor: "#D7E1EA",
-        mapColor: "#7B8A98",
-        background: {
-          type: "gradient",
-          from: "#0B1220",
-          to: "#162132",
-          direction: "to-bottom",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  if (hasAny(radiusSignals) && extractedLocations.length >= 1) {
-    return {
-      templateId: "map-radius-rings",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a radius, coverage-band, or geofence map prompt centered on a named location",
-      aspect_ratio: "16:9",
-      params: {
-        title: subject ? titleCase(subject) : "Coverage Radius",
-        mapRegion: inferredRegion,
-        locations: buildLocations(),
-        mapStyle: "editorial-light",
-        markerPulse: true,
-        connectionLines: false,
-        markerColor: "#3B82F6",
-        titleColor: "#1E3A5F",
-        labelColor: "#47627C",
-        mapColor: "#84A0BA",
-        background: {
-          type: "gradient",
-          from: "#F3F8FD",
-          to: "#E7EFF7",
-          direction: "to-bottom-right",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  if (hasAny(heatmapSignals) && extractedLocations.length >= 2) {
-    return {
-      templateId: "map-heatmap",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a heatmap or hotspot-density prompt with multiple named locations",
-      aspect_ratio: "16:9",
-      params: {
-        title: subject
-          ? titleCase(subject)
-          : normalized.includes("customer")
-            ? "Customer Hotspots"
-            : "Activity Density",
-        mapRegion: inferredRegion,
-        locations: buildLocations(),
-        mapStyle: "geo-color",
-        markerPulse: true,
-        connectionLines: false,
-        markerColor: "#F97316",
-        titleColor: "#18323A",
-        labelColor: "#35515B",
-        mapColor: "#8AA1A8",
-        background: {
-          type: "gradient",
-          from: "#F7F4EF",
-          to: "#ECE5DA",
-          direction: "to-bottom-right",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  if (hasAny(routeSignals) && extractedLocations.length >= 2) {
-    return {
-      templateId: "map-route-animation",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a route-focused map prompt with named stops",
-      aspect_ratio: "16:9",
-      params: {
-        title: normalized.includes("shipping")
-          ? "Shipping Route"
-          : "Flight Path",
-        mapRegion: inferredRegion,
-        locations: buildLocations(),
-        mapStyle: "editorial-light",
-        markerPulse: true,
-        connectionLines: true,
-        markerColor: "#4C6670",
-        titleColor: "#FFFFFF",
-        labelColor: "#CBD5E1",
-        mapColor: "#9AA8B1",
-        background: {
-          type: "gradient",
-          from: "#0C0B1C",
-          to: "#1A1730",
-          direction: "to-bottom",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  if (hasAny(networkSignals) && extractedLocations.length >= 3) {
-    return {
-      templateId: "map-network",
-      confidence: "high",
-      reasoning:
-        "Heuristic: detected a network-style map prompt with multiple hubs",
-      aspect_ratio: "16:9",
-      params: {
-        title: subject
-          ? titleCase(subject)
-          : `${regionDisplay} Infrastructure Hubs`,
-        mapRegion: inferredRegion,
-        locations: buildLocations(),
-        mapStyle: "technical-dark",
-        markerPulse: true,
-        connectionLines: true,
-        markerColor: "#8CB9C4",
-        titleColor: "#FFFFFF",
-        labelColor: "#EAF2F5",
-        mapColor: "#41505A",
-        background: {
-          type: "gradient",
-          from: "#060813",
-          to: "#111827",
-          direction: "to-bottom",
-        },
-        entranceAnimation: "progressive",
-        duration: 6,
-      },
-    };
-  }
-
-  return null;
-}
-
 function heuristicNewspaperFrontPageIntent(
   prompt: string,
 ): IntentResult | null {
