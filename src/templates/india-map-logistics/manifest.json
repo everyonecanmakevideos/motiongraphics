@@ -1,0 +1,10 @@
+{
+  "id": "india-map-logistics",
+  "name": "India Map Logistics",
+  "description": "India logistics route map with truck-led motion and corridor storytelling.",
+  "tags": ["map", "india", "logistics", "truck", "delivery", "freight"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

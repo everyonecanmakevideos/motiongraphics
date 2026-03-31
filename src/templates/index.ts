@@ -41,6 +41,10 @@ import { CinematicTransition } from "./cinematic-transition/CinematicTransition"
 import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
 import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
 import { IndiaMapHighlight } from "./india-map-highlight/IndiaMapHighlight";
+import { MapRouteFlow } from "./map-route-flow/MapRouteFlow";
+import { IndiaMapConnect } from "./india-map-connect/IndiaMapConnect";
+import { IndiaMapRoute } from "./india-map-route/IndiaMapRoute";
+import { IndiaMapLogistics } from "./india-map-logistics/IndiaMapLogistics";
 
 import {
   TEMPLATE_DESCRIPTORS,
@@ -92,6 +96,10 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "dynamic-showcase": DynamicShowcase,
   "parallax-showcase": ParallaxShowcase,
   "india-map-highlight": IndiaMapHighlight,
+  "map-route-flow": MapRouteFlow,
+  "india-map-connect": IndiaMapConnect,
+  "india-map-route": IndiaMapRoute,
+  "india-map-logistics": IndiaMapLogistics,
 };
 
 export const TEMPLATE_REGISTRY: Record<string, TemplateEntry> =

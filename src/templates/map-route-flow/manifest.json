@@ -1,0 +1,10 @@
+{
+  "id": "map-route-flow",
+  "name": "Map Route Flow",
+  "description": "Deterministic India route flow using GeoJSON-driven SVG paths with animated route tracing between states.",
+  "tags": ["map", "route", "india", "flow", "journey", "logistics"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

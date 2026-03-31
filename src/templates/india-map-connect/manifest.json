@@ -1,0 +1,10 @@
+{
+  "id": "india-map-connect",
+  "name": "India Map Connect",
+  "description": "Minimal connection map linking two Indian states with endpoint emphasis and a clean editorial line.",
+  "tags": ["map", "india", "connect", "state", "link", "corridor"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

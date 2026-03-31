@@ -562,6 +562,54 @@ const ENHANCEABLE_FIELDS: Record<string, Record<string, string>> = {
     background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
     entranceAnimation: "fade-in|slide-up|scale-pop|none",
   },
+  "map-route-flow": {
+    ...SHARED_CREATIVE_FIELDS,
+    titleColor: "hex color #RRGGBB",
+    subtitleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    baseFillColor: "hex color #RRGGBB",
+    outlineColor: "hex color #RRGGBB",
+    routeColor: "hex color #RRGGBB",
+    nodeColor: "hex color #RRGGBB",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|slide-up|scale-pop|none",
+  },
+  "india-map-connect": {
+    ...SHARED_CREATIVE_FIELDS,
+    titleColor: "hex color #RRGGBB",
+    subtitleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    baseFillColor: "hex color #RRGGBB",
+    outlineColor: "hex color #RRGGBB",
+    routeColor: "hex color #RRGGBB",
+    nodeColor: "hex color #RRGGBB",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|slide-up|scale-pop|none",
+  },
+  "india-map-route": {
+    ...SHARED_CREATIVE_FIELDS,
+    titleColor: "hex color #RRGGBB",
+    subtitleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    baseFillColor: "hex color #RRGGBB",
+    outlineColor: "hex color #RRGGBB",
+    routeColor: "hex color #RRGGBB",
+    nodeColor: "hex color #RRGGBB",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|slide-up|scale-pop|none",
+  },
+  "india-map-logistics": {
+    ...SHARED_CREATIVE_FIELDS,
+    titleColor: "hex color #RRGGBB",
+    subtitleColor: "hex color #RRGGBB",
+    labelColor: "hex color #RRGGBB",
+    baseFillColor: "hex color #RRGGBB",
+    outlineColor: "hex color #RRGGBB",
+    routeColor: "hex color #RRGGBB",
+    nodeColor: "hex color #RRGGBB",
+    background: "BackgroundSchema object (see BACKGROUND FORMAT above)",
+    entranceAnimation: "fade-in|slide-up|scale-pop|none",
+  },
   "comparison-layout": {
     ...SHARED_CREATIVE_FIELDS,
     leftColor: "hex color #RRGGBB",
@@ -2479,6 +2527,69 @@ export async function applyCreativeLayer(
           },
         };
         enhanced.params = enforceContrastOnParams(nextParams);
+      }
+      if (
+        enhanced.templateId === "map-route-flow" ||
+        enhanced.templateId === "india-map-connect" ||
+        enhanced.templateId === "india-map-route" ||
+        enhanced.templateId === "india-map-logistics"
+      ) {
+        const routeParams = enhanced.params as Record<string, unknown>;
+        const routeMode =
+          enhanced.templateId === "india-map-connect"
+            ? "connect"
+            : enhanced.templateId === "india-map-logistics"
+              ? "logistics"
+              : enhanced.templateId === "india-map-route"
+                ? "route"
+                : routeParams.routeMode === "connect"
+                  ? "connect"
+                  : routeParams.routeMode === "logistics"
+                    ? "logistics"
+                    : "route";
+        const routeColor =
+          routeMode === "connect"
+            ? "#F4B942"
+            : routeMode === "logistics"
+              ? "#FFB24A"
+              : "#86B7FF";
+        const nodeColor =
+          routeMode === "route"
+            ? "#3DDC97"
+            : routeMode === "logistics"
+              ? "#FFF7EA"
+              : "#F8FAFC";
+        enhanced.params = enforceContrastOnParams({
+          ...routeParams,
+          ...(enhanced.templateId === "india-map-connect"
+            ? { routeMode: "connect" as const }
+            : enhanced.templateId === "india-map-route"
+              ? { routeMode: "route" as const }
+              : enhanced.templateId === "india-map-logistics"
+                ? { routeMode: "logistics" as const }
+                : {}),
+          background:
+            routeMode === "logistics"
+              ? {
+                  type: "gradient" as const,
+                  from: "#EEF2F6",
+                  to: "#E2E9F0",
+                  direction: "to-bottom-right" as const,
+                }
+              : {
+                  type: "gradient" as const,
+                  from: "#02060B",
+                  to: "#0A1320",
+                  direction: "to-bottom-right" as const,
+                },
+          titleColor: routeMode === "logistics" ? "#172230" : "#F8FAFC",
+          subtitleColor: routeMode === "logistics" ? "#556476" : "#9FB0C7",
+          labelColor: routeMode === "logistics" ? "#172230" : "#F8FAFC",
+          baseFillColor: routeMode === "logistics" ? "#D5E0E9" : "#0D131A",
+          outlineColor: routeMode === "logistics" ? "#A7B9C8" : "#2A3444",
+          routeColor,
+          nodeColor,
+        });
       }
       return enhanced;
     }

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "route-logistics",
+    "prompt": "Show a logistics route from Gujarat to Tamil Nadu via Maharashtra and Karnataka on India map",
+    "expectedTemplateId": "map-route-flow"
+  },
+  {
+    "id": "route-connect",
+    "prompt": "Connect Punjab to West Bengal on India map",
+    "expectedTemplateId": "map-route-flow"
+  },
+  {
+    "id": "route-basic",
+    "prompt": "Show a route from Gujarat to Kerala on India map",
+    "expectedTemplateId": "map-route-flow"
+  }
+]

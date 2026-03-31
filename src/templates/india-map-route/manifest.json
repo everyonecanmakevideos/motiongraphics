@@ -1,0 +1,10 @@
+{
+  "id": "india-map-route",
+  "name": "India Map Route",
+  "description": "Dark route-first India map with animated path tracing between states.",
+  "tags": ["map", "india", "route", "journey", "path", "travel"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

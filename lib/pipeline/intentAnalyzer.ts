@@ -80,6 +80,9 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Product spotlight, feature showcase, icon spotlight, premium showcase, orbiting elements | "dynamic-showcase" |
 | Parallax depth scene, layered depth, 3D-like depth, immersive layers, parallax | "parallax-showcase" |
 | India map, map of India, India states, highlight Gujarat on India map, highlight Kerala on India map, show one or more Indian states filled on a map | "india-map-highlight" |
+| Connect two Indian states on a map, link Punjab to West Bengal, corridor between Delhi and Maharashtra | "india-map-connect" |
+| Show a route on India map, route from Gujarat to Kerala, path across Indian states | "india-map-route" |
+| Logistics route on India map, freight corridor, truck route across Indian states | "india-map-logistics" |
 
 BACKGROUND STYLES:
 Each template accepts a "background" parameter. Choose one of these types:
@@ -145,6 +148,9 @@ BEFORE-AFTER ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "re
 PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in", "slide-up", "none"
 MAP CITY / HEAT / RADIUS / TARGETING ANIMATION: "fade-in", "scale-pop", "progressive", "none"
 INDIA-MAP-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+INDIA-MAP-CONNECT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+INDIA-MAP-ROUTE ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+INDIA-MAP-LOGISTICS ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 
 INDIA-MAP-HIGHLIGHT PARAMS:
 - Use "india-map-highlight" when the user explicitly wants India, an India map, Indian states, state-wise India highlights, or wants one or more Indian states marked on the India map.
@@ -160,6 +166,26 @@ INDIA-MAP-HIGHLIGHT PARAMS:
   - baseFillColor: "#122033"
   - outlineColor: "#35506A"
   - highlightColor: "#F97316"
+
+INDIA MAP ROUTE FAMILY PARAMS:
+- Use "india-map-connect" for connect, link, corridor prompts.
+- Use "india-map-route" for generic route, path, journey, or flow prompts.
+- Use "india-map-logistics" for logistics, cargo, truck, shipping, delivery, or freight prompts.
+- "originState" and "destinationState" are REQUIRED.
+- "viaStates" is optional and must contain 0-4 intermediate states in travel order.
+- Keep state names human-readable, for example: "Gujarat", "Delhi", "Maharashtra", "Kerala".
+- Optional labels:
+  - "originLabel"
+  - "destinationLabel"
+  - "routeLabel"
+- Recommended defaults:
+  - titleColor: "#F8FAFC"
+  - subtitleColor: "#C8D3E0"
+  - labelColor: "#E2E8F0"
+  - baseFillColor: "#122033"
+  - outlineColor: "#35506A"
+  - routeColor: "#C8A96B"
+  - nodeColor: "#3FA7A3"
 
 CURRENT-STEP HIGHLIGHTING (process-steps only):
 - If the user says "highlight current step", "current step", or explicitly references a numbered step (e.g., "highlight step 2" / "step 1, step 2, step 3" and highlight one of them), set currentStep to the step number (1-based).
@@ -235,6 +261,9 @@ CRITICAL RULES:
    - feature-highlight "bulletPoints": maximum 4
    - before-after "beforeItems"/"afterItems": maximum 4
    - india-map-highlight "highlightedStates": minimum 1, maximum 12
+   - india-map-connect "viaStates": maximum 2
+   - india-map-route "viaStates": maximum 4
+   - india-map-logistics "viaStates": maximum 4
 5. All hex colors MUST be exactly 7 characters: #RRGGBB (e.g., "#FF0000", not "red" or "#F00")
 6. "duration" must be between 2 and 15 seconds for all templates.
 7. For multi-scene: every scene MUST include all required fields including background, entranceAnimation, and duration in params.
@@ -644,6 +673,9 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   const textHeuristic = heuristicHeroTextFromTextAnimation(prompt);
   if (textHeuristic) return textHeuristic;
 
+  const indiaRouteHeuristic = heuristicIndiaMapRouteFlowIntent(prompt);
+  if (indiaRouteHeuristic) return indiaRouteHeuristic;
+
   const indiaMapHeuristic = heuristicIndiaMapHighlightIntent(prompt);
   if (indiaMapHeuristic) return indiaMapHeuristic;
 
@@ -949,6 +981,153 @@ function heuristicHeroTextFromTextAnimation(
   };
 }
 
+const INDIA_KNOWN_STATES = [
+  "Andaman and Nicobar Islands",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chandigarh",
+  "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jammu and Kashmir",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Ladakh",
+  "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Puducherry",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+];
+
+function heuristicIndiaMapRouteFlowIntent(prompt: string): IntentResult | null {
+  const normalized = getDisplayPrompt(prompt).toLowerCase();
+
+  const indiaSignal =
+    /\bindia\b/.test(normalized) ||
+    normalized.includes("indian states") ||
+    normalized.includes("map of india");
+  const mapSignal =
+    /\bmap\b/.test(normalized) ||
+    normalized.includes("highlight") ||
+    normalized.includes("mark");
+  const routeSignal =
+    /\broute\b/.test(normalized) ||
+    /\bflow\b/.test(normalized) ||
+    /\bjourney\b/.test(normalized) ||
+    /\bpath\b/.test(normalized) ||
+    /\bconnect\b/.test(normalized) ||
+    /\bcorridor\b/.test(normalized) ||
+    /\blink\b/.test(normalized) ||
+    /\bfrom\b.+\bto\b/.test(normalized) ||
+    /\bbetween\b/.test(normalized);
+
+  if (!indiaSignal || !mapSignal || !routeSignal) return null;
+
+  const orderedStates = INDIA_KNOWN_STATES.map((state) => ({
+    state,
+    index: normalized.indexOf(state.toLowerCase()),
+  }))
+    .filter((item) => item.index >= 0)
+    .sort((a, b) => a.index - b.index)
+    .map((item) => item.state)
+    .filter((state, index, all) => all.indexOf(state) === index);
+
+  if (orderedStates.length < 2) return null;
+
+  const routeStates = orderedStates.slice(0, 6);
+  const originState = routeStates[0];
+  const destinationState = routeStates[routeStates.length - 1];
+  const viaStates = routeStates.slice(1, -1);
+  const routeMode = /\blogistics\b|\bcargo\b|\btruck\b|\bshipping\b|\bdelivery\b|\bfreight\b/.test(
+    normalized,
+  )
+    ? "logistics"
+    : /\bconnect\b|\blink\b|\bcorridor\b/.test(normalized)
+      ? "connect"
+      : "route";
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+  const viaSubtitle =
+    viaStates.length > 0 ? ` via ${viaStates.join(", ")}` : "";
+
+  return {
+    templateId:
+      routeMode === "logistics"
+        ? "india-map-logistics"
+        : routeMode === "connect"
+          ? "india-map-connect"
+          : "india-map-route",
+    confidence: "high",
+    reasoning:
+      "Heuristic: detected an India route prompt with ordered state-to-state flow",
+    aspect_ratio,
+    params: {
+      title:
+        routeMode === "logistics"
+          ? "Logistics Corridor"
+          : routeMode === "connect"
+            ? `${originState} to ${destinationState} Link`
+            : `${originState} to ${destinationState}`,
+      subtitle:
+        routeMode === "logistics"
+          ? `Moving from ${originState} to ${destinationState}${viaSubtitle}`
+          : routeMode === "connect"
+            ? `Connecting ${originState} to ${destinationState}${viaSubtitle}`
+            : `Route flow from ${originState} to ${destinationState}${viaSubtitle}`,
+      originState,
+      destinationState,
+      viaStates,
+      routeLabel:
+        routeMode === "logistics"
+          ? "India logistics route animation"
+          : routeMode === "connect"
+            ? "India connection path animation"
+            : "India route flow animation",
+      background: {
+        type: "gradient",
+        from: "#02060B",
+        to: "#0A1320",
+        direction: "to-bottom-right",
+      },
+      titleColor: "#F8FAFC",
+      subtitleColor: "#9FB0C7",
+      labelColor: "#F8FAFC",
+      baseFillColor: "#0D131A",
+      outlineColor: "#2A3444",
+      routeColor:
+        routeMode === "connect"
+          ? "#F4B942"
+          : routeMode === "logistics"
+            ? "#FFB24A"
+            : "#86B7FF",
+      nodeColor: routeMode === "route" ? "#3DDC97" : "#F8FAFC",
+      entranceAnimation: "slide-up",
+      duration: 8,
+    },
+  };
+}
+
 function heuristicIndiaMapHighlightIntent(prompt: string): IntentResult | null {
   const normalized = getDisplayPrompt(prompt).toLowerCase();
 
@@ -963,47 +1142,7 @@ function heuristicIndiaMapHighlightIntent(prompt: string): IntentResult | null {
 
   if (!indiaSignal || !mapSignal) return null;
 
-  const knownStates = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-    "Andaman and Nicobar",
-    "Chandigarh",
-    "Dadra and Nagar Haveli",
-    "Daman and Diu",
-    "Delhi",
-    "Jammu and Kashmir",
-    "Ladakh",
-    "Lakshadweep",
-    "Puducherry",
-  ];
-
-  const foundStates = knownStates.filter((state) =>
+  const foundStates = INDIA_KNOWN_STATES.filter((state) =>
     normalized.includes(state.toLowerCase()),
   );
 

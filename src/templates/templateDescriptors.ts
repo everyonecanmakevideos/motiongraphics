@@ -115,6 +115,14 @@ import { ParallaxShowcaseSchema } from "./parallax-showcase/schema";
 import parallaxShowcaseManifest from "./parallax-showcase/manifest.json";
 import { IndiaMapHighlightSchema } from "./india-map-highlight/schema";
 import indiaMapHighlightManifest from "./india-map-highlight/manifest.json";
+import { MapRouteFlowSchema } from "./map-route-flow/schema";
+import mapRouteFlowManifest from "./map-route-flow/manifest.json";
+import { IndiaMapConnectSchema } from "./india-map-connect/schema";
+import indiaMapConnectManifest from "./india-map-connect/manifest.json";
+import { IndiaMapRouteSchema } from "./india-map-route/schema";
+import indiaMapRouteManifest from "./india-map-route/manifest.json";
+import { IndiaMapLogisticsSchema } from "./india-map-logistics/schema";
+import indiaMapLogisticsManifest from "./india-map-logistics/manifest.json";
 
 export interface TemplateDescriptor {
   id: string;
@@ -334,6 +342,26 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "india-map-highlight",
     schema: IndiaMapHighlightSchema,
     manifest: indiaMapHighlightManifest as TemplateManifest,
+  },
+  {
+    id: "map-route-flow",
+    schema: MapRouteFlowSchema,
+    manifest: mapRouteFlowManifest as TemplateManifest,
+  },
+  {
+    id: "india-map-connect",
+    schema: IndiaMapConnectSchema,
+    manifest: indiaMapConnectManifest as TemplateManifest,
+  },
+  {
+    id: "india-map-route",
+    schema: IndiaMapRouteSchema,
+    manifest: indiaMapRouteManifest as TemplateManifest,
+  },
+  {
+    id: "india-map-logistics",
+    schema: IndiaMapLogisticsSchema,
+    manifest: indiaMapLogisticsManifest as TemplateManifest,
   },
 ];
 

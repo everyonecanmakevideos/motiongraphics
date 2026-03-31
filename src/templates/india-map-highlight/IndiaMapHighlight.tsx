@@ -24,7 +24,7 @@ const CLAMP = {
 type GeoFeature = {
   type: "Feature";
   properties?: {
-    NAME_1?: string;
+    st_nm?: string;
   };
   geometry: unknown;
 };
@@ -37,7 +37,7 @@ type GeoFeatureCollection = {
 type PreparedStateShape = {
   key: string;
   name: string;
-  path: string;
+  paths: string[];
   centroid: [number, number];
 };
 
@@ -59,6 +59,14 @@ type HighlightedStateVisual = {
 };
 
 const INDIA_GEO = indiaGeoJson as GeoFeatureCollection;
+const PREMIUM_MULTI_STATE_PALETTE = [
+  "#C8A96B",
+  "#3FA7A3",
+  "#B87333",
+  "#8B6F47",
+  "#6D9F71",
+  "#A56C5D",
+];
 
 const normalizeStateName = (value: string) =>
   value
@@ -71,8 +79,12 @@ const normalizeStateName = (value: string) =>
 const STATE_ALIASES: Record<string, string> = {
   "andaman nicobar": "andaman and nicobar",
   "andaman and nicobar islands": "andaman and nicobar",
-  "dadra nagar haveli daman diu": "dadra and nagar haveli",
+  "dadra nagar haveli": "dadra and nagar haveli and daman and diu",
+  "daman diu": "dadra and nagar haveli and daman and diu",
+  "dadra nagar haveli daman diu": "dadra and nagar haveli and daman and diu",
+  "dadra and nagar haveli and daman and diu": "dadra and nagar haveli and daman and diu",
   "jammu kashmir": "jammu and kashmir",
+  "andaman and nicobar": "andaman and nicobar islands",
   orissa: "odisha",
   pondicherry: "puducherry",
   uttaranchal: "uttarakhand",
@@ -95,23 +107,51 @@ const projection = geoMercator()
 
 const mapPath = geoPath(projection);
 
-const INDIA_STATE_SHAPES: PreparedStateShape[] = INDIA_GEO.features
-  .map((feature, index) => {
+const INDIA_STATE_SHAPES: PreparedStateShape[] = (() => {
+  const grouped = new Map<
+    string,
+    {
+      name: string;
+      paths: string[];
+      centroids: Array<[number, number]>;
+    }
+  >();
+
+  for (const feature of INDIA_GEO.features) {
+    const stateName = feature.properties?.st_nm;
     const path = mapPath(feature as never);
-    if (!path) {
-      return null;
+    if (!stateName || !path) {
+      continue;
     }
 
-    const centroid = mapPath.centroid(feature as never) as [number, number];
+    const key = canonicalizeStateName(stateName);
+    const existing = grouped.get(key) ?? {
+      name: stateName,
+      paths: [],
+      centroids: [],
+    };
+    existing.paths.push(path);
+    existing.centroids.push(mapPath.centroid(feature as never) as [number, number]);
+    grouped.set(key, existing);
+  }
+
+  return [...grouped.entries()].map(([key, value]) => {
+    const centroid = value.centroids.reduce(
+      (acc, point) => [acc[0] + point[0], acc[1] + point[1]] as [number, number],
+      [0, 0],
+    );
 
     return {
-      key: `india-state-${index}`,
-      name: feature.properties?.NAME_1 ?? `State ${index + 1}`,
-      path,
-      centroid,
+      key: `india-state-${key}`,
+      name: value.name,
+      paths: value.paths,
+      centroid: [
+        centroid[0] / value.centroids.length,
+        centroid[1] / value.centroids.length,
+      ],
     };
-  })
-  .filter((item): item is PreparedStateShape => item !== null);
+  });
+})();
 
 function hexToRgb(hex: string) {
   const value = hex.replace("#", "");
@@ -192,12 +232,22 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
   const panelLeft = width - panelWidth - stageRight;
   const panelTop = contentTop + Math.round(height * 0.07);
   const contentWidth = width - stageLeft - stageRight;
-  const titleWidth = Math.round(contentWidth * 0.52);
+  const titleWidth = Math.round(contentWidth * 0.46);
+  const subtitleLength = props.subtitle?.length ?? 0;
+  const compactSubtitle = subtitleLength > 56;
+  const subtitleFontSize = Math.round((compactSubtitle ? 20 : 24) * scale);
+  const subtitleMaxWidth = Math.round((compactSubtitle ? 500 : 560) * scale);
 
   const highlightedLookup = new Map(
     props.highlightedStates.map((item, index) => [
       canonicalizeStateName(item.state),
-      { ...item, index },
+      {
+        ...item,
+        accentColor:
+          item.accentColor ??
+          PREMIUM_MULTI_STATE_PALETTE[index % PREMIUM_MULTI_STATE_PALETTE.length],
+        index,
+      },
     ]),
   );
 
@@ -230,7 +280,11 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
         [0, 1],
         CLAMP,
       );
-      const accent = item.accentColor ?? props.highlightColor;
+      const effectiveAccent =
+        props.highlightedStates.length > 1
+          ? item.accentColor ??
+            PREMIUM_MULTI_STATE_PALETTE[index % PREMIUM_MULTI_STATE_PALETTE.length]
+          : item.accentColor ?? props.highlightColor;
       const [cx, cy] = shape.centroid;
       const labelSide = cx < 420 ? "right" : "left";
       const cardWidth = 172;
@@ -240,7 +294,7 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
       return {
         state: item,
         shape,
-        accent,
+        accent: effectiveAccent,
         appear,
         cardAppear: applyEntrance(
           frame,
@@ -266,7 +320,13 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 18% 28%, rgba(255,255,255,0.06), transparent 28%), radial-gradient(circle at 78% 18%, rgba(249,115,22,0.12), transparent 22%), radial-gradient(circle at 70% 78%, rgba(56,189,248,0.08), transparent 24%)",
+            `radial-gradient(circle at 18% 24%, ${alpha("#F3EBDD", 0.04)}, transparent 26%), radial-gradient(circle at 78% 18%, ${alpha(
+              props.highlightColor,
+              0.1,
+            )}, transparent 18%), radial-gradient(circle at 74% 76%, ${alpha(
+              "#6C7D8D",
+              0.06,
+            )}, transparent 20%)`,
         }}
       />
 
@@ -287,9 +347,12 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
             gap: Math.round(12 * scale),
             padding: `${Math.round(10 * scale)}px ${Math.round(16 * scale)}px`,
             borderRadius: Math.round(999 * scale),
-            background: "rgba(8,17,31,0.48)",
-            border: `1px solid ${alpha(props.outlineColor, 0.34)}`,
-            boxShadow: "0 10px 26px rgba(15,23,42,0.12)",
+            background: alpha("#0D1825", 0.72),
+            border: `1px solid ${alpha(props.highlightColor, 0.26)}`,
+            boxShadow: `0 12px 28px ${alpha("#050B12", 0.32)}, inset 0 1px 0 ${alpha(
+              "#F3EBDD",
+              0.05,
+            )}`,
             backdropFilter: "blur(10px)",
           }}
         >
@@ -299,7 +362,7 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
               height: Math.round(10 * scale),
               borderRadius: 999,
               background: props.highlightColor,
-              boxShadow: `0 0 18px ${alpha(props.highlightColor, 0.45)}`,
+              boxShadow: `0 0 18px ${alpha(props.highlightColor, 0.34)}`,
             }}
           />
           <div
@@ -309,7 +372,7 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
               fontWeight: 700,
               letterSpacing: "0.16em",
               textTransform: "uppercase",
-              color: alpha(props.subtitleColor, 0.9),
+              color: alpha(props.labelColor, 0.76),
             }}
           >
             India Geo Focus
@@ -333,10 +396,10 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
           <div
             style={{
               marginTop: Math.round(16 * scale),
-              maxWidth: Math.round(560 * scale),
+              maxWidth: subtitleMaxWidth,
               fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
-              fontSize: Math.round(24 * scale),
-              lineHeight: typography.lineHeight ?? 1.32,
+              fontSize: subtitleFontSize,
+              lineHeight: compactSubtitle ? 1.28 : typography.lineHeight ?? 1.32,
               color: props.subtitleColor,
             }}
           >
@@ -357,18 +420,18 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
           filter:
             effects.boxShadow !== "none"
               ? effects.boxShadow
-              : "drop-shadow(0 26px 60px rgba(15,23,42,0.22))",
+              : `drop-shadow(0 30px 80px ${alpha("#050B12", 0.28)})`,
         }}
       >
         <svg viewBox="0 0 920 900" style={{ width: "100%", height: "100%" }}>
           <defs>
             <linearGradient id="india-panel-grid" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={alpha("#FFFFFF", 0.12)} />
-              <stop offset="100%" stopColor={alpha(props.highlightColor, 0.04)} />
+              <stop offset="0%" stopColor={alpha("#F2E6D2", 0.08)} />
+              <stop offset="100%" stopColor={alpha(props.highlightColor, 0.07)} />
             </linearGradient>
             <linearGradient id="india-panel-shell" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
-              <stop offset="100%" stopColor="rgba(255,255,255,0.06)" />
+              <stop offset="0%" stopColor={alpha("#F2E6D2", 0.12)} />
+              <stop offset="100%" stopColor={alpha(props.highlightColor, 0.08)} />
             </linearGradient>
           </defs>
 
@@ -378,7 +441,7 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
             width={920}
             height={900}
             rx={36}
-            fill="rgba(8,17,31,0.26)"
+            fill={alpha("#0A141F", 0.54)}
             stroke="url(#india-panel-shell)"
             strokeWidth={2}
           />
@@ -399,8 +462,8 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
             width={848}
             height={828}
             rx={24}
-            fill="rgba(4,12,24,0.34)"
-            stroke="rgba(255,255,255,0.04)"
+            fill={alpha("#08111A", 0.64)}
+            stroke={alpha("#F2E6D2", 0.035)}
             strokeWidth={1}
           />
 
@@ -441,21 +504,25 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
 
               return (
                 <g key={shape.key}>
-                  {matched ? (
-                    <path
-                      d={shape.path}
-                      fill={alpha(matched.accentColor ?? props.highlightColor, glowOpacity)}
-                      stroke="none"
-                      transform="scale(1.008)"
-                    />
-                  ) : null}
-                  <path
-                    d={shape.path}
-                    fill={stateColor}
-                    stroke={strokeColor}
-                    strokeWidth={1.8}
-                    strokeLinejoin="round"
-                  />
+                  {shape.paths.map((pathD, pathIndex) => (
+                    <React.Fragment key={`${shape.key}-${pathIndex}`}>
+                      {matched ? (
+                        <path
+                          d={pathD}
+                          fill={alpha(matched.accentColor ?? props.highlightColor, glowOpacity)}
+                          stroke="none"
+                          transform="scale(1.008)"
+                        />
+                      ) : null}
+                      <path
+                        d={pathD}
+                        fill={stateColor}
+                        stroke={strokeColor}
+                        strokeWidth={1.8}
+                        strokeLinejoin="round"
+                      />
+                    </React.Fragment>
+                  ))}
                 </g>
               );
             })}
@@ -561,10 +628,15 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
           width: panelWidth,
           padding: `${Math.round(26 * scale)}px`,
           borderRadius: Math.round(28 * scale),
-          background:
-            "linear-gradient(180deg, rgba(8,17,31,0.84), rgba(10,20,34,0.74))",
-          border: `1px solid ${alpha(props.outlineColor, 0.44)}`,
-          boxShadow: "0 24px 60px rgba(2,8,23,0.26)",
+          background: `linear-gradient(180deg, ${alpha("#0D1825", 0.9)}, ${alpha(
+            "#101D2A",
+            0.78,
+          )})`,
+          border: `1px solid ${alpha(props.highlightColor, 0.18)}`,
+          boxShadow: `0 26px 70px ${alpha("#040A10", 0.3)}, inset 0 1px 0 ${alpha(
+            "#F3EBDD",
+            0.04,
+          )}`,
           backdropFilter: "blur(12px)",
         }}
       >
@@ -575,7 +647,7 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
             fontWeight: 700,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: alpha(props.subtitleColor, 0.8),
+            color: alpha(props.labelColor, 0.62),
           }}
         >
           Highlighted States
@@ -587,7 +659,7 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
             fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
             fontSize: Math.round(18 * scale),
             lineHeight: 1.35,
-            color: alpha(props.subtitleColor, 0.84),
+            color: alpha(props.labelColor, 0.68),
             maxWidth: Math.round(300 * scale),
           }}
         >
@@ -607,7 +679,11 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
               introEnd + range.startFrame,
               introEnd + range.endFrame,
             );
-            const accent = item.accentColor ?? props.highlightColor;
+            const accent =
+              props.highlightedStates.length > 1
+                ? item.accentColor ??
+                  PREMIUM_MULTI_STATE_PALETTE[index % PREMIUM_MULTI_STATE_PALETTE.length]
+                : item.accentColor ?? props.highlightColor;
 
             return (
               <div
@@ -621,12 +697,12 @@ export const IndiaMapHighlight: React.FC<IndiaMapHighlightProps> = (props) => {
                   transform: `translateY(${cardEntrance.y}px) scale(${cardEntrance.scale})`,
                   padding: `${Math.round(13 * scale)}px ${Math.round(14 * scale)}px`,
                   borderRadius: Math.round(18 * scale),
-                  background: `linear-gradient(180deg, ${alpha("#FFFFFF", 0.045)}, ${alpha(
-                    accent,
-                    0.08,
+                  background: `linear-gradient(180deg, ${alpha("#F3EBDD", 0.03)}, ${alpha(
+                    "#0D1825",
+                    0.28,
                   )})`,
                   border: `1px solid ${alpha(accent, 0.34)}`,
-                  boxShadow: `inset 0 1px 0 ${alpha("#FFFFFF", 0.05)}`,
+                  boxShadow: `inset 0 1px 0 ${alpha("#F3EBDD", 0.04)}`,
                 }}
               >
                 <div
