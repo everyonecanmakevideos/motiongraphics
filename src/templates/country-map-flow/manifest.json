@@ -1,0 +1,10 @@
+{
+  "id": "country-map-flow",
+  "name": "Country Map Flow",
+  "description": "Deterministic world map route flow using SVG country paths with animated connection tracing between countries.",
+  "tags": ["map", "world", "country", "route", "flow", "global", "logistics"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

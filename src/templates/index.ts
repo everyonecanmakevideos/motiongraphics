@@ -42,6 +42,10 @@ import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
 import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
 import { IndiaMapHighlight } from "./india-map-highlight/IndiaMapHighlight";
 import { CountryHighlight } from "./country-highlight/CountryHighlight";
+import { CountryRouteScene } from "./country-map-flow/CountryMapFlow";
+import { CountryMapConnect } from "./country-map-connect/CountryMapConnect";
+import { CountryMapRoute } from "./country-map-route/CountryMapRoute";
+import { CountryMapLogistics } from "./country-map-logistics/CountryMapLogistics";
 import { MapRouteFlow } from "./map-route-flow/MapRouteFlow";
 import { IndiaMapConnect } from "./india-map-connect/IndiaMapConnect";
 import { IndiaMapRoute } from "./india-map-route/IndiaMapRoute";
@@ -98,6 +102,10 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "parallax-showcase": ParallaxShowcase,
   "india-map-highlight": IndiaMapHighlight,
   "country-highlight": CountryHighlight,
+  "country-map-flow": CountryRouteScene,
+  "country-map-connect": CountryMapConnect,
+  "country-map-route": CountryMapRoute,
+  "country-map-logistics": CountryMapLogistics,
   "map-route-flow": MapRouteFlow,
   "india-map-connect": IndiaMapConnect,
   "india-map-route": IndiaMapRoute,

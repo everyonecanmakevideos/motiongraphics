@@ -117,6 +117,14 @@ import { IndiaMapHighlightSchema } from "./india-map-highlight/schema";
 import indiaMapHighlightManifest from "./india-map-highlight/manifest.json";
 import { CountryHighlightSchema } from "./country-highlight/schema";
 import countryHighlightManifest from "./country-highlight/manifest.json";
+import { CountryMapFlowSchema } from "./country-map-flow/schema";
+import countryMapFlowManifest from "./country-map-flow/manifest.json";
+import { CountryMapConnectSchema } from "./country-map-connect/schema";
+import countryMapConnectManifest from "./country-map-connect/manifest.json";
+import { CountryMapRouteSchema } from "./country-map-route/schema";
+import countryMapRouteManifest from "./country-map-route/manifest.json";
+import { CountryMapLogisticsSchema } from "./country-map-logistics/schema";
+import countryMapLogisticsManifest from "./country-map-logistics/manifest.json";
 import { MapRouteFlowSchema } from "./map-route-flow/schema";
 import mapRouteFlowManifest from "./map-route-flow/manifest.json";
 import { IndiaMapConnectSchema } from "./india-map-connect/schema";
@@ -349,6 +357,26 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "country-highlight",
     schema: CountryHighlightSchema,
     manifest: countryHighlightManifest as TemplateManifest,
+  },
+  {
+    id: "country-map-flow",
+    schema: CountryMapFlowSchema,
+    manifest: countryMapFlowManifest as TemplateManifest,
+  },
+  {
+    id: "country-map-connect",
+    schema: CountryMapConnectSchema,
+    manifest: countryMapConnectManifest as TemplateManifest,
+  },
+  {
+    id: "country-map-route",
+    schema: CountryMapRouteSchema,
+    manifest: countryMapRouteManifest as TemplateManifest,
+  },
+  {
+    id: "country-map-logistics",
+    schema: CountryMapLogisticsSchema,
+    manifest: countryMapLogisticsManifest as TemplateManifest,
   },
   {
     id: "map-route-flow",

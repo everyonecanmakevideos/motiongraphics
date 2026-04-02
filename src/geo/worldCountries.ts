@@ -38,6 +38,23 @@ const COUNTRY_ALIASES: Record<string, string> = {
   "ivory coast": "cote divoire",
 };
 
+// Some countries render poorly when we use the first SVG path command as the label
+// anchor, because that point can land on an island, a coastline, or an arbitrary
+// outline segment rather than the visually expected center of the country.
+const COUNTRY_ANCHOR_OVERRIDES: Record<string, { x: number; y: number }> = {
+  "united states": { x: 187, y: 325 },
+  canada: { x: 196, y: 203 },
+  brazil: { x: 286, y: 471 },
+  germany: { x: 480, y: 291 },
+  japan: { x: 836, y: 316 },
+  singapore: { x: 755, y: 474 },
+  "united arab emirates": { x: 631, y: 396 },
+  india: { x: 675, y: 388 },
+  australia: { x: 839, y: 530 },
+  "united kingdom": { x: 462, y: 274 },
+  france: { x: 470, y: 314 },
+};
+
 type CountryMatchCandidate = {
   label: string;
   name: string;
@@ -120,6 +137,12 @@ export const WORLD_COUNTRY_MAP = {
 export function getWorldCountryAnchor(
   value: string,
 ): { x: number; y: number } | null {
+  const canonicalName = canonicalizeCountryName(value);
+  const override = COUNTRY_ANCHOR_OVERRIDES[canonicalName];
+  if (override) {
+    return override;
+  }
+
   const location = WORLD_COUNTRY_MAP.findLocation(value);
   if (!location) return null;
 

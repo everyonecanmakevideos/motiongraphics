@@ -27,12 +27,12 @@ const CLAMP = {
 };
 
 const PREMIUM_COUNTRY_PALETTE = [
-  "#5BC0EB",
-  "#F4B942",
-  "#6EE7B7",
-  "#F97316",
-  "#C084FC",
-  "#F472B6",
+  "#A56A43",
+  "#C08F52",
+  "#7C8D74",
+  "#8A5A44",
+  "#6E8194",
+  "#B39A76",
 ];
 
 const MAP_FRAME = {
@@ -227,6 +227,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
       (MAP_FRAME.innerY + MAP_FRAME.innerHeight - focusTransform.translateY) /
       focusTransform.scale,
   };
+  const atlasAccent = props.highlightColor;
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -237,13 +238,13 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
           position: "absolute",
           inset: 0,
           background:
-            `radial-gradient(circle at 18% 24%, ${alpha("#F3EBDD", 0.04)}, transparent 26%), radial-gradient(circle at 78% 18%, ${alpha(
-              props.highlightColor,
-              0.1,
-            )}, transparent 18%), radial-gradient(circle at 74% 76%, ${alpha(
-              "#6C7D8D",
-              0.06,
-            )}, transparent 20%)`,
+            `radial-gradient(circle at 22% 18%, ${alpha("#E7DCCA", 0.045)}, transparent 26%), radial-gradient(circle at 78% 16%, ${alpha(
+              "#7E8A96",
+              0.05,
+            )}, transparent 22%), radial-gradient(circle at 72% 78%, ${alpha(
+              atlasAccent,
+              0.035,
+            )}, transparent 18%)`,
         }}
       />
 
@@ -262,34 +263,27 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
             display: "inline-flex",
             alignItems: "center",
             gap: Math.round(12 * scale),
-            padding: `${Math.round(10 * scale)}px ${Math.round(16 * scale)}px`,
+            padding: `${Math.round(9 * scale)}px ${Math.round(15 * scale)}px`,
             borderRadius: Math.round(999 * scale),
-            background: alpha("#0D1825", 0.72),
-            border: `1px solid ${alpha(props.highlightColor, 0.26)}`,
-            boxShadow: `0 12px 28px ${alpha("#050B12", 0.32)}, inset 0 1px 0 ${alpha(
-              "#F3EBDD",
-              0.05,
-            )}`,
-            backdropFilter: "blur(10px)",
+            background: alpha("#101821", 0.7),
+            border: `1px solid ${alpha("#D8C7AF", 0.14)}`,
           }}
         >
           <div
             style={{
-              width: Math.round(10 * scale),
-              height: Math.round(10 * scale),
-              borderRadius: 999,
-              background: props.highlightColor,
-              boxShadow: `0 0 18px ${alpha(props.highlightColor, 0.34)}`,
+              width: Math.round(18 * scale),
+              height: 1,
+              background: alpha("#D8C7AF", 0.6),
             }}
           />
           <div
             style={{
               fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
-              fontSize: Math.round(15 * scale),
+              fontSize: Math.round(14 * scale),
               fontWeight: 700,
-              letterSpacing: "0.16em",
+              letterSpacing: "0.18em",
               textTransform: "uppercase",
-              color: alpha(props.labelColor, 0.76),
+              color: alpha("#D8C7AF", 0.82),
             }}
           >
             World Geo Focus
@@ -305,7 +299,6 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
             letterSpacing: typography.letterSpacing ?? "-0.05em",
             color: props.titleColor,
             marginTop: Math.round(18 * scale),
-            textShadow: "0 10px 28px rgba(15,23,42,0.08)",
           }}
         >
           {props.title}
@@ -319,7 +312,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
               fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
               fontSize: subtitleFontSize,
               lineHeight: compactSubtitle ? 1.28 : typography.lineHeight ?? 1.32,
-              color: props.subtitleColor,
+              color: alpha(props.subtitleColor, 0.9),
             }}
           >
             {props.subtitle}
@@ -339,7 +332,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
           filter:
             effects.boxShadow !== "none"
               ? effects.boxShadow
-              : `drop-shadow(0 30px 80px ${alpha("#050B12", 0.28)})`,
+              : `drop-shadow(0 18px 40px ${alpha("#04080D", 0.22)})`,
         }}
       >
         <svg viewBox={WORLD_COUNTRY_MAP.viewBox} style={{ width: "100%", height: "100%" }}>
@@ -353,13 +346,17 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                 rx={24}
               />
             </clipPath>
-            <linearGradient id="world-panel-grid" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={alpha("#F2E6D2", 0.08)} />
-              <stop offset="100%" stopColor={alpha(props.highlightColor, 0.07)} />
+            <linearGradient id="world-shell" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={alpha("#D8C7AF", 0.13)} />
+              <stop offset="100%" stopColor={alpha("#546577", 0.18)} />
             </linearGradient>
-            <linearGradient id="world-panel-shell" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={alpha("#F2E6D2", 0.12)} />
-              <stop offset="100%" stopColor={alpha(props.highlightColor, 0.08)} />
+            <linearGradient id="world-surface" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={alpha("#121C25", 0.98)} />
+              <stop offset="100%" stopColor={alpha("#0D151D", 0.98)} />
+            </linearGradient>
+            <linearGradient id="world-inner-line" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={alpha("#D8C7AF", 0.1)} />
+              <stop offset="100%" stopColor={alpha("#65788B", 0.18)} />
             </linearGradient>
           </defs>
 
@@ -368,30 +365,27 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
             y={0}
             width={1010}
             height={666}
-            rx={36}
-            fill={alpha("#0A141F", 0.54)}
-            stroke="url(#world-panel-shell)"
-            strokeWidth={2}
+            rx={30}
+            fill={alpha("#091119", 0.6)}
+            stroke="url(#world-shell)"
+            strokeWidth={1.4}
           />
           <rect
-            x={20}
-            y={20}
-            width={970}
-            height={626}
-            rx={28}
-            fill="none"
-            stroke="url(#world-panel-grid)"
-            strokeWidth={1.5}
-            strokeDasharray="8 14"
-          />
-          <rect
-            x={32}
-            y={32}
-            width={946}
-            height={602}
+            x={24}
+            y={24}
+            width={962}
+            height={618}
             rx={24}
-            fill={alpha("#08111A", 0.64)}
-            stroke={alpha("#F2E6D2", 0.035)}
+            fill="url(#world-surface)"
+            stroke="url(#world-inner-line)"
+            strokeWidth={1}
+          />
+          <line
+            x1={46}
+            y1={76}
+            x2={964}
+            y2={76}
+            stroke={alpha("#D8C7AF", 0.08)}
             strokeWidth={1}
           />
 
@@ -427,10 +421,10 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                   ? mixHex(
                       props.outlineColor,
                       matched.accentColor ?? props.highlightColor,
-                      fillProgress * 0.8,
+                      fillProgress * 0.45,
                     )
                   : props.outlineColor;
-                const glowOpacity = matched
+                const washOpacity = matched
                   ? interpolate(
                       frame,
                       [
@@ -438,7 +432,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                         introEnd + range!.endFrame,
                         totalFrames,
                       ],
-                      [0, 0.22, 0.1],
+                      [0, 0.08, 0.04],
                       CLAMP,
                     )
                   : 0;
@@ -448,7 +442,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                     {matched ? (
                       <path
                         d={location.path}
-                        fill={alpha(matched.accentColor ?? props.highlightColor, glowOpacity)}
+                        fill={alpha(matched.accentColor ?? props.highlightColor, washOpacity)}
                         stroke="none"
                       />
                     ) : null}
@@ -456,7 +450,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                       d={location.path}
                       fill={countryColor}
                       stroke={strokeColor}
-                      strokeWidth={matched ? 1.5 : 0.9}
+                      strokeWidth={matched ? 1.15 : 0.72}
                       strokeLinejoin="round"
                     />
                   </React.Fragment>
@@ -475,12 +469,12 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                   [0, 1],
                   CLAMP,
                 );
-                const pulseRadius = 10 + markerProgress * 16;
+                const pulseRadius = 8 + markerProgress * 8;
                 const labelWidth = Math.max(
-                  110,
-                  Math.min(240, marker.country.length * 10 + 52),
+                  116,
+                  Math.min(252, marker.country.length * 9 + 56),
                 );
-                const labelHeight = 40;
+                const labelHeight = 34;
                 const mapPadding = 14;
                 const preferRight =
                   marker.anchor.x < WORLD_MAP_VIEWBOX.width * 0.58;
@@ -512,7 +506,7 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                   visibleMapBounds.maxY - labelHeight - mapPadding,
                 );
                 const labelFontSize =
-                  marker.country.length > 18 ? 13 : 14;
+                  marker.country.length > 18 ? 12 : 13;
 
                 return (
                   <React.Fragment key={`marker-${marker.location.id}`}>
@@ -520,23 +514,23 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                       cx={marker.anchor.x}
                       cy={marker.anchor.y}
                       r={pulseRadius}
-                      fill={alpha(marker.accentColor, 0.14 * markerProgress)}
+                      fill={alpha(marker.accentColor, 0.08 * markerProgress)}
                     />
                     <circle
                       cx={marker.anchor.x}
                       cy={marker.anchor.y}
-                      r={5 + markerProgress * 3}
+                      r={4 + markerProgress * 2}
                       fill={marker.accentColor}
-                      stroke={alpha("#F8FAFC", 0.9)}
-                      strokeWidth={2}
+                      stroke={alpha("#F5EBDD", 0.9)}
+                      strokeWidth={1.4}
                     />
                     <circle
                       cx={marker.anchor.x}
                       cy={marker.anchor.y}
-                      r={12 + markerProgress * 2}
+                      r={9 + markerProgress * 1.5}
                       fill="none"
-                      stroke={alpha(marker.accentColor, 0.5)}
-                      strokeWidth={1.8}
+                      stroke={alpha(marker.accentColor, 0.28)}
+                      strokeWidth={1}
                     />
                     <g
                       opacity={markerProgress}
@@ -546,27 +540,22 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                         x={0}
                         y={0}
                         width={labelWidth}
-                        height={40}
-                        rx={18}
-                        fill={alpha("#08111A", 0.9)}
-                        stroke={alpha(marker.accentColor, 0.4)}
-                        strokeWidth={1.4}
+                        height={34}
+                        rx={9}
+                        fill={alpha("#121B24", 0.94)}
+                        stroke={alpha("#D9C9B2", 0.14)}
+                        strokeWidth={1}
                       />
-                      <circle
-                        cx={18}
-                        cy={20}
-                        r={5}
-                        fill={marker.accentColor}
-                      />
+                      <rect x={10} y={9} width={4} height={16} rx={2} fill={marker.accentColor} />
                       <text
-                        x={32}
-                        y={25}
-                        fill={props.labelColor}
+                        x={24}
+                        y={22}
+                        fill={alpha(props.labelColor, 0.96)}
                         style={{
                           fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
                           fontSize: labelFontSize,
                           fontWeight: 700,
-                          letterSpacing: "-0.01em",
+                          letterSpacing: "0.01em",
                         }}
                       >
                         {marker.country}
@@ -587,19 +576,19 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
           top: panelTop,
           width: panelWidth,
           padding: `${Math.round(26 * scale)}px`,
-          borderRadius: Math.round(28 * scale),
-          background: `linear-gradient(180deg, ${alpha("#0D1825", 0.9)}, ${alpha(
-            "#101D2A",
-            0.78,
-          )})`,
-          border: `1px solid ${alpha(props.highlightColor, 0.18)}`,
-          boxShadow: `0 26px 70px ${alpha("#040A10", 0.3)}, inset 0 1px 0 ${alpha(
-            "#F3EBDD",
-            0.04,
-          )}`,
-          backdropFilter: "blur(12px)",
+          borderRadius: Math.round(18 * scale),
+          background: alpha("#121B24", 0.9),
+          border: `1px solid ${alpha("#D8C7AF", 0.12)}`,
+          boxShadow: `0 18px 40px ${alpha("#04090E", 0.18)}`,
         }}
       >
+        <div
+          style={{
+            width: Math.round(46 * scale),
+            height: 1,
+            background: alpha("#D8C7AF", 0.38),
+          }}
+        />
         <div
           style={{
             fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
@@ -607,7 +596,8 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
             fontWeight: 700,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: alpha(props.labelColor, 0.62),
+            color: alpha("#D8C7AF", 0.74),
+            marginTop: Math.round(14 * scale),
           }}
         >
           Highlighted Countries
@@ -617,13 +607,13 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
           style={{
             marginTop: Math.round(14 * scale),
             fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
-            fontSize: Math.round(18 * scale),
+            fontSize: Math.round(17 * scale),
             lineHeight: 1.35,
-            color: alpha(props.labelColor, 0.68),
+            color: alpha(props.labelColor, 0.62),
             maxWidth: Math.round(300 * scale),
           }}
         >
-          Country-level focus rendered from deterministic SVG paths with crisp global highlights.
+          Deterministic country rendering with restrained fills, direct labeling, and an editorial map hierarchy.
         </div>
 
         <div style={{ marginTop: Math.round(22 * scale), display: "grid", gap: Math.round(14 * scale) }}>
@@ -648,35 +638,30 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                 key={`${item.country}-${index}`}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: `${Math.round(18 * scale)}px 1fr`,
-                  gap: Math.round(14 * scale),
-                  alignItems: "center",
+                  gridTemplateColumns: `${Math.round(12 * scale)}px 1fr`,
+                  gap: Math.round(12 * scale),
+                  alignItems: "start",
                   opacity: cardEntrance.opacity,
                   transform: `translateY(${cardEntrance.y}px) scale(${cardEntrance.scale})`,
-                  padding: `${Math.round(13 * scale)}px ${Math.round(14 * scale)}px`,
-                  borderRadius: Math.round(18 * scale),
-                  background: `linear-gradient(180deg, ${alpha("#F3EBDD", 0.03)}, ${alpha(
-                    "#0D1825",
-                    0.28,
-                  )})`,
-                  border: `1px solid ${alpha(accent, 0.34)}`,
-                  boxShadow: `inset 0 1px 0 ${alpha("#F3EBDD", 0.04)}`,
+                  padding: `${Math.round(12 * scale)}px ${Math.round(12 * scale)}px`,
+                  borderRadius: Math.round(12 * scale),
+                  background: alpha("#0E161E", 0.52),
+                  border: `1px solid ${alpha("#D8C7AF", 0.08)}`,
                 }}
               >
                 <div
                   style={{
-                    width: Math.round(18 * scale),
-                    height: Math.round(18 * scale),
+                    width: Math.round(4 * scale),
+                    height: Math.round(42 * scale),
                     borderRadius: 999,
                     background: accent,
-                    boxShadow: `0 0 18px ${alpha(accent, 0.35)}`,
                   }}
                 />
                 <div>
                   <div
                     style={{
                       fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
-                      fontSize: Math.round(22 * scale),
+                      fontSize: Math.round(21 * scale),
                       fontWeight: 700,
                       color: props.labelColor,
                       lineHeight: 1.1,
@@ -689,10 +674,10 @@ export const CountryHighlight: React.FC<CountryHighlightProps> = (props) => {
                       style={{
                         marginTop: Math.round(5 * scale),
                         fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
-                        fontSize: Math.round(14 * scale),
-                        letterSpacing: "0.14em",
+                        fontSize: Math.round(12 * scale),
+                        letterSpacing: "0.18em",
                         textTransform: "uppercase",
-                        color: alpha(accent, 0.92),
+                        color: alpha(accent, 0.82),
                       }}
                     >
                       {item.value}

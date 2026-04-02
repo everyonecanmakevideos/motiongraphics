@@ -221,6 +221,14 @@ function getQuadraticAngle(segment: RouteSegment, t: number): number {
 function getRouteFocusTransform(
   routeShapes: PreparedStateShape[],
   routeSegments: RouteSegment[],
+  options?: {
+    minScale?: number;
+    maxScale?: number;
+    paddingX?: number;
+    paddingY?: number;
+    targetX?: number;
+    targetY?: number;
+  },
 ): ViewTransform {
   const routePoints = [
     ...routeShapes.map((shape) => shape.centroid),
@@ -237,13 +245,17 @@ function getRouteFocusTransform(
   const maxX = Math.max(...xs);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
-  const width = Math.max(140, maxX - minX + 150);
-  const height = Math.max(220, maxY - minY + 180);
-  const scale = Math.max(1.06, Math.min(2.05, Math.min(828 / width, 820 / height)));
+  const paddingX = options?.paddingX ?? 150;
+  const paddingY = options?.paddingY ?? 180;
+  const minScale = options?.minScale ?? 1.06;
+  const maxScale = options?.maxScale ?? 2.05;
+  const width = Math.max(140, maxX - minX + paddingX);
+  const height = Math.max(220, maxY - minY + paddingY);
+  const scale = Math.max(minScale, Math.min(maxScale, Math.min(828 / width, 820 / height)));
   const centerX = (minX + maxX) / 2;
   const centerY = (minY + maxY) / 2;
-  const targetX = 424;
-  const targetY = 426;
+  const targetX = options?.targetX ?? 424;
+  const targetY = options?.targetY ?? 426;
 
   return {
     scale,
@@ -311,6 +323,7 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
   const { width, height, scale } = useResponsiveConfig();
   const isLogistics = props.routeMode === "logistics";
   const isRoute = props.routeMode === "route";
+  const isConnect = props.routeMode === "connect";
 
   const resolved = resolveStylePreset(
     props.stylePreset,
@@ -378,21 +391,43 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
       : props.routeMode === "connect"
         ? "#FFE2A8"
         : "#FFD89C";
-  const uiPanelBackground = isLogistics ? alpha("#FFFFFF", 0.82) : alpha("#0A1017", 0.82);
-  const uiPanelBorder = isLogistics ? alpha("#E1C08A", 0.44) : alpha(modeAccent, 0.34);
+  const uiPanelBackground = isLogistics
+    ? alpha("#FFFFFF", 0.82)
+    : isConnect
+      ? alpha("#101821", 0.7)
+      : alpha("#0A1017", 0.82);
+  const uiPanelBorder = isLogistics
+    ? alpha("#E1C08A", 0.44)
+    : isConnect
+      ? alpha("#D8C7AF", 0.14)
+      : alpha(modeAccent, 0.34);
   const uiPanelShadow = isLogistics
     ? `0 22px 46px ${alpha("#9DA8B6", 0.18)}, inset 0 1px 0 ${alpha("#FFFFFF", 0.55)}`
-    : `0 18px 44px ${alpha("#01060B", 0.44)}, inset 0 1px 0 ${alpha(glowColor, 0.1)}`;
-  const uiBadgeText = isLogistics ? alpha("#425160", 0.9) : alpha(props.labelColor, 0.72);
+    : isConnect
+      ? "none"
+      : `0 18px 44px ${alpha("#01060B", 0.44)}, inset 0 1px 0 ${alpha(glowColor, 0.1)}`;
+  const uiBadgeText = isLogistics
+    ? alpha("#425160", 0.9)
+    : isConnect
+      ? alpha("#D8C7AF", 0.82)
+      : alpha(props.labelColor, 0.72);
   const backdropWash = isLogistics
     ? `radial-gradient(circle at 68% 52%, ${alpha("#E9C98E", 0.16)}, transparent 28%), radial-gradient(circle at 22% 18%, ${alpha(
         "#D2DFEA",
         0.24,
       )}, transparent 22%)`
-    : `radial-gradient(circle at 68% 52%, ${alpha(modeAccent, 0.08)}, transparent 26%), radial-gradient(circle at 22% 18%, ${alpha(
-        "#C2D3E6",
-        0.05,
-      )}, transparent 20%)`;
+    : isConnect
+      ? `radial-gradient(circle at 22% 18%, ${alpha("#E7DCCA", 0.045)}, transparent 26%), radial-gradient(circle at 78% 16%, ${alpha(
+          "#7E8A96",
+          0.05,
+        )}, transparent 22%), radial-gradient(circle at 72% 78%, ${alpha(
+          modeAccent,
+          0.035,
+        )}, transparent 18%)`
+      : `radial-gradient(circle at 68% 52%, ${alpha(modeAccent, 0.08)}, transparent 26%), radial-gradient(circle at 22% 18%, ${alpha(
+          "#C2D3E6",
+          0.05,
+        )}, transparent 20%)`;
   const travelerSegmentCount = Math.max(routeSegments.length, 1);
   const travelerIndex = Math.max(
     0,
@@ -411,6 +446,15 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
   const routeFocusTransform =
     isRoute
       ? getRouteFocusTransform(routeShapes, routeSegments)
+      : isConnect
+        ? getRouteFocusTransform(routeShapes, routeSegments, {
+            minScale: 1,
+            maxScale: 1.32,
+            paddingX: 210,
+            paddingY: 240,
+            targetX: 430,
+            targetY: 438,
+          })
       : { scale: 1, x: 0, y: 0 };
 
   const shouldShowIntermediateLabels =
@@ -444,21 +488,23 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
             display: "inline-flex",
             alignItems: "center",
             gap: Math.round(12 * scale),
-            padding: `${Math.round(10 * scale)}px ${Math.round(16 * scale)}px`,
+            padding: isConnect
+              ? `${Math.round(9 * scale)}px ${Math.round(15 * scale)}px`
+              : `${Math.round(10 * scale)}px ${Math.round(16 * scale)}px`,
             borderRadius: Math.round(999 * scale),
             background: uiPanelBackground,
             border: `1px solid ${uiPanelBorder}`,
             boxShadow: uiPanelShadow,
-            backdropFilter: "blur(10px)",
+            backdropFilter: isConnect ? undefined : "blur(10px)",
           }}
         >
           <div
             style={{
-              width: Math.round(10 * scale),
-              height: Math.round(10 * scale),
-              borderRadius: 999,
-              background: modeAccent,
-              boxShadow: `0 0 18px ${alpha(modeAccent, 0.42)}`,
+              width: isConnect ? Math.round(18 * scale) : Math.round(10 * scale),
+              height: isConnect ? 1 : Math.round(10 * scale),
+              borderRadius: isConnect ? 0 : 999,
+              background: isConnect ? alpha("#D8C7AF", 0.6) : modeAccent,
+              boxShadow: isConnect ? undefined : `0 0 18px ${alpha(modeAccent, 0.42)}`,
             }}
           />
           <div
@@ -486,7 +532,7 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
             fontSize: Math.round(48 * scale),
             lineHeight: 0.96,
             letterSpacing: typography.letterSpacing ?? "-0.05em",
-            color: props.titleColor,
+            color: isConnect ? alpha(props.titleColor, 0.98) : props.titleColor,
             marginTop: Math.round(16 * scale),
           }}
         >
@@ -501,7 +547,7 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
               fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
               fontSize: Math.round(20 * scale),
               lineHeight: 1.3,
-              color: props.subtitleColor,
+              color: isConnect ? alpha("#C4B59E", 0.96) : props.subtitleColor,
             }}
           >
             {props.subtitle}
@@ -521,7 +567,9 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
           filter:
             effects.boxShadow !== "none"
               ? effects.boxShadow
-              : `drop-shadow(0 30px 80px ${alpha("#000000", 0.34)})`,
+              : isConnect
+                ? `drop-shadow(0 18px 40px ${alpha("#04080D", 0.22)})`
+                : `drop-shadow(0 30px 80px ${alpha("#000000", 0.34)})`,
         }}
       >
         <svg viewBox="0 0 920 900" style={{ width: "100%", height: "100%" }}>
@@ -554,6 +602,18 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
               <stop offset="0%" stopColor={glowColor} />
               <stop offset="100%" stopColor={modeAccent} />
             </linearGradient>
+            <linearGradient id="connect-shell" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={alpha("#D8C7AF", 0.13)} />
+              <stop offset="100%" stopColor={alpha("#546577", 0.18)} />
+            </linearGradient>
+            <linearGradient id="connect-surface" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={alpha("#121C25", 0.98)} />
+              <stop offset="100%" stopColor={alpha("#0D151D", 0.98)} />
+            </linearGradient>
+            <linearGradient id="connect-inner-line" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={alpha("#D8C7AF", 0.1)} />
+              <stop offset="100%" stopColor={alpha("#65788B", 0.18)} />
+            </linearGradient>
           </defs>
 
           <rect
@@ -562,8 +622,20 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
             width={920}
             height={900}
             rx={34}
-            fill={isLogistics ? alpha("#F6F2EA", 0.92) : alpha("#05090F", 0.84)}
-            stroke={isLogistics ? alpha("#E8D6B5", 0.72) : "url(#route-shell)"}
+            fill={
+              isLogistics
+                ? alpha("#F6F2EA", 0.92)
+                : isConnect
+                  ? alpha("#091119", 0.6)
+                  : alpha("#05090F", 0.84)
+            }
+            stroke={
+              isLogistics
+                ? alpha("#E8D6B5", 0.72)
+                : isConnect
+                  ? "url(#connect-shell)"
+                  : "url(#route-shell)"
+            }
             strokeWidth={1.6}
           />
           <rect
@@ -577,11 +649,29 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                 ? "url(#route-surface)"
                 : props.routeMode === "logistics"
                   ? "url(#logistics-surface)"
-                  : alpha("#090F16", 0.92)
+                  : isConnect
+                    ? "url(#connect-surface)"
+                    : alpha("#090F16", 0.92)
             }
-            stroke={isLogistics ? alpha("#D3C1A1", 0.42) : alpha("#A8B7CC", 0.06)}
+            stroke={
+              isLogistics
+                ? alpha("#D3C1A1", 0.42)
+                : isConnect
+                  ? "url(#connect-inner-line)"
+                  : alpha("#A8B7CC", 0.06)
+            }
             strokeWidth={1}
           />
+          {isConnect ? (
+            <line
+              x1={36}
+              y1={70}
+              x2={884}
+              y2={70}
+              stroke={alpha("#D8C7AF", 0.08)}
+              strokeWidth={1}
+            />
+          ) : null}
           {props.routeMode === "route" ? (
             <rect
               x={18}
@@ -648,11 +738,51 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                             }
                             strokeWidth={isStop ? 1.8 : 0.92}
                             strokeLinejoin="round"
-                          />
-                        ))}
-                      </g>
-                    );
-                  })
+                        />
+                      ))}
+                    </g>
+                  );
+                })
+              : isConnect
+                ? (
+                    <>
+                      {INDIA_STATE_SHAPES.map((shape) => (
+                        <g key={`connect-base-${shape.key}`}>
+                          {shape.paths.map((pathD, pathIndex) => (
+                            <path
+                              key={`connect-base-${shape.key}-${pathIndex}`}
+                              d={pathD}
+                              fill={alpha("#121C26", 0.92)}
+                              stroke={alpha("#44576A", 0.62)}
+                              strokeWidth={0.8}
+                              strokeLinejoin="round"
+                            />
+                          ))}
+                        </g>
+                      ))}
+
+                      {routeShapes.map((shape, index) => {
+                        const isEndpoint =
+                          index === 0 || index === routeShapes.length - 1;
+                        const highlightFill = isEndpoint
+                          ? alpha(modeAccent, 0.18)
+                          : alpha(modeAccent, 0.08);
+
+                        return (
+                          <g key={`connect-highlight-${shape.key}`}>
+                            {shape.paths.map((pathD, pathIndex) => (
+                              <path
+                                key={`connect-highlight-${shape.key}-${pathIndex}`}
+                                d={pathD}
+                                fill={highlightFill}
+                                stroke="none"
+                              />
+                            ))}
+                          </g>
+                        );
+                      })}
+                    </>
+                  )
               : INDIA_STATE_SHAPES.map((shape) => {
                   const isStop = routeStates.some(
                     (state) =>
@@ -668,11 +798,12 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                     : isStop
                       ? alpha(modeAccent, 0.72)
                       : props.outlineColor;
-                  const fillColor =
-                    isEndpoint && props.routeMode === "connect"
-                      ? alpha(modeAccent, 0.08)
-                      : "transparent";
-                  const strokeWidth = isEndpoint ? 2.2 : isStop ? 1.8 : 1.05;
+                  const fillColor = "transparent";
+                  const strokeWidth = isEndpoint
+                    ? 2.2
+                    : isStop
+                      ? 1.8
+                      : 1.05;
 
                   return (
                     <g key={shape.key}>
@@ -705,8 +836,8 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                   <path
                     d={segment.path}
                     fill="none"
-                    stroke={alpha(glowColor, isRoute ? 0.16 : isLogistics ? 0.1 : 0.12)}
-                    strokeWidth={props.routeMode === "connect" ? 7 : isRoute ? 9 : isLogistics ? 8 : 8}
+                    stroke={alpha(glowColor, isRoute ? 0.16 : isLogistics ? 0.1 : isConnect ? 0.06 : 0.12)}
+                    strokeWidth={props.routeMode === "connect" ? 5 : isRoute ? 9 : isLogistics ? 8 : 8}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     pathLength={1}
@@ -728,15 +859,15 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                   <path
                     d={segment.path}
                     fill="none"
-                    stroke={alpha(modeAccent, isRoute ? 0.4 : isLogistics ? 0.18 : 0.28)}
-                    strokeWidth={props.routeMode === "connect" ? 4.8 : isRoute ? 6.2 : isLogistics ? 4.5 : 5.8}
+                    stroke={alpha(modeAccent, isRoute ? 0.4 : isLogistics ? 0.18 : isConnect ? 0.2 : 0.28)}
+                    strokeWidth={props.routeMode === "connect" ? 3.2 : isRoute ? 6.2 : isLogistics ? 4.5 : 5.8}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     pathLength={1}
                     strokeDasharray="1"
                     strokeDashoffset={1 - segmentProgress}
                     opacity={segmentProgress > 0 ? 1 : 0}
-                    style={{
+                    style={isConnect ? undefined : {
                       filter: `drop-shadow(0 0 10px ${alpha(modeAccent, 0.36)})`,
                     }}
                   />
@@ -744,7 +875,7 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                     d={segment.path}
                     fill="none"
                     stroke="url(#route-line)"
-                    strokeWidth={props.routeMode === "connect" ? 2.6 : isRoute ? 3.8 : isLogistics ? 2.8 : 3.2}
+                    strokeWidth={props.routeMode === "connect" ? 2 : isRoute ? 3.8 : isLogistics ? 2.8 : 3.2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     pathLength={1}
@@ -795,6 +926,16 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                         : index % 2 === 0
                           ? "right"
                           : "left"
+                  : isConnect
+                    ? index === 0
+                      ? "right"
+                      : shape.centroid[1] > 700
+                        ? shape.centroid[0] < 430
+                          ? "right"
+                          : "left"
+                        : shape.centroid[0] < 430
+                          ? "right"
+                          : "left"
                   : shape.centroid[0] < 430
                     ? "right"
                     : "left";
@@ -815,12 +956,16 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                     ? -6
                     : isLogistics
                       ? -12
+                      : isConnect && index === routeShapes.length - 1 && shape.centroid[1] > 700
+                        ? -34
+                        : isConnect
+                          ? -8
                       : 0;
               const pillY = Math.max(
                 32,
                 Math.min(
                   shape.centroid[1] - (isRoute ? 10 : isLogistics ? 14 : 18) + logisticsYOffset,
-                  790,
+                  isConnect ? 748 : 790,
                 ),
               );
               const stopRole =
@@ -856,8 +1001,8 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                     }
                     fill={nodeAccent}
                     stroke={alpha("#FFFFFF", isLogistics ? 0.92 : 0.85)}
-                    strokeWidth={1.6}
-                    style={{
+                    strokeWidth={isConnect ? 1.2 : 1.6}
+                    style={isConnect ? undefined : {
                       filter: `drop-shadow(0 0 10px ${alpha(nodeAccent, 0.4)})`,
                     }}
                   />
@@ -867,11 +1012,26 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                       y={0}
                       width={pillWidth}
                       height={isRoute ? 34 : isLogistics ? 34 : 38}
-                      rx={isRoute ? 9 : isLogistics ? 11 : 10}
-                      fill={isLogistics ? alpha("#FFFDF9", 0.93) : alpha("#0A1017", isRoute ? 0.94 : 0.88)}
-                      stroke={isLogistics ? alpha("#DCC8A3", 0.55) : alpha(nodeAccent, isRoute ? 0.22 : 0.28)}
-                      strokeWidth={isRoute ? 1 : isLogistics ? 1 : 1.2}
+                      rx={isRoute ? 9 : isLogistics ? 11 : isConnect ? 9 : 10}
+                      fill={
+                        isLogistics
+                          ? alpha("#FFFDF9", 0.93)
+                          : isConnect
+                            ? alpha("#121B24", 0.94)
+                            : alpha("#0A1017", isRoute ? 0.94 : 0.88)
+                      }
+                      stroke={
+                        isLogistics
+                          ? alpha("#DCC8A3", 0.55)
+                          : isConnect
+                            ? alpha("#D9C9B2", 0.14)
+                            : alpha(nodeAccent, isRoute ? 0.22 : 0.28)
+                      }
+                      strokeWidth={isRoute ? 1 : isLogistics ? 1 : isConnect ? 1 : 1.2}
                     />
+                    {isConnect ? (
+                      <rect x={10} y={9} width={4} height={16} rx={999} fill={nodeAccent} />
+                    ) : null}
                     {isLogistics ? (
                       <text
                         x={12}
@@ -888,14 +1048,20 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                       </text>
                     ) : null}
                     <text
-                      x={12}
+                      x={isConnect ? 24 : 12}
                       y={isRoute ? 22 : isLogistics ? 25 : 24}
-                      fill={isLogistics ? "#23313F" : props.labelColor}
+                      fill={
+                        isLogistics
+                          ? "#23313F"
+                          : isConnect
+                            ? alpha(props.labelColor, 0.96)
+                            : props.labelColor
+                      }
                       style={{
                         fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
                         fontSize: isRoute ? 13 : isLogistics ? 13 : 14,
                         fontWeight: 700,
-                        letterSpacing: "-0.02em",
+                        letterSpacing: isConnect ? "0.01em" : "-0.02em",
                       }}
                     >
                       {label}
@@ -927,7 +1093,7 @@ export const IndiaRouteScene: React.FC<MapRouteFlowProps> = (props) => {
                     cx={travelerPoint[0]}
                     cy={travelerPoint[1]}
                     r={props.routeMode === "route" ? 10 : 11}
-                    fill={alpha(modeAccent, props.routeMode === "route" ? 0.18 : 0.14)}
+                    fill={alpha(modeAccent, props.routeMode === "route" ? 0.18 : isConnect ? 0.08 : 0.14)}
                   />
                   <circle
                     cx={travelerPoint[0]}

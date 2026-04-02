@@ -1,0 +1,10 @@
+{
+  "id": "country-map-route",
+  "name": "Country Map Route",
+  "description": "Deterministic world map route animation tracing movement between countries.",
+  "tags": ["map", "world", "country", "route", "path", "global"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

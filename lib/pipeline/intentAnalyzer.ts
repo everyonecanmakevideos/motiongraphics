@@ -82,6 +82,9 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Parallax depth scene, layered depth, 3D-like depth, immersive layers, parallax | "parallax-showcase" |
 | India map, map of India, India states, highlight Gujarat on India map, highlight Kerala on India map, show one or more Indian states filled on a map | "india-map-highlight" |
 | World map, global map, mark countries on a world map, highlight France on a world map, show UAE and Singapore on a global map | "country-highlight" |
+| Connect two countries on a world map, link UAE to Singapore globally, corridor between Germany and Brazil on a world map | "country-map-connect" |
+| Show a route on a world map, route from India to Japan, path across countries on a global map | "country-map-route" |
+| Logistics route on a world map, freight corridor across countries, shipping path between countries globally | "country-map-logistics" |
 | Connect two Indian states on a map, link Punjab to West Bengal, corridor between Delhi and Maharashtra | "india-map-connect" |
 | Show a route on India map, route from Gujarat to Kerala, path across Indian states | "india-map-route" |
 | Logistics route on India map, freight corridor, truck route across Indian states | "india-map-logistics" |
@@ -151,6 +154,9 @@ PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in
 MAP CITY / HEAT / RADIUS / TARGETING ANIMATION: "fade-in", "scale-pop", "progressive", "none"
 INDIA-MAP-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 COUNTRY-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+COUNTRY-MAP-CONNECT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+COUNTRY-MAP-ROUTE ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+COUNTRY-MAP-LOGISTICS ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 INDIA-MAP-CONNECT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 INDIA-MAP-ROUTE ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 INDIA-MAP-LOGISTICS ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
@@ -184,6 +190,26 @@ COUNTRY-HIGHLIGHT PARAMS:
   - baseFillColor: "#0B1623"
   - outlineColor: "#445D73"
   - highlightColor: "#5BC0EB"
+
+WORLD COUNTRY ROUTE FAMILY PARAMS:
+- Use "country-map-connect" for connect, link, corridor prompts on a world/global map.
+- Use "country-map-route" for generic route, path, journey, or flow prompts on a world/global map.
+- Use "country-map-logistics" for logistics, cargo, shipping, delivery, freight, or trade prompts on a world/global map.
+- "originCountry" and "destinationCountry" are REQUIRED.
+- "viaCountries" is optional and must contain 0-4 intermediate countries in travel order.
+- Keep country names human-readable, for example: "India", "Japan", "United Arab Emirates", "Germany".
+- Optional labels:
+  - "originLabel"
+  - "destinationLabel"
+  - "routeLabel"
+- Recommended defaults:
+  - titleColor: "#F3EBDD"
+  - subtitleColor: "#CBBFA6"
+  - labelColor: "#F2E6D2"
+  - baseFillColor: "#0B1623"
+  - outlineColor: "#445D73"
+  - routeColor: "#5BC0EB"
+  - nodeColor: "#F3EBDD"
 
 INDIA MAP ROUTE FAMILY PARAMS:
 - Use "india-map-connect" for connect, link, corridor prompts.
@@ -695,6 +721,9 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
   const indiaRouteHeuristic = heuristicIndiaMapRouteFlowIntent(prompt);
   if (indiaRouteHeuristic) return indiaRouteHeuristic;
 
+  const worldRouteHeuristic = heuristicWorldCountryRouteFlowIntent(prompt);
+  if (worldRouteHeuristic) return worldRouteHeuristic;
+
   const worldCountryHeuristic = heuristicWorldCountryHighlightIntent(prompt);
   if (worldCountryHeuristic) return worldCountryHeuristic;
 
@@ -1042,6 +1071,81 @@ const INDIA_KNOWN_STATES = [
   "West Bengal",
 ];
 
+const INDIA_CITY_TO_STATE_ALIASES = [
+  { term: "new delhi", state: "Delhi" },
+  { term: "delhi", state: "Delhi" },
+  { term: "mumbai", state: "Maharashtra" },
+  { term: "bombay", state: "Maharashtra" },
+  { term: "pune", state: "Maharashtra" },
+  { term: "nagpur", state: "Maharashtra" },
+  { term: "bengaluru", state: "Karnataka" },
+  { term: "bangalore", state: "Karnataka" },
+  { term: "mysuru", state: "Karnataka" },
+  { term: "mysore", state: "Karnataka" },
+  { term: "chennai", state: "Tamil Nadu" },
+  { term: "coimbatore", state: "Tamil Nadu" },
+  { term: "madurai", state: "Tamil Nadu" },
+  { term: "kolkata", state: "West Bengal" },
+  { term: "calcutta", state: "West Bengal" },
+  { term: "hyderabad", state: "Telangana" },
+  { term: "warangal", state: "Telangana" },
+  { term: "ahmedabad", state: "Gujarat" },
+  { term: "surat", state: "Gujarat" },
+  { term: "vadodara", state: "Gujarat" },
+  { term: "kochi", state: "Kerala" },
+  { term: "cochin", state: "Kerala" },
+  { term: "thiruvananthapuram", state: "Kerala" },
+  { term: "trivandrum", state: "Kerala" },
+  { term: "kozhikode", state: "Kerala" },
+  { term: "calicut", state: "Kerala" },
+  { term: "jaipur", state: "Rajasthan" },
+  { term: "jodhpur", state: "Rajasthan" },
+  { term: "lucknow", state: "Uttar Pradesh" },
+  { term: "kanpur", state: "Uttar Pradesh" },
+  { term: "noida", state: "Uttar Pradesh" },
+  { term: "gurugram", state: "Haryana" },
+  { term: "gurgaon", state: "Haryana" },
+  { term: "chandigarh", state: "Chandigarh" },
+  { term: "bhopal", state: "Madhya Pradesh" },
+  { term: "indore", state: "Madhya Pradesh" },
+  { term: "patna", state: "Bihar" },
+  { term: "bhubaneswar", state: "Odisha" },
+  { term: "cuttack", state: "Odisha" },
+  { term: "visakhapatnam", state: "Andhra Pradesh" },
+  { term: "vizag", state: "Andhra Pradesh" },
+  { term: "vijayawada", state: "Andhra Pradesh" },
+];
+
+function toPromptPlaceLabel(term: string): string {
+  return term.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getOrderedIndiaPlacesFromPrompt(
+  normalizedPrompt: string,
+  options?: { includeCityAliases?: boolean },
+): Array<{ state: string; label: string; index: number }> {
+  const stateMatches = INDIA_KNOWN_STATES.map((state) => ({
+    state,
+    index: normalizedPrompt.indexOf(state.toLowerCase()),
+    label: state,
+  })).filter((item) => item.index >= 0);
+
+  const aliasMatches = options?.includeCityAliases
+    ? INDIA_CITY_TO_STATE_ALIASES.map((alias) => ({
+        state: alias.state,
+        index: normalizedPrompt.indexOf(alias.term),
+        label: toPromptPlaceLabel(alias.term),
+      })).filter((item) => item.index >= 0)
+    : [];
+
+  return [...stateMatches, ...aliasMatches]
+    .sort((a, b) => a.index - b.index)
+    .filter(
+      (item, index, all) =>
+        all.findIndex((candidate) => candidate.state === item.state) === index,
+    );
+}
+
 function heuristicIndiaMapRouteFlowIntent(prompt: string): IntentResult | null {
   const normalized = getDisplayPrompt(prompt).toLowerCase();
 
@@ -1066,21 +1170,19 @@ function heuristicIndiaMapRouteFlowIntent(prompt: string): IntentResult | null {
 
   if (!indiaSignal || !mapSignal || !routeSignal) return null;
 
-  const orderedStates = INDIA_KNOWN_STATES.map((state) => ({
-    state,
-    index: normalized.indexOf(state.toLowerCase()),
-  }))
-    .filter((item) => item.index >= 0)
-    .sort((a, b) => a.index - b.index)
-    .map((item) => item.state)
-    .filter((state, index, all) => all.indexOf(state) === index);
+  const orderedPlaces = getOrderedIndiaPlacesFromPrompt(normalized, {
+    includeCityAliases: true,
+  });
 
-  if (orderedStates.length < 2) return null;
+  if (orderedPlaces.length < 2) return null;
 
-  const routeStates = orderedStates.slice(0, 6);
+  const routePlaces = orderedPlaces.slice(0, 6);
+  const routeStates = routePlaces.map((place) => place.state);
   const originState = routeStates[0];
   const destinationState = routeStates[routeStates.length - 1];
   const viaStates = routeStates.slice(1, -1);
+  const originLabel = routePlaces[0]?.label;
+  const destinationLabel = routePlaces[routePlaces.length - 1]?.label;
   const routeMode = /\blogistics\b|\bcargo\b|\btruck\b|\bshipping\b|\bdelivery\b|\bfreight\b/.test(
     normalized,
   )
@@ -1091,7 +1193,14 @@ function heuristicIndiaMapRouteFlowIntent(prompt: string): IntentResult | null {
   const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
   const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
   const viaSubtitle =
-    viaStates.length > 0 ? ` via ${viaStates.join(", ")}` : "";
+    viaStates.length > 0
+      ? ` via ${routePlaces
+          .slice(1, -1)
+          .map((place) => place.label)
+          .join(", ")}`
+      : "";
+  const originDisplay = originLabel ?? originState;
+  const destinationDisplay = destinationLabel ?? destinationState;
 
   return {
     templateId:
@@ -1109,17 +1218,21 @@ function heuristicIndiaMapRouteFlowIntent(prompt: string): IntentResult | null {
         routeMode === "logistics"
           ? "Logistics Corridor"
           : routeMode === "connect"
-            ? `${originState} to ${destinationState} Link`
-            : `${originState} to ${destinationState}`,
+            ? `${originDisplay} to ${destinationDisplay} Link`
+            : `${originDisplay} to ${destinationDisplay}`,
       subtitle:
         routeMode === "logistics"
-          ? `Moving from ${originState} to ${destinationState}${viaSubtitle}`
+          ? `Moving from ${originDisplay} to ${destinationDisplay}${viaSubtitle}`
           : routeMode === "connect"
-            ? `Connecting ${originState} to ${destinationState}${viaSubtitle}`
-            : `Route flow from ${originState} to ${destinationState}${viaSubtitle}`,
+            ? `Connecting ${originDisplay} to ${destinationDisplay}${viaSubtitle}`
+            : `Route flow from ${originDisplay} to ${destinationDisplay}${viaSubtitle}`,
       originState,
       destinationState,
       viaStates,
+      ...(originLabel && originLabel !== originState ? { originLabel } : {}),
+      ...(destinationLabel && destinationLabel !== destinationState
+        ? { destinationLabel }
+        : {}),
       routeLabel:
         routeMode === "logistics"
           ? "India logistics route animation"
@@ -1161,8 +1274,24 @@ function heuristicIndiaMapHighlightIntent(prompt: string): IntentResult | null {
     /\bmap\b/.test(normalized) ||
     normalized.includes("highlight") ||
     normalized.includes("mark");
+  const routeLikeSignal =
+    /\broute\b/.test(normalized) ||
+    /\bflow\b/.test(normalized) ||
+    /\bjourney\b/.test(normalized) ||
+    /\bpath\b/.test(normalized) ||
+    /\bconnect\b/.test(normalized) ||
+    /\bcorridor\b/.test(normalized) ||
+    /\blink\b/.test(normalized) ||
+    /\blogistics\b/.test(normalized) ||
+    /\bcargo\b/.test(normalized) ||
+    /\btruck\b/.test(normalized) ||
+    /\bshipping\b/.test(normalized) ||
+    /\bdelivery\b/.test(normalized) ||
+    /\bfreight\b/.test(normalized) ||
+    /\bfrom\b.+\bto\b/.test(normalized) ||
+    /\bbetween\b/.test(normalized);
 
-  if (!indiaSignal || !mapSignal) return null;
+  if (!indiaSignal || !mapSignal || routeLikeSignal) return null;
 
   const foundStates = INDIA_KNOWN_STATES.filter((state) =>
     normalized.includes(state.toLowerCase()),
@@ -1208,6 +1337,122 @@ function heuristicIndiaMapHighlightIntent(prompt: string): IntentResult | null {
   };
 }
 
+function heuristicWorldCountryRouteFlowIntent(
+  prompt: string,
+): IntentResult | null {
+  const displayPrompt = getDisplayPrompt(prompt);
+  const normalized = displayPrompt.toLowerCase();
+
+  const worldSignal =
+    /\bworld\b/.test(normalized) ||
+    /\bglobal\b/.test(normalized) ||
+    normalized.includes("world map") ||
+    normalized.includes("global map") ||
+    normalized.includes("across countries") ||
+    normalized.includes("between countries");
+  const routeSignal =
+    /\broute\b/.test(normalized) ||
+    /\bflow\b/.test(normalized) ||
+    /\bjourney\b/.test(normalized) ||
+    /\bpath\b/.test(normalized) ||
+    /\bconnect\b/.test(normalized) ||
+    /\bcorridor\b/.test(normalized) ||
+    /\blink\b/.test(normalized) ||
+    /\blogistics\b/.test(normalized) ||
+    /\bcargo\b/.test(normalized) ||
+    /\bshipping\b/.test(normalized) ||
+    /\bdelivery\b/.test(normalized) ||
+    /\bfreight\b/.test(normalized) ||
+    /\btrade\b/.test(normalized) ||
+    /\bfrom\b.+\bto\b/.test(normalized) ||
+    /\bbetween\b/.test(normalized);
+
+  if (!worldSignal || !routeSignal) return null;
+
+  const matchedCountries = matchWorldCountries(displayPrompt).slice(0, 6);
+  if (matchedCountries.length < 2) return null;
+
+  const originCountry = matchedCountries[0];
+  const destinationCountry = matchedCountries[matchedCountries.length - 1];
+  const viaCountries = matchedCountries.slice(1, -1);
+  const routeMode = /\blogistics\b|\bcargo\b|\bshipping\b|\bdelivery\b|\bfreight\b|\btrade\b/.test(
+    normalized,
+  )
+    ? "logistics"
+    : /\bconnect\b|\blink\b|\bcorridor\b/.test(normalized)
+      ? "connect"
+      : "route";
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+  const viaSubtitle =
+    viaCountries.length > 0 ? ` via ${viaCountries.join(", ")}` : "";
+
+  return {
+    templateId:
+      routeMode === "logistics"
+        ? "country-map-logistics"
+        : routeMode === "connect"
+          ? "country-map-connect"
+          : "country-map-route",
+    confidence: "high",
+    reasoning:
+      "Heuristic: detected a world map route prompt with ordered country flow",
+    aspect_ratio,
+    params: {
+      title:
+        routeMode === "logistics"
+          ? "Global Logistics Corridor"
+          : routeMode === "connect"
+            ? `${originCountry} to ${destinationCountry} Link`
+            : `${originCountry} to ${destinationCountry}`,
+      subtitle:
+        routeMode === "logistics"
+          ? `Moving from ${originCountry} to ${destinationCountry}${viaSubtitle}`
+          : routeMode === "connect"
+            ? `Connecting ${originCountry} to ${destinationCountry}${viaSubtitle}`
+            : `Route flow from ${originCountry} to ${destinationCountry}${viaSubtitle}`,
+      originCountry,
+      destinationCountry,
+      viaCountries,
+      routeLabel:
+        routeMode === "logistics"
+          ? "Global logistics route animation"
+          : routeMode === "connect"
+            ? "Global connection path animation"
+            : "Global route flow animation",
+      background:
+        routeMode === "logistics"
+          ? {
+              type: "gradient",
+              from: "#F7F4EE",
+              to: "#E6EEF8",
+              direction: "to-bottom-right",
+            }
+          : {
+              type: "gradient",
+              from: "#071019",
+              to: "#1B2432",
+              direction: "to-bottom-right",
+            },
+      titleColor: routeMode === "logistics" ? "#1F2B3D" : "#F3EBDD",
+      subtitleColor: routeMode === "logistics" ? "#5A6B7E" : "#CBBFA6",
+      labelColor: routeMode === "logistics" ? "#233044" : "#F2E6D2",
+      baseFillColor: routeMode === "logistics" ? "#F4F7FA" : "#0B1623",
+      outlineColor: routeMode === "logistics" ? "#CAD7E4" : "#445D73",
+      routeColor:
+        routeMode === "connect"
+          ? "#C08F52"
+          : routeMode === "logistics"
+            ? "#F3BE74"
+            : "#5D87A1",
+      nodeColor:
+        routeMode === "logistics" ? "#F3BE74" : "#F3EBDD",
+      entranceAnimation: "slide-up",
+      duration: 8,
+    },
+  };
+}
+
 function heuristicWorldCountryHighlightIntent(
   prompt: string,
 ): IntentResult | null {
@@ -1224,8 +1469,24 @@ function heuristicWorldCountryHighlightIntent(
     normalized.includes("highlight") ||
     normalized.includes("mark") ||
     normalized.includes("focus");
+  const routeLikeSignal =
+    /\broute\b/.test(normalized) ||
+    /\bflow\b/.test(normalized) ||
+    /\bjourney\b/.test(normalized) ||
+    /\bpath\b/.test(normalized) ||
+    /\bconnect\b/.test(normalized) ||
+    /\bcorridor\b/.test(normalized) ||
+    /\blink\b/.test(normalized) ||
+    /\blogistics\b/.test(normalized) ||
+    /\bcargo\b/.test(normalized) ||
+    /\bshipping\b/.test(normalized) ||
+    /\bdelivery\b/.test(normalized) ||
+    /\bfreight\b/.test(normalized) ||
+    /\btrade\b/.test(normalized) ||
+    /\bfrom\b.+\bto\b/.test(normalized) ||
+    /\bbetween\b/.test(normalized);
 
-  if (!worldSignal || !mapSignal) return null;
+  if (!worldSignal || !mapSignal || routeLikeSignal) return null;
 
   const matchedCountries = matchWorldCountries(displayPrompt).slice(0, 12);
   if (matchedCountries.length === 0) return null;

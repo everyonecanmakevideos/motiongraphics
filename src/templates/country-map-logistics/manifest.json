@@ -1,0 +1,10 @@
+{
+  "id": "country-map-logistics",
+  "name": "Country Map Logistics",
+  "description": "Deterministic world logistics corridor with light cartography and animated country-to-country path.",
+  "tags": ["map", "world", "country", "logistics", "freight", "global"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

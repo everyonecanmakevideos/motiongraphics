@@ -1,0 +1,10 @@
+{
+  "id": "country-map-connect",
+  "name": "Country Map Connect",
+  "description": "Deterministic world map connection between countries using routed SVG path animation.",
+  "tags": ["map", "world", "country", "connect", "global", "corridor"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}
