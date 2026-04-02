@@ -1,0 +1,10 @@
+{
+  "id": "country-highlight",
+  "name": "Country Highlight",
+  "description": "Deterministic world country map using SVG paths with staggered country highlight animation.",
+  "tags": ["map", "world", "country", "highlight", "global", "geo"],
+  "compatibleAnimations": ["fade-in", "slide-up", "scale-pop", "none"],
+  "minDuration": 4,
+  "maxDuration": 18,
+  "defaultDuration": 8
+}

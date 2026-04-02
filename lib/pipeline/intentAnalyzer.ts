@@ -11,6 +11,7 @@ import type {
   SceneDefinition,
 } from "../templates/sceneTypes";
 import { isCompositeScene } from "../templates/sceneTypes";
+import { matchWorldCountries } from "../../src/geo/worldCountries";
 
 const SYSTEM_PROMPT = `You are a motion graphics intent analyzer.
 
@@ -80,6 +81,7 @@ TEMPLATE SELECTION RULES — follow these strictly:
 | Product spotlight, feature showcase, icon spotlight, premium showcase, orbiting elements | "dynamic-showcase" |
 | Parallax depth scene, layered depth, 3D-like depth, immersive layers, parallax | "parallax-showcase" |
 | India map, map of India, India states, highlight Gujarat on India map, highlight Kerala on India map, show one or more Indian states filled on a map | "india-map-highlight" |
+| World map, global map, mark countries on a world map, highlight France on a world map, show UAE and Singapore on a global map | "country-highlight" |
 | Connect two Indian states on a map, link Punjab to West Bengal, corridor between Delhi and Maharashtra | "india-map-connect" |
 | Show a route on India map, route from Gujarat to Kerala, path across Indian states | "india-map-route" |
 | Logistics route on India map, freight corridor, truck route across Indian states | "india-map-logistics" |
@@ -148,6 +150,7 @@ BEFORE-AFTER ANIMATION: "fade-in", "slide-up", "scale-pop", "none". Also has "re
 PROCESS-STEPS ANIMATION: "progressive" (steps appear along connectors), "fade-in", "slide-up", "none"
 MAP CITY / HEAT / RADIUS / TARGETING ANIMATION: "fade-in", "scale-pop", "progressive", "none"
 INDIA-MAP-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
+COUNTRY-HIGHLIGHT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 INDIA-MAP-CONNECT ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 INDIA-MAP-ROUTE ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
 INDIA-MAP-LOGISTICS ANIMATION: "fade-in", "slide-up", "scale-pop", "none"
@@ -166,6 +169,21 @@ INDIA-MAP-HIGHLIGHT PARAMS:
   - baseFillColor: "#122033"
   - outlineColor: "#35506A"
   - highlightColor: "#F97316"
+
+COUNTRY-HIGHLIGHT PARAMS:
+- Use "country-highlight" when the user explicitly wants a world map, global map, world countries, or wants one or more countries marked on the world map.
+- "highlightedCountries" is REQUIRED and must contain 1-12 items.
+- Each highlightedCountries item must be:
+  { "country": "Country Name", "value": "optional short label", "accentColor": "#RRGGBB" }
+- Keep country names human-readable, for example: "France", "Japan", "United Arab Emirates", "Singapore".
+- If the user only names countries and gives no value text, omit "value".
+- Recommended defaults:
+  - titleColor: "#F3EBDD"
+  - subtitleColor: "#CBBFA6"
+  - labelColor: "#F2E6D2"
+  - baseFillColor: "#0B1623"
+  - outlineColor: "#445D73"
+  - highlightColor: "#5BC0EB"
 
 INDIA MAP ROUTE FAMILY PARAMS:
 - Use "india-map-connect" for connect, link, corridor prompts.
@@ -260,6 +278,7 @@ CRITICAL RULES:
    - process-steps "steps": minimum 3, maximum 6
    - feature-highlight "bulletPoints": maximum 4
    - before-after "beforeItems"/"afterItems": maximum 4
+   - country-highlight "highlightedCountries": minimum 1, maximum 12
    - india-map-highlight "highlightedStates": minimum 1, maximum 12
    - india-map-connect "viaStates": maximum 2
    - india-map-route "viaStates": maximum 4
@@ -675,6 +694,9 @@ export async function analyzeIntent(prompt: string): Promise<AnalyzerResult> {
 
   const indiaRouteHeuristic = heuristicIndiaMapRouteFlowIntent(prompt);
   if (indiaRouteHeuristic) return indiaRouteHeuristic;
+
+  const worldCountryHeuristic = heuristicWorldCountryHighlightIntent(prompt);
+  if (worldCountryHeuristic) return worldCountryHeuristic;
 
   const indiaMapHeuristic = heuristicIndiaMapHighlightIntent(prompt);
   if (indiaMapHeuristic) return indiaMapHeuristic;
@@ -1180,6 +1202,65 @@ function heuristicIndiaMapHighlightIntent(prompt: string): IntentResult | null {
       baseFillColor: "#122033",
       outlineColor: "#35506A",
       highlightColor: "#F97316",
+      entranceAnimation: "slide-up",
+      duration: 8,
+    },
+  };
+}
+
+function heuristicWorldCountryHighlightIntent(
+  prompt: string,
+): IntentResult | null {
+  const displayPrompt = getDisplayPrompt(prompt);
+  const normalized = displayPrompt.toLowerCase();
+
+  const worldSignal =
+    /\bworld\b/.test(normalized) ||
+    /\bglobal\b/.test(normalized) ||
+    normalized.includes("world map") ||
+    normalized.includes("global map");
+  const mapSignal =
+    /\bmap\b/.test(normalized) ||
+    normalized.includes("highlight") ||
+    normalized.includes("mark") ||
+    normalized.includes("focus");
+
+  if (!worldSignal || !mapSignal) return null;
+
+  const matchedCountries = matchWorldCountries(displayPrompt).slice(0, 12);
+  if (matchedCountries.length === 0) return null;
+
+  const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
+  const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
+
+  return {
+    templateId: "country-highlight",
+    confidence: "high",
+    reasoning:
+      "Heuristic: detected a world map prompt with explicit country highlights",
+    aspect_ratio,
+    params: {
+      title:
+        matchedCountries.length === 1
+          ? `${matchedCountries[0]} Focus`
+          : "Global Country Highlights",
+      subtitle:
+        matchedCountries.length === 1
+          ? `Highlighting ${matchedCountries[0]} on the world map`
+          : `Highlighting ${matchedCountries.join(", ")}`,
+      highlightedCountries: matchedCountries.map((country) => ({ country })),
+      background: {
+        type: "gradient",
+        from: "#071019",
+        to: "#1B2432",
+        direction: "to-bottom-right",
+      },
+      titleColor: "#F3EBDD",
+      subtitleColor: "#CBBFA6",
+      labelColor: "#F2E6D2",
+      baseFillColor: "#0B1623",
+      outlineColor: "#445D73",
+      highlightColor: "#5BC0EB",
       entranceAnimation: "slide-up",
       duration: 8,
     },

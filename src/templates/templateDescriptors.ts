@@ -115,6 +115,8 @@ import { ParallaxShowcaseSchema } from "./parallax-showcase/schema";
 import parallaxShowcaseManifest from "./parallax-showcase/manifest.json";
 import { IndiaMapHighlightSchema } from "./india-map-highlight/schema";
 import indiaMapHighlightManifest from "./india-map-highlight/manifest.json";
+import { CountryHighlightSchema } from "./country-highlight/schema";
+import countryHighlightManifest from "./country-highlight/manifest.json";
 import { MapRouteFlowSchema } from "./map-route-flow/schema";
 import mapRouteFlowManifest from "./map-route-flow/manifest.json";
 import { IndiaMapConnectSchema } from "./india-map-connect/schema";
@@ -342,6 +344,11 @@ export const TEMPLATE_DESCRIPTORS: TemplateDescriptor[] = [
     id: "india-map-highlight",
     schema: IndiaMapHighlightSchema,
     manifest: indiaMapHighlightManifest as TemplateManifest,
+  },
+  {
+    id: "country-highlight",
+    schema: CountryHighlightSchema,
+    manifest: countryHighlightManifest as TemplateManifest,
   },
   {
     id: "map-route-flow",

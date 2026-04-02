@@ -41,6 +41,7 @@ import { CinematicTransition } from "./cinematic-transition/CinematicTransition"
 import { DynamicShowcase } from "./dynamic-showcase/DynamicShowcase";
 import { ParallaxShowcase } from "./parallax-showcase/ParallaxShowcase";
 import { IndiaMapHighlight } from "./india-map-highlight/IndiaMapHighlight";
+import { CountryHighlight } from "./country-highlight/CountryHighlight";
 import { MapRouteFlow } from "./map-route-flow/MapRouteFlow";
 import { IndiaMapConnect } from "./india-map-connect/IndiaMapConnect";
 import { IndiaMapRoute } from "./india-map-route/IndiaMapRoute";
@@ -96,6 +97,7 @@ const CLIENT_COMPONENTS: Record<string, any> = {
   "dynamic-showcase": DynamicShowcase,
   "parallax-showcase": ParallaxShowcase,
   "india-map-highlight": IndiaMapHighlight,
+  "country-highlight": CountryHighlight,
   "map-route-flow": MapRouteFlow,
   "india-map-connect": IndiaMapConnect,
   "india-map-route": IndiaMapRoute,
