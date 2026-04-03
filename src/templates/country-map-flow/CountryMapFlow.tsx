@@ -375,42 +375,42 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
       ? "World Logistics Route"
       : "World Route Flow";
   const overlayWash = isLogistics
-    ? `radial-gradient(circle at 18% 18%, ${alpha("#F4E1C0", 0.18)}, transparent 24%), radial-gradient(circle at 74% 18%, ${alpha("#D8E5EF", 0.24)}, transparent 22%)`
+    ? `radial-gradient(circle at 18% 18%, ${alpha("#F4E1C0", 0.14)}, transparent 24%), radial-gradient(circle at 74% 18%, ${alpha("#D8E5EF", 0.18)}, transparent 22%), linear-gradient(180deg, ${alpha("#FFF8EF", 0.18)}, transparent 38%)`
     : isRoute
       ? `radial-gradient(circle at 18% 16%, ${alpha("#D7E4F4", 0.055)}, transparent 24%), radial-gradient(circle at 70% 18%, ${alpha(modeAccent, 0.06)}, transparent 18%), linear-gradient(180deg, ${alpha("#06111A", 0.04)}, transparent 34%)`
       : `radial-gradient(circle at 20% 18%, ${alpha("#E7DCCA", 0.045)}, transparent 26%), radial-gradient(circle at 74% 16%, ${alpha(modeAccent, 0.045)}, transparent 18%)`;
 
   const panelBackground = isLogistics
-    ? alpha("#FFFFFF", 0.8)
+    ? alpha("#FFFCF7", 0.88)
     : isConnect
       ? alpha("#0F1720", 0.82)
       : alpha("#0E1620", 0.78);
   const panelBorder = isLogistics
-    ? alpha("#E1C08A", 0.44)
+    ? alpha("#E1C08A", 0.58)
     : isConnect
       ? alpha("#D8C7AF", 0.2)
       : alpha("#CFE0EE", 0.16);
   const mapShellStroke = isLogistics
-    ? alpha("#E1C08A", 0.48)
+    ? alpha("#E1C08A", 0.56)
     : isConnect
       ? alpha("#D8C7AF", 0.18)
       : alpha("#CFE0EE", 0.14);
-  const mapShellFill = isLogistics ? alpha("#FCF7EF", 0.78) : alpha("#091119", 0.6);
+  const mapShellFill = isLogistics ? alpha("#FCF8F1", 0.88) : alpha("#091119", 0.6);
   const mapSurfaceFill = isLogistics
-    ? alpha("#EDF2F7", 0.92)
+    ? alpha("#EEF3F7", 0.96)
     : isConnect
       ? alpha("#0D151E", 0.985)
       : alpha("#0D151E", 0.98);
   const baseCountryFill = isLogistics ? "#F4F7FA" : props.baseFillColor;
   const baseCountryStroke = isLogistics
-    ? alpha("#CAD7E4", 0.92)
+    ? alpha("#C2D1E0", 0.98)
     : isConnect
       ? alpha("#536A81", 0.98)
       : alpha("#50667D", 0.94);
   const titleColor = isLogistics ? "#1F2B3D" : props.titleColor;
   const subtitleColor = isLogistics ? "#5A6B7E" : props.subtitleColor;
   const labelTextColor = isLogistics ? "#233044" : props.labelColor;
-  const logisticsPlaneColor = "#6B4C2A";
+  const logisticsPlaneColor = "#5B4126";
   const panelHeading = isConnect
     ? "Connected Countries"
     : isLogistics
@@ -534,7 +534,7 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
           filter:
             effects.boxShadow !== "none"
               ? effects.boxShadow
-              : `drop-shadow(0 18px 40px ${alpha("#04080D", isLogistics ? 0.12 : 0.22)})`,
+              : `drop-shadow(0 18px 40px ${alpha("#04080D", isLogistics ? 0.09 : 0.22)})`,
         }}
       >
         <svg
@@ -623,15 +623,15 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
                     <path
                       d={segment.path}
                       fill="none"
-                      stroke={alpha(isLogistics ? "#F4D7A3" : "#D7E6F6", isLogistics ? 0.32 : isConnect ? 0.14 : 0.18)}
-                      strokeWidth={isLogistics ? 10 : isConnect ? 6 : 9}
+                      stroke={alpha(isLogistics ? "#E6C589" : "#D7E6F6", isLogistics ? 0.22 : isConnect ? 0.14 : 0.18)}
+                      strokeWidth={isLogistics ? 8 : isConnect ? 6 : 9}
                       strokeLinecap="round"
                     />
                     <path
                       d={segment.path}
                       fill="none"
-                      stroke={alpha(modeAccent, isLogistics ? 0.96 : isConnect ? 0.98 : 0.92)}
-                      strokeWidth={isLogistics ? 4.5 : isConnect ? 3 : 4}
+                      stroke={alpha(modeAccent, isLogistics ? 0.98 : isConnect ? 0.98 : 0.92)}
+                      strokeWidth={isLogistics ? 4.2 : isConnect ? 3 : 4}
                       strokeLinecap="round"
                       strokeDasharray={`${segment.length} ${segment.length}`}
                       strokeDashoffset={segment.length * (1 - portion)}
@@ -640,8 +640,8 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
                       <path
                         d={segment.path}
                         fill="none"
-                        stroke={alpha("#FFF9F0", 0.72)}
-                        strokeWidth={1.2}
+                        stroke={alpha("#FFF9F0", 0.78)}
+                        strokeWidth={0.95}
                         strokeLinecap="round"
                         strokeDasharray={`${segment.length} ${segment.length}`}
                         strokeDashoffset={segment.length * (1 - portion)}
@@ -664,12 +664,12 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
 
               {preparedCountries.map((country, index) => (
                 <g key={`world-route-node-${country.key}`}>
-                  <circle cx={country.anchor.x} cy={country.anchor.y} r={isLogistics ? 10 : isConnect ? 8 : 11} fill={alpha(modeAccent, isLogistics ? 0.12 : isConnect ? 0.08 : 0.14)} />
+                  <circle cx={country.anchor.x} cy={country.anchor.y} r={isLogistics ? 9 : isConnect ? 8 : 11} fill={alpha(modeAccent, isLogistics ? 0.1 : isConnect ? 0.08 : 0.14)} />
                   <circle
                     cx={country.anchor.x}
                     cy={country.anchor.y}
                     r={isLogistics ? 5.6 : isConnect ? 4.8 : 6.2}
-                    fill={alpha(modeAccent, 0.98)}
+                    fill={alpha(modeAccent, isLogistics ? 0.96 : 0.98)}
                     stroke={alpha(isLogistics ? "#FFF8EF" : "#F8F3EA", 0.9)}
                     strokeWidth={isConnect ? 1.8 : 2}
                   />
@@ -822,13 +822,13 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
                 height: isConnect ? 30 : isRoute && isViaStop ? 30 : 32,
                 borderRadius: Math.round((isLogistics ? 14 : isConnect ? 10 : 12) * scale),
                 background: isLogistics
-                  ? alpha("#FFF9F2", 0.88)
+                  ? alpha("#FFFCF7", 0.92)
                   : isConnect
                     ? alpha("#0E161F", 0.9)
                     : routeLabelBg,
                 border: `1px solid ${
                   isLogistics
-                    ? alpha("#E8D0A6", 0.7)
+                    ? alpha("#E8D0A6", 0.82)
                     : isConnect
                       ? alpha("#D8C7AF", 0.16)
                       : routeLabelBorderColor
@@ -854,7 +854,7 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
                   fontFamily: typography.fontFamily ?? "'Inter', sans-serif",
                   fontSize: Math.round((isConnect ? 13 : isRoute && isViaStop ? 13 : 14) * scale),
                   fontWeight: isViaStop && isRoute ? 600 : 700,
-                  color: isConnect ? alpha("#F1E6D6", 0.96) : isRoute ? routeLabelText : labelTextColor,
+                  color: isConnect ? alpha("#F1E6D6", 0.96) : isRoute ? routeLabelText : alpha("#263547", 0.96),
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -877,6 +877,7 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
           borderRadius: Math.round(26 * scale),
           background: panelBackground,
           border: `1px solid ${panelBorder}`,
+          boxShadow: isLogistics ? `0 14px 30px ${alpha("#B99A67", 0.08)}` : "none",
         }}
       >
         <div
@@ -928,7 +929,7 @@ export const CountryRouteScene: React.FC<CountryMapFlowProps> = (props) => {
               style={{
                 borderRadius: Math.round((isConnect ? 16 : 18) * scale),
                 background: isLogistics
-                  ? alpha("#FFFFFF", 0.8)
+                  ? alpha("#FFFFFF", 0.9)
                   : isConnect
                     ? alpha("#0E161F", 0.56)
                     : alpha("#0F1720", 0.46),

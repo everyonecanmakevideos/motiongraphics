@@ -1116,8 +1116,74 @@ const INDIA_CITY_TO_STATE_ALIASES = [
   { term: "vijayawada", state: "Andhra Pradesh" },
 ];
 
+const WORLD_CITY_TO_COUNTRY_ALIASES = [
+  { term: "dubai", country: "United Arab Emirates" },
+  { term: "abu dhabi", country: "United Arab Emirates" },
+  { term: "singapore", country: "Singapore" },
+  { term: "tokyo", country: "Japan" },
+  { term: "osaka", country: "Japan" },
+  { term: "kyoto", country: "Japan" },
+  { term: "paris", country: "France" },
+  { term: "marseille", country: "France" },
+  { term: "berlin", country: "Germany" },
+  { term: "munich", country: "Germany" },
+  { term: "frankfurt", country: "Germany" },
+  { term: "london", country: "United Kingdom" },
+  { term: "manchester", country: "United Kingdom" },
+  { term: "new york", country: "United States" },
+  { term: "nyc", country: "United States" },
+  { term: "los angeles", country: "United States" },
+  { term: "san francisco", country: "United States" },
+  { term: "seattle", country: "United States" },
+  { term: "washington dc", country: "United States" },
+  { term: "chicago", country: "United States" },
+  { term: "toronto", country: "Canada" },
+  { term: "vancouver", country: "Canada" },
+  { term: "montreal", country: "Canada" },
+  { term: "sydney", country: "Australia" },
+  { term: "melbourne", country: "Australia" },
+  { term: "brisbane", country: "Australia" },
+  { term: "cape town", country: "South Africa" },
+  { term: "johannesburg", country: "South Africa" },
+  { term: "sao paulo", country: "Brazil" },
+  { term: "rio de janeiro", country: "Brazil" },
+  { term: "mexico city", country: "Mexico" },
+  { term: "istanbul", country: "Turkey" },
+  { term: "doha", country: "Qatar" },
+  { term: "riyadh", country: "Saudi Arabia" },
+  { term: "jeddah", country: "Saudi Arabia" },
+  { term: "muscat", country: "Oman" },
+  { term: "kuwait city", country: "Kuwait" },
+  { term: "cairo", country: "Egypt" },
+  { term: "nairobi", country: "Kenya" },
+];
+
+const WORLD_COUNTRY_PROMPT_ALIASES: Record<string, string[]> = {
+  "United Arab Emirates": ["uae"],
+  "United States": ["usa", "u s a", "united states of america"],
+  "United Kingdom": ["uk"],
+  "Russian Federation": ["russia"],
+  "Korea South": ["south korea"],
+  "Korea North": ["north korea"],
+  "Viet Nam": ["vietnam"],
+  "Iran Islamic Republic Of": ["iran"],
+  Czechia: ["czech republic"],
+  "Cote Divoire": ["ivory coast", "ivory"],
+};
+
 function toPromptPlaceLabel(term: string): string {
   return term.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function escapePromptRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getPromptTermIndex(normalizedPrompt: string, term: string): number {
+  const match = normalizedPrompt.match(
+    new RegExp(`(^|\\b)${escapePromptRegex(term)}(\\b|$)`),
+  );
+  return match?.index ?? -1;
 }
 
 function getOrderedIndiaPlacesFromPrompt(
@@ -1143,6 +1209,61 @@ function getOrderedIndiaPlacesFromPrompt(
     .filter(
       (item, index, all) =>
         all.findIndex((candidate) => candidate.state === item.state) === index,
+    );
+}
+
+function getOrderedWorldPlacesFromPrompt(
+  normalizedPrompt: string,
+  displayPrompt: string,
+  options?: { includeCityAliases?: boolean },
+): Array<{ country: string; label: string; index: number }> {
+  const countryMatches = matchWorldCountries(displayPrompt)
+    .map((country) => {
+      const candidateTerms = [
+        country.toLowerCase(),
+        ...(WORLD_COUNTRY_PROMPT_ALIASES[country] ?? []),
+      ];
+      const indexedTerms = candidateTerms
+        .map((term) => ({
+          term,
+          index: getPromptTermIndex(normalizedPrompt, term),
+        }))
+        .filter((item) => item.index >= 0)
+        .sort((left, right) => left.index - right.index);
+
+      if (indexedTerms.length === 0) {
+        return null;
+      }
+
+      return {
+        country,
+        label: country,
+        index: indexedTerms[0].index,
+      };
+    })
+    .filter(
+      (
+        item,
+      ): item is {
+        country: string;
+        label: string;
+        index: number;
+      } => item !== null,
+    );
+
+  const aliasMatches = options?.includeCityAliases
+    ? WORLD_CITY_TO_COUNTRY_ALIASES.map((alias) => ({
+        country: alias.country,
+        label: toPromptPlaceLabel(alias.term),
+        index: getPromptTermIndex(normalizedPrompt, alias.term),
+      })).filter((item) => item.index >= 0)
+    : [];
+
+  return [...countryMatches, ...aliasMatches]
+    .sort((a, b) => a.index - b.index)
+    .filter(
+      (item, index, all) =>
+        all.findIndex((candidate) => candidate.country === item.country) === index,
     );
 }
 
@@ -1342,6 +1463,9 @@ function heuristicWorldCountryRouteFlowIntent(
 ): IntentResult | null {
   const displayPrompt = getDisplayPrompt(prompt);
   const normalized = displayPrompt.toLowerCase();
+  const orderedPlaces = getOrderedWorldPlacesFromPrompt(normalized, displayPrompt, {
+    includeCityAliases: true,
+  });
 
   const worldSignal =
     /\bworld\b/.test(normalized) ||
@@ -1349,7 +1473,17 @@ function heuristicWorldCountryRouteFlowIntent(
     normalized.includes("world map") ||
     normalized.includes("global map") ||
     normalized.includes("across countries") ||
-    normalized.includes("between countries");
+    normalized.includes("between countries") ||
+    normalized.includes("international") ||
+    normalized.includes("cross border") ||
+    normalized.includes("cross-border") ||
+    normalized.includes("overseas") ||
+    normalized.includes("intercontinental");
+  const implicitWorldSignal =
+    orderedPlaces.length >= 2 &&
+    !normalized.includes("india map") &&
+    !normalized.includes("map of india") &&
+    !normalized.includes("indian states");
   const routeSignal =
     /\broute\b/.test(normalized) ||
     /\bflow\b/.test(normalized) ||
@@ -1367,14 +1501,17 @@ function heuristicWorldCountryRouteFlowIntent(
     /\bfrom\b.+\bto\b/.test(normalized) ||
     /\bbetween\b/.test(normalized);
 
-  if (!worldSignal || !routeSignal) return null;
+  if ((!worldSignal && !implicitWorldSignal) || !routeSignal) return null;
 
-  const matchedCountries = matchWorldCountries(displayPrompt).slice(0, 6);
-  if (matchedCountries.length < 2) return null;
+  if (orderedPlaces.length < 2) return null;
 
-  const originCountry = matchedCountries[0];
-  const destinationCountry = matchedCountries[matchedCountries.length - 1];
-  const viaCountries = matchedCountries.slice(1, -1);
+  const routePlaces = orderedPlaces.slice(0, 6);
+  const routeCountries = routePlaces.map((place) => place.country);
+  const originCountry = routeCountries[0];
+  const destinationCountry = routeCountries[routeCountries.length - 1];
+  const viaCountries = routeCountries.slice(1, -1);
+  const originLabel = routePlaces[0]?.label;
+  const destinationLabel = routePlaces[routePlaces.length - 1]?.label;
   const routeMode = /\blogistics\b|\bcargo\b|\bshipping\b|\bdelivery\b|\bfreight\b|\btrade\b/.test(
     normalized,
   )
@@ -1385,7 +1522,14 @@ function heuristicWorldCountryRouteFlowIntent(
   const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
   const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
   const viaSubtitle =
-    viaCountries.length > 0 ? ` via ${viaCountries.join(", ")}` : "";
+    viaCountries.length > 0
+      ? ` via ${routePlaces
+          .slice(1, -1)
+          .map((place) => place.label)
+          .join(", ")}`
+      : "";
+  const originDisplay = originLabel ?? originCountry;
+  const destinationDisplay = destinationLabel ?? destinationCountry;
 
   return {
     templateId:
@@ -1403,17 +1547,21 @@ function heuristicWorldCountryRouteFlowIntent(
         routeMode === "logistics"
           ? "Global Logistics Corridor"
           : routeMode === "connect"
-            ? `${originCountry} to ${destinationCountry} Link`
-            : `${originCountry} to ${destinationCountry}`,
+            ? `${originDisplay} to ${destinationDisplay} Link`
+            : `${originDisplay} to ${destinationDisplay}`,
       subtitle:
         routeMode === "logistics"
-          ? `Moving from ${originCountry} to ${destinationCountry}${viaSubtitle}`
+          ? `Moving from ${originDisplay} to ${destinationDisplay}${viaSubtitle}`
           : routeMode === "connect"
-            ? `Connecting ${originCountry} to ${destinationCountry}${viaSubtitle}`
-            : `Route flow from ${originCountry} to ${destinationCountry}${viaSubtitle}`,
+            ? `Connecting ${originDisplay} to ${destinationDisplay}${viaSubtitle}`
+            : `Route flow from ${originDisplay} to ${destinationDisplay}${viaSubtitle}`,
       originCountry,
       destinationCountry,
       viaCountries,
+      ...(originLabel && originLabel !== originCountry ? { originLabel } : {}),
+      ...(destinationLabel && destinationLabel !== destinationCountry
+        ? { destinationLabel }
+        : {}),
       routeLabel:
         routeMode === "logistics"
           ? "Global logistics route animation"
@@ -1458,12 +1606,16 @@ function heuristicWorldCountryHighlightIntent(
 ): IntentResult | null {
   const displayPrompt = getDisplayPrompt(prompt);
   const normalized = displayPrompt.toLowerCase();
+  const orderedPlaces = getOrderedWorldPlacesFromPrompt(normalized, displayPrompt, {
+    includeCityAliases: true,
+  });
 
   const worldSignal =
     /\bworld\b/.test(normalized) ||
     /\bglobal\b/.test(normalized) ||
     normalized.includes("world map") ||
-    normalized.includes("global map");
+    normalized.includes("global map") ||
+    normalized.includes("international");
   const mapSignal =
     /\bmap\b/.test(normalized) ||
     normalized.includes("highlight") ||
@@ -1487,9 +1639,11 @@ function heuristicWorldCountryHighlightIntent(
     /\bbetween\b/.test(normalized);
 
   if (!worldSignal || !mapSignal || routeLikeSignal) return null;
+  if (orderedPlaces.length === 0) return null;
 
-  const matchedCountries = matchWorldCountries(displayPrompt).slice(0, 12);
-  if (matchedCountries.length === 0) return null;
+  const highlightPlaces = orderedPlaces.slice(0, 12);
+  const matchedCountries = highlightPlaces.map((place) => place.country);
+  const displayCountries = highlightPlaces.map((place) => place.label);
 
   const aspectMatch = prompt.match(/Aspect ratio:\s*([0-9]+:[0-9]+)/i);
   const aspect_ratio = aspectMatch?.[1]?.trim() || "16:9";
@@ -1502,14 +1656,17 @@ function heuristicWorldCountryHighlightIntent(
     aspect_ratio,
     params: {
       title:
-        matchedCountries.length === 1
-          ? `${matchedCountries[0]} Focus`
+        displayCountries.length === 1
+          ? `${displayCountries[0]} Focus`
           : "Global Country Highlights",
       subtitle:
-        matchedCountries.length === 1
-          ? `Highlighting ${matchedCountries[0]} on the world map`
-          : `Highlighting ${matchedCountries.join(", ")}`,
-      highlightedCountries: matchedCountries.map((country) => ({ country })),
+        displayCountries.length === 1
+          ? `Highlighting ${displayCountries[0]} on the world map`
+          : `Highlighting ${displayCountries.join(", ")}`,
+      highlightedCountries: highlightPlaces.map((place) => ({
+        country: place.country,
+        ...(place.label !== place.country ? { value: place.label } : {}),
+      })),
       background: {
         type: "gradient",
         from: "#071019",
